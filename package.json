@@ -1,0 +1,16 @@
+{
+  "name": "thirdeye",
+  "private": true,
+  "description": "A post-game coach that watches your match recording and finds the one habit costing you fights.",
+  "scripts": {
+    "dev": "node scripts/dev.mjs",
+    "fixture": "node tests/make-fixture.mjs",
+    "test:unit": "node --test tests/core.test.mjs tests/gemini-images.test.mjs",
+    "test:e2e": "node tests/e2e.mjs",
+    "test:live": "node tests/live-check.mjs",
+    "test": "npm run test:unit && npm run test:e2e"
+  },
+  "devDependencies": {
+    "playwright": "^1.56.0"
+  }
+}

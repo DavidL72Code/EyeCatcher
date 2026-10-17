@@ -1,0 +1,58 @@
+{
+  "id": "valorant",
+  "name": "Valorant",
+  "fovH": 103,
+  "crosshair": [0.5, 0.5],
+  "regions": {
+    "aim": [0.3, 0.22, 0.4, 0.56],
+    "killfeed": [0.7, 0.06, 0.29, 0.26],
+    "minimap": [0.0, 0.0, 0.27, 0.44],
+    "scoreboard": [0.36, 0.0, 0.28, 0.1],
+    "health": [0.3, 0.86, 0.4, 0.14]
+  },
+  "regionNotes": "Fractions of a 16:9 screen with the default HUD. Positions are approximate and move with HUD settings.",
+  "cues": [
+    "The crosshair is always at the screen center.",
+    "The kill feed (top right) lists killer, weapon, and victim for a few seconds. Entries with the player in them usually stand out.",
+    "After the player dies, the view switches to a teammate or the death recap, so a sudden change of view marks a death.",
+    "The scoreboard at the top center shows the round timer and score; a new round starts in a buy phase behind barriers."
+  ],
+  "habits": [
+    {
+      "id": "crosshair_low",
+      "name": "Crosshair below head level",
+      "signs": "When an enemy first appears, the crosshair sits at chest height or lower, so the first shot needs a flick up and often loses to a faster head shot.",
+      "drill": "Ten minutes in a custom game: walk each common angle on one map and hold the crosshair at head height on the edge of the corner before it opens. Then a deathmatch where you check your crosshair height at every corner."
+    },
+    {
+      "id": "wide_peek",
+      "name": "Peeking too wide",
+      "signs": "Swinging far past a corner, so two or more enemies or angles can see the player at once and the duel is not one-on-one.",
+      "drill": "Custom game: practise slicing a corner one angle at a time with short shoulder peeks. In your next deathmatch, clear each corner in slices instead of one wide swing."
+    },
+    {
+      "id": "moving_shots",
+      "name": "Shooting while moving",
+      "signs": "Firing before the character has stopped, so the first bullets spread off target. In Valorant, moving shots are very inaccurate.",
+      "drill": "In the Range: strafe, tap the opposite key to stop, fire one shot, and repeat 100 times. Then a deathmatch where you only fire after you have stopped."
+    },
+    {
+      "id": "long_spray",
+      "name": "Spraying at long range",
+      "signs": "Holding the trigger past the first few bullets at long range, where recoil sends the rest over the target.",
+      "drill": "In the Range, at the far targets: taps or bursts of 2 to 3 bullets only for 10 minutes. Then a deathmatch tapping at anything past mid range."
+    },
+    {
+      "id": "repeek",
+      "name": "Re-peeking the same angle",
+      "signs": "After missing or trading, peeking the same angle again right away, where the enemy is ready and aiming at it.",
+      "drill": "Deathmatch rule for three games: after any fight at an angle, move or wait before you peek it again."
+    },
+    {
+      "id": "untraded",
+      "name": "Dying alone, untraded",
+      "signs": "Dying far from teammates on the minimap, so no one can trade the kill.",
+      "drill": "For three matches, before you take a fight, check the minimap and stay within trade distance of a teammate."
+    }
+  ]
+}

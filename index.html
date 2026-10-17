@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Thirdeye</title>
+  <meta name="description" content="A post-game coach that watches your match and finds the habit losing you fights." />
+  <meta name="theme-color" content="#0c0d0f" />
+  <meta name="color-scheme" content="dark" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%278%27 fill=%27%230c0d0f%27/%3E%3Cpath d=%27M4 16c3.5-5.5 7.5-8 12-8s8.5 2.5 12 8c-3.5 5.5-7.5 8-12 8s-8.5-2.5-12-8z%27 fill=%27none%27 stroke=%27%23ffd23f%27 stroke-width=%272.4%27/%3E%3Cpath d=%27M16 11v3.2M16 17.8V21M11 16h3.2M17.8 16H21%27 stroke=%27%23ffd23f%27 stroke-width=%272.4%27 stroke-linecap=%27round%27/%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<!--
+THESIS: The film room. Your match is the canvas and the coach marks it up in telestrator yellow: every scan, look, and
+piece of evidence lands on the match timeline, so you can see where it looked and why it decided.
+OWN-WORLD: Near-black ground (#0c0d0f), graphite panels, chalk text, and one telestrator yellow (#ffd23f) with three jobs:
+the coach's marks, the primary action, and the working spinner. Death red is the only other color, and only on the
+timeline. Big Shoulders Display for the verdict and big numbers, JetBrains Mono for times, the platform sans for text.
+-->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <filter id="marker" x="-5%" y="-40%" width="110%" height="180%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.9 0.08" numOctaves="2" seed="7" result="n" />
+        <feDisplacementMap in="SourceGraphic" in2="n" scale="3" xChannelSelector="R" yChannelSelector="G" result="d" />
+        <feComponentTransfer in="n" result="grain"><feFuncA type="linear" slope="0.35" intercept="0.72" /></feComponentTransfer>
+        <feComposite in="d" in2="grain" operator="in" />
+      </filter>
+      <symbol id="eye" viewBox="0 0 32 32"><path d="M3 16c3.7-5.8 8-8.6 13-8.6s9.3 2.8 13 8.6c-3.7 5.8-8 8.6-13 8.6S6.7 21.8 3 16z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" /><path d="M16 10.6v3.3M16 18.1v3.3M10.6 16h3.3M18.1 16h3.3" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" /></symbol>
+    </defs>
+  </svg>
+
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="top">
+    <a class="mark" href="./" aria-label="Thirdeye, start over"><svg aria-hidden="true"><use href="#eye" /></svg>thirdeye</a>
+    <button class="quiet" id="historyBtn" type="button" hidden>Past reviews <span id="historyCount"></span></button>
+  </header>
+
+  <main id="main" tabindex="-1">
+    <section class="start" id="start" aria-labelledby="startTitle">
+      <h1 id="startTitle">Find the habit that's<br /><span class="pen">losing you fights.</span></h1>
+      <p class="lede">Drop in a match. It watches, then shows you why.</p>
+
+      <label class="drop" id="drop">
+        <input id="fileInput" type="file" accept="video/*,.mkv" />
+        <span class="corners" aria-hidden="true"></span>
+        <svg class="reticle" aria-hidden="true" viewBox="0 0 40 40"><path d="M20 6v9M20 25v9M6 20h9M25 20h9" /></svg>
+        <span class="drop-title">Drop a match recording</span>
+        <span class="drop-sub">MP4, MKV, or WebM. Up to 2 hours.</span>
+      </label>
+
+      <div class="setup">
+        <label class="field game"><span>Game</span>
+          <select id="game"><option value="valorant">Valorant</option></select>
+        </label>
+        <label class="field goal"><span>Anything to look at?</span>
+          <input id="goal" type="text" maxlength="200" placeholder="I keep losing duels on B site" />
+        </label>
+      </div>
+
+      <div class="working" id="working" hidden></div>
+
+      <form class="keybox" id="keyBox" hidden>
+        <label class="field"><span>Gemini API key</span><input id="keyInput" type="password" autocomplete="off" placeholder="Paste a free key from aistudio.google.com" /></label>
+        <button class="pill" type="submit">Save</button>
+      </form>
+
+      <div class="foot">
+        <p>Post-game only. The sound, with any voice chat, never leaves this device.</p>
+        <button class="quiet" id="sampleBtn" type="button" hidden>Use the synthetic test match</button>
+      </div>
+    </section>
+
+    <section class="review" id="review" aria-label="Match review" hidden>
+      <div class="stage">
+        <div class="player"><video id="video" playsinline controls preload="metadata"></video></div>
+        <div class="timeline" id="timeline" role="slider" tabindex="0" aria-label="Match timeline" aria-valuemin="0" aria-valuemax="0" aria-valuenow="0">
+          <div class="track" id="track"></div>
+          <div class="eye-mark" id="eyeMark" hidden><svg><use href="#eye" /></svg></div>
+          <div class="playhead" id="playhead"></div>
+        </div>
+        <div class="axis" id="axis" aria-hidden="true"></div>
+        <ul class="legend" aria-hidden="true"><li class="k-death">Death</li><li class="k-kill">Kill</li><li class="k-look">Looked at</li></ul>
+      </div>
+
+      <aside class="rail" id="rail">
+        <div class="status" id="status" role="status" aria-live="polite">
+          <span class="ring" aria-hidden="true"></span>
+          <span class="status-text" id="statusText">Opening the recording</span>
+          <span class="secs" id="statusSecs"></span>
+          <button class="quiet stop" id="stopBtn" type="button">Stop</button>
+        </div>
+        <div class="meter" id="meter" hidden><div class="ticks" id="meterTicks"></div><span id="meterText"></span></div>
+        <div class="question" id="question" hidden></div>
+        <div class="strip" id="strip" hidden></div>
+        <div class="board" id="board" hidden></div>
+        <article class="verdict" id="verdict" hidden></article>
+      </aside>
+    </section>
+
+    <dialog class="history" id="history" aria-labelledby="historyTitle">
+      <header><h2 id="historyTitle">Past reviews</h2><button class="quiet" type="button" data-close>Close</button></header>
+      <ol id="historyList"></ol>
+    </dialog>
+  </main>
+
+  <script src="env.js"></script>
+  <script src="gemini.js"></script>
+  <script src="core.js"></script>
+  <script src="video.js"></script>
+  <script src="agent.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
