@@ -193,6 +193,8 @@ img { display: block; max-width: 100%; }
 .evidence .n { position: absolute; left: 5px; top: 5px; width: 20px; height: 20px; border-radius: 50%; background: var(--pen); color: var(--pen-ink); font: 700 11px/20px var(--mono); text-align: center; }
 .evidence .tt { display: block; font: 600 12px var(--mono); color: var(--pen); }
 .evidence .wt { display: block; font-size: 14px; line-height: 1.35; }
+.contrast { margin: 0 0 18px; padding: 0; list-style: none; display: grid; gap: 6px; }
+.contrast li { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 10px; align-items: baseline; font-size: 14px; line-height: 1.4; color: var(--muted); }
 .drill { margin: 0 0 12px; padding: 14px 16px; border-radius: var(--r-sm); background: var(--panel-2); }
 .drill p { margin: 0; font-size: 15px; line-height: 1.5; }
 .recheck { margin: 0 0 18px; font-size: 14px; color: var(--muted); }

@@ -89,10 +89,12 @@ const good = {
   drill: 'Ten minutes in the Range walking corners with the crosshair at head height.', recheck: 'Measure first sight in five duels.',
   evidence: [{ t: '0:10', what: 'Enemy appears above the crosshair' }, { t: '0:40.5', what: 'Same at B main' }, { t: '1:11', what: 'Lost to a head shot' }],
 };
-const HABITS = [{ id: 'crosshair_low' }, { id: 'wide_peek' }];
+const HABITS = [{ id: 'crosshair_low', measuredBy: 'aim' }, { id: 'wide_peek' }];
+
+const LOW = [{ t: 10.2, heads: 2.1 }, { t: 40.5, heads: 1.8 }, { t: 70.3, heads: 2.4 }];
 
 test('finish stands when every moment was looked at', () => {
-  assert.deepEqual(C.checkFinish(good, { ledger: looked(), duration: 120, habits: HABITS }), []);
+  assert.deepEqual(C.checkFinish(good, { ledger: looked(), duration: 120, habits: HABITS, measures: LOW }), []);
 });
 
 test('finish is sent back for unseen, repeated, too few, or made-up moments', () => {
@@ -100,7 +102,7 @@ test('finish is sent back for unseen, repeated, too few, or made-up moments', ()
   assert.ok(p.some((x) => /same moment as other evidence/.test(x)));
   assert.ok(p.some((x) => /haven't looked closely at 0:55/.test(x)));
   assert.ok(p.some((x) => /9:00 isn't a time/.test(x)));
-  assert.ok(p.some((x) => /at least 3 separate moments you looked at \(you have 1\)/.test(x)));
+  assert.ok(p.some((x) => /at least 3 separate moments you looked at that show the habit \(you have 1\)\. Moments where they got it right go in contrast.*finish with found false/.test(x)));
 });
 
 test('finish needs a known habit id, a drill, and a recheck', () => {
@@ -165,4 +167,32 @@ test('history keeps the accepted habit and compares the next match to its baseli
   assert.equal(C.compareAim(h.habit.baseline, { n: 5, heads: -2.8 }), 'worse');
   assert.equal(C.compareAim(h.habit.baseline, { n: 2, heads: 0 }), null);
   assert.equal(C.historyBrief(C.emptyHistory()), 'First review for this player.');
+});
+
+test('an aim habit has to agree with the aim the coach measured', () => {
+  const atHead = [{ t: 10.2, heads: 0.1 }, { t: 40.5, heads: -0.2 }, { t: 70.3, heads: 0.3 }];
+  const p = C.checkFinish(good, { ledger: looked(), duration: 120, habits: HABITS, measures: atHead });
+  assert.ok(p.some((x) => /put the crosshair at head level \(median 0\.1 heads over 3 duels\)/.test(x)));
+  assert.ok(p.some((x) => /At 0:10 you measured the crosshair at head level \(0\.1 heads\)/.test(x)));
+  assert.deepEqual(C.checkFinish(good, { ledger: looked(), duration: 120, habits: HABITS, measures: LOW }), []);
+  const eyeballed = C.checkFinish(good, { ledger: looked(), duration: 120, habits: HABITS, measures: [{ t: 10.2, heads: 2.1 }] });
+  assert.ok(eyeballed.some((x) => /at least 3 measure_aim readings where an enemy was in view \(you have 1\)/.test(x)), 'a measurable habit needs measurements');
+  assert.deepEqual(C.checkFinish({ ...good, habit_id: 'wide_peek' }, { ledger: looked(), duration: 120, habits: HABITS, measures: atHead }), [], 'other habits are not judged by aim');
+});
+
+test('a head box has to sit at the top of a body box', () => {
+  const body = [400, 450, 900, 550];
+  assert.equal(C.headOnBody([400, 480, 460, 520], body), true);
+  assert.equal(C.headOnBody([700, 480, 760, 520], body), false, 'a "head" at the waist');
+  assert.equal(C.headOnBody([400, 700, 460, 740], body), false, 'a "head" beside the body');
+  assert.equal(C.headOnBody([400, 480, 460, 520], undefined), false, 'no body, no head');
+});
+
+test('moments they got right go in contrast, never in both lists', () => {
+  const ledger = C.recordLook(looked(), { from: 100, to: 101, kind: 'frames' });
+  const ok = C.checkFinish({ ...good, contrast: [{ t: '1:40.5', what: 'On the head and won' }] }, { ledger, duration: 120, habits: HABITS, measures: LOW });
+  assert.deepEqual(ok, []);
+  const both = C.checkFinish({ ...good, contrast: [{ t: '0:40.5', what: 'won this one' }, { t: '1:45', what: 'never looked' }] }, { ledger: looked(), duration: 120, habits: HABITS });
+  assert.ok(both.some((x) => /0:40 is in both evidence and contrast/.test(x)));
+  assert.ok(both.some((x) => /haven't looked closely at 1:45 \(in contrast\)/.test(x)));
 });

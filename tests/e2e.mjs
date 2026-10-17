@@ -53,14 +53,14 @@ const coach = [
   () => call(['finish', { found: true, habit_id: 'crosshair_low', habit: 'Crosshair below head level', why: 'Your crosshair sat at chest height when enemies appeared, so they shot first.', drill: 'Ten minutes walking corners in a custom game with the crosshair at head height.', recheck: 'Measure first sight in five duels.', evidence: [ev('0:14.2', 'Chest height as Enemy 1 appears'), ev('0:47.1', 'Same at the doorway'), ev('2:14.0', 'Again before the last death')] }]),
   () => call(['frames', { at: '0:31', before: 1, after: 0.5, fps: 4, region: 'aim' }]),
   () => call(['note', { id: 'T1', status: 'supported', evidence: [ev('0:31', 'on the head in a fight they won')] }]),
-  () => call(['finish', { found: true, habit_id: 'crosshair_low', habit: 'Crosshair below head level', why: 'Your crosshair sat at chest height when enemies appeared, so they shot first.', drill: 'Ten minutes walking corners in a custom game with the crosshair at head height.', recheck: 'Measure first sight in five duels.', progress: 'unclear', evidence: [ev('0:14.2', 'Chest height as Enemy 1 appears'), ev('0:47.1', 'Same at the doorway'), ev('2:14.0', 'Again before the last death')] }]),
+  () => call(['finish', { found: true, habit_id: 'crosshair_low', habit: 'Crosshair below head level', why: 'Your crosshair sat at chest height when enemies appeared, so they shot first.', drill: 'Ten minutes walking corners in a custom game with the crosshair at head height.', recheck: 'Measure first sight in five duels.', progress: 'unclear', evidence: [ev('0:14.2', 'Chest height as Enemy 1 appears'), ev('0:47.1', 'Same at the doorway'), ev('2:14.0', 'Again before the last death')], contrast: [ev('0:31', 'On the head, and the fight was won')] }]),
 ];
 const seen = { agentBodies: [], scans: 0, heads: 0, uploads: 0, starts: 0 };
 
 function gemini(body) {
   const parts = body.contents?.[0]?.parts || [];
   if (parts.some((p) => p.fileData)) { seen.scans++; seen.scanBody = body; return text({ events: scanEvents }); }
-  if (!body.tools) { const h = heads[seen.heads++ % heads.length]; return text({ found: true, box_2d: headBox(h) }); }
+  if (!body.tools) { const h = heads[seen.heads++ % heads.length], b = headBox(h); return text({ enemies: [{ head_2d: [0, 950, 40, 990], body_2d: [600, 0, 700, 20] }, { head_2d: b, body_2d: [b[0], b[1] - 10, b[2] + 200, b[3] + 10] }] }); }
   seen.agentBodies.push(body);
   const turn = body.contents.filter((c) => c.role === 'model').length;
   return (coach[turn] || coach.at(-1))();
@@ -135,6 +135,7 @@ try {
   await page.waitForFunction(() => [...document.querySelectorAll('.evidence .thumb')].every((t) => t.style.backgroundImage.startsWith('url')));
   check(true, 'each evidence moment gets a frame from the recording');
   check(await page.locator('#status').isHidden(), 'the spinner is gone when done');
+  check(/0:31\s*On the head, and the fight was won/.test(await page.locator('.contrast').innerText()), 'moments they got right show apart from the evidence');
   check(await page.locator('.how .theory.supported').count() === 1, 'the board is kept under How it got here');
   await page.click('.evidence li:nth-child(2) button');
   await page.waitForFunction(() => document.querySelector('#video').currentTime > 44);

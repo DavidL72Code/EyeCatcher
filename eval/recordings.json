@@ -1,0 +1,14 @@
+[
+  {
+    "file": "../tests/fixtures/match.mp4",
+    "plantedHabit": "crosshair_low",
+    "truth": "../tests/fixtures/truth.json",
+    "note": "Synthetic 150 s match from npm run fixture: 8 duels, crosshair about 2 heads low on every death. Checks the plumbing, not accuracy on real footage."
+  },
+  {
+    "file": "recordings/yt-vyse-ascent.mov",
+    "plantedHabit": null,
+    "truth": "recordings/yt-vyse-ascent.truth.json",
+    "note": "Real footage: first 14:10 of YouTube NZ1LABTSaTY (Im Muted, Vyse on Ascent, 22-kill game), screen-recorded at 1290x726. Nothing planted; a skilled player, so a named habit needs checking by hand rather than counting as wrong."
+  }
+]

@@ -1,0 +1,162 @@
+{
+  "started": "2026-10-17T17:21:32.745Z",
+  "budget": {
+    "looks": 30,
+    "turns": 30
+  },
+  "maxCallsPerRecording": 80,
+  "recordings": [
+    {
+      "file": "../tests/fixtures/match.mp4",
+      "plantedHabit": "crosshair_low",
+      "systems": {
+        "gemini-agentic": {
+          "model": "gemini-3.5-flash-lite",
+          "status": "completed",
+          "id": "v1_ChZwSzdUYXJQcUE5V18zOUlQdk1iMWFREhZwSzdUYXJQcUE5V18zOUlQdk1iMWFR",
+          "requests": {
+            "create": 1,
+            "polls": 1
+          },
+          "tokens": {
+            "total_tokens": 11641,
+            "total_input_tokens": 506,
+            "input_tokens_by_modality": [
+              {
+                "modality": "text",
+                "tokens": 506
+              }
+            ],
+            "total_cached_tokens": 0,
+            "total_output_tokens": 101,
+            "total_tool_use_tokens": 11034,
+            "tool_use_tokens_by_modality": [
+              {
+                "modality": "text",
+                "tokens": 1134
+              },
+              {
+                "modality": "video",
+                "tokens": 9900
+              }
+            ],
+            "total_thought_tokens": 0
+          },
+          "looks": 2,
+          "stepTypes": [
+            "user_input",
+            "processing_call",
+            "processing_result",
+            "processing_call",
+            "processing_result",
+            "thought",
+            "model_output"
+          ],
+          "steps": [
+            {
+              "type": "user_input",
+              "content": [
+                {
+                  "uri": "https://generativelanguage.googleapis.com/v1beta/files/xmo451si39dv",
+                  "mime_type": "video/webm",
+                  "type": "video",
+                  "processing": "agentic"
+                },
+                {
+                  "text": "This is a recording of one Valorant match from the player's own screen (a small silent copy), 2:30 long. Find the one habit that cost this player the most fights, and prove it with moments from the video. If no single habit stands out, say so: a wrong diagnosis is worse than none.\n\nHow Valorant looks on screen:\n- The crosshair is always at the screen center.\n- The kill feed (top right) lists kille…",
+                  "type": "text"
+                }
+              ]
+            },
+            {
+              "id": "call_1185945",
+              "type": "processing_call"
+            },
+            {
+              "call_id": "call_1185945",
+              "type": "processing_result"
+            },
+            {
+              "id": "call_1185948",
+              "type": "processing_call"
+            },
+            {
+              "call_id": "call_1185948",
+              "type": "processing_result"
+            },
+            {
+              "type": "thought"
+            },
+            {
+              "content": [
+                {
+                  "text": "```json\n{\"found\": false, \"habit_id\": null, \"habit\": null, \"why\": null, \"evidence\": []}\n```",
+                  "type": "text"
+                }
+              ],
+              "type": "model_output"
+            }
+          ],
+          "errors": null,
+          "found": false,
+          "habitId": null,
+          "habit": "",
+          "why": "",
+          "evidence": [],
+          "text": "```json\n{\"found\": false, \"habit_id\": null, \"habit\": null, \"why\": null, \"evidence\": []}\n```",
+          "seconds": 6.3,
+          "usage": {
+            "calls": 1,
+            "polls": 1,
+            "files": 0,
+            "rateLimited": 0,
+            "failed": 0,
+            "blocked": 0,
+            "models": {
+              "gemini-3.5-flash-lite": 1
+            }
+          },
+          "score": {
+            "verdict": "missed",
+            "hit": false,
+            "counted": true
+          },
+          "evidenceOnDuels": null
+        }
+      },
+      "setup": {
+        "duration": 150,
+        "size": "1280x720",
+        "proxyMb": 0.63,
+        "proxySeconds": 1.5,
+        "uploadSeconds": 4.1,
+        "usage": {
+          "calls": 0,
+          "polls": 0,
+          "files": 3,
+          "rateLimited": 0,
+          "failed": 0,
+          "blocked": 0,
+          "models": {}
+        }
+      }
+    }
+  ],
+  "finished": "2026-10-17T17:21:46.552Z",
+  "summary": {
+    "gemini-agentic": {
+      "plantedFound": "0/1",
+      "falsePositives": "0/0",
+      "noResult": 0,
+      "calls": 1,
+      "seconds": 6.3
+    }
+  },
+  "totals": {
+    "modelCalls": 1,
+    "uploadRequests": 3,
+    "models": {
+      "gemini-3.5-flash-lite": 1
+    }
+  }
+}

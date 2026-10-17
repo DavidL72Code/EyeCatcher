@@ -1,0 +1,398 @@
+{
+  "started": "2026-10-17T17:18:47.671Z",
+  "budget": {
+    "looks": 30,
+    "turns": 30
+  },
+  "maxCallsPerRecording": 80,
+  "recordings": [
+    {
+      "file": "../tests/fixtures/match.mp4",
+      "plantedHabit": "crosshair_low",
+      "systems": {
+        "agent": {
+          "found": true,
+          "habitId": "crosshair_low",
+          "habit": "Crosshair below head level",
+          "why": "In multiple lost duels, your crosshair sat around chest height when enemies appeared, requiring a slower upward flick while opponents could shoot straight ahead.",
+          "stopped": false,
+          "confidence": "high",
+          "evidence": [
+            {
+              "t": 14,
+              "what": "Crosshair at chest height when enemy appears"
+            },
+            {
+              "t": 47,
+              "what": "Crosshair held low before duel"
+            },
+            {
+              "t": 101,
+              "what": "Crosshair low when peeked and killed"
+            }
+          ],
+          "aim": {
+            "n": 7,
+            "heads": 1.66,
+            "dyDeg": 3.74,
+            "atHead": 1,
+            "bands": {
+              "chest": 5,
+              "low": 1,
+              "head": 1
+            }
+          },
+          "measures": [
+            {
+              "t": 15,
+              "heads": 2.16,
+              "band": "chest"
+            },
+            {
+              "t": 14,
+              "heads": 1.66,
+              "band": "chest"
+            },
+            {
+              "t": 32,
+              "heads": 9.65,
+              "band": "low"
+            },
+            {
+              "t": 48,
+              "heads": 1.85,
+              "band": "chest"
+            },
+            {
+              "t": 83,
+              "heads": 0.01,
+              "band": "head"
+            },
+            {
+              "t": 101,
+              "heads": 1.33,
+              "band": "chest"
+            },
+            {
+              "t": 134,
+              "heads": 1.4,
+              "band": "chest"
+            }
+          ],
+          "looks": 11,
+          "turns": 20,
+          "theories": "T1 supported: crosshair_low (0:15, 0:14, 0:31, 0:47, 1:23, 1:41, 2:14)",
+          "asks": [],
+          "rejected": [],
+          "steps": [
+            {
+              "name": "scan",
+              "args": "{\"from\":\"0:00\",\"to\":\"2:30\"}"
+            },
+            {
+              "name": "frames",
+              "args": "{\"at\":\"0:15\",\"region\":\"full\"}"
+            },
+            {
+              "name": "note",
+              "args": "{\"theory\":\"crosshair_low\",\"status\":\"testing\",\"evidence\":[{\"what\":\"Crosshair positioned at chest/body height when enemy appears\",\"t\":\"0:15\"}],\"id\":\"T1\"}"
+            },
+            {
+              "name": "measure_aim",
+              "args": "{\"at\":\"0:15\"}"
+            },
+            {
+              "name": "frames",
+              "args": "{\"region\":\"aim\",\"at\":\"0:14\"}"
+            },
+            {
+              "name": "measure_aim",
+              "args": "{\"at\":\"0:14.0\"}"
+            },
+            {
+              "name": "note",
+              "args": "{\"id\":\"T1\",\"theory\":\"crosshair_low\",\"evidence\":[{\"what\":\"Crosshair measured at 1.66 head-heights (chest level) when enemy appears\",\"t\":\"0:14\"}],\"status\":\"suppor"
+            },
+            {
+              "name": "measure_aim",
+              "args": "{\"at\":\"0:32\"}"
+            },
+            {
+              "name": "frames",
+              "args": "{\"region\":\"aim\",\"at\":\"0:31\"}"
+            },
+            {
+              "name": "note",
+              "args": "{\"theory\":\"crosshair_low\",\"id\":\"T1\",\"evidence\":[{\"what\":\"Crosshair placed at head level when winning duel at 0:32\",\"t\":\"0:31\"}],\"status\":\"supported\"}"
+            },
+            {
+              "name": "measure_aim",
+              "args": "{\"at\":\"0:48\"}"
+            },
+            {
+              "name": "frames",
+              "args": "{\"at\":\"0:47.5\",\"region\":\"aim\"}"
+            },
+            {
+              "name": "note",
+              "args": "{\"status\":\"supported\",\"theory\":\"crosshair_low\",\"evidence\":[{\"t\":\"0:47\",\"what\":\"Crosshair held low at chest level before enemy appears\"}],\"id\":\"T1\"}"
+            },
+            {
+              "name": "measure_aim",
+              "args": "{\"at\":\"1:23\"}"
+            },
+            {
+              "name": "note",
+              "args": "{\"evidence\":[{\"what\":\"Crosshair placed nicely at head level in another won duel\",\"t\":\"1:23\"}],\"id\":\"T1\",\"theory\":\"crosshair_low\",\"status\":\"supported\"}"
+            },
+            {
+              "name": "measure_aim",
+              "args": "{\"at\":\"1:41\"}"
+            },
+            {
+              "name": "note",
+              "args": "{\"evidence\":[{\"t\":\"1:41\",\"what\":\"Crosshair low at chest height when peeked and killed\"}],\"theory\":\"crosshair_low\",\"status\":\"supported\",\"id\":\"T1\"}"
+            },
+            {
+              "name": "measure_aim",
+              "args": "{\"at\":\"2:14\"}"
+            },
+            {
+              "name": "note",
+              "args": "{\"evidence\":[{\"what\":\"Crosshair resting below head level before final death\",\"t\":\"2:14\"}],\"id\":\"T1\",\"status\":\"supported\",\"theory\":\"crosshair_low\"}"
+            },
+            {
+              "name": "finish",
+              "args": "{\"found\":true,\"drill\":\"Ten minutes in a custom game: walk each common angle on one map and hold the crosshair at head height on the edge of the corner before it"
+            }
+          ],
+          "seconds": 75.1,
+          "usage": {
+            "calls": 31,
+            "polls": 0,
+            "files": 0,
+            "rateLimited": 3,
+            "failed": 0,
+            "blocked": 0,
+            "models": {
+              "gemini-3.5-flash-lite": 30,
+              "gemini-3.1-flash-lite": 1
+            }
+          },
+          "score": {
+            "verdict": "found",
+            "hit": true,
+            "counted": true
+          },
+          "evidenceOnDuels": "3/3"
+        },
+        "pipeline": {
+          "found": true,
+          "habitId": "crosshair_low",
+          "evidence": [
+            {
+              "t": 14.4,
+              "what": "crosshair 1.75 heads below"
+            },
+            {
+              "t": 47.4,
+              "what": "crosshair 1.64 heads below"
+            },
+            {
+              "t": 66.4,
+              "what": "crosshair 2.51 heads below"
+            },
+            {
+              "t": 101.4,
+              "what": "crosshair 1.77 heads below"
+            },
+            {
+              "t": 134.4,
+              "what": "crosshair 2.14 heads below"
+            }
+          ],
+          "aim": {
+            "n": 5,
+            "heads": 1.77,
+            "dyDeg": 4.43,
+            "atHead": 0,
+            "bands": {
+              "chest": 4,
+              "low": 1
+            }
+          },
+          "measures": [
+            {
+              "t": 14.4,
+              "heads": 1.75,
+              "dyDeg": 4.43,
+              "dxDeg": 5.6,
+              "headPx": 22.6,
+              "band": "chest",
+              "small": false
+            },
+            {
+              "t": 47.4,
+              "heads": 1.64,
+              "dyDeg": 3.7,
+              "dxDeg": 5.97,
+              "headPx": 20.2,
+              "band": "chest",
+              "small": false
+            },
+            {
+              "t": 66.4,
+              "heads": 2.51,
+              "dyDeg": 4.74,
+              "dxDeg": 5.54,
+              "headPx": 16.9,
+              "band": "low",
+              "small": false
+            },
+            {
+              "t": 101.4,
+              "heads": 1.77,
+              "dyDeg": 3.91,
+              "dxDeg": 5.91,
+              "headPx": 19.7,
+              "band": "chest",
+              "small": false
+            },
+            {
+              "t": 134.4,
+              "heads": 2.14,
+              "dyDeg": 4.72,
+              "dxDeg": 5.46,
+              "headPx": 19.7,
+              "band": "chest",
+              "small": false
+            }
+          ],
+          "deaths": 5,
+          "looks": 5,
+          "steps": [
+            {
+              "name": "scan",
+              "args": "{\"from\":\"0:00\",\"to\":\"2:30\"}"
+            },
+            {
+              "name": "measure_aim",
+              "args": "{\"at\":\"0:14.4\"}"
+            },
+            {
+              "name": "measure_aim",
+              "args": "{\"at\":\"0:47.4\"}"
+            },
+            {
+              "name": "measure_aim",
+              "args": "{\"at\":\"1:06.4\"}"
+            },
+            {
+              "name": "measure_aim",
+              "args": "{\"at\":\"1:41.4\"}"
+            },
+            {
+              "name": "measure_aim",
+              "args": "{\"at\":\"2:14.4\"}"
+            }
+          ],
+          "seconds": 20.5,
+          "usage": {
+            "calls": 6,
+            "polls": 0,
+            "files": 0,
+            "rateLimited": 0,
+            "failed": 0,
+            "blocked": 0,
+            "models": {
+              "gemini-3.5-flash-lite": 6
+            }
+          },
+          "score": {
+            "verdict": "found",
+            "hit": true,
+            "counted": true
+          },
+          "evidenceOnDuels": "5/5"
+        },
+        "gemini-agentic": {
+          "found": false,
+          "refused": true,
+          "stage": "poll",
+          "status": 429,
+          "error": "Rate limit exceeded for model gemini-3.5-flash-lite (limit: 15 requests per minute on Free Tier). Please retry in 24s or upgrade your tier at https://ai.dev/rate-limit.",
+          "model": "gemini-3.5-flash-lite",
+          "requests": {
+            "create": 1,
+            "polls": 1
+          },
+          "seconds": 6.3,
+          "usage": {
+            "calls": 1,
+            "polls": 1,
+            "files": 0,
+            "rateLimited": 1,
+            "failed": 0,
+            "blocked": 0,
+            "models": {
+              "gemini-3.5-flash-lite": 1
+            }
+          },
+          "score": {
+            "verdict": "refused",
+            "counted": false
+          },
+          "evidenceOnDuels": null
+        }
+      },
+      "setup": {
+        "duration": 150,
+        "size": "1280x720",
+        "proxyMb": 0.63,
+        "proxySeconds": 4.2,
+        "uploadSeconds": 5.8,
+        "usage": {
+          "calls": 0,
+          "polls": 0,
+          "files": 4,
+          "rateLimited": 0,
+          "failed": 0,
+          "blocked": 0,
+          "models": {}
+        }
+      }
+    }
+  ],
+  "finished": "2026-10-17T17:20:43.035Z",
+  "summary": {
+    "agent": {
+      "plantedFound": "1/1",
+      "falsePositives": "0/0",
+      "noResult": 0,
+      "calls": 31,
+      "seconds": 75.1
+    },
+    "pipeline": {
+      "plantedFound": "1/1",
+      "falsePositives": "0/0",
+      "noResult": 0,
+      "calls": 6,
+      "seconds": 20.5
+    },
+    "gemini-agentic": {
+      "plantedFound": "0/0",
+      "falsePositives": "0/0",
+      "noResult": 1,
+      "calls": 1,
+      "seconds": 6.3
+    }
+  },
+  "totals": {
+    "modelCalls": 38,
+    "uploadRequests": 4,
+    "models": {
+      "gemini-3.5-flash-lite": 37,
+      "gemini-3.1-flash-lite": 1
+    }
+  }
+}

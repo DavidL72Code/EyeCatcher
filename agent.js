@@ -9,7 +9,8 @@
   const str = (description) => ({ type: 'string', description });
   const moments = (description) => ({ type: 'array', description, items: { type: 'object', properties: { t: str('M:SS'), what: str('what happens then') }, required: ['t', 'what'] } });
   const EVENTS = { type: 'object', properties: { events: { type: 'array', items: { type: 'object', properties: { t: str('M:SS'), kind: { type: 'string', enum: C.KINDS }, text: str('a few words') }, required: ['t', 'kind', 'text'] } } }, required: ['events'] };
-  const HEAD = { type: 'object', properties: { found: { type: 'boolean' }, box_2d: { type: 'array', items: { type: 'number' } } }, required: ['found'] };
+  const BOX = { type: 'array', items: { type: 'number' }, minItems: 4, maxItems: 4 };
+  const ENEMIES = { type: 'object', properties: { enemies: { type: 'array', maxItems: 3, items: { type: 'object', properties: { head_2d: BOX, body_2d: BOX }, required: ['head_2d', 'body_2d'] } } }, required: ['enemies'] };
 
   // A separate call watches the scan copy, so the video never enters the coach's own context.
   async function scanVideo({ file, profile, from, to, signal, onNotice }) {
@@ -23,14 +24,16 @@ kind: kill (the player killed someone), death (the player died), round_start, ro
     return C.normalizeEvents(G.parseJSON(G.textOf(resp)).events, { from, to });
   }
 
-  // Gemini only draws the box; the geometry is code (C.aimOffset).
+  // Gemini only draws the boxes; code keeps the heads that sit on a body and picks the one nearest the crosshair, and
+  // the geometry is code too (C.aimOffset).
   async function findHead(image, { signal, onNotice }) {
     const resp = await G.generate({
-      contents: [{ role: 'user', parts: [{ inlineData: { mimeType: image.mimeType, data: image.data } }, { text: 'This is the middle of a first-person shooter screen; the crosshair is at the exact center. Find the enemy player nearest the crosshair and draw a tight box around their head only. Return box_2d as [ymin, xmin, ymax, xmax] scaled 0-1000. If no enemy head is visible, found is false.' }] }],
-      generationConfig: { temperature: 0, responseMimeType: 'application/json', responseSchema: HEAD, mediaResolution: 'MEDIA_RESOLUTION_HIGH' },
+      contents: [{ role: 'user', parts: [{ inlineData: { mimeType: image.mimeType, data: image.data } }, { text: 'This is the middle of a first-person shooter screen; the crosshair is at the exact center. List the enemy players you can see, nearest the crosshair first, at most 3. For each, head_2d is a tight box around the head only and body_2d a box around all of them that is visible, each [ymin, xmin, ymax, xmax] scaled 0-1000. No enemy players visible: an empty list.' }] }],
+      generationConfig: { temperature: 0, responseMimeType: 'application/json', responseSchema: ENEMIES, mediaResolution: 'MEDIA_RESOLUTION_HIGH' },
     }, { signal, onNotice });
-    const j = G.parseJSON(G.textOf(resp));
-    return j.found && Array.isArray(j.box_2d) && j.box_2d.length === 4 ? j.box_2d : null;
+    const heads = (G.parseJSON(G.textOf(resp)).enemies || []).filter((e) => C.headOnBody(e.head_2d, e.body_2d)).map((e) => e.head_2d);
+    const off = (b) => Math.hypot((b[1] + b[3]) / 2 - 500, (b[0] + b[2]) / 2 - 500);
+    return heads.sort((a, b) => off(a) - off(b))[0] || null;
   }
 
   function brief({ profile, video, history, budget, goal }) {
@@ -46,7 +49,7 @@ Tools and what they cost:
 - measure_aim: code measures how far the crosshair was from the nearest enemy head at one moment, in head-heights (0 = on the head, 2 = chest height) and degrees. 1 look. The player can trust a measured number; a height judged by eye from frames is a guess. It only means something at the moment an enemy first becomes visible.
 - ask_player: one short question about a moment, for what video can't show, like whether they expected an enemy there. The app plays that moment for them. At most ${MAX_ASKS} per review.
 - note: puts a theory on the board the player watches (testing, supported, or dropped) with the moments behind it.
-- finish: ends the review. Code hands it back if any evidence moment wasn't looked at closely (frames or measure_aim), or if there are fewer than ${C.MIN_EVIDENCE} separate moments, and once if you never looked at a fight they won.
+- finish: ends the review. evidence holds only moments that show the habit; moments where they got it right go in contrast, which the player sees too. Code hands it back if any moment wasn't looked at closely (frames or measure_aim), or if fewer than ${C.MIN_EVIDENCE} separate moments show the habit, and once if you never looked at a fight they won.
 
 Budget: ${budget.looks} looks and ${budget.turns} turns. A turn is one model call from a small daily allowance; every tool result says what's left. Running out before finish wastes the review. Call a tool every turn.
 
@@ -139,6 +142,7 @@ Rules:
           onEvent({ type: 'measure', t, found: true, measure: m, shot });
           const warnings = [];
           if (m.small) warnings.push('The head is tiny on screen, so this is rough.');
+          if (m.headPx > frame.h * 0.06) warnings.push(`The enemy is very close (their head is ${Math.round(m.headPx)} px tall), so crosshair height here says little about placement.`);
           // the scan times a fight by its kill-feed line, which comes after the moment that shows placement
           const end = s.events.find((e) => (e.kind === 'kill' || e.kind === 'death') && t >= e.t && t <= e.t + 1.5);
           if (end) warnings.push(`This is when the kill feed shows the fight ending (${C.mmss(end.t)} ${end.kind}). The enemy usually comes into view 0.3 to 1 s earlier, and that moment shows placement.`);
@@ -178,7 +182,8 @@ Rules:
             habit_id: { type: 'string', enum: [...profile.habits.map((h) => h.id), 'other'] },
             habit: str('the habit in a few words'),
             why: str('how it cost fights, in one to three sentences'),
-            evidence: moments('the moments that show it'),
+            evidence: moments('only moments where they do the habit'),
+            contrast: moments('optional: moments where they got it right, for comparison; never also in evidence'),
             drill: str('one specific drill'),
             recheck: str('what to check in the next match'),
             progress: { type: 'string', enum: ['better', 'same', 'worse', 'unclear'] },
@@ -188,7 +193,7 @@ Rules:
         },
         ends: (r) => r.ok,
         execute: async (a) => {
-          const problems = C.checkFinish(a, { ledger: s.ledger, duration: video.duration, habits: profile.habits });
+          const problems = C.checkFinish(a, { ledger: s.ledger, duration: video.duration, habits: profile.habits, measures: s.measures });
           // A habit that shows up as often in won fights isn't what loses them. Asked once; finishing again keeps the answer.
           const wins = s.events.filter((e) => e.kind === 'kill');
           if (!problems.length && a.found !== false && !s.askedWins && wins.length && !wins.some((w) => C.seen(s.ledger, w.t) || C.seen(s.ledger, w.t - 1))) {
@@ -239,9 +244,12 @@ Rules:
       confidence: f.confidence || 'medium',
       progress: history?.habit ? measured || f.progress || 'unclear' : null,
       progressFrom: measured ? 'measured' : 'agent',
-      evidence: (f.evidence || []).map((e) => ({ t: C.parseTime(e.t), what: e.what })).filter((e) => Number.isFinite(e.t)).sort((x, y) => x.t - y.t),
+      evidence: toMoments(f.evidence),
+      contrast: toMoments(f.contrast),
     };
   }
+
+  const toMoments = (list) => (Array.isArray(list) ? list : []).map((e) => ({ t: C.parseTime(e?.t), what: e?.what })).filter((e) => Number.isFinite(e.t)).sort((x, y) => x.t - y.t);
 
   // the finish call that ended the run: the last finish arguments the model sent
   function lastFinish(contents) {

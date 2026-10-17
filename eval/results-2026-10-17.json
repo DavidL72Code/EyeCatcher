@@ -1,0 +1,392 @@
+{
+  "started": "2026-10-17T17:07:01.448Z",
+  "budget": {
+    "looks": 30,
+    "turns": 30
+  },
+  "maxCallsPerRecording": 80,
+  "recordings": [
+    {
+      "file": "../tests/fixtures/match.mp4",
+      "plantedHabit": "crosshair_low",
+      "systems": {
+        "agent": {
+          "found": true,
+          "habitId": "crosshair_low",
+          "habit": "Crosshair placement is often too low, resting at chest level rather than head level.",
+          "why": "When your crosshair is at chest height, you have to flick up to hit the head, which takes extra time and often causes you to lose the duel. When you keep it at head height, you can secure the kill much faster.",
+          "stopped": false,
+          "confidence": "high",
+          "evidence": [
+            {
+              "t": 14,
+              "what": "Crosshair at chest height, lost fight"
+            },
+            {
+              "t": 31,
+              "what": "Crosshair at head height, won fight"
+            },
+            {
+              "t": 47,
+              "what": "Crosshair at chest height, lost fight"
+            },
+            {
+              "t": 83,
+              "what": "Crosshair at head height, won fight"
+            }
+          ],
+          "aim": {
+            "n": 4,
+            "heads": 1.1,
+            "dyDeg": 2.35,
+            "atHead": 2,
+            "bands": {
+              "chest": 2,
+              "head": 2
+            }
+          },
+          "looks": 8,
+          "turns": 12,
+          "theories": "T1 supported: Crosshair placement is often too low, resting at chest level rather than head level (0:14, 0:31, 0:47, 1:23)",
+          "asks": [],
+          "rejected": [],
+          "steps": [
+            {
+              "name": "scan",
+              "args": "{\"to\":\"2:30\",\"from\":\"0:00\"}"
+            },
+            {
+              "name": "frames",
+              "args": "{\"at\":\"0:15\",\"region\":\"full\"}"
+            },
+            {
+              "name": "measure_aim",
+              "args": "{\"at\":\"0:14.2\"}"
+            },
+            {
+              "name": "frames",
+              "args": "{\"region\":\"full\",\"at\":\"0:32\"}"
+            },
+            {
+              "name": "measure_aim",
+              "args": "{\"at\":\"0:31.2\"}"
+            },
+            {
+              "name": "frames",
+              "args": "{\"at\":\"0:48\",\"region\":\"full\"}"
+            },
+            {
+              "name": "note",
+              "args": "{\"id\":\"T1\",\"evidence\":[{\"t\":\"0:14\",\"what\":\"Crosshair placed at chest height resulting in slower time-to-kill\"},{\"what\":\"Crosshair placed at head height resultin"
+            },
+            {
+              "name": "measure_aim",
+              "args": "{\"at\":\"0:47.3\"}"
+            },
+            {
+              "name": "frames",
+              "args": "{\"region\":\"full\",\"at\":\"1:24\"}"
+            },
+            {
+              "name": "measure_aim",
+              "args": "{\"at\":\"1:23.3\"}"
+            },
+            {
+              "name": "note",
+              "args": "{\"status\":\"supported\",\"theory\":\"Crosshair placement is often too low, resting at chest level rather than head level\",\"id\":\"T1\",\"evidence\":[{\"t\":\"0:14\",\"what\":\"C"
+            },
+            {
+              "name": "finish",
+              "args": "{\"evidence\":[{\"what\":\"Crosshair at chest height, lost fight\",\"t\":\"0:14\"},{\"t\":\"0:31\",\"what\":\"Crosshair at head height, won fight\"},{\"t\":\"0:47\",\"what\":\"Crosshair"
+            }
+          ],
+          "seconds": 52,
+          "usage": {
+            "calls": 19,
+            "polls": 0,
+            "files": 0,
+            "rateLimited": 2,
+            "failed": 0,
+            "blocked": 0,
+            "models": {
+              "gemini-3.5-flash-lite": 18,
+              "gemini-3.1-flash-lite": 1
+            }
+          },
+          "score": {
+            "verdict": "found",
+            "hit": true,
+            "counted": true
+          },
+          "evidenceOnDuels": "4/4"
+        },
+        "pipeline": {
+          "found": true,
+          "habitId": "crosshair_low",
+          "evidence": [
+            {
+              "t": 14.4,
+              "what": "crosshair 1.75 heads below"
+            },
+            {
+              "t": 47.4,
+              "what": "crosshair 1.8 heads below"
+            },
+            {
+              "t": 66.4,
+              "what": "crosshair 2.51 heads below"
+            },
+            {
+              "t": 101.4,
+              "what": "crosshair 2.45 heads below"
+            },
+            {
+              "t": 134.4,
+              "what": "crosshair 2.01 heads below"
+            }
+          ],
+          "aim": {
+            "n": 5,
+            "heads": 2.01,
+            "dyDeg": 4.16,
+            "atHead": 0,
+            "bands": {
+              "chest": 4,
+              "low": 1
+            }
+          },
+          "measures": [
+            {
+              "t": 14.4,
+              "heads": 1.75,
+              "dyDeg": 4.43,
+              "dxDeg": 5.6,
+              "headPx": 22.6,
+              "band": "chest",
+              "small": false
+            },
+            {
+              "t": 47.4,
+              "heads": 1.8,
+              "dyDeg": 3.88,
+              "dxDeg": 6.17,
+              "headPx": 19.3,
+              "band": "chest",
+              "small": false
+            },
+            {
+              "t": 66.4,
+              "heads": 2.51,
+              "dyDeg": 4.74,
+              "dxDeg": 5.57,
+              "headPx": 16.9,
+              "band": "low",
+              "small": false
+            },
+            {
+              "t": 101.4,
+              "heads": 2.45,
+              "dyDeg": 4.09,
+              "dxDeg": 6.11,
+              "headPx": 14.9,
+              "band": "chest",
+              "small": false
+            },
+            {
+              "t": 134.4,
+              "heads": 2.01,
+              "dyDeg": 4.16,
+              "dxDeg": 5.23,
+              "headPx": 18.5,
+              "band": "chest",
+              "small": false
+            }
+          ],
+          "deaths": 5,
+          "looks": 5,
+          "steps": [
+            {
+              "name": "scan",
+              "args": "{\"from\":\"0:00\",\"to\":\"2:30\"}"
+            },
+            {
+              "name": "measure_aim",
+              "args": "{\"at\":\"0:14.4\"}"
+            },
+            {
+              "name": "measure_aim",
+              "args": "{\"at\":\"0:47.4\"}"
+            },
+            {
+              "name": "measure_aim",
+              "args": "{\"at\":\"1:06.4\"}"
+            },
+            {
+              "name": "measure_aim",
+              "args": "{\"at\":\"1:41.4\"}"
+            },
+            {
+              "name": "measure_aim",
+              "args": "{\"at\":\"2:14.4\"}"
+            }
+          ],
+          "seconds": 27.8,
+          "usage": {
+            "calls": 7,
+            "polls": 0,
+            "files": 0,
+            "rateLimited": 1,
+            "failed": 0,
+            "blocked": 0,
+            "models": {
+              "gemini-3.5-flash-lite": 7
+            }
+          },
+          "score": {
+            "verdict": "found",
+            "hit": true,
+            "counted": true
+          },
+          "evidenceOnDuels": "5/5"
+        },
+        "gemini-agentic": {
+          "model": "gemini-3.5-flash-lite",
+          "status": "completed",
+          "id": "v1_ChdqcXZUYXNXeUVJS25fdU1QaS1lczZRYxIXanF2VGFzV3lFSUtuX3VNUGktZXM2UWM",
+          "requests": {
+            "create": 1,
+            "polls": 1
+          },
+          "usage": {
+            "calls": 1,
+            "polls": 1,
+            "files": 0,
+            "rateLimited": 0,
+            "failed": 0,
+            "blocked": 0,
+            "models": {
+              "gemini-3.5-flash-lite": 1
+            }
+          },
+          "looks": 2,
+          "stepTypes": [
+            "user_input",
+            "processing_call",
+            "processing_result",
+            "processing_call",
+            "processing_result",
+            "thought",
+            "model_output"
+          ],
+          "steps": [
+            {
+              "type": "user_input",
+              "content": [
+                {
+                  "uri": "https://generativelanguage.googleapis.com/v1beta/files/hy0uoucykkm6",
+                  "mime_type": "video/webm",
+                  "type": "video",
+                  "processing": "agentic"
+                },
+                {
+                  "text": "This is a recording of one Valorant match from the player's own screen (a small silent copy), 2:30 long. Find the one habit that cost this player the most fights, and prove it with moments from the video. If no single habit stands out, say so: a wrong diagnosis is worse than none.\n\nHow Valorant looks on screen:\n- The crosshair is always at the screen center.\n- The kill feed (top right) lists kille…",
+                  "type": "text"
+                }
+              ]
+            },
+            {
+              "id": "call_1170148",
+              "type": "processing_call"
+            },
+            {
+              "call_id": "call_1170148",
+              "type": "processing_result"
+            },
+            {
+              "id": "call_1170151",
+              "type": "processing_call"
+            },
+            {
+              "call_id": "call_1170151",
+              "type": "processing_result"
+            },
+            {
+              "type": "thought"
+            },
+            {
+              "content": [
+                {
+                  "text": "```json\n{\"found\": false, \"habit_id\": null, \"habit\": null, \"why\": null, \"evidence\": []}\n```",
+                  "type": "text"
+                }
+              ],
+              "type": "model_output"
+            }
+          ],
+          "errors": null,
+          "found": false,
+          "habitId": null,
+          "habit": "",
+          "why": "",
+          "evidence": [],
+          "text": "```json\n{\"found\": false, \"habit_id\": null, \"habit\": null, \"why\": null, \"evidence\": []}\n```",
+          "seconds": 6.4,
+          "score": {
+            "verdict": "missed",
+            "hit": false,
+            "counted": true
+          },
+          "evidenceOnDuels": null
+        }
+      },
+      "setup": {
+        "duration": 150,
+        "size": "1280x720",
+        "proxyMb": 0.63,
+        "proxySeconds": 1.5,
+        "uploadSeconds": 5.8,
+        "usage": {
+          "calls": 0,
+          "polls": 0,
+          "files": 4,
+          "rateLimited": 0,
+          "failed": 0,
+          "blocked": 0,
+          "models": {}
+        }
+      }
+    }
+  ],
+  "finished": "2026-10-17T17:08:37.747Z",
+  "summary": {
+    "agent": {
+      "plantedFound": "1/1",
+      "falsePositives": "0/0",
+      "noResult": 0,
+      "calls": 19,
+      "seconds": 52
+    },
+    "pipeline": {
+      "plantedFound": "1/1",
+      "falsePositives": "0/0",
+      "noResult": 0,
+      "calls": 7,
+      "seconds": 27.8
+    },
+    "gemini-agentic": {
+      "plantedFound": "0/1",
+      "falsePositives": "0/0",
+      "noResult": 0,
+      "calls": 1,
+      "seconds": 6.4
+    }
+  },
+  "totals": {
+    "modelCalls": 27,
+    "uploadRequests": 4,
+    "models": {
+      "gemini-3.5-flash-lite": 26,
+      "gemini-3.1-flash-lite": 1
+    }
+  }
+}

@@ -13,14 +13,16 @@
   "regionNotes": "Fractions of a 16:9 screen with the default HUD. Positions are approximate and move with HUD settings.",
   "cues": [
     "The crosshair is always at the screen center.",
-    "The kill feed (top right) lists killer, weapon, and victim for a few seconds. Entries with the player in them usually stand out.",
-    "After the player dies, the view switches to a teammate or the death recap, so a sudden change of view marks a death.",
+    "The kill feed (top right) lists killer, weapon, and victim for a few seconds. Lines with the player in them have a yellow border.",
+    "When the player gets a kill, a skull emblem flashes at the bottom center of the screen for about a second.",
+    "After the player dies, a combat report panel on the right says KILLED BY and names the killer, and the view switches to a teammate.",
     "The scoreboard at the top center shows the round timer and score; a new round starts in a buy phase behind barriers."
   ],
   "habits": [
     {
       "id": "crosshair_low",
       "name": "Crosshair below head level",
+      "measuredBy": "aim",
       "signs": "When an enemy first appears, the crosshair sits at chest height or lower, so the first shot needs a flick up and often loses to a faster head shot.",
       "drill": "Ten minutes in a custom game: walk each common angle on one map and hold the crosshair at head height on the edge of the corner before it opens. Then a deathmatch where you check your crosshair height at every corner."
     },

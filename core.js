@@ -61,6 +61,14 @@
     };
   }
 
+  // Gemini sometimes boxes a "head" on a wall mark. A real head sits near the top of a body, so both boxes are asked
+  // for and a head outside the top of its body is refused.
+  function headOnBody(head, body) {
+    if (![head, body].every((b) => Array.isArray(b) && b.length === 4 && b.every((v) => Number.isFinite(+v)) && b[2] > b[0] && b[3] > b[1])) return false;
+    const cx = (head[1] + head[3]) / 2, cy = (head[0] + head[2]) / 2, top = body[0] + (body[2] - body[0]) * 0.4;
+    return cx >= body[1] && cx <= body[3] && cy >= body[0] - (head[2] - head[0]) && cy <= top && head[3] - head[1] <= (body[3] - body[1]) * 1.1;
+  }
+
   function summarizeAim(measures) {
     const ok = (measures || []).filter((m) => Number.isFinite(m?.heads));
     if (!ok.length) return null;
@@ -100,7 +108,7 @@
   const seen = (ledger, t) => ledger.looks.some((l) => t >= l.from - SLACK && t <= l.to + SLACK);
 
   /** The problems with a finish call, or [] when it can stand. Sent back to the agent to fix. */
-  function checkFinish(args, { ledger, duration = Infinity, habits = [] }) {
+  function checkFinish(args, { ledger, duration = Infinity, habits = [], measures = [] }) {
     const problems = [];
     if (args?.found === false) {
       if (text(args.why).length < 20) problems.push('Say why no single habit stands out (why, one or two sentences).');
@@ -121,7 +129,24 @@
       if (kept.some((x) => Math.abs(x - t) < MIN_GAP)) { problems.push(`${mmss(t)} is the same moment as other evidence.`); continue; }
       kept.push(t);
     }
-    if (kept.length < MIN_EVIDENCE) problems.push(`Cite at least ${MIN_EVIDENCE} separate moments you looked at (you have ${kept.length}).`);
+    if (kept.length < MIN_EVIDENCE) problems.push(`Cite at least ${MIN_EVIDENCE} separate moments you looked at that show the habit (you have ${kept.length}). Moments where they got it right go in contrast, not evidence. If fewer than ${MIN_EVIDENCE} moments show it, finish with found false.`);
+    // a moment can show the habit or its opposite, not both
+    for (const c of Array.isArray(args?.contrast) ? args.contrast : []) {
+      const t = parseTime(c?.t);
+      if (!Number.isFinite(t) || t < 0 || t > duration + 1) { problems.push(`${c?.t ?? '?'} in contrast isn't a time in this match.`); continue; }
+      if (!seen(ledger, t)) problems.push(`You haven't looked closely at ${mmss(t)} (in contrast).`);
+      if (kept.some((x) => Math.abs(x - t) < MIN_GAP)) problems.push(`${mmss(t)} is in both evidence and contrast. Keep it where it belongs.`);
+    }
+    // a habit the profile measures by aim has to agree with the aim the coach measured
+    if (habits.find((h) => h.id === args?.habit_id)?.measuredBy === 'aim') {
+      const sum = summarizeAim(measures);
+      if (!(sum?.n >= 3)) problems.push(`Crosshair height can be measured, so back this with at least 3 measure_aim readings where an enemy was in view (you have ${sum?.n || 0}). Or name a different habit, or none.`);
+      else if (sum.heads <= 0.75) problems.push(`Your measurements put the crosshair at head level (median ${sum.heads} heads over ${sum.n} duels). Show measurements where it was low, or name a different habit, or none.`);
+      for (const t of kept) {
+        const m = measures.find((x) => Math.abs(x.t - t) <= 1 && Number.isFinite(x.heads));
+        if (m && m.heads <= 0.75) problems.push(`At ${mmss(t)} you measured the crosshair at head level (${m.heads} heads), so that moment doesn't show this habit.`);
+      }
+    }
     return problems;
   }
 
@@ -218,7 +243,7 @@
   }
 
   const api = {
-    mmss, parseTime, median, round, clamp, aimBand, aimOffset, summarizeAim, aimText,
+    mmss, parseTime, median, round, clamp, aimBand, aimOffset, headOnBody, summarizeAim, aimText,
     BudgetError, createBudget, left, spend, budgetLine,
     SLACK, MIN_EVIDENCE, createLedger, recordLook, seen, checkFinish,
     STATUSES, applyNote, boardBrief, KINDS, normalizeEvents, mergeEvents, eventsBrief,

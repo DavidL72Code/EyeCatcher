@@ -1,0 +1,238 @@
+{
+  "started": "2026-10-17T20:29:43.218Z",
+  "budget": {
+    "looks": 30,
+    "turns": 30
+  },
+  "maxCallsPerRecording": 80,
+  "recordings": [
+    {
+      "file": "recordings/yt-vyse-ascent.mov",
+      "plantedHabit": null,
+      "systems": {
+        "agent": {
+          "found": true,
+          "habitId": "crosshair_low",
+          "habit": "crosshair_low",
+          "why": "Your crosshair is consistently placed at chest or stomach level, which forces you to flick upward to land headshots. This delay gives your opponents the advantage and often causes you to lose duels.",
+          "stopped": false,
+          "confidence": "high",
+          "evidence": [
+            {
+              "t": 126,
+              "what": "Crosshair positioned at chest level before Sova encounter"
+            },
+            {
+              "t": 473,
+              "what": "Crosshair positioned at chest level while holding A site corner"
+            },
+            {
+              "t": 666,
+              "what": "Crosshair positioned at chest level when Omen appears"
+            }
+          ],
+          "aim": null,
+          "measures": [],
+          "looks": 8,
+          "turns": 13,
+          "events": [
+            {
+              "t": 1,
+              "kind": "round_start"
+            },
+            {
+              "t": 82,
+              "kind": "kill"
+            },
+            {
+              "t": 128,
+              "kind": "death"
+            },
+            {
+              "t": 140,
+              "kind": "round_end"
+            },
+            {
+              "t": 156,
+              "kind": "round_start"
+            },
+            {
+              "t": 320,
+              "kind": "kill"
+            },
+            {
+              "t": 326,
+              "kind": "death"
+            },
+            {
+              "t": 398,
+              "kind": "round_end"
+            },
+            {
+              "t": 416,
+              "kind": "round_start"
+            },
+            {
+              "t": 476,
+              "kind": "death"
+            },
+            {
+              "t": 480,
+              "kind": "round_end"
+            },
+            {
+              "t": 492,
+              "kind": "round_start"
+            },
+            {
+              "t": 668,
+              "kind": "death"
+            },
+            {
+              "t": 739,
+              "kind": "round_end"
+            },
+            {
+              "t": 746,
+              "kind": "round_start"
+            },
+            {
+              "t": 788,
+              "kind": "kill"
+            },
+            {
+              "t": 813,
+              "kind": "round_end"
+            },
+            {
+              "t": 821,
+              "kind": "round_start"
+            }
+          ],
+          "theories": "T1 supported: Crosshair placement is consistently too low when holding or peeking angles (2:06, 7:53, 11:06)",
+          "asks": [],
+          "rejected": [],
+          "steps": [
+            {
+              "name": "scan",
+              "args": "{\"to\":\"14:10\",\"from\":\"0:00\"}"
+            },
+            {
+              "name": "measure_aim",
+              "args": "{\"at\":\"2:05\"}"
+            },
+            {
+              "name": "measure_aim",
+              "args": "{\"at\":\"2:06\"}"
+            },
+            {
+              "name": "frames",
+              "args": "{\"region\":\"full\",\"at\":\"2:07\"}"
+            },
+            {
+              "name": "note",
+              "args": "{\"status\":\"testing\",\"id\":\"T1\",\"theory\":\"Crosshair placement is consistently too low when holding or peeking angles\",\"evidence\":[{\"what\":\"Crosshair is positioned"
+            },
+            {
+              "name": "measure_aim",
+              "args": "{\"at\":\"7:53\"}"
+            },
+            {
+              "name": "frames",
+              "args": "{\"region\":\"full\",\"at\":\"7:54\"}"
+            },
+            {
+              "name": "note",
+              "args": "{\"theory\":\"Crosshair placement is consistently too low when holding or peeking angles\",\"status\":\"supported\",\"id\":\"T1\",\"evidence\":[{\"t\":\"7:53\",\"what\":\"Crosshair "
+            },
+            {
+              "name": "measure_aim",
+              "args": "{\"at\":\"11:05\"}"
+            },
+            {
+              "name": "frames",
+              "args": "{\"at\":\"11:06\",\"region\":\"full\"}"
+            },
+            {
+              "name": "note",
+              "args": "{\"theory\":\"Crosshair placement is consistently too low when holding or peeking angles\",\"status\":\"supported\",\"evidence\":[{\"t\":\"11:06\",\"what\":\"Crosshair is positi"
+            },
+            {
+              "name": "frames",
+              "args": "{\"region\":\"full\",\"at\":\"1:20\"}"
+            },
+            {
+              "name": "finish",
+              "args": "{\"found\":true,\"confidence\":\"high\",\"recheck\":\"Check crosshair height at every corner in the next match.\",\"habit_id\":\"crosshair_low\",\"habit\":\"crosshair_low\",\"why\""
+            }
+          ],
+          "seconds": 70.1,
+          "usage": {
+            "calls": 20,
+            "polls": 0,
+            "files": 0,
+            "rateLimited": 2,
+            "failed": 0,
+            "blocked": 0,
+            "models": {
+              "gemini-3.5-flash-lite": 18,
+              "gemini-3.1-flash-lite": 2
+            }
+          },
+          "score": {
+            "verdict": "false positive: crosshair_low",
+            "falsePositive": true,
+            "counted": true
+          },
+          "evidenceOnDuels": "2/3",
+          "scanRecall": {
+            "kills": {
+              "found": "3/9",
+              "extra": []
+            },
+            "deaths": {
+              "found": "3/6",
+              "extra": [
+                "7:56"
+              ]
+            }
+          }
+        }
+      },
+      "setup": {
+        "duration": 850.5,
+        "size": "1290x726",
+        "proxyMb": 27.13,
+        "proxySeconds": 28.1,
+        "uploadSeconds": 42.4,
+        "usage": {
+          "calls": 0,
+          "polls": 0,
+          "files": 12,
+          "rateLimited": 0,
+          "failed": 0,
+          "blocked": 0,
+          "models": {}
+        }
+      }
+    }
+  ],
+  "finished": "2026-10-17T20:32:05.788Z",
+  "summary": {
+    "agent": {
+      "plantedFound": "0/0",
+      "falsePositives": "1/1",
+      "noResult": 0,
+      "calls": 20,
+      "seconds": 70.1
+    }
+  },
+  "totals": {
+    "modelCalls": 20,
+    "uploadRequests": 12,
+    "models": {
+      "gemini-3.5-flash-lite": 18,
+      "gemini-3.1-flash-lite": 2
+    }
+  }
+}

@@ -1,0 +1,594 @@
+{
+  "started": "2026-10-17T18:15:52.687Z",
+  "budget": {
+    "looks": 30,
+    "turns": 30
+  },
+  "maxCallsPerRecording": 80,
+  "recordings": [
+    {
+      "file": "recordings/yt-vyse-ascent.mov",
+      "plantedHabit": null,
+      "systems": {
+        "agent": {
+          "found": true,
+          "habitId": "moving_shots",
+          "habit": "Shooting while moving",
+          "why": "Firing before movement stops causes bullets to spread wildly off target, losing duels that stationary shooting wins.",
+          "stopped": false,
+          "confidence": "high",
+          "evidence": [
+            {
+              "t": 399,
+              "what": "Shot while still moving against KAY/O and missed crucial shots"
+            },
+            {
+              "t": 479,
+              "what": "Fired while moving/sliding when fighting Killjoy"
+            },
+            {
+              "t": 788,
+              "what": "Stoppped completely before shooting, resulting in a clean kill on Sage"
+            }
+          ],
+          "aim": null,
+          "measures": [],
+          "looks": 9,
+          "turns": 16,
+          "events": [
+            {
+              "t": 3,
+              "kind": "round_start"
+            },
+            {
+              "t": 140,
+              "kind": "death"
+            },
+            {
+              "t": 141,
+              "kind": "round_end"
+            },
+            {
+              "t": 152,
+              "kind": "round_start"
+            },
+            {
+              "t": 212,
+              "kind": "kill"
+            },
+            {
+              "t": 399,
+              "kind": "death"
+            },
+            {
+              "t": 400,
+              "kind": "round_end"
+            },
+            {
+              "t": 409,
+              "kind": "round_start"
+            },
+            {
+              "t": 479,
+              "kind": "death"
+            },
+            {
+              "t": 480,
+              "kind": "round_end"
+            },
+            {
+              "t": 486,
+              "kind": "round_start"
+            },
+            {
+              "t": 601,
+              "kind": "death"
+            },
+            {
+              "t": 610,
+              "kind": "round_end"
+            },
+            {
+              "t": 616,
+              "kind": "round_start"
+            },
+            {
+              "t": 668,
+              "kind": "death"
+            },
+            {
+              "t": 739,
+              "kind": "round_end"
+            },
+            {
+              "t": 745,
+              "kind": "round_start"
+            },
+            {
+              "t": 788,
+              "kind": "kill"
+            },
+            {
+              "t": 813,
+              "kind": "round_end"
+            },
+            {
+              "t": 819,
+              "kind": "round_start"
+            }
+          ],
+          "theories": "T1 dropped: Crosshair placement is often too low (2:20, 3:32)\nT2 supported: Firing while moving reduces accuracy (6:39, 7:59, 13:08)",
+          "asks": [],
+          "rejected": [],
+          "steps": [
+            {
+              "name": "scan",
+              "args": "{\"to\":\"14:10\",\"from\":\"0:00\"}"
+            },
+            {
+              "name": "measure_aim",
+              "args": "{\"at\":\"2:18\"}"
+            },
+            {
+              "name": "frames",
+              "args": "{\"before\":1.5,\"at\":\"2:20\"}"
+            },
+            {
+              "name": "note",
+              "args": "{\"evidence\":[{\"what\":\"Died to Sova with crosshair low\",\"t\":\"2:20\"}],\"status\":\"testing\",\"id\":\"T1\",\"theory\":\"Crosshair placement is often too low\"}"
+            },
+            {
+              "name": "measure_aim",
+              "args": "{\"at\":\"3:30\"}"
+            },
+            {
+              "name": "frames",
+              "args": "{\"at\":\"3:32\",\"before\":1.5}"
+            },
+            {
+              "name": "note",
+              "args": "{\"status\":\"dropped\",\"theory\":\"Crosshair placement is often too low\",\"evidence\":[{\"t\":\"3:32\",\"what\":\"Won kill on Omen with head-height crosshair placement\"}],\"id"
+            },
+            {
+              "name": "measure_aim",
+              "args": "{\"at\":\"6:37\"}"
+            },
+            {
+              "name": "frames",
+              "args": "{\"before\":1.5,\"at\":\"6:39\"}"
+            },
+            {
+              "name": "note",
+              "args": "{\"id\":\"T2\",\"evidence\":[{\"t\":\"6:39\",\"what\":\"Died while moving and shooting against KAY/O\"}],\"theory\":\"Firing while moving reduces accuracy\",\"status\":\"testing\"}"
+            },
+            {
+              "name": "measure_aim",
+              "args": "{\"at\":\"7:57\"}"
+            },
+            {
+              "name": "frames",
+              "args": "{\"before\":1.5,\"at\":\"7:59\"}"
+            },
+            {
+              "name": "note",
+              "args": "{\"evidence\":[{\"what\":\"Fired while moving/sliding off ice when killed by Killjoy\",\"t\":\"7:59\"}],\"id\":\"T2\",\"theory\":\"Firing while moving reduces accuracy\",\"status\""
+            },
+            {
+              "name": "frames",
+              "args": "{\"before\":1.5,\"at\":\"13:08\"}"
+            },
+            {
+              "name": "note",
+              "args": "{\"id\":\"T2\",\"theory\":\"Firing while moving reduces accuracy\",\"evidence\":[{\"t\":\"13:08\",\"what\":\"Stopped fully before firing and secured a clean kill on Sage\"}],\"sta"
+            },
+            {
+              "name": "finish",
+              "args": "{\"habit_id\":\"moving_shots\",\"evidence\":[{\"what\":\"Shot while still moving against KAY/O and missed crucial shots\",\"t\":\"6:39\"},{\"what\":\"Fired while moving/sliding "
+            }
+          ],
+          "seconds": 78,
+          "usage": {
+            "calls": 23,
+            "polls": 0,
+            "files": 0,
+            "rateLimited": 2,
+            "failed": 0,
+            "blocked": 0,
+            "models": {
+              "gemini-3.5-flash-lite": 22,
+              "gemini-3.1-flash-lite": 1
+            }
+          },
+          "score": {
+            "verdict": "false positive: moving_shots",
+            "falsePositive": true,
+            "counted": true
+          },
+          "evidenceOnDuels": "3/3",
+          "scanRecall": {
+            "kills": {
+              "found": "2/9",
+              "extra": []
+            },
+            "deaths": {
+              "found": "4/6",
+              "extra": [
+                "2:20"
+              ]
+            }
+          }
+        },
+        "pipeline": {
+          "found": false,
+          "habitId": null,
+          "evidence": [],
+          "aim": {
+            "n": 3,
+            "heads": 0.46,
+            "dyDeg": 9.29,
+            "atHead": 2,
+            "bands": {
+              "low": 1,
+              "head": 2
+            }
+          },
+          "measures": [
+            {
+              "t": 127.4,
+              "found": false
+            },
+            {
+              "t": 325.4,
+              "heads": 5.59,
+              "dyDeg": 11.02,
+              "dxDeg": -2.85,
+              "headPx": 17.9,
+              "band": "low",
+              "small": false
+            },
+            {
+              "t": 478.4,
+              "found": false
+            },
+            {
+              "t": 609.4,
+              "heads": 0.38,
+              "dyDeg": 9.29,
+              "dxDeg": 4.34,
+              "headPx": 219,
+              "band": "head",
+              "small": false
+            },
+            {
+              "t": 667.4,
+              "heads": 0.46,
+              "dyDeg": 0.6,
+              "dxDeg": 0,
+              "headPx": 11.8,
+              "band": "head",
+              "small": false
+            }
+          ],
+          "deaths": 5,
+          "looks": 5,
+          "events": [
+            {
+              "t": 1,
+              "kind": "round_start"
+            },
+            {
+              "t": 82,
+              "kind": "kill"
+            },
+            {
+              "t": 128,
+              "kind": "death"
+            },
+            {
+              "t": 140,
+              "kind": "round_end"
+            },
+            {
+              "t": 146,
+              "kind": "round_start"
+            },
+            {
+              "t": 320,
+              "kind": "kill"
+            },
+            {
+              "t": 326,
+              "kind": "death"
+            },
+            {
+              "t": 399,
+              "kind": "round_end"
+            },
+            {
+              "t": 408,
+              "kind": "round_start"
+            },
+            {
+              "t": 479,
+              "kind": "death"
+            },
+            {
+              "t": 480,
+              "kind": "round_end"
+            },
+            {
+              "t": 487,
+              "kind": "round_start"
+            },
+            {
+              "t": 610,
+              "kind": "death"
+            },
+            {
+              "t": 611,
+              "kind": "round_end"
+            },
+            {
+              "t": 621,
+              "kind": "round_start"
+            },
+            {
+              "t": 668,
+              "kind": "death"
+            },
+            {
+              "t": 739,
+              "kind": "round_end"
+            },
+            {
+              "t": 746,
+              "kind": "round_start"
+            },
+            {
+              "t": 788,
+              "kind": "kill"
+            },
+            {
+              "t": 813,
+              "kind": "round_end"
+            },
+            {
+              "t": 821,
+              "kind": "round_start"
+            }
+          ],
+          "steps": [
+            {
+              "name": "scan",
+              "args": "{\"from\":\"0:00\",\"to\":\"14:10\"}"
+            },
+            {
+              "name": "measure_aim",
+              "args": "{\"at\":\"2:07.4\"}"
+            },
+            {
+              "name": "measure_aim",
+              "args": "{\"at\":\"5:25.4\"}"
+            },
+            {
+              "name": "measure_aim",
+              "args": "{\"at\":\"7:58.4\"}"
+            },
+            {
+              "name": "measure_aim",
+              "args": "{\"at\":\"10:09.4\"}"
+            },
+            {
+              "name": "measure_aim",
+              "args": "{\"at\":\"11:07.4\"}"
+            }
+          ],
+          "seconds": 12.4,
+          "usage": {
+            "calls": 6,
+            "polls": 0,
+            "files": 0,
+            "rateLimited": 0,
+            "failed": 0,
+            "blocked": 0,
+            "models": {
+              "gemini-3.5-flash-lite": 6
+            }
+          },
+          "score": {
+            "verdict": "clean",
+            "falsePositive": false,
+            "counted": true
+          },
+          "evidenceOnDuels": null,
+          "scanRecall": {
+            "kills": {
+              "found": "3/9",
+              "extra": []
+            },
+            "deaths": {
+              "found": "4/6",
+              "extra": [
+                "10:10"
+              ]
+            }
+          }
+        },
+        "gemini-agentic": {
+          "model": "gemini-3.5-flash-lite",
+          "status": "completed",
+          "id": "v1_ChctcnZUYXFmdURLZTYzOUlQaXFYUjJRZxIXLXJ2VGFxZnVES2U2MzlJUGlxWFIyUWc",
+          "requests": {
+            "create": 1,
+            "polls": 2
+          },
+          "tokens": {
+            "total_tokens": 30093,
+            "total_input_tokens": 537,
+            "input_tokens_by_modality": [
+              {
+                "modality": "text",
+                "tokens": 537
+              }
+            ],
+            "total_cached_tokens": 0,
+            "total_output_tokens": 242,
+            "total_tool_use_tokens": 29314,
+            "tool_use_tokens_by_modality": [
+              {
+                "modality": "video",
+                "tokens": 28116
+              },
+              {
+                "modality": "text",
+                "tokens": 1198
+              }
+            ],
+            "total_thought_tokens": 0
+          },
+          "looks": 2,
+          "stepTypes": [
+            "user_input",
+            "processing_call",
+            "processing_result",
+            "processing_call",
+            "processing_result",
+            "thought",
+            "model_output"
+          ],
+          "steps": [
+            {
+              "type": "user_input",
+              "content": [
+                {
+                  "uri": "https://generativelanguage.googleapis.com/v1beta/files/pxkpfrkxcju9",
+                  "mime_type": "video/webm",
+                  "type": "video",
+                  "processing": "agentic"
+                },
+                {
+                  "text": "This is a recording of one Valorant match from the player's own screen (a small silent copy), 14:10 long. Find the one habit that cost this player the most fights, and prove it with moments from the video. If no single habit stands out, say so: a wrong diagnosis is worse than none.\n\nHow Valorant looks on screen:\n- The crosshair is always at the screen center.\n- The kill feed (top right) lists kill…",
+                  "type": "text"
+                }
+              ]
+            },
+            {
+              "id": "call_1125217",
+              "type": "processing_call"
+            },
+            {
+              "call_id": "call_1125217",
+              "type": "processing_result"
+            },
+            {
+              "id": "call_1125220",
+              "type": "processing_call"
+            },
+            {
+              "call_id": "call_1125220",
+              "type": "processing_result"
+            },
+            {
+              "type": "thought"
+            },
+            {
+              "content": [
+                {
+                  "text": "```json\n{\"found\": true, \"habit_id\": \"crosshair_low\", \"habit\": \"Crosshair below head level\", \"why\": \"Throughout the match, the player frequently keeps their crosshair near chest or ground height while moving or turning corners. When enemies appear, this forces an unnecessary upward flick to secure headshots, often causing them to lose the duel.\", \"evidence\": [{\"t\": \"3:29\", \"what\": \"Player's crossha…",
+                  "type": "text"
+                }
+              ],
+              "type": "model_output"
+            }
+          ],
+          "errors": null,
+          "found": true,
+          "habitId": "crosshair_low",
+          "habit": "Crosshair below head level",
+          "why": "Throughout the match, the player frequently keeps their crosshair near chest or ground height while moving or turning corners. When enemies appear, this forces an unnecessary upward flick to secure headshots, often causing them to lose the duel.",
+          "evidence": [
+            {
+              "t": 209,
+              "what": "Player's crosshair is aimed significantly below head height when approaching A Window."
+            },
+            {
+              "t": 320,
+              "what": "Player peeks Mid Market with crosshair positioned lower than enemy head level."
+            },
+            {
+              "t": 576,
+              "what": "Player aims low while holding B Main, requiring an upward adjustment when the enemy appears."
+            }
+          ],
+          "text": "```json\n{\"found\": true, \"habit_id\": \"crosshair_low\", \"habit\": \"Crosshair below head level\", \"why\": \"Throughout the match, the player frequently keeps their crosshair near chest or ground height while moving or turning corners. When enemies appear, this forces an unnecessary upward flick to secure headshots, often causing them to lose the duel.\", \"evidence\": [{\"t\": \"3:29\", \"what\": \"Player's crosshair is aimed significantly below head height when approaching A Window.\"}, {\"t\": \"5:20\", \"what\": \"Player peeks Mid Market with crosshair positioned lower than enemy head level.\"}, {\"t\": \"9:36\", \"what\": \"Player aims low while holding B Main, requiring an upward adjustment when the enemy appears.\"}]}\n```",
+          "seconds": 11.9,
+          "usage": {
+            "calls": 1,
+            "polls": 2,
+            "files": 0,
+            "rateLimited": 0,
+            "failed": 0,
+            "blocked": 0,
+            "models": {
+              "gemini-3.5-flash-lite": 1
+            }
+          },
+          "score": {
+            "verdict": "false positive: crosshair_low",
+            "falsePositive": true,
+            "counted": true
+          },
+          "evidenceOnDuels": "1/3"
+        }
+      },
+      "setup": {
+        "duration": 850.5,
+        "size": "1290x726",
+        "proxyMb": 27.13,
+        "proxySeconds": 36.4,
+        "uploadSeconds": 31.8,
+        "usage": {
+          "calls": 0,
+          "polls": 0,
+          "files": 7,
+          "rateLimited": 0,
+          "failed": 0,
+          "blocked": 0,
+          "models": {}
+        }
+      }
+    }
+  ],
+  "finished": "2026-10-17T18:18:46.590Z",
+  "summary": {
+    "agent": {
+      "plantedFound": "0/0",
+      "falsePositives": "1/1",
+      "noResult": 0,
+      "calls": 23,
+      "seconds": 78
+    },
+    "pipeline": {
+      "plantedFound": "0/0",
+      "falsePositives": "0/1",
+      "noResult": 0,
+      "calls": 6,
+      "seconds": 12.4
+    },
+    "gemini-agentic": {
+      "plantedFound": "0/0",
+      "falsePositives": "1/1",
+      "noResult": 0,
+      "calls": 1,
+      "seconds": 11.9
+    }
+  },
+  "totals": {
+    "modelCalls": 30,
+    "uploadRequests": 7,
+    "models": {
+      "gemini-3.5-flash-lite": 29,
+      "gemini-3.1-flash-lite": 1
+    }
+  }
+}

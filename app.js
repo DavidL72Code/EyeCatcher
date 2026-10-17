@@ -291,12 +291,13 @@
       v.innerHTML = `<p class="label">${r.stopped ? 'Review stopped' : 'The verdict'}</p><h2><span class="pen">${r.stopped ? 'No verdict yet' : 'No single habit stood out'}</span></h2>${working}<p class="why">${esc(r.why)}</p>
         <div class="actions"><button class="pill primary" type="button" id="againBtn">Review again</button></div>${how}`;
     } else {
-      const metric = r.aim && r.habitId === 'crosshair_low'
+      const metric = r.aim && run.game.habits.find((h) => h.id === r.habitId)?.measuredBy === 'aim'
         ? `<p class="metric"><b>${Math.abs(r.aim.heads).toFixed(1)}</b><span>heads ${r.aim.heads >= 0 ? 'below' : 'above'} the head when enemies appeared, median of ${r.aim.n} measured</span></p>` : '';
       v.innerHTML = `<p class="label">The habit to fix</p><h2><span class="pen">${esc(r.habit)}</span></h2>${working}${metric}
         <p class="why">${esc(r.why)}</p>
         <h3>Where it shows</h3>
         <ol class="evidence">${r.evidence.map((e, i) => `<li><button type="button" data-t="${e.t}"><span class="thumb" data-thumb="${i}"><span class="n">${i + 1}</span></span><span><span class="tt">${C.mmss(e.t)}</span><span class="wt">${esc(e.what)}</span></span></button></li>`).join('')}</ol>
+        ${r.contrast.length ? `<h3>Where you got it right</h3><ul class="contrast">${r.contrast.map((e) => `<li><button class="t-btn" type="button" data-t="${e.t}">${C.mmss(e.t)}</button><span>${esc(e.what)}</span></li>`).join('')}</ul>` : ''}
         <h3>Drill</h3><div class="drill"><p>${esc(r.drill)}</p></div>
         <p class="recheck"><b>Next match:</b> ${esc(r.recheck)}</p>
         <div class="actions" id="actions"><button class="pill primary" type="button" id="acceptBtn">Work on this</button><button class="pill" type="button" id="rejectBtn">Not this</button></div>${how}`;

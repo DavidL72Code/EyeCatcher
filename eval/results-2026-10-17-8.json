@@ -1,0 +1,271 @@
+{
+  "started": "2026-10-17T20:33:02.280Z",
+  "budget": {
+    "looks": 30,
+    "turns": 30
+  },
+  "maxCallsPerRecording": 80,
+  "recordings": [
+    {
+      "file": "recordings/yt-vyse-ascent.mov",
+      "plantedHabit": null,
+      "systems": {
+        "agent": {
+          "found": false,
+          "habitId": "other",
+          "habit": "",
+          "why": "While crosshair placement is generally good, it occasionally drops at specific angles. However, I could not find a consistent habit of low crosshair placement across enough fights to definitively say it is the primary cause of your deaths. You often hold your crosshair at head level, even in fights you lose. No other single habit stood out as the main cause of your deaths.",
+          "stopped": false,
+          "confidence": "medium",
+          "evidence": [],
+          "contrast": [],
+          "aim": {
+            "n": 4,
+            "heads": 0.5,
+            "dyDeg": 0.57,
+            "atHead": 3,
+            "bands": {
+              "low": 1,
+              "head": 3
+            }
+          },
+          "measures": [
+            {
+              "t": 127,
+              "heads": 9.89,
+              "band": "low",
+              "headPx": 19.5,
+              "box": [
+                0,
+                383,
+                48,
+                642
+              ]
+            },
+            {
+              "t": 324,
+              "heads": 0.1,
+              "band": "head",
+              "headPx": 9.4,
+              "box": [
+                485,
+                493,
+                508,
+                509
+              ]
+            },
+            {
+              "t": 666,
+              "heads": 0.54,
+              "band": "head",
+              "headPx": 7.7,
+              "box": [
+                479,
+                372,
+                498,
+                388
+              ]
+            },
+            {
+              "t": 81,
+              "heads": 0.46,
+              "band": "head",
+              "headPx": 13.4,
+              "box": [
+                467,
+                642,
+                500,
+                673
+              ]
+            }
+          ],
+          "looks": 8,
+          "turns": 13,
+          "events": [
+            {
+              "t": 3,
+              "kind": "round_start"
+            },
+            {
+              "t": 82,
+              "kind": "kill"
+            },
+            {
+              "t": 128,
+              "kind": "death"
+            },
+            {
+              "t": 141,
+              "kind": "round_end"
+            },
+            {
+              "t": 156,
+              "kind": "round_start"
+            },
+            {
+              "t": 326,
+              "kind": "death"
+            },
+            {
+              "t": 400,
+              "kind": "round_end"
+            },
+            {
+              "t": 417,
+              "kind": "round_start"
+            },
+            {
+              "t": 479,
+              "kind": "death"
+            },
+            {
+              "t": 484,
+              "kind": "round_end"
+            },
+            {
+              "t": 501,
+              "kind": "round_start"
+            },
+            {
+              "t": 668,
+              "kind": "death"
+            },
+            {
+              "t": 739,
+              "kind": "round_end"
+            },
+            {
+              "t": 746,
+              "kind": "round_start"
+            }
+          ],
+          "theories": "T1 supported: Crosshair is held below head level before fights (2:07, 7:57)",
+          "asks": [],
+          "rejected": [
+            [
+              "Cite at least 3 separate moments you looked at that show the habit (you have 1). Moments where they got it right go in contrast, not evidence. If fewer than 3 moments show it, finish with found false.",
+              "Your measurements put the crosshair at head level (median 0.5 heads over 4 duels). Show measurements where it was low, or name a different habit, or none."
+            ]
+          ],
+          "steps": [
+            {
+              "name": "scan",
+              "args": "{\"to\":\"14:10\",\"from\":\"0:00\"}"
+            },
+            {
+              "name": "measure_aim",
+              "args": "{\"at\":\"2:06\"}"
+            },
+            {
+              "name": "measure_aim",
+              "args": "{\"at\":\"2:07\"}"
+            },
+            {
+              "name": "measure_aim",
+              "args": "{\"at\":\"5:24\"}"
+            },
+            {
+              "name": "measure_aim",
+              "args": "{\"at\":\"7:57\"}"
+            },
+            {
+              "name": "measure_aim",
+              "args": "{\"at\":\"11:06\"}"
+            },
+            {
+              "name": "measure_aim",
+              "args": "{\"at\":\"1:21\"}"
+            },
+            {
+              "name": "frames",
+              "args": "{\"at\":\"2:07\"}"
+            },
+            {
+              "name": "note",
+              "args": "{\"evidence\":[{\"what\":\"Crosshair positioned too low (around chest/stomach level) when peeking stairs, requiring upward correction.\",\"t\":\"2:07\"}],\"theory\":\"Crossh"
+            },
+            {
+              "name": "frames",
+              "args": "{\"at\":\"7:57\"}"
+            },
+            {
+              "name": "note",
+              "args": "{\"theory\":\"Crosshair is held below head level before fights\",\"status\":\"supported\",\"evidence\":[{\"t\":\"7:57\",\"what\":\"Crosshair is held at head level while holding "
+            },
+            {
+              "name": "finish",
+              "args": "{\"confidence\":\"medium\",\"habit\":\"crosshair_low\",\"drill\":\"Ten minutes in a custom game: walk each common angle on one map and hold the crosshair at head height on"
+            },
+            {
+              "name": "finish",
+              "args": "{\"found\":false,\"why\":\"While crosshair placement is generally good, it occasionally drops at specific angles. However, I could not find a consistent habit of low"
+            }
+          ],
+          "seconds": 56.3,
+          "usage": {
+            "calls": 22,
+            "polls": 0,
+            "files": 0,
+            "rateLimited": 2,
+            "failed": 0,
+            "blocked": 0,
+            "models": {
+              "gemini-3.5-flash-lite": 18,
+              "gemini-3.1-flash-lite": 4
+            }
+          },
+          "score": {
+            "verdict": "clean",
+            "falsePositive": false,
+            "counted": true
+          },
+          "evidenceOnDuels": null,
+          "scanRecall": {
+            "kills": {
+              "found": "1/9",
+              "extra": []
+            },
+            "deaths": {
+              "found": "4/6",
+              "extra": []
+            }
+          }
+        }
+      },
+      "setup": {
+        "duration": 850.5,
+        "size": "1290x726",
+        "proxyMb": 27.13,
+        "proxySeconds": 25.7,
+        "uploadSeconds": 32.5,
+        "usage": {
+          "calls": 0,
+          "polls": 0,
+          "files": 7,
+          "rateLimited": 0,
+          "failed": 0,
+          "blocked": 0,
+          "models": {}
+        }
+      }
+    }
+  ],
+  "finished": "2026-10-17T20:34:58.778Z",
+  "summary": {
+    "agent": {
+      "plantedFound": "0/0",
+      "falsePositives": "0/1",
+      "noResult": 0,
+      "calls": 22,
+      "seconds": 56.3
+    }
+  },
+  "totals": {
+    "modelCalls": 22,
+    "uploadRequests": 7,
+    "models": {
+      "gemini-3.5-flash-lite": 18,
+      "gemini-3.1-flash-lite": 4
+    }
+  }
+}

@@ -1,0 +1,640 @@
+{
+  "started": "2026-10-17T17:58:06.271Z",
+  "budget": {
+    "looks": 30,
+    "turns": 30
+  },
+  "maxCallsPerRecording": 80,
+  "recordings": [
+    {
+      "file": "recordings/yt-vyse-ascent.mov",
+      "plantedHabit": null,
+      "systems": {
+        "agent": {
+          "found": true,
+          "habitId": "crosshair_low",
+          "habit": "Crosshair placement too low",
+          "why": "When your crosshair is below head level (as seen at 2:07 and 5:25), you have to flick upward to land headshots, which costs critical milliseconds. Contrast this with 1:21 where proper head-level placement allowed an immediate, clean kill.",
+          "stopped": false,
+          "confidence": "high",
+          "evidence": [
+            {
+              "t": 81,
+              "what": "Crosshair is at head level and secures the kill on Omen"
+            },
+            {
+              "t": 127,
+              "what": "Crosshair is low at chest/waist level when peeking stairs"
+            },
+            {
+              "t": 325,
+              "what": "Crosshair is low when holding an angle"
+            }
+          ],
+          "aim": {
+            "n": 7,
+            "heads": 0.01,
+            "dyDeg": 0.01,
+            "atHead": 5,
+            "bands": {
+              "low": 2,
+              "head": 5
+            }
+          },
+          "measures": [
+            {
+              "t": 127,
+              "heads": 6.06,
+              "band": "low"
+            },
+            {
+              "t": 211,
+              "heads": 0.01,
+              "band": "head"
+            },
+            {
+              "t": 325,
+              "heads": 12.69,
+              "band": "low"
+            },
+            {
+              "t": 478,
+              "heads": -0.32,
+              "band": "head"
+            },
+            {
+              "t": 666,
+              "heads": 0.35,
+              "band": "head"
+            },
+            {
+              "t": 81,
+              "heads": -0.12,
+              "band": "head"
+            },
+            {
+              "t": 81,
+              "heads": -0.1,
+              "band": "head"
+            }
+          ],
+          "looks": 11,
+          "turns": 16,
+          "events": [
+            {
+              "t": 3,
+              "kind": "round_start"
+            },
+            {
+              "t": 82,
+              "kind": "kill"
+            },
+            {
+              "t": 128,
+              "kind": "death"
+            },
+            {
+              "t": 140,
+              "kind": "round_end"
+            },
+            {
+              "t": 156,
+              "kind": "round_start"
+            },
+            {
+              "t": 212,
+              "kind": "death"
+            },
+            {
+              "t": 223,
+              "kind": "round_end"
+            },
+            {
+              "t": 251,
+              "kind": "round_start"
+            },
+            {
+              "t": 320,
+              "kind": "kill"
+            },
+            {
+              "t": 327,
+              "kind": "death"
+            },
+            {
+              "t": 400,
+              "kind": "round_end"
+            },
+            {
+              "t": 436,
+              "kind": "round_start"
+            },
+            {
+              "t": 479,
+              "kind": "death"
+            },
+            {
+              "t": 480,
+              "kind": "round_end"
+            },
+            {
+              "t": 517,
+              "kind": "round_start"
+            },
+            {
+              "t": 611,
+              "kind": "death"
+            },
+            {
+              "t": 612,
+              "kind": "round_end"
+            },
+            {
+              "t": 648,
+              "kind": "round_start"
+            },
+            {
+              "t": 668,
+              "kind": "death"
+            },
+            {
+              "t": 739,
+              "kind": "round_end"
+            },
+            {
+              "t": 776,
+              "kind": "round_start"
+            },
+            {
+              "t": 813,
+              "kind": "round_end"
+            },
+            {
+              "t": 846,
+              "kind": "round_start"
+            }
+          ],
+          "theories": "T1 supported: Crosshair placement is often too low (below head level) (2:07, 5:25)",
+          "asks": [],
+          "rejected": [
+            [
+              "Cite at least 3 separate moments you looked at (you have 2)."
+            ]
+          ],
+          "steps": [
+            {
+              "name": "scan",
+              "args": "{\"from\":\"0:00\",\"to\":\"14:10\"}"
+            },
+            {
+              "name": "measure_aim",
+              "args": "{\"at\":\"2:07\"}"
+            },
+            {
+              "name": "measure_aim",
+              "args": "{\"at\":\"3:31\"}"
+            },
+            {
+              "name": "measure_aim",
+              "args": "{\"at\":\"5:25\"}"
+            },
+            {
+              "name": "measure_aim",
+              "args": "{\"at\":\"7:58\"}"
+            },
+            {
+              "name": "measure_aim",
+              "args": "{\"at\":\"10:10\"}"
+            },
+            {
+              "name": "measure_aim",
+              "args": "{\"at\":\"11:06\"}"
+            },
+            {
+              "name": "measure_aim",
+              "args": "{\"at\":\"1:21\"}"
+            },
+            {
+              "name": "frames",
+              "args": "{\"at\":\"2:07\",\"region\":\"full\"}"
+            },
+            {
+              "name": "note",
+              "args": "{\"status\":\"testing\",\"theory\":\"Crosshair placement is often too low (below head level)\",\"id\":\"T1\",\"evidence\":[{\"what\":\"Crosshair is low (chest/waist height) when"
+            },
+            {
+              "name": "frames",
+              "args": "{\"region\":\"full\",\"at\":\"5:25\"}"
+            },
+            {
+              "name": "note",
+              "args": "{\"id\":\"T1\",\"status\":\"supported\"}"
+            },
+            {
+              "name": "finish",
+              "args": "{\"recheck\":\"Watch corner pre-aiming and crosshair height on first contact in the next match.\",\"evidence\":[{\"what\":\"Crosshair is low (chest/waist height) when pe"
+            },
+            {
+              "name": "measure_aim",
+              "args": "{\"at\":\"1:21\"}"
+            },
+            {
+              "name": "frames",
+              "args": "{\"region\":\"full\",\"at\":\"1:21\"}"
+            },
+            {
+              "name": "finish",
+              "args": "{\"found\":true,\"habit_id\":\"crosshair_low\",\"confidence\":\"high\",\"why\":\"When your crosshair is below head level (as seen at 2:07 and 5:25), you have to flick upward"
+            }
+          ],
+          "seconds": 104.1,
+          "usage": {
+            "calls": 27,
+            "polls": 0,
+            "files": 0,
+            "rateLimited": 2,
+            "failed": 0,
+            "blocked": 0,
+            "models": {
+              "gemini-3.5-flash-lite": 26,
+              "gemini-3.1-flash-lite": 1
+            }
+          },
+          "score": {
+            "verdict": "false positive: crosshair_low",
+            "falsePositive": true,
+            "counted": true
+          },
+          "evidenceOnDuels": "3/3",
+          "scanRecall": {
+            "kills": {
+              "found": "2/9",
+              "extra": []
+            },
+            "deaths": {
+              "found": "4/6",
+              "extra": [
+                "3:32",
+                "10:11"
+              ]
+            }
+          }
+        },
+        "pipeline": {
+          "found": true,
+          "habitId": "crosshair_low",
+          "evidence": [
+            {
+              "t": 667.4,
+              "what": "crosshair 1.05 heads below"
+            }
+          ],
+          "aim": {
+            "n": 1,
+            "heads": 1.05,
+            "dyDeg": 0.76,
+            "atHead": 0,
+            "bands": {
+              "chest": 1
+            }
+          },
+          "measures": [
+            {
+              "t": 127.4,
+              "found": false
+            },
+            {
+              "t": 326.4,
+              "found": false
+            },
+            {
+              "t": 478.4,
+              "found": false
+            },
+            {
+              "t": 667.4,
+              "heads": 1.05,
+              "dyDeg": 0.76,
+              "dxDeg": 0,
+              "headPx": 6.5,
+              "band": "chest",
+              "small": false
+            }
+          ],
+          "deaths": 4,
+          "looks": 4,
+          "events": [
+            {
+              "t": 1,
+              "kind": "round_start"
+            },
+            {
+              "t": 82,
+              "kind": "kill"
+            },
+            {
+              "t": 128,
+              "kind": "death"
+            },
+            {
+              "t": 140,
+              "kind": "round_end"
+            },
+            {
+              "t": 147,
+              "kind": "round_start"
+            },
+            {
+              "t": 212,
+              "kind": "kill"
+            },
+            {
+              "t": 320,
+              "kind": "kill"
+            },
+            {
+              "t": 327,
+              "kind": "death"
+            },
+            {
+              "t": 399,
+              "kind": "round_end"
+            },
+            {
+              "t": 408,
+              "kind": "round_start"
+            },
+            {
+              "t": 479,
+              "kind": "death"
+            },
+            {
+              "t": 484,
+              "kind": "round_end"
+            },
+            {
+              "t": 487,
+              "kind": "round_start"
+            },
+            {
+              "t": 610,
+              "kind": "round_end"
+            },
+            {
+              "t": 617,
+              "kind": "round_start"
+            },
+            {
+              "t": 668,
+              "kind": "death"
+            },
+            {
+              "t": 739,
+              "kind": "round_end"
+            },
+            {
+              "t": 746,
+              "kind": "round_start"
+            },
+            {
+              "t": 788,
+              "kind": "kill"
+            },
+            {
+              "t": 813,
+              "kind": "round_end"
+            },
+            {
+              "t": 821,
+              "kind": "round_start"
+            }
+          ],
+          "steps": [
+            {
+              "name": "scan",
+              "args": "{\"from\":\"0:00\",\"to\":\"14:10\"}"
+            },
+            {
+              "name": "measure_aim",
+              "args": "{\"at\":\"2:07.4\"}"
+            },
+            {
+              "name": "measure_aim",
+              "args": "{\"at\":\"5:26.4\"}"
+            },
+            {
+              "name": "measure_aim",
+              "args": "{\"at\":\"7:58.4\"}"
+            },
+            {
+              "name": "measure_aim",
+              "args": "{\"at\":\"11:07.4\"}"
+            }
+          ],
+          "seconds": 12.7,
+          "usage": {
+            "calls": 5,
+            "polls": 0,
+            "files": 0,
+            "rateLimited": 0,
+            "failed": 0,
+            "blocked": 0,
+            "models": {
+              "gemini-3.5-flash-lite": 5
+            }
+          },
+          "score": {
+            "verdict": "false positive: crosshair_low",
+            "falsePositive": true,
+            "counted": true
+          },
+          "evidenceOnDuels": "1/1",
+          "scanRecall": {
+            "kills": {
+              "found": "4/9",
+              "extra": []
+            },
+            "deaths": {
+              "found": "4/6",
+              "extra": []
+            }
+          }
+        },
+        "gemini-agentic": {
+          "model": "gemini-3.5-flash-lite",
+          "status": "completed",
+          "id": "v1_Chc0YmZUYXN1NEk2X2Ytc0FQNWYzZDJRURIXNGJmVGFzdTRJNl9mLXNBUDVmM2QyUVE",
+          "requests": {
+            "create": 1,
+            "polls": 2
+          },
+          "tokens": {
+            "total_tokens": 30092,
+            "total_input_tokens": 537,
+            "input_tokens_by_modality": [
+              {
+                "modality": "text",
+                "tokens": 537
+              }
+            ],
+            "total_cached_tokens": 0,
+            "total_output_tokens": 241,
+            "total_tool_use_tokens": 29314,
+            "tool_use_tokens_by_modality": [
+              {
+                "modality": "text",
+                "tokens": 1198
+              },
+              {
+                "modality": "video",
+                "tokens": 28116
+              }
+            ],
+            "total_thought_tokens": 0
+          },
+          "looks": 2,
+          "stepTypes": [
+            "user_input",
+            "processing_call",
+            "processing_result",
+            "processing_call",
+            "processing_result",
+            "thought",
+            "model_output"
+          ],
+          "steps": [
+            {
+              "type": "user_input",
+              "content": [
+                {
+                  "uri": "https://generativelanguage.googleapis.com/v1beta/files/u2i2p8sg7mgl",
+                  "mime_type": "video/webm",
+                  "type": "video",
+                  "processing": "agentic"
+                },
+                {
+                  "text": "This is a recording of one Valorant match from the player's own screen (a small silent copy), 14:10 long. Find the one habit that cost this player the most fights, and prove it with moments from the video. If no single habit stands out, say so: a wrong diagnosis is worse than none.\n\nHow Valorant looks on screen:\n- The crosshair is always at the screen center.\n- The kill feed (top right) lists kill…",
+                  "type": "text"
+                }
+              ]
+            },
+            {
+              "id": "call_4582",
+              "type": "processing_call"
+            },
+            {
+              "call_id": "call_4582",
+              "type": "processing_result"
+            },
+            {
+              "id": "call_4588",
+              "type": "processing_call"
+            },
+            {
+              "call_id": "call_4588",
+              "type": "processing_result"
+            },
+            {
+              "type": "thought"
+            },
+            {
+              "content": [
+                {
+                  "text": "```json\n{\"found\": true, \"habit_id\": \"crosshair_low\", \"habit\": \"Crosshair placement too low\", \"why\": \"Throughout the match, the player consistently holds their crosshair below head or chest height while navigating, forcing them to manually flick upwards whenever enemies appear. This delay significantly contributes to losing gunfights against opponents whose crosshairs are already aligned.\", \"eviden…",
+                  "type": "text"
+                }
+              ],
+              "type": "model_output"
+            }
+          ],
+          "errors": null,
+          "found": true,
+          "habitId": "crosshair_low",
+          "habit": "Crosshair placement too low",
+          "why": "Throughout the match, the player consistently holds their crosshair below head or chest height while navigating, forcing them to manually flick upwards whenever enemies appear. This delay significantly contributes to losing gunfights against opponents whose crosshairs are already aligned.",
+          "evidence": [
+            {
+              "t": 209,
+              "what": "Player walks holding crosshair low, spotting an enemy and needing to flick up."
+            },
+            {
+              "t": 368,
+              "what": "Player enters B main with crosshair pointed towards the ground."
+            },
+            {
+              "t": 682,
+              "what": "Player runs through Gelato with crosshair below head level before spotting the enemy."
+            }
+          ],
+          "text": "```json\n{\"found\": true, \"habit_id\": \"crosshair_low\", \"habit\": \"Crosshair placement too low\", \"why\": \"Throughout the match, the player consistently holds their crosshair below head or chest height while navigating, forcing them to manually flick upwards whenever enemies appear. This delay significantly contributes to losing gunfights against opponents whose crosshairs are already aligned.\", \"evidence\": [{\"t\": \"3:29\", \"what\": \"Player walks holding crosshair low, spotting an enemy and needing to flick up.\"}, {\"t\": \"6:08\", \"what\": \"Player enters B main with crosshair pointed towards the ground.\"}, {\"t\": \"11:22\", \"what\": \"Player runs through Gelato with crosshair below head level before spotting the enemy.\"}]}\n```",
+          "seconds": 11.9,
+          "usage": {
+            "calls": 1,
+            "polls": 2,
+            "files": 0,
+            "rateLimited": 0,
+            "failed": 0,
+            "blocked": 0,
+            "models": {
+              "gemini-3.5-flash-lite": 1
+            }
+          },
+          "score": {
+            "verdict": "false positive: crosshair_low",
+            "falsePositive": true,
+            "counted": true
+          },
+          "evidenceOnDuels": "0/3"
+        }
+      },
+      "setup": {
+        "duration": 850.5,
+        "size": "1290x726",
+        "proxyMb": 27.13,
+        "proxySeconds": 30.5,
+        "uploadSeconds": 30.4,
+        "usage": {
+          "calls": 0,
+          "polls": 0,
+          "files": 6,
+          "rateLimited": 0,
+          "failed": 0,
+          "blocked": 0,
+          "models": {}
+        }
+      }
+    }
+  ],
+  "finished": "2026-10-17T18:01:17.878Z",
+  "summary": {
+    "agent": {
+      "plantedFound": "0/0",
+      "falsePositives": "1/1",
+      "noResult": 0,
+      "calls": 27,
+      "seconds": 104.1
+    },
+    "pipeline": {
+      "plantedFound": "0/0",
+      "falsePositives": "1/1",
+      "noResult": 0,
+      "calls": 5,
+      "seconds": 12.7
+    },
+    "gemini-agentic": {
+      "plantedFound": "0/0",
+      "falsePositives": "1/1",
+      "noResult": 0,
+      "calls": 1,
+      "seconds": 11.9
+    }
+  },
+  "totals": {
+    "modelCalls": 33,
+    "uploadRequests": 6,
+    "models": {
+      "gemini-3.5-flash-lite": 32,
+      "gemini-3.1-flash-lite": 1
+    }
+  }
+}

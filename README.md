@@ -35,6 +35,9 @@ The coach gets a goal, its tools and what each costs, a budget, the game profile
 
 - **The budget.** 30 looks and 30 model calls by default, and every tool result says what's left.
 - **Evidence.** `finish` is sent back if any cited moment wasn't looked at closely, or if it cites fewer than 3 separate moments.
+- **Aim habits match the numbers.** A habit the profile measures by aim (`measuredBy: "aim"`) needs at least 3 measurements with an enemy in view. It's sent back when those measurements put the crosshair at head level, or when a cited moment was measured at head level.
+- **Evidence shows the habit.** Moments where the player got it right go in a separate `contrast` list, which the verdict shows as "Where you got it right". A moment can't be in both lists. With fewer than 3 moments that show the habit, the coach is told to answer "no single habit".
+- **Real heads only.** A head box counts only if it sits at the top of a body box. Measurements where the enemy is very close come back with a warning.
 - **Won fights.** `finish` is sent back once if the coach never looked at a fight the player won, since a habit that shows up just as often in wins isn't what's losing fights. Finishing again keeps the answer.
 - **Measurement timing.** A measurement taken when the kill feed shows a fight ending comes back with a warning. The scan times fights by their kill-feed line, but placement shows earlier, when the enemy first comes into view.
 - **Progress.** When the player is working on an aim habit, code compares this match's measured median with the baseline. Half a head of change, over at least 3 duels each, counts as better or worse. The coach's own opinion is used only when there are no numbers.
@@ -71,7 +74,15 @@ Adding a game means writing a profile in `games/`; the code doesn't change.
 - **Aim:** boxed 8 of 8 heads. The median error was 0.27° and the worst 1.01°, against a target of 0.5° median.
 - **Review:** found the planted habit (crosshair low) in 12 calls and 7 looks, in 42 s. It measured two fights the player won as well as the losses.
 
-These numbers come from drawn shapes, not game footage. **Not yet measured:** accuracy on real Valorant recordings, and how long the scan copy takes for a 30-minute 1080p60 match. Run those next, with planted-habit deathmatch recordings.
+These numbers come from drawn shapes, not game footage.
+
+**Real footage (Oct 17).** The first 14 minutes of a YouTube match by a skilled player, screen-recorded at 1290x726. I labeled it by hand (9 kills, 6 deaths), and the labels match the in-game scoreboard. There were three eval runs (`npm run eval`):
+- **Scan copy:** 27 MB, made in about 30 s and uploaded in about 30 s.
+- **Scan:** found 4 of 6 deaths, but only 1 to 4 of 9 kills per run. Two frames a second and higher image detail didn't help.
+- **Head boxes:** landed on the right head whenever an enemy was in view. Gemini once boxed a wall mark as a head, so it now has to return each head with its body, and code drops heads that aren't on a body.
+- **Verdicts:** nothing usable yet. Across three runs the agent named three different habits (crosshair low, peeking wide, shooting while moving), and a frame-by-frame check supports none of them. Twice it measured, saw the crosshair at head level, and dropped that theory. Gemini's agentic mode said "crosshair low" every time, against the measurements. The fixed pipeline mostly measured empty or point-blank frames.
+
+**Next test:** a recording with a habit played on purpose, to see whether a strong habit gets caught.
 
 ## Limits
 
