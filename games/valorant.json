@@ -10,7 +10,9 @@
     "scoreboard": [0.36, 0.0, 0.28, 0.1],
     "health": [0.3, 0.86, 0.4, 0.14]
   },
-  "regionNotes": "Fractions of a 16:9 screen with the default HUD. Positions are approximate and move with HUD settings.",
+  "killfeedColors": { "ally": [140, 190], "enemy": [340, 12] },
+  "killfeedGrid": { "top": 0.106, "pitch": 0.1376, "height": 0.116, "portrait": 0.14 },
+  "regionNotes": "Fractions of a 16:9 screen with the default HUD. Positions are approximate and move with HUD settings. killfeedGrid places kill-feed rows as fractions of the killfeed region's height.",
   "cues": [
     "The crosshair is always at the screen center.",
     "The kill feed (top right) lists killer, weapon, and victim for a few seconds. Lines with the player in them have a yellow border.",
@@ -49,6 +51,12 @@
       "name": "Re-peeking the same angle",
       "signs": "After missing or trading, peeking the same angle again right away, where the enemy is ready and aiming at it.",
       "drill": "Deathmatch rule for three games: after any fight at an angle, move or wait before you peek it again."
+    },
+    {
+      "id": "no_trade",
+      "name": "Not trading teammates",
+      "signs": "A teammate dies close to the player and the enemy who killed them lives, because the player was too far, facing elsewhere, or late to swing.",
+      "drill": "Play three unrated games next to one teammate. When they take a fight, be ready to swing their angle within two seconds, and check the minimap before every fight."
     },
     {
       "id": "untraded",

@@ -10,7 +10,8 @@
   async function run({ video, file, profile, looks = 30, signal, onNotice, onStep = () => {} }) {
     const frame = { w: video.width, h: video.height }, crop = C.regionRect(profile, 'aim', frame);
     onStep({ name: 'scan', args: { from: '0:00', to: C.mmss(video.duration) } });
-    const events = await A.scanVideo({ file, profile, from: 0, to: video.duration, signal, onNotice });
+    // the same record of fights the agent's scan builds, so both start from the same place
+    const { events } = await A.fightLog({ video, file, profile, from: 0, to: video.duration, signal, onNotice });
     const deaths = events.filter((e) => e.kind === 'death');
     const measures = [];
     let used = 0;

@@ -177,10 +177,11 @@
   const boardBrief = (board) => board.map((x) => `${x.id} ${x.status}: ${x.theory}${x.evidence.length ? ` (${x.evidence.map((e) => mmss(e.t)).join(', ')})` : ''}`).join('\n');
 
   // ---------- events from a scan ----------
-  const KINDS = ['kill', 'death', 'round_start', 'round_end', 'other'];
+  // kill and death are the player's own; ally_death and ally_kill are teammates'
+  const KINDS = ['kill', 'death', 'ally_death', 'ally_kill', 'round_start', 'round_end', 'other'];
   function mergeEvents(a, b) {
     const out = [];
-    for (const e of [...a, ...b].sort((x, y) => x.t - y.t)) if (!out.some((o) => o.kind === e.kind && Math.abs(o.t - e.t) < 2)) out.push(e);
+    for (const e of [...a, ...b].sort((x, y) => x.t - y.t)) if (!out.some((o) => o.kind === e.kind && Math.abs(o.t - e.t) < 2 && nameKey(o.victim) === nameKey(e.victim))) out.push(e);
     return out;
   }
   /** Cleans a scan's events: valid times inside the scanned stretch, known kinds, no repeats. */
@@ -198,6 +199,246 @@
     return mergeEvents([], list);
   }
   const eventsBrief = (events) => events.map((e) => `${mmss(e.t)} ${e.kind}${e.text ? `: ${e.text}` : ''}`).join('\n');
+
+  // ---------- the kill feed ----------
+  // Gemini reads kill-feed names well but mixes up the team colors behind them, so the colors come from pixels here.
+  // Hues in degrees; Valorant draws your team teal and the enemy red.
+  const FEED_COLORS = { ally: [140, 190], enemy: [340, 12] };
+  const inHue = (h, [a, b]) => (a <= b ? h >= a && h <= b : h >= a || h <= b);
+  // 1 and 2: clearly ally or enemy. 3 and 4: the same hues, muted, as the game draws the ends of a row behind names
+  // and portraits; trusted only inside a row already found from clear color.
+  function pixelTeam(r, g, b, colors = FEED_COLORS) {
+    const mx = Math.max(r, g, b), mn = Math.min(r, g, b), sat = mx ? (mx - mn) / mx : 0;
+    if (sat < 0.12 || mx < 85) return 0;
+    const hue = ((mx === r ? (g - b) / (mx - mn) : mx === g ? 2 + (b - r) / (mx - mn) : 4 + (r - g) / (mx - mn)) * 60 + 360) % 360;
+    const team = inHue(hue, colors.ally) ? 1 : inHue(hue, colors.enemy) ? 2 : 0;
+    return team && (sat < 0.35 || mx < 110) ? team + 2 : team;
+  }
+
+  /**
+   * The kill-feed rows in one crop, top to bottom: { y0, y1, left, right, fp }. left and right are the team color behind
+   * the killer and the victim ('ally', 'enemy', or null); fp fingerprints the row's two ends, where the names are, so a
+   * row can be told apart from new ones. img is { data (RGBA), width, height }, like ImageData.
+   * grid { top, pitch, height, portrait } places the rows as fractions of the crop height, as the game draws them, and
+   * portrait is the share of the width at the right edge taken by the victim's portrait; a slot holds a
+   * row when a quarter or more of its right three-quarters is team color. Without a grid, rows are found as bands of
+   * team color. Either way a colorful background can pass for a row, so sides read as one team come back null.
+   */
+  function killfeedRows(img, { colors = FEED_COLORS, grid } = {}) {
+    const { data: d, width: w, height: h } = img;
+    const kind = new Uint8Array(w * h);
+    for (let i = 0; i < w * h; i++) kind[i] = pixelTeam(d[i * 4], d[i * 4 + 1], d[i * 4 + 2], colors);
+    const isTeam = (x, y) => kind[y * w + x] === 1 || kind[y * w + x] === 2;
+    let slots;
+    if (grid) {
+      slots = [];
+      for (let k = 0; ; k++) {
+        const y0 = Math.round((grid.top + k * grid.pitch) * h), y1 = Math.round(y0 + grid.height * h) - 1;
+        if (y1 >= h) break;
+        // each column's team color down the slot: the color on 30% or more of its lines, or none
+        const n = y1 - y0 + 1, clear = [], col = [];
+        for (let x = 0; x < w; x++) {
+          let ally = 0, enemy = 0, sure = 0;
+          for (let y = y0; y <= y1; y++) { const t = kind[y * w + x]; if (t === 1 || t === 3) ally++; else if (t === 2 || t === 4) enemy++; if (t === 1 || t === 2) sure++; }
+          clear.push(sure / n >= 0.3);
+          col.push(ally >= enemy && ally / n >= 0.3 ? 'ally' : enemy / n >= 0.3 ? 'enemy' : null);
+        }
+        const from = Math.round(w * 0.25);
+        if (clear.slice(from).filter(Boolean).length / (w - from) < 0.25) continue;
+        // Read from the right edge, where every row ends: the first run of color is the victim's, and the next
+        // different color, right beside it, is the killer's. Names and the weapon icon leave gaps; a longer gap is
+        // past the row's left end.
+        // The victim's portrait sits at the very end and can carry either color, so the reading starts past it.
+        const runs = [];
+        let gap = 0, x0 = -1, x1 = -1;
+        for (let x = w - 1; x >= 0; x--) if (col[x]) { x1 = x; break; }
+        for (let x = w - 1 - Math.round((grid.portrait || 0) * w); x >= 0; x--) {
+          const c = col[x];
+          if (!c) { if (x0 >= 0 && ++gap > 60) break; continue; }
+          gap = 0;
+          x0 = x;
+          const last = runs.at(-1);
+          if (last && last.c === c) last.n++; else runs.push({ c, n: 1 });
+        }
+        const solid = runs.filter((r) => r.n >= 10);
+        const victim = solid[0]?.c ?? null, killer = solid.find((r) => r.c !== victim)?.c ?? null;
+        // a real row carries names in white text; a flash or a wall of the same colors doesn't
+        const white = (a, b) => {
+          let n = 0, tot = 0;
+          for (let y = y0; y <= y1; y++) for (let x = Math.max(0, a); x <= b; x++) { const i = (y * w + x) * 4, mx = Math.max(d[i], d[i + 1], d[i + 2]); tot++; if (mx > 205 && (mx - Math.min(d[i], d[i + 1], d[i + 2])) / mx < 0.2) n++; }
+          return n / Math.max(1, tot);
+        };
+        const mid = Math.round((x0 + x1) / 2);
+        if (x1 < 0 || Math.max(white(x0, mid), white(mid, x1)) < 0.03) continue;
+        slots.push({ y0, y1, x0, x1, left: killer, right: victim });
+      }
+        } else {
+      let bands = [];
+      const team = (y) => { let n = 0; for (let x = 0; x < w; x++) if (isTeam(x, y)) n++; return n; };
+      for (let y = 0; y < h; y++) {
+        if (team(y) <= w * 0.18) continue;
+        const last = bands.at(-1);
+        if (last && y - last.y1 <= 4) last.y1 = y; else bands.push({ y0: y, y1: y });
+      }
+      bands = bands.filter((b) => b.y1 - b.y0 >= 9);
+      // two rows can touch and read as one band: split a band about twice the usual height
+      const heights = bands.map((b) => b.y1 - b.y0 + 1), mid = median(heights) || 0;
+      const usual = Math.min(...heights.filter((x) => x >= mid * 0.6), Infinity); // the smallest full-size row
+      slots = bands.flatMap((b) => {
+        const n = Number.isFinite(usual) ? Math.max(1, Math.round((b.y1 - b.y0 + 1) / usual)) : 1, step = (b.y1 - b.y0 + 1) / n;
+        return Array.from({ length: n }, (_, k) => ({ y0: Math.round(b.y0 + k * step), y1: Math.round(b.y0 + (k + 1) * step) - 1 }));
+      }).map(({ y0, y1 }) => {
+        let x0 = w, x1 = -1;
+        for (let y = y0; y <= y1; y++) for (let x = 0; x < w; x++) if (isTeam(x, y)) { if (x < x0) x0 = x; if (x > x1) x1 = x; }
+        return { y0, y1, x0, x1 };
+      });
+    }
+    return slots.map((slot) => {
+      const { y0, y1, x0, x1 } = slot;
+      const side = (a, b) => {
+        let ally = 0, enemy = 0;
+        for (let y = y0; y <= y1; y++) for (let x = a; x <= b; x++) { const k = kind[y * w + x]; if (k === 1) ally++; else if (k === 2) enemy++; }
+        return ally > enemy * 1.5 ? 'ally' : enemy > ally * 1.5 ? 'enemy' : null;
+      };
+      const span = Math.max(1, x1 - x0), edge = Math.round(span * 0.3);
+      // a coarse picture of each end, where the names and portraits are: two rows with the same killer still differ at
+      // the victim's end. Eight strips of mean brightness per end.
+      const strips = (a, b) => Array.from({ length: 8 }, (_, k) => {
+        const s0 = Math.round(a + ((b - a) * k) / 8), s1 = Math.max(s0, Math.round(a + ((b - a) * (k + 1)) / 8) - 1);
+        let sum = 0, n = 0;
+        for (let y = y0; y <= y1; y++) for (let x = s0; x <= s1; x++) { const i = (y * w + x) * 4; sum += d[i] * 0.3 + d[i + 1] * 0.59 + d[i + 2] * 0.11; n++; }
+        return Math.round(sum / Math.max(1, n));
+      });
+      const end = Math.round(span * 0.4);
+      // a kill is always between the teams: one color at both ends means the background showed through, so neither
+      // end can be trusted
+      let left = slot.left !== undefined ? slot.left : side(x0, x0 + edge), right = slot.right !== undefined ? slot.right : side(x1 - edge, x1);
+      if (left && left === right) left = right = null;
+      return { y0, y1, x0, x1, left, right, fp: [strips(x0, x0 + end), strips(x1 - end, x1)] };
+    });
+  }
+  /** Whether a crop shows a row the previous sampled crop didn't, so only crops with new kills go to Gemini. */
+  const near = (a, b) => a.reduce((sum, x, i) => sum + Math.abs(x - b[i]), 0) / a.length < 14;
+  const hasNewRow = (prev, cur) => cur.some((r) => !prev.some((p) => p.left === r.left && p.right === r.right && near(p.fp[0], r.fp[0]) && near(p.fp[1], r.fp[1])));
+
+  const nameKey = (s) => String(s || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+  function editDistance(a, b) {
+    const row = Array.from({ length: b.length + 1 }, (_, j) => j);
+    for (let i = 1; i <= a.length; i++) {
+      let prev = row[0];
+      row[0] = i;
+      for (let j = 1; j <= b.length; j++) { const keep = row[j]; row[j] = Math.min(row[j] + 1, row[j - 1] + 1, prev + (a[i - 1] === b[j - 1] ? 0 : 1)); prev = keep; }
+    }
+    return row[b.length];
+  }
+  // one misread letter in a longer name is still the same player
+  const sameName = (a, b) => { const x = nameKey(a), y = nameKey(b); return x === y || (Math.min(x.length, y.length) >= 5 && editDistance(x, y) <= 1); };
+  const mostCommon = (xs) => { const c = new Map(); for (const x of xs) if (x) c.set(x, (c.get(x) || 0) + 1); return [...c].sort((a, b) => b[1] - a[1])[0]?.[0] ?? null; };
+  const other = (team) => (team === 'ally' ? 'enemy' : team === 'enemy' ? 'ally' : null);
+
+  function feedText(e) {
+    const you = (role) => e[role === 'killer' ? 'killerIsPlayer' : 'victimIsPlayer'];
+    const name = (role) => (you(role) ? 'you' : `${e[role]}${e[`${role}Team`] === 'ally' ? ' (teammate)' : e[`${role}Team`] === 'enemy' ? ' (enemy)' : ''}`);
+    const parts = [`${name('killer')} killed ${name('victim')}`];
+    if (e.trades) parts.push(`trading ${e.trades}`);
+    if (e.victimTeam === 'ally') parts.push(e.tradedBy ? `traded by ${sameName(e.tradedBy, e.player) ? 'you' : e.tradedBy} ${round(e.tradedAt - e.t, 1)} s later` : 'not traded');
+    return parts.join('; ');
+  }
+
+  /**
+   * Sightings from one crop: Gemini's rows (names, top to bottom) matched to the rows code found in its pixels. Faded
+   * old rows at the top are the ones Gemini skips, so the two lists are matched from the bottom.
+   */
+  function feedSightings(t, read, pixelRows) {
+    const rows = (Array.isArray(read) ? read : []).filter((r) => text(r?.killer) && text(r?.victim));
+    const offset = pixelRows.length - rows.length;
+    return rows.map((r, i) => {
+      const px = pixelRows[i + offset];
+      return { t, killer: text(r.killer), victim: text(r.victim), killerSide: px?.left ?? null, victimSide: px?.right ?? null, mine: !!r.yellow_border };
+    });
+  }
+
+  /**
+   * The player's name, when they didn't type it. Two signals, each fooled on its own: Gemini marks rows with a yellow
+   * marker (and sometimes a yellow agent portrait), and the low-detail pass catches deaths (and sometimes a teammate's).
+   * The player is on the teal team, so only teammates count; each yellow mark scores 1 and each of the player's deaths
+   * where the name is the victim scores 2. null when nobody scores 3 or more.
+   */
+  function choosePlayer(events, sightings, deathTimes = []) {
+    const team = new Map();
+    for (const e of events) for (const [n, t] of [[e.killer, e.killerTeam], [e.victim, e.victimTeam]]) if (t) { const v = team.get(nameKey(n)) || { ally: 0, enemy: 0 }; v[t]++; team.set(nameKey(n), v); }
+    const teammate = (n) => { const v = team.get(nameKey(n)); return !!v && v.ally > v.enemy; };
+    const score = new Map(), add = (n, k) => { if (teammate(n)) score.set(nameKey(n), (score.get(nameKey(n)) || 0) + k); };
+    for (const s of sightings) if (s.mine) for (const n of new Set([s.killer, s.victim])) add(n, 1);
+    for (const t of deathTimes) for (const n of new Set(events.filter((e) => Math.abs(e.t - t) <= 3 && e.victimTeam === 'ally').map((e) => e.victim))) add(n, 2);
+    const [best, points] = [...score].sort((a, b) => b[1] - a[1])[0] || [];
+    return best && points >= 3 ? mostCommon(sightings.flatMap((x) => [x.killer, x.victim]).filter((n) => nameKey(n) === best)) : null;
+  }
+
+  /**
+   * Turns kill-feed sightings into events. sighting: { t, killer, victim, killerSide, victimSide, mine }, with
+   * sides from killfeedRows and mine from the yellow marker on the player's rows. player: the player's name when it's
+   * known some other way; otherwise it's the name on the most marked rows. One kill seen in several crops becomes one event, timed at
+   * its first sighting. A death is traded when its killer dies to the other team within `trade` seconds.
+   */
+  function buildKillfeed(sightings, { window = 8, trade = 5, player: known = null } = {}) {
+    const groups = [];
+    for (const s of [...sightings].filter((x) => x?.killer && x?.victim && Number.isFinite(x.t)).sort((a, b) => a.t - b.t)) {
+      const g = groups.find((x) => s.t - x.last <= window && sameName(x.killer, s.killer) && sameName(x.victim, s.victim));
+      if (g) { g.list.push(s); g.last = s.t; } else groups.push({ killer: s.killer, victim: s.victim, last: s.t, list: [s] });
+    }
+    // the player is the name in the most rows with the yellow outline
+    const mine = new Map();
+    for (const s of sightings) if (s?.mine) for (const n of new Set([nameKey(s.killer), nameKey(s.victim)])) mine.set(n, (mine.get(n) || 0) + 1);
+    const playerKey = [...mine].sort((a, b) => b[1] - a[1])[0]?.[0] || null;
+    const player = known || (playerKey ? mostCommon(sightings.flatMap((s) => [s.killer, s.victim]).filter((n) => nameKey(n) === playerKey)) : null);
+    const events = groups.map((g) => {
+      const killer = mostCommon(g.list.map((s) => s.killer)), victim = mostCommon(g.list.map((s) => s.victim));
+      const killerIsPlayer = !!player && sameName(killer, player), victimIsPlayer = !!player && sameName(victim, player);
+      let killerTeam = killerIsPlayer ? 'ally' : mostCommon(g.list.map((s) => s.killerSide));
+      let victimTeam = victimIsPlayer ? 'ally' : mostCommon(g.list.map((s) => s.victimSide));
+      if (!killerTeam) killerTeam = other(victimTeam);
+      if (!victimTeam) victimTeam = other(killerTeam);
+      const kind = killerIsPlayer ? 'kill' : victimIsPlayer ? 'death' : victimTeam === 'ally' ? 'ally_death' : killerTeam === 'ally' ? 'ally_kill' : 'other';
+      return { t: round(g.list[0].t, 1), kind, killer, victim, killerTeam, victimTeam, killerIsPlayer, victimIsPlayer, seen: g.list.length, player };
+    });
+    // A flash or smoke over the kill feed can tint one reading. Names seen on one team again and again outvote it; a
+    // name on both teams (both can pick the same agent) is never trusted this way.
+    // Twice: fixing a flipped kill first makes the names' records cleaner for the kills read as one team.
+    for (let pass = 0; pass < 2; pass++) {
+      const votes = new Map();
+      for (const e of events) {
+        if (!e.killerTeam || e.killerTeam === e.victimTeam) continue;
+        for (const [n, team] of [[e.killer, e.killerTeam], [e.victim, e.victimTeam]]) { const v = votes.get(nameKey(n)) || { ally: 0, enemy: 0 }; v[team]++; votes.set(nameKey(n), v); }
+      }
+      // what the other kills say about a name, leaving out the kill being judged
+      const roster = (n, e, role) => {
+        const v = { ...(votes.get(nameKey(n)) || { ally: 0, enemy: 0 }) };
+        if (e.killerTeam && e.killerTeam !== e.victimTeam) v[e[`${role}Team`]]--;
+        const total = v.ally + v.enemy, top = v.ally >= v.enemy ? 'ally' : 'enemy';
+        return total >= 2 && v[top] / total >= 0.8 ? top : null;
+      };
+      for (const e of events) {
+        if (e.killerIsPlayer || e.victimIsPlayer) continue;
+        const k = roster(e.killer, e, 'killer'), v = roster(e.victim, e, 'victim');
+        if (!e.killerTeam || e.killerTeam === e.victimTeam) {
+          // a kill can't be on one team: trust whichever name the other kills settle
+          const killerTeam = v ? other(v) : k;
+          if (killerTeam) { e.killerTeam = killerTeam; e.victimTeam = other(killerTeam); }
+        } else if (k && v && k !== v && k !== e.killerTeam) {
+          // both names say the colors were flipped
+          e.killerTeam = k; e.victimTeam = v;
+        }
+        e.kind = e.victimTeam === 'ally' ? 'ally_death' : e.killerTeam === 'ally' ? 'ally_kill' : 'other';
+      }
+    }
+    for (const e of events) {
+      const revenge = events.find((x) => x.t >= e.t && x !== e && x.t - e.t <= trade && sameName(x.victim, e.killer) && x.victimTeam === e.killerTeam);
+      if (revenge && e.victimTeam === 'ally') { e.tradedBy = revenge.killer; e.tradedAt = revenge.t; revenge.trades = e.victimIsPlayer ? 'your death' : e.victim; }
+    }
+    for (const e of events) e.text = feedText(e);
+    return { player, events };
+  }
 
   // ---------- looks ----------
   const MAX_FRAMES = 12;
@@ -247,6 +488,7 @@
     BudgetError, createBudget, left, spend, budgetLine,
     SLACK, MIN_EVIDENCE, createLedger, recordLook, seen, checkFinish,
     STATUSES, applyNote, boardBrief, KINDS, normalizeEvents, mergeEvents, eventsBrief,
+    FEED_COLORS, pixelTeam, killfeedRows, hasNewRow, nameKey, sameName, feedSightings, choosePlayer, buildKillfeed,
     MAX_FRAMES, framePlan, regionRect,
     emptyHistory, addMatch, acceptHabit, dropHabit, compareAim, historyBrief,
   };

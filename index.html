@@ -18,8 +18,8 @@
 THESIS: The film room. Your match is the canvas and the coach marks it up in telestrator yellow: every scan, look, and
 piece of evidence lands on the match timeline, so you can see where it looked and why it decided.
 OWN-WORLD: Near-black ground (#0c0d0f), graphite panels, chalk text, and one telestrator yellow (#ffd23f) with three jobs:
-the coach's marks, the primary action, and the working spinner. Death red is the only other color, and only on the
-timeline. Big Shoulders Display for the verdict and big numbers, JetBrains Mono for times, the platform sans for text.
+the coach's marks, the primary action, and the working spinner. Death red and a muted teal
+(teammates' deaths) are the only other colors, and only on the timeline. Big Shoulders Display for the verdict and big numbers, JetBrains Mono for times, the platform sans for text.
 -->
   <svg width="0" height="0" style="position:absolute" aria-hidden="true">
     <defs>
@@ -56,6 +56,9 @@ timeline. Big Shoulders Display for the verdict and big numbers, JetBrains Mono 
         <label class="field game"><span>Game</span>
           <select id="game"><option value="valorant">Valorant</option></select>
         </label>
+        <label class="field name"><span>Your in-game name</span>
+          <input id="playerName" type="text" maxlength="40" autocomplete="off" placeholder="Optional" />
+        </label>
         <label class="field goal"><span>Anything to look at?</span>
           <input id="goal" type="text" maxlength="200" placeholder="I keep losing duels on B site" />
         </label>
@@ -83,7 +86,7 @@ timeline. Big Shoulders Display for the verdict and big numbers, JetBrains Mono 
           <div class="playhead" id="playhead"></div>
         </div>
         <div class="axis" id="axis" aria-hidden="true"></div>
-        <ul class="legend" aria-hidden="true"><li class="k-death">Death</li><li class="k-kill">Kill</li><li class="k-look">Looked at</li></ul>
+        <ul class="legend" aria-hidden="true"><li class="k-kill">Your kill</li><li class="k-death">Your death</li><li class="k-ally">Teammate died</li><li class="k-look">Looked at</li></ul>
       </div>
 
       <aside class="rail" id="rail">

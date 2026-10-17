@@ -196,3 +196,120 @@ test('moments they got right go in contrast, never in both lists', () => {
   assert.ok(both.some((x) => /0:40 is in both evidence and contrast/.test(x)));
   assert.ok(both.some((x) => /haven't looked closely at 1:45 \(in contrast\)/.test(x)));
 });
+
+// a fake kill-feed crop: rows of team-colored bars, killer side then victim side
+function feedImage(rows, w = 360, h = 120) {
+  const data = new Uint8ClampedArray(w * h * 4).fill(60);
+  const paint = (x0, x1, y0, y1, [r, g, b]) => { for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) { const i = (y * w + x) * 4; data[i] = r; data[i + 1] = g; data[i + 2] = b; data[i + 3] = 255; } };
+  const TEAL = [80, 200, 170], RED = [225, 75, 85], YELLOW = [235, 205, 60];
+  for (const { y, left, right, yellow, shade = 0, victimShade = 0 } of rows) {
+    if (yellow) paint(96, 99, y - 2, y + 22, YELLOW);
+    paint(100, 220, y, y + 20, left === 'ally' ? TEAL : RED);
+    paint(221, 340, y, y + 20, right === 'ally' ? TEAL : RED);
+    // names, drawn as thin strokes like text
+    for (let x = 110; x <= 160; x += 3) paint(x, x, y + 6, y + 14, [225 + shade / 2, 225 + shade / 2, 225 + shade / 2]);
+    for (let x = 270; x <= 330; x += 3) paint(x, x + 1, y + 6, y + 14, [150 + victimShade, 150 + victimShade, 150 + victimShade]);
+  }
+  return { data, width: w, height: h };
+}
+
+test('kill-feed rows and their team colors come from pixels', () => {
+  const rows = C.killfeedRows(feedImage([{ y: 10, left: 'ally', right: 'enemy', yellow: true }, { y: 36, left: 'enemy', right: 'ally' }]));
+  assert.equal(rows.length, 2);
+  assert.deepEqual(rows.map((r) => [r.left, r.right]), [['ally', 'enemy'], ['enemy', 'ally']]);
+  assert.deepEqual(C.killfeedRows(feedImage([])), []);
+  const touching = C.killfeedRows(feedImage([{ y: 10, left: 'ally', right: 'enemy' }, { y: 31, left: 'enemy', right: 'ally' }, { y: 60, left: 'ally', right: 'ally' }]));
+  assert.equal(touching.length, 3, 'two rows that touch are split apart');
+});
+
+test("on the game's grid, a row is a slot that's mostly team color", () => {
+  const img = feedImage([{ y: 10, left: 'ally', right: 'enemy' }, { y: 36, left: 'enemy', right: 'ally' }]);
+  const { data, width } = img;
+  for (let y = 66; y <= 84; y++) for (let x = 20; x <= 160; x++) { const i = (y * width + x) * 4; data[i] = 225; data[i + 1] = 75; data[i + 2] = 85; } // a red wall at the left of slot 3
+  for (let y = 88; y <= 108; y++) for (let x = 0; x < width; x++) { const i = (y * width + x) * 4; data[i] = 80; data[i + 1] = 200; data[i + 2] = 170; } // a teal flash across slot 4
+  for (const y0 of [10, 36]) for (let y = y0; y <= y0 + 20; y++) for (let x = 322; x <= 340; x++) { const i = (y * width + x) * 4; data[i] = 230; data[i + 1] = 80; data[i + 2] = 120; } // red-toned victim portraits
+  const grid = { top: 10 / 120, pitch: 26 / 120, height: 21 / 120, portrait: 0.14 };
+  const rows = C.killfeedRows(img, { grid });
+  assert.deepEqual(rows.map((r) => [r.y0, r.left, r.right]), [[10, 'ally', 'enemy'], [36, 'enemy', 'ally']], 'portraits are skipped, and a red wall and a teal flash have no names, so they are no rows');
+});
+
+test('only crops with a row not seen before count as new', () => {
+  const a = C.killfeedRows(feedImage([{ y: 10, left: 'ally', right: 'enemy' }]));
+  const moved = C.killfeedRows(feedImage([{ y: 40, left: 'ally', right: 'enemy' }]));
+  const added = C.killfeedRows(feedImage([{ y: 10, left: 'ally', right: 'enemy' }, { y: 36, left: 'enemy', right: 'ally', shade: 40 }]));
+  assert.equal(C.hasNewRow(a, moved), false, 'the same row moved up is not new');
+  assert.equal(C.hasNewRow(a, added), true);
+  assert.equal(C.hasNewRow([], a), true);
+  const sameKiller = C.killfeedRows(feedImage([{ y: 10, left: 'ally', right: 'enemy' }, { y: 36, left: 'ally', right: 'enemy', victimShade: 105 }]));
+  assert.equal(C.hasNewRow(a, sameKiller), true, 'the same killer on a new victim is a new row');
+});
+
+test('names match despite one misread letter in a long name', () => {
+  assert.equal(C.sameName('ZedCapetinha', 'ZedCapetlnha'), true);
+  assert.equal(C.sameName('KAY/O', 'kayo'), true);
+  assert.equal(C.sameName('Sage', 'Sova'), false);
+});
+
+test('sightings become one event per kill, with teams, the player, and trades', () => {
+  const s = (t, killer, killerSide, victim, victimSide, mine = false) => ({ t, killer, killerSide, victim, victimSide, mine });
+  const { player, events } = C.buildKillfeed([
+    s(74, 'KAY/O', 'enemy', 'Omen', 'ally'), s(76, 'KAY/O', 'enemy', 'Omen', 'ally'),
+    s(80, 'ZedCapetinha', 'ally', 'KAY/O', 'enemy'), s(80, 'Omen', 'enemy', 'ZedCapetinha', 'ally'),
+    s(82, 'Im Muted', 'ally', 'Omen', 'enemy', true), s(84, 'Im Muted', null, 'Omen', null, true),
+    s(85, 'Im Muted', 'ally', 'Killjoy', 'enemy', true),
+    s(127, 'Sova', 'enemy', 'Im Muted', null, true),
+  ]);
+  assert.equal(player, 'Im Muted');
+  assert.deepEqual(events.map((e) => [e.t, e.kind, e.killer, e.victim]), [
+    [74, 'ally_death', 'KAY/O', 'Omen'], [80, 'ally_kill', 'ZedCapetinha', 'KAY/O'], [80, 'ally_death', 'Omen', 'ZedCapetinha'],
+    [82, 'kill', 'Im Muted', 'Omen'], [85, 'kill', 'Im Muted', 'Killjoy'], [127, 'death', 'Sova', 'Im Muted'],
+  ]);
+  const zed = events[2], omenKill = events[3];
+  assert.equal(zed.text, 'Omen (enemy) killed ZedCapetinha (teammate); traded by you 2 s later');
+  assert.equal(omenKill.text, 'you killed Omen (enemy); trading ZedCapetinha');
+  assert.equal(events[0].text, 'KAY/O (enemy) killed Omen (teammate); not traded', 'six seconds is too late to count as a trade');
+  assert.equal(events[5].text, 'Sova (enemy) killed you; not traded');
+  assert.equal(events[1].seen, 1);
+  assert.equal(events[0].seen, 2);
+});
+
+test("Gemini's rows take their team colors from the pixel rows, matched from the bottom", () => {
+  const px = [{ left: 'ally', right: 'enemy' }, { left: 'enemy', right: 'ally' }, { left: 'ally', right: 'enemy' }];
+  const read = [{ killer: 'Omen', victim: 'ZedCapetinha' }, { killer: 'Im Muted', victim: 'Omen', yellow_border: true }]; // the faded top row was skipped
+  assert.deepEqual(C.feedSightings(82, read, px), [
+    { t: 82, killer: 'Omen', victim: 'ZedCapetinha', killerSide: 'enemy', victimSide: 'ally', mine: false },
+    { t: 82, killer: 'Im Muted', victim: 'Omen', killerSide: 'ally', victimSide: 'enemy', mine: true },
+  ]);
+  const unmatched = C.feedSightings(90, [{ killer: 'A', victim: 'B' }, { killer: 'C', victim: 'D' }], [{ left: 'ally', right: 'enemy' }]);
+  assert.deepEqual(unmatched.map((x) => [x.killerSide, x.victimSide]), [[null, null], ['ally', 'enemy']]);
+});
+
+test('a name seen on one team again and again corrects a tinted reading', () => {
+  const s = (t, killer, killerSide, victim, victimSide, mine = false) => ({ t, killer, killerSide, victim, victimSide, mine });
+  const { events } = C.buildKillfeed([
+    s(10, 'Im Muted', 'ally', 'Sage', 'enemy', true),
+    s(20, 'ZedCapetinha', 'ally', 'Sova', 'enemy'), s(30, 'Sova', 'enemy', 'ZedCapetinha', 'ally'), s(40, 'ZedCapetinha', 'ally', 'Sage', 'enemy'),
+    s(50, 'KAY/O', 'enemy', 'Febera', 'ally'), s(60, 'Febera', 'ally', 'KAY/O', 'enemy'), s(70, 'KAY/O', 'enemy', 'Febera', 'ally'),
+    s(80, 'ZedCapetinha', 'enemy', 'KAY/O', 'ally'), // a flash flipped both colors
+    s(90, 'Omen', 'enemy', 'ZedCapetinha', 'enemy'), // one side tinted
+    s(100, 'Omen', 'ally', 'Sage', 'enemy'), s(110, 'Omen', 'enemy', 'Febera', 'ally'), // an Omen on each team
+  ]);
+  const at = (t) => events.find((e) => e.t === t);
+  assert.deepEqual([at(80).killerTeam, at(80).victimTeam, at(80).kind], ['ally', 'enemy', 'ally_kill']);
+  assert.deepEqual([at(90).killerTeam, at(90).victimTeam, at(90).kind], ['enemy', 'ally', 'ally_death']);
+  assert.deepEqual([at(100).killerTeam, at(110).killerTeam], ['ally', 'enemy'], 'Omen keeps the colors read for each kill');
+});
+
+test('the player is the teammate with the most yellow marks and deaths at their own death screens', () => {
+  const ev = (t, killer, killerTeam, victim, victimTeam) => ({ t, killer, killerTeam, victim, victimTeam });
+  const events = [ev(82, 'Im Muted', 'ally', 'Omen', 'enemy'), ev(85, 'Im Muted', 'ally', 'Killjoy', 'enemy'), ev(127, 'Sova', 'enemy', 'Im Muted', 'ally'),
+    ev(74, 'KAY/O', 'enemy', 'Omen', 'ally'), ev(278, 'Sova', 'enemy', 'Omen', 'ally'), ev(479, 'Killjoy', 'enemy', 'Im Muted', 'ally'), ev(500, 'Killjoy', 'enemy', 'Febera', 'ally')];
+  const mark = (killer, victim, mine) => ({ killer, victim, mine });
+  const sightings = [mark('Im Muted', 'Omen', true), mark('Im Muted', 'Killjoy', true), mark('Killjoy', 'Febera', true), mark('Killjoy', 'Im Muted', true), mark('KAY/O', 'Omen', false)];
+  assert.equal(C.choosePlayer(events, sightings, [127, 479]), 'Im Muted');
+  assert.equal(C.choosePlayer(events, sightings.map((x) => ({ ...x, mine: false })), [74, 278]), 'Omen', 'deaths alone can decide');
+  assert.equal(C.choosePlayer(events, [mark('Killjoy', 'Febera', true), mark('Killjoy', 'Sage', true), mark('Killjoy', 'Omen', true)], []), null, 'a yellow enemy portrait never makes the player');
+  assert.equal(C.choosePlayer(events, [], []), null);
+  const { events: built } = C.buildKillfeed([{ t: 127, killer: 'Sova', victim: 'Im Muted', killerSide: 'enemy', victimSide: 'ally', mine: false }, { t: 400, killer: 'Killjoy', victim: 'Febera', killerSide: 'enemy', victimSide: 'ally', mine: true }], { player: 'Im Muted' });
+  assert.deepEqual(built.map((x) => x.kind), ['death', 'ally_death'], 'a given name beats the yellow marks');
+});

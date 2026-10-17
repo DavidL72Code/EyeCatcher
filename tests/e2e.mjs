@@ -48,7 +48,7 @@ const coach = [
   () => call(['measure_aim', { at: '0:14.2' }]),
   () => call(['note', { theory: 'Crosshair sits low', status: 'testing', evidence: [ev('0:14', 'chest height at first sight')] }]),
   () => call(['ask_player', { question: 'Did you expect someone at that corner?', at: '0:14', options: ['Yes', 'No'] }]),
-  () => call(['measure_aim', { at: '0:47.1' }], ['measure_aim', { at: '2:15' }]),
+  () => call(['measure_aim', { at: '0:47.1', more: ['2:15'] }]),
   () => call(['finish', { found: true, habit_id: 'crosshair_low', habit: 'Crosshair below head level', why: 'Your crosshair sat at chest height when enemies appeared, so they shot first.', drill: 'Ten minutes walking corners in a custom game with the crosshair at head height.', recheck: 'Measure first sight in five duels.', evidence: [ev('0:14.2', 'a'), ev('0:47.1', 'b'), ev('1:30', 'never looked here')] }]),
   () => call(['finish', { found: true, habit_id: 'crosshair_low', habit: 'Crosshair below head level', why: 'Your crosshair sat at chest height when enemies appeared, so they shot first.', drill: 'Ten minutes walking corners in a custom game with the crosshair at head height.', recheck: 'Measure first sight in five duels.', evidence: [ev('0:14.2', 'Chest height as Enemy 1 appears'), ev('0:47.1', 'Same at the doorway'), ev('2:14.0', 'Again before the last death')] }]),
   () => call(['frames', { at: '0:31', before: 1, after: 0.5, fps: 4, region: 'aim' }]),
@@ -119,7 +119,7 @@ try {
   const after = (i) => lastResults(seen.agentBodies[i]);
   const askReply = seen.agentBodies.map(lastResults).flat().find((r) => r.name === 'ask_player');
   check(askReply?.response.result.answer === '<data>No</data>', "the player's answer goes back to the coach");
-  const measured = seen.agentBodies.map(lastResults).flat().filter((r) => r.name === 'measure_aim').map((r) => r.response.result);
+  const measured = seen.agentBodies.map(lastResults).flat().filter((r) => r.name === 'measure_aim').flatMap((r) => r.response.result.measured || [r.response.result]);
   check(!measured[0].warnings && /kill feed shows the fight ending \(2:15 death\)/.test(measured[2].warnings?.[0]), 'measuring at the kill-feed time, not first sight, comes with a warning');
   const firstFinish = after(6).find((r) => r.name === 'finish')?.response.result;
   check(firstFinish?.ok === false && firstFinish.problems.some((p) => /haven't looked closely at 1:30/.test(p)), 'a finish citing an unseen moment is sent back');

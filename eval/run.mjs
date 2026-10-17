@@ -61,6 +61,21 @@ function scanRecall(events, truth) {
   return { kills: of('kill', truth.kills), deaths: of('death', truth.deaths) };
 }
 
+// Kill-feed events against hand labels inside the labeled window: the same killer and victim within 3 s, then whether
+// both teams came out right.
+function killfeedScore(events, kf) {
+  const key = (s) => String(s || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+  const [a, b] = kf.window, got = events.filter((e) => e.killer && e.t >= a - 2 && e.t <= b + 2), used = new Set();
+  let found = 0, teams = 0;
+  for (const r of kf.events) {
+    const m = got.find((e) => !used.has(e) && key(e.killer) === key(r.killer) && key(e.victim) === key(r.victim) && Math.abs(e.t - r.t) <= 3);
+    if (!m) continue;
+    used.add(m); found++;
+    if (m.killerTeam === r.killerTeam && m.victimTeam === r.victimTeam) teams++;
+  }
+  return { found: `${found}/${kf.events.length}`, teamsRight: `${teams}/${found}`, notReal: got.filter((e) => !used.has(e)).map((e) => `${mmss(e.t)} ${e.killer}>${e.victim}`) };
+}
+
 function score(r, rec) {
   if (!r || r.error || r.refused || r.unparsed) return { verdict: r?.refused ? 'refused' : 'no result', counted: false };
   if (rec.plantedHabit) {
@@ -153,7 +168,7 @@ try {
           return {
             found: r.found, habitId: r.habitId ?? null, habit: r.habit || '', why: r.why, stopped: !!r.stopped, confidence: r.confidence,
             evidence: (r.evidence || []).map((e) => ({ t: e.t, what: e.what })), contrast: r.contrast || [], aim: r.aim, measures: r.measures.map((m) => ({ t: m.t, heads: m.heads, band: m.band, headPx: m.headPx, box: m.box })),
-            looks: r.stats.looks, turns: r.stats.turns, events: (r.events || []).map((e) => ({ t: e.t, kind: e.kind })),
+            looks: r.stats.looks, turns: r.stats.turns, events: (r.events || []).map((e) => ({ t: e.t, kind: e.kind, killer: e.killer, victim: e.victim, killerTeam: e.killerTeam, victimTeam: e.victimTeam, tradedBy: e.tradedBy })),
             theories: C.boardBrief(r.board), asks, rejected, steps, seconds: (performance.now() - t0) / 1000,
           };
         } catch (e) {
@@ -164,7 +179,7 @@ try {
         const { video, file, profile } = window.__eval, steps = [], t0 = performance.now();
         try {
           const r = await window.ThirdeyePipeline.run({ video, file, profile, looks, onStep: (s) => steps.push({ name: s.name, args: JSON.stringify(s.args) }) });
-          return { found: r.found, habitId: r.habitId, evidence: r.evidence, aim: r.aim, measures: r.measures, deaths: r.stats.deaths, looks: r.stats.looks, events: (r.events || []).map((e) => ({ t: e.t, kind: e.kind })), steps, seconds: (performance.now() - t0) / 1000 };
+          return { found: r.found, habitId: r.habitId, evidence: r.evidence, aim: r.aim, measures: r.measures, deaths: r.stats.deaths, looks: r.stats.looks, events: (r.events || []).map((e) => ({ t: e.t, kind: e.kind, killer: e.killer, victim: e.victim, killerTeam: e.killerTeam, victimTeam: e.victimTeam, tradedBy: e.tradedBy })), steps, seconds: (performance.now() - t0) / 1000 };
         } catch (e) {
           return { error: String(e.message || e), steps, seconds: (performance.now() - t0) / 1000 };
         }
@@ -189,6 +204,7 @@ try {
       r.score = score(r, rec);
       if (truth) r.evidenceOnDuels = onDuels(r.evidence, truth);
       if (truth?.kills && r.events?.length) r.scanRecall = scanRecall(r.events, truth);
+      if (truth?.killfeed && r.events?.length) r.killfeedScore = killfeedScore(r.events, truth.killfeed);
       row.systems[name] = r;
       console.log(`${r.score.verdict}${r.error ? ` (${r.error})` : r.refused ? ` (${r.status ?? r.stage}: ${r.error})` : ''}, ${r.usage.calls} calls${r.usage.blocked ? ` (${r.usage.blocked} more blocked by EVAL_MAX_CALLS)` : ''}, ${r.seconds} s`);
     }
@@ -235,6 +251,7 @@ for (const r of out.recordings) {
 console.log('\nPer system: planted habits found, false positives on clean controls, model calls');
 for (const [name, s] of Object.entries(out.summary)) console.log(`  ${name.padEnd(15)} found ${s.plantedFound}, false positives ${s.falsePositives}${s.noResult ? `, ${s.noResult} with no result` : ''}, ${s.calls} calls, ${s.seconds} s`);
 for (const r of out.recordings) for (const [name, s] of Object.entries(r.systems)) if (s.scanRecall) console.log(`Scan vs hand labels (${name}, ${path.basename(r.file)}): kills ${s.scanRecall.kills.found}, deaths ${s.scanRecall.deaths.found}; not real: ${[...s.scanRecall.kills.extra.map((t) => `${t} kill`), ...s.scanRecall.deaths.extra.map((t) => `${t} death`)].join(', ') || 'none'}`);
+for (const r of out.recordings) for (const [name, s] of Object.entries(r.systems)) if (s.killfeedScore) console.log(`Kill feed vs hand labels (${name}, ${path.basename(r.file)}): found ${s.killfeedScore.found}, teams right ${s.killfeedScore.teamsRight}; not real: ${s.killfeedScore.notReal.join(', ') || 'none'}`);
 if (SYSTEMS.includes('agent')) console.log('\nAgent tool sequences');
 for (const r of out.recordings) if (r.systems.agent) console.log(`  ${path.basename(r.file)}: ${compact(r.systems.agent.steps.filter((s) => !s.error).map((s) => s.name)) || '(none)'}`);
 const models = Object.entries(out.totals.models).map(([m, k]) => `${m} x${k}`).join(', ');

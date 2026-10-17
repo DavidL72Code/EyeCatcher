@@ -30,7 +30,7 @@ The second form runs only the recordings whose file name contains `dm-crosshair`
 { "file": "recordings/dm-crosshair-low-1.mp4", "plantedHabit": "crosshair_low", "note": "Ascent DM, aimed at the floor all game" }
 ```
 
-`truth` is optional. It points at a JSON file with `duels: [{ "t": seconds }]`, and with it the table shows how many cited moments fall within 2 s of a real duel. Add `kills` and `deaths` (lists of seconds) and the run also scores the scan against them. `game` is optional too and defaults to `valorant`.
+`truth` is optional. It points at a JSON file with `duels: [{ "t": seconds }]`, and with it the table shows how many cited moments fall within 2 s of a real duel. Add `kills` and `deaths` (lists of seconds) and the run also scores the scan against them. Add `killfeed`, as `{ "window": [from, to], "events": [{ "t", "killer", "killerTeam", "victim", "victimTeam" }] }` with teams `ally` or `enemy`, and it scores every kill-feed line in the window: found within 3 s, and whether both teams came out right. `game` is optional too and defaults to `valorant`.
 
 To label a recording by hand, `frames.mjs` makes contact sheets:
 

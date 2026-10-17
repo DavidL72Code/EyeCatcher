@@ -12,6 +12,7 @@
   --pen-ink: #1a1500;
   --death: #ff6a52;
   --kill: #dfe6ee;
+  --ally: #4fc7ad;
   --display: 'Big Shoulders Display', 'Arial Narrow', sans-serif;
   --mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
   --sans: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
@@ -71,7 +72,7 @@ img { display: block; max-width: 100%; }
 .drop:hover .reticle, .drop.over .reticle { stroke: var(--pen); transform: rotate(45deg); }
 .drop:focus-within { outline: 2px solid var(--pen); outline-offset: 3px; }
 
-.setup { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 12px; margin-top: 14px; }
+.setup { display: grid; grid-template-columns: 180px 220px minmax(0, 1fr); gap: 12px; margin-top: 14px; }
 .field { display: grid; gap: 6px; }
 .field > span { font-size: 13px; color: var(--muted); font-weight: 600; }
 .field input, .field select { height: 48px; padding: 0 14px; border-radius: var(--r-sm); border: 1px solid var(--line); background: var(--panel); outline: none; transition: border-color 0.15s; }
@@ -102,6 +103,7 @@ img { display: block; max-width: 100%; }
 .tick { position: absolute; width: 2px; margin-left: -1px; border-radius: 2px; }
 .tick.kill { top: 22%; bottom: 50%; background: var(--kill); }
 .tick.death { top: 50%; bottom: 20%; background: var(--death); }
+.tick.ally { top: 50%; bottom: 36%; background: var(--ally); opacity: 0.85; }
 .tick.kill::after, .tick.death::after { content: ''; position: absolute; left: -2px; width: 6px; height: 6px; border-radius: 50%; background: inherit; }
 .tick.kill::after { top: -3px; }
 .tick.death::after { bottom: -3px; }
@@ -124,6 +126,7 @@ img { display: block; max-width: 100%; }
 .legend li::before { content: ''; width: 10px; height: 10px; border-radius: 50%; }
 .legend .k-death::before { background: var(--death); }
 .legend .k-kill::before { background: var(--kill); }
+.legend .k-ally::before { background: var(--ally); }
 .legend .k-look::before { border-radius: 2px; border: 2px solid var(--pen); background: var(--pen-soft); }
 
 /* ---------- rail ---------- */

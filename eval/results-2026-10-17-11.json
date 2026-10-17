@@ -1,0 +1,594 @@
+{
+  "started": "2026-10-17T22:34:58.005Z",
+  "budget": {
+    "looks": 30,
+    "turns": 30
+  },
+  "maxCallsPerRecording": 80,
+  "recordings": [
+    {
+      "file": "recordings/yt-vyse-ascent.mov",
+      "plantedHabit": null,
+      "systems": {
+        "agent": {
+          "found": false,
+          "habitId": "other",
+          "habit": "",
+          "why": "Not enough direct enemy-visible gunfight moments with measurable crosshair positions to conclusively prove a single recurring habit across three separate engagements.",
+          "stopped": false,
+          "confidence": "low",
+          "evidence": [],
+          "contrast": [],
+          "aim": {
+            "n": 2,
+            "heads": -0.37,
+            "dyDeg": -0.18,
+            "atHead": 0,
+            "bands": {
+              "above": 1,
+              "low": 1
+            }
+          },
+          "measures": [
+            {
+              "t": 84,
+              "heads": -3.37,
+              "band": "above",
+              "headPx": 5.7,
+              "box": [
+                539,
+                485,
+                553,
+                500
+              ]
+            },
+            {
+              "t": 83.5,
+              "heads": 2.62,
+              "band": "low",
+              "headPx": 6.1,
+              "box": [
+                452,
+                472,
+                467,
+                485
+              ]
+            }
+          ],
+          "looks": 9,
+          "turns": 14,
+          "events": [
+            {
+              "t": 3,
+              "kind": "round_start"
+            },
+            {
+              "t": 84,
+              "kind": "death",
+              "killer": "Im Muted",
+              "victim": "Omen",
+              "killerTeam": "ally",
+              "victimTeam": "ally"
+            },
+            {
+              "t": 140,
+              "kind": "round_end"
+            },
+            {
+              "t": 152,
+              "kind": "round_start"
+            },
+            {
+              "t": 223,
+              "kind": "round_end"
+            },
+            {
+              "t": 225,
+              "kind": "round_start"
+            },
+            {
+              "t": 399,
+              "kind": "round_end"
+            },
+            {
+              "t": 409,
+              "kind": "round_start"
+            },
+            {
+              "t": 484,
+              "kind": "round_end"
+            },
+            {
+              "t": 487,
+              "kind": "round_start"
+            },
+            {
+              "t": 610,
+              "kind": "round_end"
+            },
+            {
+              "t": 617,
+              "kind": "round_start"
+            },
+            {
+              "t": 739,
+              "kind": "round_end"
+            },
+            {
+              "t": 746,
+              "kind": "round_start"
+            },
+            {
+              "t": 788,
+              "kind": "other",
+              "killer": "Sage",
+              "victim": "Febera",
+              "killerTeam": null,
+              "victimTeam": null
+            },
+            {
+              "t": 788,
+              "kind": "ally_death",
+              "killer": "Rumpeistillskin",
+              "victim": "Sage",
+              "killerTeam": "ally",
+              "victimTeam": "ally"
+            },
+            {
+              "t": 804,
+              "kind": "kill",
+              "killer": "Omen",
+              "victim": "Omen",
+              "killerTeam": "ally",
+              "victimTeam": "ally"
+            },
+            {
+              "t": 808,
+              "kind": "other",
+              "killer": "Sova",
+              "victim": "ZedCapetinha",
+              "killerTeam": "enemy",
+              "victimTeam": "enemy"
+            },
+            {
+              "t": 813,
+              "kind": "round_end"
+            },
+            {
+              "t": 821,
+              "kind": "round_start"
+            }
+          ],
+          "theories": "T1 supported: Crosshair sits low when turning corners and engaging enemies (1:24, 1:23)",
+          "asks": [],
+          "rejected": [
+            [
+              "1:24 is the same moment as other evidence.",
+              "Cite at least 3 separate moments you looked at that show the habit (you have 1). Moments where they got it right go in contrast, not evidence. If fewer than 3 moments show it, finish with found false.",
+              "Crosshair height can be measured, so back this with at least 3 measure_aim readings where an enemy was in view (you have 2). Or name a different habit, or none.",
+              "At 1:23 you measured the crosshair at head level (-3.37 heads), so that moment doesn't show this habit."
+            ]
+          ],
+          "steps": [
+            {
+              "name": "scan",
+              "args": "{\"from\":\"0:00\",\"to\":\"14:10\"}"
+            },
+            {
+              "name": "measure_aim",
+              "args": "{\"at\":\"1:24\"}"
+            },
+            {
+              "name": "measure_aim",
+              "args": "{\"at\":\"1:23.5\"}"
+            },
+            {
+              "name": "measure_aim",
+              "args": "{\"at\":\"13:24\"}"
+            },
+            {
+              "name": "measure_aim",
+              "args": "{\"at\":\"13:23.5\"}"
+            },
+            {
+              "name": "frames",
+              "args": "{\"at\":\"13:23.5\",\"region\":\"aim\"}"
+            },
+            {
+              "name": "note",
+              "args": "{\"status\":\"testing\",\"id\":\"T1\",\"theory\":\"Crosshair sits low when turning corners and engaging enemies\",\"evidence\":[{\"t\":\"1:24\",\"what\":\"Crosshair placed well belo"
+            },
+            {
+              "name": "frames",
+              "args": "{\"region\":\"aim\",\"at\":\"1:23.0\"}"
+            },
+            {
+              "name": "note",
+              "args": "{\"status\":\"supported\",\"id\":\"T1\",\"evidence\":[{\"t\":\"1:23\",\"what\":\"Crosshair aimed at ground/wall level when holding angle before enemy appears\"}],\"theory\":\"Crossh"
+            },
+            {
+              "name": "frames",
+              "args": "{\"region\":\"aim\",\"at\":\"13:21.0\"}"
+            },
+            {
+              "name": "finish",
+              "args": "{\"contrast\":[{\"t\":\"13:21\",\"what\":\"Holding crosshair lower on wall before engagement\"}],\"habit\":\"Crosshair sits below head level when holding angles and taking d"
+            },
+            {
+              "name": "measure_aim",
+              "args": "{\"at\":\"13:22.5\"}"
+            },
+            {
+              "name": "measure_aim",
+              "args": "{\"at\":\"13:21.5\"}"
+            },
+            {
+              "name": "finish",
+              "args": "{\"found\":false,\"why\":\"Not enough direct enemy-visible gunfight moments with measurable crosshair positions to conclusively prove a single recurring habit across"
+            }
+          ],
+          "seconds": 88.6,
+          "usage": {
+            "calls": 23,
+            "polls": 0,
+            "files": 0,
+            "rateLimited": 1,
+            "failed": 0,
+            "blocked": 0,
+            "models": {
+              "gemini-3.5-flash-lite": 23
+            }
+          },
+          "score": {
+            "verdict": "clean",
+            "falsePositive": false,
+            "counted": true
+          },
+          "evidenceOnDuels": null,
+          "scanRecall": {
+            "kills": {
+              "found": "0/9",
+              "extra": [
+                "13:24"
+              ]
+            },
+            "deaths": {
+              "found": "0/6",
+              "extra": [
+                "1:24"
+              ]
+            }
+          },
+          "killfeedScore": {
+            "found": "1/41",
+            "teamsRight": "0/1",
+            "notReal": []
+          }
+        },
+        "pipeline": {
+          "found": false,
+          "habitId": null,
+          "evidence": [],
+          "aim": null,
+          "measures": [],
+          "deaths": 0,
+          "looks": 0,
+          "events": [
+            {
+              "t": 1,
+              "kind": "round_start"
+            },
+            {
+              "t": 150,
+              "kind": "round_end"
+            },
+            {
+              "t": 152,
+              "kind": "round_start"
+            },
+            {
+              "t": 222,
+              "kind": "round_end"
+            },
+            {
+              "t": 225,
+              "kind": "round_start"
+            },
+            {
+              "t": 400,
+              "kind": "round_end"
+            },
+            {
+              "t": 407,
+              "kind": "round_start"
+            },
+            {
+              "t": 485,
+              "kind": "round_end"
+            },
+            {
+              "t": 486,
+              "kind": "round_start"
+            },
+            {
+              "t": 611,
+              "kind": "round_end"
+            },
+            {
+              "t": 617,
+              "kind": "round_start"
+            },
+            {
+              "t": 739,
+              "kind": "round_end"
+            },
+            {
+              "t": 746,
+              "kind": "round_start"
+            },
+            {
+              "t": 813,
+              "kind": "round_end"
+            },
+            {
+              "t": 821,
+              "kind": "round_start"
+            },
+            {
+              "t": 84,
+              "kind": "kill",
+              "killer": "Im Muted",
+              "victim": "Omen",
+              "killerTeam": "ally",
+              "victimTeam": "ally"
+            },
+            {
+              "t": 788,
+              "kind": "other",
+              "killer": "Sage",
+              "victim": "Febera",
+              "killerTeam": null,
+              "victimTeam": null
+            },
+            {
+              "t": 788,
+              "kind": "ally_death",
+              "killer": "Rumpelstiltskin",
+              "victim": "Sage",
+              "killerTeam": "ally",
+              "victimTeam": "ally"
+            },
+            {
+              "t": 804,
+              "kind": "other",
+              "killer": "Omen",
+              "victim": "Omen",
+              "killerTeam": "enemy",
+              "victimTeam": "enemy"
+            },
+            {
+              "t": 808,
+              "kind": "other",
+              "killer": "Sova",
+              "victim": "ZedCapetinha",
+              "killerTeam": "enemy",
+              "victimTeam": "enemy"
+            }
+          ],
+          "steps": [
+            {
+              "name": "scan",
+              "args": "{\"from\":\"0:00\",\"to\":\"14:10\"}"
+            }
+          ],
+          "seconds": 15.3,
+          "usage": {
+            "calls": 2,
+            "polls": 0,
+            "files": 0,
+            "rateLimited": 0,
+            "failed": 0,
+            "blocked": 0,
+            "models": {
+              "gemini-3.5-flash-lite": 2
+            }
+          },
+          "score": {
+            "verdict": "clean",
+            "falsePositive": false,
+            "counted": true
+          },
+          "evidenceOnDuels": null,
+          "scanRecall": {
+            "kills": {
+              "found": "2/9",
+              "extra": []
+            },
+            "deaths": {
+              "found": "0/6",
+              "extra": []
+            }
+          },
+          "killfeedScore": {
+            "found": "1/41",
+            "teamsRight": "0/1",
+            "notReal": []
+          }
+        },
+        "gemini-agentic": {
+          "model": "gemini-3.5-flash-lite",
+          "status": "completed",
+          "id": "v1_Chd0X2pUYXB5MU1NMk4xc2dQamFIdGlBcxIXdF9qVGFweTFNTTJOMXNnUGphSHRpQXM",
+          "requests": {
+            "create": 1,
+            "polls": 3
+          },
+          "tokens": {
+            "total_tokens": 58341,
+            "total_input_tokens": 581,
+            "input_tokens_by_modality": [
+              {
+                "modality": "text",
+                "tokens": 581
+              }
+            ],
+            "total_cached_tokens": 0,
+            "total_output_tokens": 310,
+            "total_tool_use_tokens": 57450,
+            "tool_use_tokens_by_modality": [
+              {
+                "modality": "video",
+                "tokens": 56166
+              },
+              {
+                "modality": "text",
+                "tokens": 1284
+              }
+            ],
+            "total_thought_tokens": 0
+          },
+          "looks": 2,
+          "stepTypes": [
+            "user_input",
+            "processing_call",
+            "processing_result",
+            "processing_call",
+            "processing_result",
+            "thought",
+            "model_output"
+          ],
+          "steps": [
+            {
+              "type": "user_input",
+              "content": [
+                {
+                  "uri": "https://generativelanguage.googleapis.com/v1beta/files/cmaw8idgkqr4",
+                  "mime_type": "video/webm",
+                  "type": "video",
+                  "processing": "agentic"
+                },
+                {
+                  "text": "This is a recording of one Valorant match from the player's own screen (a small silent copy), 14:10 long. Find the one habit that cost this player the most fights, and prove it with moments from the video. If no single habit stands out, say so: a wrong diagnosis is worse than none.\n\nHow Valorant looks on screen:\n- The crosshair is always at the screen center.\n- The kill feed (top right) lists kill…",
+                  "type": "text"
+                }
+              ]
+            },
+            {
+              "id": "call_2492705",
+              "type": "processing_call"
+            },
+            {
+              "call_id": "call_2492705",
+              "type": "processing_result"
+            },
+            {
+              "id": "call_2492720",
+              "type": "processing_call"
+            },
+            {
+              "call_id": "call_2492720",
+              "type": "processing_result"
+            },
+            {
+              "type": "thought"
+            },
+            {
+              "content": [
+                {
+                  "text": "```json\n{\n  \"found\": true,\n  \"habit_id\": \"crosshair_low\",\n  \"habit\": \"Crosshair below head level\",\n  \"why\": \"Throughout the match, the player consistently maintains their crosshair at chest or lower height while holding angles and moving around corners. When enemies suddenly appear, this forces a vertical flick to land headshots, causing the player to lose crucial milliseconds in gunfights.\",\n  \"e…",
+                  "type": "text"
+                }
+              ],
+              "type": "model_output"
+            }
+          ],
+          "errors": null,
+          "found": true,
+          "habitId": "crosshair_low",
+          "habit": "Crosshair below head level",
+          "why": "Throughout the match, the player consistently maintains their crosshair at chest or lower height while holding angles and moving around corners. When enemies suddenly appear, this forces a vertical flick to land headshots, causing the player to lose crucial milliseconds in gunfights.",
+          "evidence": [
+            {
+              "t": 211,
+              "what": "The player holds an angle with the crosshair pointed significantly below head level as the enemy appears."
+            },
+            {
+              "t": 475,
+              "what": "The player peeks/holds an angle with the crosshair sitting near chest height, requiring an upward adjustment during the fight."
+            },
+            {
+              "t": 560,
+              "what": "The player holds an angle with the crosshair positioned low against the wall, below head height."
+            }
+          ],
+          "text": "```json\n{\n  \"found\": true,\n  \"habit_id\": \"crosshair_low\",\n  \"habit\": \"Crosshair below head level\",\n  \"why\": \"Throughout the match, the player consistently maintains their crosshair at chest or lower height while holding angles and moving around corners. When enemies suddenly appear, this forces a vertical flick to land headshots, causing the player to lose crucial milliseconds in gunfights.\",\n  \"evidence\": [\n    {\n      \"t\": \"03:31\",\n      \"what\": \"The player holds an angle with the crosshair pointed significantly below head level as the enemy appears.\"\n    },\n    {\n      \"t\": \"07:55\",\n      \"what\": \"The player peeks/holds an angle with the crosshair sitting near chest height, requiring an upward adjustment during the fight.\"\n    },\n    {\n      \"t\": \"09:20\",\n      \"what\": \"The player holds an angle with the crosshair positioned low against the wall, below head height.\"\n    }\n  ]\n}\n```",
+          "seconds": 18.6,
+          "usage": {
+            "calls": 1,
+            "polls": 3,
+            "files": 0,
+            "rateLimited": 0,
+            "failed": 0,
+            "blocked": 0,
+            "models": {
+              "gemini-3.5-flash-lite": 1
+            }
+          },
+          "score": {
+            "verdict": "false positive: crosshair_low",
+            "falsePositive": true,
+            "counted": true
+          },
+          "evidenceOnDuels": "2/3"
+        }
+      },
+      "setup": {
+        "duration": 850.5,
+        "size": "1290x726",
+        "proxyMb": 27.13,
+        "proxySeconds": 25.8,
+        "uploadSeconds": 34.5,
+        "usage": {
+          "calls": 0,
+          "polls": 0,
+          "files": 8,
+          "rateLimited": 0,
+          "failed": 0,
+          "blocked": 0,
+          "models": {}
+        }
+      }
+    }
+  ],
+  "finished": "2026-10-17T22:38:02.719Z",
+  "summary": {
+    "agent": {
+      "plantedFound": "0/0",
+      "falsePositives": "0/1",
+      "noResult": 0,
+      "calls": 23,
+      "seconds": 88.6
+    },
+    "pipeline": {
+      "plantedFound": "0/0",
+      "falsePositives": "0/1",
+      "noResult": 0,
+      "calls": 2,
+      "seconds": 15.3
+    },
+    "gemini-agentic": {
+      "plantedFound": "0/0",
+      "falsePositives": "1/1",
+      "noResult": 0,
+      "calls": 1,
+      "seconds": 18.6
+    }
+  },
+  "totals": {
+    "modelCalls": 26,
+    "uploadRequests": 8,
+    "models": {
+      "gemini-3.5-flash-lite": 26
+    }
+  }
+}

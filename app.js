@@ -4,7 +4,7 @@
 (function () {
   const G = window.Gemini, C = window.ThirdeyeCore, V = window.ThirdeyeVideo, A = window.ThirdeyeAgent;
   G.preferEnv = true;
-  const STORE = 'thirdeye.v1', UPLOADS = 'thirdeye.uploads';
+  const STORE = 'thirdeye.v1', UPLOADS = 'thirdeye.uploads', NAME = 'thirdeye.player';
   const BUDGET = { looks: 30, turns: 30 };
   const REGION_NAMES = { aim: 'aim area', killfeed: 'kill feed', minimap: 'minimap', scoreboard: 'scoreboard', health: 'health bar' };
   const PROGRESS = { better: 'better than before', same: 'about the same as before', worse: 'worse than before', unclear: "couldn't tell this match" };
@@ -80,7 +80,9 @@
     const game = await profile($('game').value);
     $('start').hidden = true;
     $('review').hidden = false;
-    run = { id: uid(), file, game, goal: $('goal').value.trim(), workingOn: history.habit, abort: new AbortController(), steps: [], looks: 0, turns: 0 };
+    const player = $('playerName').value.trim();
+    write(NAME, player);
+    run = { id: uid(), file, game, goal: $('goal').value.trim(), player, workingOn: history.habit, abort: new AbortController(), steps: [], looks: 0, turns: 0 };
     resetReview();
     if (vid.src) URL.revokeObjectURL(vid.src);
     vid.src = URL.createObjectURL(file);
@@ -92,7 +94,7 @@
       drawMeter();
       setStatus('Deciding where to look');
       const result = await A.review({
-        video: run.video, file: run.scanFile, profile: game, history, goal: run.goal, budget: C.createBudget(BUDGET),
+        video: run.video, file: run.scanFile, profile: game, history, goal: run.goal, player: run.player || null, budget: C.createBudget(BUDGET),
         ask, onEvent, onStep, signal: run.abort.signal,
         onNotice: (n) => setStatus(n, '', ''),
       });
@@ -127,7 +129,7 @@
   }
 
   const LINES = {
-    scan: (a) => `Scanning ${a.from}–${a.to}`,
+    scan: (a) => `Reading the kill feed ${a.from}–${a.to}`,
     frames: (a) => `Looking at ${a.at}${a.region && a.region !== 'full' ? `, ${REGION_NAMES[a.region] || a.region}` : ''}`,
     measure_aim: (a) => `Measuring aim at ${a.at}`,
     ask_player: () => 'Waiting for you',
@@ -144,6 +146,7 @@
   }
 
   function onEvent(e) {
+    if (e.type === 'scanning' && e.progress != null) setStatus(`Reading the kill feed ${C.mmss(e.from)}–${C.mmss(e.to)}`, '', `${Math.round(e.progress * 100)}%`);
     if (e.type === 'scan') { drawEvents(e.events); addMark('scanned', e.from, e.to); }
     if (e.type === 'look') { run.looks++; addMark(e.kind === 'measure' ? 'look measure' : 'look', e.from, e.to); moveEye((e.from + e.to) / 2); drawMeter(); }
     if (e.type === 'frames') showStrip(e.frames);
@@ -180,11 +183,11 @@
       rounds.append(el);
     });
     track.prepend(rounds);
-    for (const e of events.filter((x) => x.kind === 'kill' || x.kind === 'death')) {
+    for (const e of events.filter((x) => ['kill', 'death', 'ally_death'].includes(x.kind))) {
       const el = document.createElement('div');
-      el.className = `tick ${e.kind}`;
+      el.className = `tick ${e.kind === 'ally_death' ? 'ally' : e.kind}`;
       el.style.left = pct(e.t);
-      el.title = `${C.mmss(e.t)} ${e.kind}${e.text ? `: ${e.text}` : ''}`;
+      el.title = `${C.mmss(e.t)} ${e.text || e.kind}`;
       track.append(el);
     }
   }
@@ -348,6 +351,7 @@
   $('history').addEventListener('click', (e) => { if (e.target.closest('[data-close]') || e.target === $('history')) $('history').close(); });
   $('stopBtn').addEventListener('click', () => run?.abort.abort());
 
+  $('playerName').value = read(NAME, '');
   penStroke(document.querySelector('.start .pen'));
   renderStart();
 })();

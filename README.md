@@ -24,12 +24,22 @@ The coach gets a goal, its tools and what each costs, a budget, the game profile
 
 | Tool | What it does | Cost |
 |---|---|---|
-| `scan` | A separate Gemini call watches a stretch of the copy and lists kills, deaths, and rounds with times. The video never enters the coach's own context. | ~66 tokens per second watched, 0 looks |
+| `scan` | Reads every kill-feed line in a stretch from the full-quality recording: the player's kills and deaths, and teammates' too, with each side's team and whether each death was traded within 5 s. A low-detail pass over the scan copy adds round starts. The video never enters the coach's own context. | About 1 call per 12 new kill-feed lines, plus 1; 0 looks |
 | `frames` | Grabs up to 12 frames around a moment from the full-quality recording, of the whole screen or a region (aim area, kill feed, minimap). The coach sees them for one turn; after that they're swapped for a note. | 1 look |
 | `measure_aim` | Gemini boxes the enemy head nearest the crosshair. Code turns that into head-heights and degrees using the game's FOV. | 1 look |
 | `ask_player` | One question about a moment, for what video can't show. The app plays the moment and the player taps an answer. At most 3 per review. | Waits for the player |
 | `note` | Puts a theory on the board the player watches: testing, supported, or dropped. | Free |
 | `finish` | Ends the review with one habit, or with "no single habit stood out". | Checked in code |
+
+### Reading the kill feed
+
+It's a team game, so the coach needs every kill, not just the player's own. The low-detail scan copy can't show that: at 640 px the kill feed is a smear, and it found only 1 to 4 of 9 kills. So `scan` reads the kill feed from the original recording:
+
+1. **Rows.** Code samples the kill-feed corner once a second and reads its rows on the game's grid (`killfeedGrid` in the profile). A slot holds a row when it's mostly team color and has white name text, so a red wall or a teal ability flash doesn't count.
+2. **Teams.** Code reads each row's teams from pixels, starting at the right edge, past the victim's portrait: the first color is the victim's team (teal for the player's side, red for the enemy) and the next different color is the killer's. The game draws the victim's end in a muted shade, so muted color counts inside a row. A row that reads as one team on both ends gets no sides, since the background must have shown through.
+3. **Names.** Only crops with a row code hasn't seen go to Gemini, 12 to a call, and Gemini reads the names. Gemini is good at names but mixed up the team colors in about half the rows, so the teams come from code. Names and colors are matched from the bottom of the feed, since faded rows at the top are the ones Gemini skips.
+4. **Events.** Code turns the readings into an event log. Repeated sightings become one event. A death counts as traded when the killer dies within 5 s. When a reading comes out as one team on both sides, the names' other kills settle it. A name that appears on both teams (both can pick Omen) is never trusted this way.
+5. **Who the player is.** It's the name typed on the start screen. Without one, it's the victim the kill feed names at the player's own deaths, which the low-detail pass catches from the "Killed by" panel. A first version used the yellow marker on the player's rows instead, and it picked Killjoy, whose portrait is yellow.
 
 ### What code enforces
 
@@ -64,8 +74,8 @@ Adding a game means writing a profile in `games/`; the code doesn't change.
 
 | Command | What it runs | Result (Oct 16, 2026) |
 |---|---|---|
-| `npm run test:unit` | 21 unit tests: aim geometry, the finish checks, the theory board, events, history, and how the agent loop handles pictures | 21 pass |
-| `npm run test:e2e` | 35 checks in Chrome on the synthetic match, with Gemini and the Files API mocked: upload, scan, timeline, questions, the finish checks, the verdict, the re-check against a baseline, and a phone-width layout | 35 pass |
+| `npm run test:unit` | 32 unit tests: aim geometry, the finish checks, the theory board, events, the kill-feed reader (rows on the grid, portraits, walls and flashes, new rows, names, teams, trades, finding the player), history, and how the agent loop handles pictures | 32 pass |
+| `npm run test:e2e` | 36 checks in Chrome on the synthetic match, with Gemini and the Files API mocked: upload, scan, timeline, questions, the finish checks, the verdict, the re-check against a baseline, and a phone-width layout | 36 pass |
 | `npm run test:live` | The real pipeline on the synthetic match, about 25 requests | Below |
 
 **Live check on the synthetic match** (one run, 720p at 30 fps, 150 s):
@@ -81,6 +91,12 @@ These numbers come from drawn shapes, not game footage.
 - **Scan:** found 4 of 6 deaths, but only 1 to 4 of 9 kills per run. Two frames a second and higher image detail didn't help.
 - **Head boxes:** landed on the right head whenever an enemy was in view. Gemini once boxed a wall mark as a head, so it now has to return each head with its body, and code drops heads that aren't on a body.
 - **Verdicts:** nothing usable yet. Across three runs the agent named three different habits (crosshair low, peeking wide, shooting while moving), and a frame-by-frame check supports none of them. Twice it measured, saw the crosshair at head level, and dropped that theory. Gemini's agentic mode said "crosshair low" every time, against the measurements. The fixed pipeline mostly measured empty or point-blank frames.
+
+**Kill feed on the same footage.** I labeled every kill-feed line from 0:00 to 10:00 by hand: 41 events, most of them teammates'. Each full 14-minute scan costs about 15 model calls and 1 to 2 minutes.
+- **Lines found:** all 41 in each of the last three full-match runs, against 1 to 4 of the player's 9 kills before the reader existed. The first version found 22 of 22 and 19 of 19 on two stretches, but it only worked because the team checks covered for rows it merged; on the full match it picked the wrong player.
+- **Player's own fights:** when the player was identified correctly, the scan found all 9 kills and all 6 deaths.
+- **Teams:** 37 of 41 right in the best run. All four misses were teammate Febera's deaths: her portrait at the end of the row reads as the enemy color. The reader now skips the portrait, and those frames read correctly.
+- **Who the player is:** wrong in two of four full-match runs, first Killjoy (a yellow portrait), then the allied Omen (two Omens, plus a teammate's death taken for the player's). The current rule counts only teammates and combines yellow marks with the player's death screens. It passes the unit tests, but the live check ran out of Gemini's free daily quota. **Not verified on the real match yet.** Typing your in-game name on the start screen skips the guess.
 
 **Next test:** a recording with a habit played on purpose, to see whether a strong habit gets caught.
 

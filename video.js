@@ -52,6 +52,25 @@
   }
 
   /**
+   * Calls onFrame({ t, canvas, w, h }) for the frame at each time, in time order, without keeping them: for passes
+   * over many frames, like reading the kill feed. crop and maxDim work as in grab.
+   */
+  async function each(v, times, { crop, maxDim = 768, signal } = {}, onFrame) {
+    const M = await lib();
+    const c = crop || { x: 0, y: 0, w: v.width, h: v.height };
+    const scale = Math.min(1, maxDim / Math.max(c.w, c.h));
+    const w = Math.max(2, Math.round(c.w * scale)), h = Math.max(2, Math.round(c.h * scale));
+    const sink = new M.CanvasSink(v.track, { crop: { left: c.x, top: c.y, width: c.w, height: c.h }, width: w, height: h, fit: 'fill', poolSize: 2 });
+    const sorted = [...times].sort((a, b) => a - b);
+    let i = 0;
+    for await (const wc of sink.canvasesAtTimestamps(sorted.map((t) => v.start + t))) {
+      if (signal?.aborted) throw stopped();
+      const t = sorted[i++];
+      if (wc) await onFrame({ t, canvas: wc.canvas, w, h });
+    }
+  }
+
+  /**
    * The small silent copy Gemini scans: 640 px wide at 2 frames a second, VP8 in WebM, timed like the recording so
    * a time Gemini reports is a time in the match. onProgress(fraction) as it goes.
    */
@@ -116,5 +135,5 @@
     return { uri: file.uri, mimeType: file.mimeType, name: file.name };
   }
 
-  root.ThirdeyeVideo = { open, grab, makeProxy, upload, toJpeg };
+  root.ThirdeyeVideo = { open, grab, each, makeProxy, upload, toJpeg };
 })(window);

@@ -24,6 +24,78 @@ kind: kill (the player killed someone), death (the player died), round_start, ro
     return C.normalizeEvents(G.parseJSON(G.textOf(resp)).events, { from, to });
   }
 
+  const FEED = { type: 'object', properties: { tiles: { type: 'array', items: { type: 'object', properties: { tile: { type: 'integer' }, rows: { type: 'array', items: { type: 'object', properties: { killer: str('the name on the left'), victim: str('the name on the right'), yellow_border: { type: 'boolean' } }, required: ['killer', 'victim'] } } }, required: ['tile', 'rows'] } } }, required: ['tiles'] };
+  const FEED_PER_CALL = 12;
+
+  // Up to 12 kill-feed crops in one picture, three across, each labeled with its number.
+  async function feedMosaic(batch) {
+    const { w, h } = batch[0], cols = Math.min(3, batch.length), label = 26;
+    const c = new OffscreenCanvas(cols * w, Math.ceil(batch.length / cols) * (h + label)), g = c.getContext('2d');
+    g.fillStyle = '#000'; g.fillRect(0, 0, c.width, c.height);
+    g.font = 'bold 20px sans-serif'; g.fillStyle = '#fff';
+    batch.forEach((shot, i) => { const x = (i % cols) * w, y = Math.floor(i / cols) * (h + label); g.fillText(`Tile ${i + 1}`, x + 6, y + 20); g.drawImage(shot.canvas, x, y + label); });
+    return V.toJpeg(c, 0.9);
+  }
+
+  /**
+   * Every kill-feed row in a stretch, read from the full-quality recording: code samples the kill feed once a second,
+   * reads each row's team colors from pixels, and keeps only crops that show a row it hasn't seen; Gemini reads the
+   * names from those, 12 crops to a call. Returns C.buildKillfeed's { player, events }, plus the calls it took.
+   */
+  async function readKillfeed({ video, profile, from, to, signal, onNotice, onProgress }) {
+    const crop = C.regionRect(profile, 'killfeed', { w: video.width, h: video.height });
+    const times = [];
+    for (let t = from; t <= to; t += 1) times.push(t);
+    const picked = [];
+    let prev = [];
+    await V.each(video, times, { crop, maxDim: 2000, signal }, ({ t, canvas, w, h }) => {
+      const rows = C.killfeedRows(canvas.getContext('2d').getImageData(0, 0, w, h), { colors: profile.killfeedColors, grid: profile.killfeedGrid });
+      if (rows.length && C.hasNewRow(prev, rows)) {
+        const copy = new OffscreenCanvas(w, h); // the sink reuses its canvases
+        copy.getContext('2d').drawImage(canvas, 0, 0);
+        picked.push({ t, rows, canvas: copy, w, h });
+      }
+      prev = rows;
+    });
+    const batches = [];
+    for (let k = 0; k < picked.length; k += FEED_PER_CALL) batches.push(picked.slice(k, k + FEED_PER_CALL));
+    const sightings = [];
+    let done = 0;
+    const read = async (batch) => {
+      const img = await feedMosaic(batch);
+      const resp = await G.generate({
+        contents: [{ role: 'user', parts: [{ inlineData: { mimeType: img.mimeType, data: img.data } }, { text: `Each numbered tile is the kill feed from the top right of a ${profile.name} screen. Each row reads: killer name, weapon, victim name. Transcribe every row of every tile, top to bottom, copying names exactly. yellow_border: the row is marked as the player's own with a yellow chevron or outline; a yellow character portrait doesn't count. Skip rows too faded to read.` }] }],
+        generationConfig: { temperature: 0, responseMimeType: 'application/json', responseSchema: FEED, mediaResolution: 'MEDIA_RESOLUTION_HIGH' },
+      }, { signal, onNotice });
+      for (const tile of G.parseJSON(G.textOf(resp)).tiles || []) {
+        const shot = batch[tile.tile - 1];
+        if (shot) sightings.push(...C.feedSightings(shot.t, tile.rows, shot.rows));
+      }
+      onProgress?.(++done / batches.length);
+    };
+    for (let k = 0; k < batches.length; k += 3) await Promise.all(batches.slice(k, k + 3).map(read)); // three at a time
+    return { sightings, calls: batches.length };
+  }
+
+  /**
+   * The record of fights in a stretch: the kill feed, read in full (readKillfeed), plus round starts from a low-detail
+   * pass over the scan copy. The player is the name they typed, or C.choosePlayer's pick from the yellow-marked rows and
+   * the deaths the low-detail pass sees. If the kill feed can't be read (another HUD or game), the low-detail pass's own
+   * fights stand in.
+   */
+  async function fightLog({ video, file, profile, from, to, player: known, signal, onNotice, onProgress }) {
+    const [quick, feed] = await Promise.all([
+      scanVideo({ file, profile, from, to, signal, onNotice }),
+      readKillfeed({ video, profile, from, to, signal, onNotice, onProgress }),
+    ]);
+    const rounds = quick.filter((e) => /^round_/.test(e.kind));
+    const draft = C.buildKillfeed(feed.sightings, { player: '\u0000' }); // teams from pixels alone, before anyone is the player
+    const player = known || C.choosePlayer(draft.events, feed.sightings, quick.filter((e) => e.kind === 'death').map((e) => e.t));
+    const { events } = C.buildKillfeed(feed.sightings, { player });
+    const fromFeed = events.length > 0;
+    return { player, fromFeed, calls: feed.calls + 1, events: [...rounds, ...(fromFeed ? events : quick.filter((e) => !/^round_/.test(e.kind)))] };
+  }
+
   // Gemini only draws the boxes; code keeps the heads that sit on a body and picks the one nearest the crosshair, and
   // the geometry is code too (C.aimOffset).
   async function findHead(image, { signal, onNotice }) {
@@ -44,14 +116,16 @@ kind: kill (the player killed someone), death (the player died), round_start, ro
 You can't see the match until you look. It is ${C.mmss(video.duration)} long, timed M:SS from 0:00.
 
 Tools and what they cost:
-- scan: a separate, fast, low-detail viewer lists kills, deaths, and rounds with times for any stretch you choose. About ${SCAN_TOKENS_PER_SECOND} tokens per second of video and no looks, but it can misread or miss kill-feed lines.
+- scan: reads the whole kill feed of any stretch you choose from the full-quality recording: the player's kills and deaths, and teammates' too, with each side's team and whether each death was traded within 5 s. A low-detail pass adds round starts. No looks; about one model call per 12 new kill-feed lines, plus one.
 - frames: up to ${C.MAX_FRAMES} full-quality frames around one moment, of the whole screen or one region (${regions}). 1 look. The pictures are removed after your next turn, so put what matters on the board with note.
-- measure_aim: code measures how far the crosshair was from the nearest enemy head at one moment, in head-heights (0 = on the head, 2 = chest height) and degrees. 1 look. The player can trust a measured number; a height judged by eye from frames is a guess. It only means something at the moment an enemy first becomes visible.
+- measure_aim: code measures how far the crosshair was from the nearest enemy head, in head-heights (0 = on the head, 2 = chest height) and degrees, at one moment or up to 6 in one call. 1 look per moment. The player can trust a measured number; a height judged by eye from frames is a guess. It only means something at the moment an enemy first becomes visible.
 - ask_player: one short question about a moment, for what video can't show, like whether they expected an enemy there. The app plays that moment for them. At most ${MAX_ASKS} per review.
 - note: puts a theory on the board the player watches (testing, supported, or dropped) with the moments behind it.
 - finish: ends the review. evidence holds only moments that show the habit; moments where they got it right go in contrast, which the player sees too. Code hands it back if any moment wasn't looked at closely (frames or measure_aim), or if fewer than ${C.MIN_EVIDENCE} separate moments show the habit, and once if you never looked at a fight they won.
 
 Budget: ${budget.looks} looks and ${budget.turns} turns. A turn is one model call from a small daily allowance; every tool result says what's left. Running out before finish wastes the review. Call a tool every turn.
+
+It's a team game. A teammate's death near the player, untraded, can matter as much as the player's own; the minimap region shows where everyone was.
 
 How ${profile.name} looks on screen:
 ${profile.cues.map((c) => `- ${c}`).join('\n')}
@@ -76,8 +150,8 @@ Rules:
    * ask({ question, t, options }) resolves with the player's answer. onEvent streams what the UI draws.
    * Resolves with the finding, or { stopped } when the budget ran out first.
    */
-  async function review({ video, file, profile, history, goal, budget = C.createBudget(), ask, onEvent = () => {}, onStep, onNotice, signal }) {
-    const s = { events: [], scanned: [], board: [], measures: [], ledger: C.createLedger(), asks: 0, scanTokens: 0 };
+  async function review({ video, file, profile, history, goal, player = null, budget = C.createBudget(), ask, onEvent = () => {}, onStep, onNotice, signal }) {
+    const s = { events: [], scanned: [], board: [], measures: [], ledger: C.createLedger(), asks: 0, scanTokens: 0, scanCalls: 0, player };
     const frame = { w: video.width, h: video.height };
     const left = () => C.budgetLine(budget);
     const at = (v) => {
@@ -87,10 +161,30 @@ Rules:
     };
     const look = (from, to, kind, region) => { C.recordLook(s.ledger, { from, to, kind, region }); onEvent({ type: 'look', from, to, kind, region }); };
 
+    // one moment of measure_aim: Gemini boxes the head, code does the geometry and adds what the number can't say
+    async function measureOne(t) {
+      C.spend(budget, 'looks');
+      const crop = C.regionRect(profile, 'aim', frame);
+      const [shot] = await V.grab(video, [t], { crop, maxDim: 1024, quality: 0.9 });
+      look(t, t, 'measure', 'aim');
+      const box = await findHead(shot, { signal, onNotice });
+      if (!box) { onEvent({ type: 'measure', t, found: false, shot }); return { at: C.mmss(t, true), found: false }; }
+      const m = { t, ...C.aimOffset({ box, crop, frame, fovH: profile.fovH, crosshair: profile.crosshair }), box };
+      s.measures.push(m);
+      onEvent({ type: 'measure', t, found: true, measure: m, shot });
+      const warnings = [];
+      if (m.small) warnings.push('The head is tiny on screen, so this is rough.');
+      if (m.headPx > frame.h * 0.06) warnings.push(`The enemy is very close (their head is ${Math.round(m.headPx)} px tall), so crosshair height here says little about placement.`);
+      // the scan times a fight by its kill-feed line, which comes after the moment that shows placement
+      const end = s.events.find((e) => (e.kind === 'kill' || e.kind === 'death') && t >= e.t && t <= e.t + 1.5);
+      if (end) warnings.push(`This is when the kill feed shows the fight ending (${C.mmss(end.t)} ${end.kind}). The enemy usually comes into view 0.3 to 1 s earlier, and that moment shows placement.`);
+      return { at: C.mmss(t, true), found: true, heads: m.heads, up_degrees: m.dyDeg, band: m.band, ...(warnings.length ? { warnings } : {}) };
+    }
+
     const tools = [
       {
         name: 'scan',
-        description: 'Lists kills, deaths, and rounds with M:SS times for a stretch of the match, from a fast, low-detail pass. Costs no looks.',
+        description: "Lists every kill-feed line in a stretch, the player's and teammates', with teams and trades, plus round starts. Costs no looks.",
         parameters: { type: 'object', properties: { from: str('M:SS'), to: str('M:SS') }, required: ['from', 'to'] },
         execute: async (a) => {
           const from = at(a.from), to = at(a.to);
@@ -98,12 +192,21 @@ Rules:
           const done = s.scanned.find((r) => r.from <= from && r.to >= to);
           if (done) return { events: C.eventsBrief(s.events.filter((e) => e.t >= from && e.t <= to)), note: 'Already scanned; these are the saved events.', budget: left() };
           onEvent({ type: 'scanning', from, to });
-          const events = await scanVideo({ file, profile, from, to, signal, onNotice });
+          const log = await fightLog({ video, file, profile, from, to, player: s.player, signal, onNotice, onProgress: (p) => onEvent({ type: 'scanning', from, to, progress: p }) });
           s.scanned.push({ from, to });
           s.scanTokens += Math.round((to - from) * SCAN_TOKENS_PER_SECOND);
-          s.events = C.mergeEvents(s.events, events);
+          s.scanCalls += log.calls;
+          s.player ||= log.player;
+          s.events = C.mergeEvents(s.events, log.events);
           onEvent({ type: 'scan', from, to, events: s.events });
-          return { events: C.eventsBrief(events) || 'nothing found', count: events.length, budget: left() };
+          const n = (kind) => log.events.filter((e) => e.kind === kind).length;
+          return {
+            ...(s.player ? { player: s.player } : {}),
+            events: C.eventsBrief(C.mergeEvents([], log.events)) || 'nothing found',
+            counts: { your_kills: n('kill'), your_deaths: n('death'), teammate_deaths: n('ally_death'), teammate_deaths_not_traded: log.events.filter((e) => e.kind === 'ally_death' && !e.tradedBy).length },
+            ...(log.fromFeed ? {} : { note: "The kill feed couldn't be read here, so these fights come from the low-detail pass and may miss some." }),
+            budget: left(),
+          };
         },
       },
       {
@@ -127,26 +230,13 @@ Rules:
       },
       {
         name: 'measure_aim',
-        description: 'Measures where the crosshair was against the nearest enemy head at one moment, in head-heights and degrees. Costs 1 look.',
-        parameters: { type: 'object', properties: { at: str('M:SS, can have tenths') }, required: ['at'] },
+        description: 'Measures where the crosshair was against the nearest enemy head, in head-heights and degrees, at one moment or several (more). Costs 1 look per moment.',
+        parameters: { type: 'object', properties: { at: str('M:SS, can have tenths'), more: { type: 'array', items: str('M:SS'), description: 'up to 5 more moments to measure in the same call' } }, required: ['at'] },
         execute: async (a) => {
-          const t = at(a.at);
-          C.spend(budget, 'looks');
-          const crop = C.regionRect(profile, 'aim', frame);
-          const [shot] = await V.grab(video, [t], { crop, maxDim: 1024, quality: 0.9 });
-          look(t, t, 'measure', 'aim');
-          const box = await findHead(shot, { signal, onNotice });
-          if (!box) { onEvent({ type: 'measure', t, found: false, shot }); return { at: C.mmss(t, true), found: false, budget: left() }; }
-          const m = { t, ...C.aimOffset({ box, crop, frame, fovH: profile.fovH, crosshair: profile.crosshair }), box };
-          s.measures.push(m);
-          onEvent({ type: 'measure', t, found: true, measure: m, shot });
-          const warnings = [];
-          if (m.small) warnings.push('The head is tiny on screen, so this is rough.');
-          if (m.headPx > frame.h * 0.06) warnings.push(`The enemy is very close (their head is ${Math.round(m.headPx)} px tall), so crosshair height here says little about placement.`);
-          // the scan times a fight by its kill-feed line, which comes after the moment that shows placement
-          const end = s.events.find((e) => (e.kind === 'kill' || e.kind === 'death') && t >= e.t && t <= e.t + 1.5);
-          if (end) warnings.push(`This is when the kill feed shows the fight ending (${C.mmss(end.t)} ${end.kind}). The enemy usually comes into view 0.3 to 1 s earlier, and that moment shows placement.`);
-          return { at: C.mmss(t, true), found: true, heads: m.heads, up_degrees: m.dyDeg, band: m.band, ...(warnings.length ? { warnings } : {}), budget: left() };
+          const times = [a.at, ...(Array.isArray(a.more) ? a.more.slice(0, 5) : [])].map(at);
+          if (C.left(budget).looks < times.length) throw new Error(`That's ${times.length} looks and you have ${C.left(budget).looks}. Measure fewer moments.`);
+          const results = await Promise.all(times.map(measureOne));
+          return results.length === 1 ? { ...results[0], budget: left() } : { measured: results, budget: left() };
         },
       },
       {
@@ -226,7 +316,7 @@ Rules:
       throw e;
     });
 
-    const stats = { turns, looks: budget.used.looks, scanTokens: s.scanTokens, asks: s.asks };
+    const stats = { turns, looks: budget.used.looks, scanTokens: s.scanTokens, scanCalls: s.scanCalls, asks: s.asks };
     const base = { events: s.events, board: s.board, measures: s.measures, ledger: s.ledger, stats, aim: C.summarizeAim(s.measures) };
     if (run.stopped) return { ...base, found: false, stopped: true, why: 'The review ran out of turns before it could settle on a habit.' };
     const f = run.ended.name === 'finish' ? lastFinish(run.contents) : null;
@@ -260,5 +350,5 @@ Rules:
     return null;
   }
 
-  root.ThirdeyeAgent = { review, brief, scanVideo, findHead, MAX_ASKS };
+  root.ThirdeyeAgent = { review, brief, scanVideo, readKillfeed, fightLog, findHead, MAX_ASKS };
 })(window);

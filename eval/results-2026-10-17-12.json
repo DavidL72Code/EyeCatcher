@@ -1,0 +1,904 @@
+{
+  "started": "2026-10-17T22:43:11.080Z",
+  "budget": {
+    "looks": 30,
+    "turns": 30
+  },
+  "maxCallsPerRecording": 80,
+  "recordings": [
+    {
+      "file": "recordings/yt-vyse-ascent.mov",
+      "plantedHabit": null,
+      "systems": {
+        "agent": {
+          "found": false,
+          "habitId": null,
+          "habit": "",
+          "why": "The review ran out of turns before it could settle on a habit.",
+          "stopped": true,
+          "evidence": [],
+          "contrast": [],
+          "aim": {
+            "n": 5,
+            "heads": 0.29,
+            "dyDeg": 1.38,
+            "atHead": 3,
+            "bands": {
+              "low": 2,
+              "head": 3
+            }
+          },
+          "measures": [
+            {
+              "t": 127,
+              "heads": 7.29,
+              "band": "low",
+              "headPx": 26,
+              "box": [
+                0,
+                418,
+                64,
+                597
+              ]
+            },
+            {
+              "t": 325,
+              "heads": 10.89,
+              "band": "low",
+              "headPx": 16.3,
+              "box": [
+                43,
+                642,
+                83,
+                682
+              ]
+            },
+            {
+              "t": 324,
+              "heads": 0.1,
+              "band": "head",
+              "headPx": 9.4,
+              "box": [
+                485,
+                500,
+                508,
+                518
+              ]
+            },
+            {
+              "t": 788,
+              "heads": 0.29,
+              "band": "head",
+              "headPx": 42.7,
+              "box": [
+                416,
+                438,
+                521,
+                508
+              ]
+            },
+            {
+              "t": 462,
+              "heads": 0.18,
+              "band": "head",
+              "headPx": 11.8,
+              "box": [
+                479,
+                463,
+                508,
+                485
+              ]
+            }
+          ],
+          "looks": 24,
+          "turns": 30,
+          "events": [
+            {
+              "t": 2,
+              "kind": "round_start"
+            },
+            {
+              "t": 55,
+              "kind": "ally_death",
+              "killer": "Sage",
+              "victim": "Rumpelstiltskin",
+              "killerTeam": "enemy",
+              "victimTeam": "ally"
+            },
+            {
+              "t": 61,
+              "kind": "ally_kill",
+              "killer": "Sage",
+              "victim": "Febera",
+              "killerTeam": "ally",
+              "victimTeam": "enemy"
+            },
+            {
+              "t": 70,
+              "kind": "ally_kill",
+              "killer": "ZedCapetinha",
+              "victim": "Sage",
+              "killerTeam": "ally",
+              "victimTeam": "enemy"
+            },
+            {
+              "t": 74,
+              "kind": "ally_death",
+              "killer": "KAY/O",
+              "victim": "Omen",
+              "killerTeam": "enemy",
+              "victimTeam": "ally"
+            },
+            {
+              "t": 81,
+              "kind": "ally_kill",
+              "killer": "ZedCapetinha",
+              "victim": "KAY/O",
+              "killerTeam": "ally",
+              "victimTeam": "enemy"
+            },
+            {
+              "t": 81,
+              "kind": "ally_death",
+              "killer": "Omen",
+              "victim": "ZedCapetinha",
+              "killerTeam": "enemy",
+              "victimTeam": "ally",
+              "tradedBy": "Im Muted"
+            },
+            {
+              "t": 82,
+              "kind": "kill",
+              "killer": "Im Muted",
+              "victim": "Omen",
+              "killerTeam": "ally",
+              "victimTeam": "enemy"
+            },
+            {
+              "t": 85,
+              "kind": "kill",
+              "killer": "Im Muted",
+              "victim": "Killjoy",
+              "killerTeam": "ally",
+              "victimTeam": "enemy"
+            },
+            {
+              "t": 127,
+              "kind": "death",
+              "killer": "Sova",
+              "victim": "Im Muted",
+              "killerTeam": "enemy",
+              "victimTeam": "ally"
+            },
+            {
+              "t": 140,
+              "kind": "round_end"
+            },
+            {
+              "t": 152,
+              "kind": "round_start"
+            },
+            {
+              "t": 187,
+              "kind": "ally_death",
+              "killer": "KAY/O",
+              "victim": "Rumpelstiltskin",
+              "killerTeam": "enemy",
+              "victimTeam": "ally",
+              "tradedBy": "Febera"
+            },
+            {
+              "t": 187,
+              "kind": "ally_kill",
+              "killer": "Febera",
+              "victim": "KAY/O",
+              "killerTeam": "ally",
+              "victimTeam": "enemy"
+            },
+            {
+              "t": 193,
+              "kind": "kill",
+              "killer": "Im Muted",
+              "victim": "Omen",
+              "killerTeam": "ally",
+              "victimTeam": "enemy"
+            },
+            {
+              "t": 209,
+              "kind": "ally_kill",
+              "killer": "Omen",
+              "victim": "Sova",
+              "killerTeam": "ally",
+              "victimTeam": "enemy"
+            },
+            {
+              "t": 212,
+              "kind": "kill",
+              "killer": "Im Muted",
+              "victim": "Sage",
+              "killerTeam": "ally",
+              "victimTeam": "enemy"
+            },
+            {
+              "t": 213,
+              "kind": "ally_kill",
+              "killer": "Omen",
+              "victim": "Killjoy",
+              "killerTeam": "ally",
+              "victimTeam": "enemy"
+            },
+            {
+              "t": 265,
+              "kind": "ally_death",
+              "killer": "Sova",
+              "victim": "Rumpelstiltskin",
+              "killerTeam": "enemy",
+              "victimTeam": "ally"
+            },
+            {
+              "t": 267,
+              "kind": "ally_kill",
+              "killer": "KAY/O",
+              "victim": "Febera",
+              "killerTeam": "ally",
+              "victimTeam": "enemy"
+            },
+            {
+              "t": 277,
+              "kind": "ally_kill",
+              "killer": "Omen",
+              "victim": "KAY/O",
+              "killerTeam": "ally",
+              "victimTeam": "enemy"
+            },
+            {
+              "t": 277,
+              "kind": "ally_death",
+              "killer": "Sova",
+              "victim": "Omen",
+              "killerTeam": "enemy",
+              "victimTeam": "ally"
+            },
+            {
+              "t": 320,
+              "kind": "kill",
+              "killer": "Im Muted",
+              "victim": "Killjoy",
+              "killerTeam": "ally",
+              "victimTeam": "enemy"
+            },
+            {
+              "t": 326,
+              "kind": "death",
+              "killer": "Sage",
+              "victim": "Im Muted",
+              "killerTeam": "enemy",
+              "victimTeam": "ally"
+            },
+            {
+              "t": 329,
+              "kind": "ally_death",
+              "killer": "Sage",
+              "victim": "ZedCapetinha",
+              "killerTeam": "enemy",
+              "victimTeam": "ally"
+            },
+            {
+              "t": 385,
+              "kind": "ally_kill",
+              "killer": "Sage",
+              "victim": "Febera",
+              "killerTeam": "ally",
+              "victimTeam": "enemy"
+            },
+            {
+              "t": 386,
+              "kind": "ally_death",
+              "killer": "Sova",
+              "victim": "Rumpelstiltskin",
+              "killerTeam": "enemy",
+              "victimTeam": "ally"
+            },
+            {
+              "t": 396,
+              "kind": "ally_kill",
+              "killer": "Omen",
+              "victim": "Killjoy",
+              "killerTeam": "ally",
+              "victimTeam": "enemy"
+            },
+            {
+              "t": 396,
+              "kind": "ally_death",
+              "killer": "Omen",
+              "victim": "Omen",
+              "killerTeam": "enemy",
+              "victimTeam": "ally",
+              "tradedBy": "Im Muted"
+            },
+            {
+              "t": 397,
+              "kind": "ally_death",
+              "killer": "Sage",
+              "victim": "ZedCapetinha",
+              "killerTeam": "enemy",
+              "victimTeam": "ally"
+            },
+            {
+              "t": 398,
+              "kind": "kill",
+              "killer": "Im Muted",
+              "victim": "Omen",
+              "killerTeam": "ally",
+              "victimTeam": "enemy"
+            },
+            {
+              "t": 399,
+              "kind": "round_end"
+            },
+            {
+              "t": 401,
+              "kind": "death",
+              "killer": "KAY/O",
+              "victim": "Im Muted",
+              "killerTeam": "enemy",
+              "victimTeam": "ally"
+            },
+            {
+              "t": 408,
+              "kind": "round_start"
+            },
+            {
+              "t": 443,
+              "kind": "ally_kill",
+              "killer": "Sage",
+              "victim": "Febera",
+              "killerTeam": "ally",
+              "victimTeam": "enemy"
+            },
+            {
+              "t": 449,
+              "kind": "ally_kill",
+              "killer": "Omen",
+              "victim": "KAY/O",
+              "killerTeam": "ally",
+              "victimTeam": "enemy"
+            },
+            {
+              "t": 461,
+              "kind": "ally_death",
+              "killer": "Omen",
+              "victim": "ZedCapetinha",
+              "killerTeam": "enemy",
+              "victimTeam": "ally",
+              "tradedBy": "Rumpelstiltskin"
+            },
+            {
+              "t": 461,
+              "kind": "ally_kill",
+              "killer": "Rumpelstiltskin",
+              "victim": "Omen",
+              "killerTeam": "ally",
+              "victimTeam": "enemy"
+            },
+            {
+              "t": 462,
+              "kind": "kill",
+              "killer": "Im Muted",
+              "victim": "Sova",
+              "killerTeam": "ally",
+              "victimTeam": "enemy"
+            },
+            {
+              "t": 468,
+              "kind": "ally_death",
+              "killer": "Sage",
+              "victim": "Omen",
+              "killerTeam": "enemy",
+              "victimTeam": "ally"
+            },
+            {
+              "t": 474,
+              "kind": "ally_death",
+              "killer": "Sage",
+              "victim": "Rumpelstiltskin",
+              "killerTeam": "enemy",
+              "victimTeam": "ally",
+              "tradedBy": "Im Muted"
+            },
+            {
+              "t": 476,
+              "kind": "kill",
+              "killer": "Im Muted",
+              "victim": "Sage",
+              "killerTeam": "ally",
+              "victimTeam": "enemy"
+            },
+            {
+              "t": 479,
+              "kind": "death",
+              "killer": "Killjoy",
+              "victim": "Im Muted",
+              "killerTeam": "enemy",
+              "victimTeam": "ally"
+            },
+            {
+              "t": 484,
+              "kind": "round_end"
+            },
+            {
+              "t": 486,
+              "kind": "round_start"
+            },
+            {
+              "t": 532,
+              "kind": "ally_death",
+              "killer": "Sage",
+              "victim": "Rumpelstiltskin",
+              "killerTeam": "enemy",
+              "victimTeam": "ally"
+            },
+            {
+              "t": 533,
+              "kind": "ally_death",
+              "killer": "Sage",
+              "victim": "Febera",
+              "killerTeam": "enemy",
+              "victimTeam": "ally"
+            },
+            {
+              "t": 541,
+              "kind": "ally_kill",
+              "killer": "Omen",
+              "victim": "Sage",
+              "killerTeam": "ally",
+              "victimTeam": "enemy"
+            },
+            {
+              "t": 601,
+              "kind": "death",
+              "killer": "KAY/O",
+              "victim": "Im Muted",
+              "killerTeam": "enemy",
+              "victimTeam": "ally",
+              "tradedBy": "Omen"
+            },
+            {
+              "t": 602,
+              "kind": "ally_kill",
+              "killer": "Omen",
+              "victim": "KAY/O",
+              "killerTeam": "ally",
+              "victimTeam": "enemy"
+            },
+            {
+              "t": 610,
+              "kind": "ally_death",
+              "killer": "KillJoy",
+              "victim": "ZedCapetinha",
+              "killerTeam": "enemy",
+              "victimTeam": "ally"
+            },
+            {
+              "t": 610,
+              "kind": "ally_death",
+              "killer": "Sova",
+              "victim": "Omen",
+              "killerTeam": "enemy",
+              "victimTeam": "ally"
+            },
+            {
+              "t": 619,
+              "kind": "round_end"
+            },
+            {
+              "t": 620,
+              "kind": "round_start"
+            },
+            {
+              "t": 662,
+              "kind": "ally_kill",
+              "killer": "Sova",
+              "victim": "Febera",
+              "killerTeam": "ally",
+              "victimTeam": "enemy"
+            },
+            {
+              "t": 662,
+              "kind": "ally_kill",
+              "killer": "Omen",
+              "victim": "KAY/O",
+              "killerTeam": "ally",
+              "victimTeam": "enemy"
+            },
+            {
+              "t": 668,
+              "kind": "death",
+              "killer": "Omen",
+              "victim": "Im Muted",
+              "killerTeam": "enemy",
+              "victimTeam": "ally"
+            },
+            {
+              "t": 670,
+              "kind": "ally_death",
+              "killer": "Sova",
+              "victim": "Rumpeltiltskin",
+              "killerTeam": "enemy",
+              "victimTeam": "ally"
+            },
+            {
+              "t": 706,
+              "kind": "ally_death",
+              "killer": "Sova",
+              "victim": "ZedCapetinha",
+              "killerTeam": "enemy",
+              "victimTeam": "ally"
+            },
+            {
+              "t": 725,
+              "kind": "ally_kill",
+              "killer": "Omen",
+              "victim": "Killjoy",
+              "killerTeam": "ally",
+              "victimTeam": "enemy"
+            },
+            {
+              "t": 728,
+              "kind": "ally_death",
+              "killer": "Omen",
+              "victim": "Omen",
+              "killerTeam": "enemy",
+              "victimTeam": "ally"
+            },
+            {
+              "t": 739,
+              "kind": "round_end"
+            },
+            {
+              "t": 745,
+              "kind": "round_start"
+            },
+            {
+              "t": 785,
+              "kind": "ally_kill",
+              "killer": "Sage",
+              "victim": "Febera",
+              "killerTeam": "ally",
+              "victimTeam": "enemy"
+            },
+            {
+              "t": 788,
+              "kind": "ally_kill",
+              "killer": "Rumpelstiltskin",
+              "victim": "Sage",
+              "killerTeam": "ally",
+              "victimTeam": "enemy"
+            },
+            {
+              "t": 789,
+              "kind": "kill",
+              "killer": "Im Muted",
+              "victim": "KAY/O",
+              "killerTeam": "ally",
+              "victimTeam": "enemy"
+            },
+            {
+              "t": 792,
+              "kind": "ally_death",
+              "killer": "Killjoy",
+              "victim": "Rumpelstiltskin",
+              "killerTeam": "enemy",
+              "victimTeam": "ally",
+              "tradedBy": "ZedCapetinha"
+            },
+            {
+              "t": 797,
+              "kind": "ally_kill",
+              "killer": "ZedCapetinha",
+              "victim": "Killjoy",
+              "killerTeam": "ally",
+              "victimTeam": "enemy"
+            },
+            {
+              "t": 800,
+              "kind": "ally_kill",
+              "killer": "Omen",
+              "victim": "Omen",
+              "killerTeam": "ally",
+              "victimTeam": "enemy"
+            },
+            {
+              "t": 805,
+              "kind": "ally_death",
+              "killer": "Sova",
+              "victim": "ZedCapetinha",
+              "killerTeam": "enemy",
+              "victimTeam": "ally"
+            },
+            {
+              "t": 812,
+              "kind": "ally_kill",
+              "killer": "Omen",
+              "victim": "Sova",
+              "killerTeam": "ally",
+              "victimTeam": "enemy"
+            },
+            {
+              "t": 813,
+              "kind": "round_end"
+            },
+            {
+              "t": 819,
+              "kind": "round_start"
+            }
+          ],
+          "theories": "T1 supported: Crosshair is consistently placed below head height when clearing angles (2:07, 5:25, 10:01)",
+          "asks": [],
+          "rejected": [
+            [
+              "Crosshair height can be measured, so back this with at least 3 measure_aim readings where an enemy was in view (you have 0). Or name a different habit, or none."
+            ],
+            [
+              "5:24 is the same moment as other evidence.",
+              "Cite at least 3 separate moments you looked at that show the habit (you have 2). Moments where they got it right go in contrast, not evidence. If fewer than 3 moments show it, finish with found false.",
+              "Your measurements put the crosshair at head level (median 0.29 heads over 5 duels). Show measurements where it was low, or name a different habit, or none."
+            ]
+          ],
+          "steps": [
+            {
+              "name": "scan",
+              "args": "{\"to\":\"14:10\",\"from\":\"0:00\"}"
+            },
+            {
+              "name": "frames",
+              "args": "{\"at\":\"2:06\",\"region\":\"full\"}"
+            },
+            {
+              "name": "note",
+              "args": "{\"id\":\"T1\",\"theory\":\"Crosshair is consistently placed below head height when clearing angles\",\"status\":\"testing\",\"evidence\":[{\"what\":\"Crosshair held well below "
+            },
+            {
+              "name": "frames",
+              "args": "{\"at\":\"5:25\",\"region\":\"full\"}"
+            },
+            {
+              "name": "note",
+              "args": "{\"evidence\":[{\"t\":\"5:25\",\"what\":\"Crosshair is positioned at chest/stomach height when swinging out around the corner, forcing a vertical correction to the head\""
+            },
+            {
+              "name": "frames",
+              "args": "{\"at\":\"10:00\",\"region\":\"full\"}"
+            },
+            {
+              "name": "note",
+              "args": "{\"id\":\"T1\",\"status\":\"supported\",\"evidence\":[{\"what\":\"Crosshair is kept low while swinging B site, resulting in a body shot before getting killed by KAY/O's head"
+            },
+            {
+              "name": "frames",
+              "args": "{\"region\":\"full\",\"at\":\"13:09\"}"
+            },
+            {
+              "name": "finish",
+              "args": "{\"habit_id\":\"crosshair_low\",\"habit\":\"Crosshair below head level\",\"drill\":\"Ten minutes in a custom game: walk each common angle on one map and hold the crosshair"
+            },
+            {
+              "name": "measure_aim",
+              "args": "{\"at\":\"2:07\"}"
+            },
+            {
+              "name": "measure_aim",
+              "args": "{\"at\":\"5:25\"}"
+            },
+            {
+              "name": "measure_aim",
+              "args": "{\"at\":\"10:01\"}"
+            },
+            {
+              "name": "measure_aim",
+              "args": "{\"at\":\"13:09\"}"
+            },
+            {
+              "name": "measure_aim",
+              "args": "{\"at\":\"11:08\"}"
+            },
+            {
+              "name": "measure_aim",
+              "args": "{\"at\":\"6:41\"}"
+            },
+            {
+              "name": "measure_aim",
+              "args": "{\"at\":\"7:59\"}"
+            },
+            {
+              "name": "measure_aim",
+              "args": "{\"at\":\"2:06\"}"
+            },
+            {
+              "name": "measure_aim",
+              "args": "{\"at\":\"5:24\"}"
+            },
+            {
+              "name": "measure_aim",
+              "args": "{\"at\":\"10:00\"}"
+            },
+            {
+              "name": "measure_aim",
+              "args": "{\"at\":\"13:08\"}"
+            },
+            {
+              "name": "measure_aim",
+              "args": "{\"at\":\"2:05\"}"
+            },
+            {
+              "name": "measure_aim",
+              "args": "{\"at\":\"5:23\"}"
+            },
+            {
+              "name": "measure_aim",
+              "args": "{\"at\":\"10:02\"}"
+            },
+            {
+              "name": "measure_aim",
+              "args": "{\"at\":\"3:13\"}"
+            },
+            {
+              "name": "measure_aim",
+              "args": "{\"at\":\"3:32\"}"
+            },
+            {
+              "name": "measure_aim",
+              "args": "{\"at\":\"1:22\"}"
+            },
+            {
+              "name": "measure_aim",
+              "args": "{\"at\":\"1:25\"}"
+            },
+            {
+              "name": "measure_aim",
+              "args": "{\"at\":\"5:20\"}"
+            },
+            {
+              "name": "measure_aim",
+              "args": "{\"at\":\"7:42\"}"
+            },
+            {
+              "name": "finish",
+              "args": "{\"habit\":\"Crosshair below head level\",\"habit_id\":\"crosshair_low\",\"why\":\"Keeping your crosshair below head level forces you to flick upward whenever an enemy app"
+            }
+          ],
+          "seconds": 205.3,
+          "usage": {
+            "calls": 69,
+            "polls": 0,
+            "files": 0,
+            "rateLimited": 5,
+            "failed": 0,
+            "blocked": 0,
+            "models": {
+              "gemini-3.5-flash-lite": 68,
+              "gemini-3.1-flash-lite": 1
+            }
+          },
+          "score": {
+            "verdict": "clean",
+            "falsePositive": false,
+            "counted": true
+          },
+          "evidenceOnDuels": null,
+          "scanRecall": {
+            "kills": {
+              "found": "9/9",
+              "extra": []
+            },
+            "deaths": {
+              "found": "6/6",
+              "extra": []
+            }
+          },
+          "killfeedScore": {
+            "found": "41/41",
+            "teamsRight": "37/41",
+            "notReal": [
+              "10:01 KAY/O>Im Muted",
+              "10:02 Omen>KAY/O"
+            ]
+          }
+        },
+        "pipeline": {
+          "error": "Gemini is busy right now. Try again in a minute.",
+          "steps": [
+            {
+              "name": "scan",
+              "args": "{\"from\":\"0:00\",\"to\":\"14:10\"}"
+            }
+          ],
+          "seconds": 96.7,
+          "usage": {
+            "calls": 11,
+            "polls": 0,
+            "files": 0,
+            "rateLimited": 2,
+            "failed": 0,
+            "blocked": 19,
+            "models": {
+              "gemini-3.5-flash-lite": 9,
+              "gemini-3.1-flash-lite": 2
+            }
+          },
+          "score": {
+            "verdict": "no result",
+            "counted": false
+          },
+          "evidenceOnDuels": null
+        },
+        "gemini-agentic": {
+          "error": "Failed to fetch",
+          "seconds": 0,
+          "usage": {
+            "calls": 0,
+            "polls": 0,
+            "files": 0,
+            "rateLimited": 0,
+            "failed": 0,
+            "blocked": 1,
+            "models": {}
+          },
+          "score": {
+            "verdict": "no result",
+            "counted": false
+          },
+          "evidenceOnDuels": null
+        }
+      },
+      "setup": {
+        "duration": 850.5,
+        "size": "1290x726",
+        "proxyMb": 27.13,
+        "proxySeconds": 25.2,
+        "uploadSeconds": 34.4,
+        "usage": {
+          "calls": 0,
+          "polls": 0,
+          "files": 8,
+          "rateLimited": 0,
+          "failed": 0,
+          "blocked": 0,
+          "models": {}
+        }
+      }
+    }
+  ],
+  "finished": "2026-10-17T22:49:14.785Z",
+  "summary": {
+    "agent": {
+      "plantedFound": "0/0",
+      "falsePositives": "0/1",
+      "noResult": 0,
+      "calls": 69,
+      "seconds": 205.3
+    },
+    "pipeline": {
+      "plantedFound": "0/0",
+      "falsePositives": "0/0",
+      "noResult": 1,
+      "calls": 11,
+      "seconds": 96.7
+    },
+    "gemini-agentic": {
+      "plantedFound": "0/0",
+      "falsePositives": "0/0",
+      "noResult": 1,
+      "calls": 0,
+      "seconds": 0
+    }
+  },
+  "totals": {
+    "modelCalls": 80,
+    "uploadRequests": 8,
+    "models": {
+      "gemini-3.5-flash-lite": 77,
+      "gemini-3.1-flash-lite": 3
+    }
+  }
+}
