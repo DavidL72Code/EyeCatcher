@@ -1,0 +1,1087 @@
+{
+  "started": "2026-10-17T22:29:36.262Z",
+  "budget": {
+    "looks": 30,
+    "turns": 30
+  },
+  "maxCallsPerRecording": 80,
+  "recordings": [
+    {
+      "file": "recordings/Screen Recording 2026-10-17 at 6.13.34 PM.mov",
+      "plantedHabit": null,
+      "systems": {
+        "agent": {
+          "found": true,
+          "habitId": "wide_peek",
+          "habit": "Peeking too wide",
+          "why": "Swinging wide past corners exposed you to multiple enemy angles at once, turning winnable 1v1 duels into disadvantaged multi-target fights.",
+          "stopped": false,
+          "confidence": "high",
+          "evidence": [
+            {
+              "t": 124,
+              "what": "swung wide past the corner into multiple enemy angles"
+            },
+            {
+              "t": 149,
+              "what": "swung wide into the open exposing multiple lines of sight"
+            },
+            {
+              "t": 221,
+              "what": "swung wide around a corner straight into an enemy crosshair"
+            }
+          ],
+          "contrast": [
+            {
+              "t": 20,
+              "what": "cleared and engaged a tight angle cleanly"
+            }
+          ],
+          "aim": {
+            "n": 1,
+            "heads": 2.78,
+            "dyDeg": 3.94,
+            "atHead": 0,
+            "bands": {
+              "low": 1
+            }
+          },
+          "measures": [
+            {
+              "t": 221,
+              "heads": 2.78,
+              "band": "low",
+              "headPx": 21.5,
+              "box": [
+                391,
+                408,
+                424,
+                427
+              ]
+            }
+          ],
+          "looks": 9,
+          "turns": 17,
+          "events": [
+            {
+              "t": 0,
+              "kind": "round_start"
+            },
+            {
+              "t": 18,
+              "kind": "ally_kill",
+              "killer": "lisa",
+              "victim": "ulquiorra",
+              "killerTeam": "ally",
+              "victimTeam": "enemy"
+            },
+            {
+              "t": 20,
+              "kind": "kill",
+              "killer": "Fade",
+              "victim": "lisa",
+              "killerTeam": "ally",
+              "victimTeam": "enemy"
+            },
+            {
+              "t": 23,
+              "kind": "kill",
+              "killer": "Fade",
+              "victim": "CLV | bam",
+              "killerTeam": "ally",
+              "victimTeam": "ally"
+            },
+            {
+              "t": 41,
+              "kind": "kill",
+              "killer": "Fade",
+              "victim": "Me",
+              "killerTeam": "ally",
+              "victimTeam": "ally"
+            },
+            {
+              "t": 44,
+              "kind": "ally_death",
+              "killer": "zeytazin",
+              "victim": "woo",
+              "killerTeam": "enemy",
+              "victimTeam": "ally",
+              "tradedBy": "Chamber"
+            },
+            {
+              "t": 49,
+              "kind": "ally_kill",
+              "killer": "Chamber",
+              "victim": "zeytazin",
+              "killerTeam": "ally",
+              "victimTeam": "enemy"
+            },
+            {
+              "t": 49,
+              "kind": "ally_death",
+              "killer": "Reyna",
+              "victim": "Chamber",
+              "killerTeam": "enemy",
+              "victimTeam": "ally"
+            },
+            {
+              "t": 56,
+              "kind": "round_end"
+            },
+            {
+              "t": 59,
+              "kind": "round_start"
+            },
+            {
+              "t": 95,
+              "kind": "ally_death",
+              "killer": "ulquiorra",
+              "victim": "woo",
+              "killerTeam": "enemy",
+              "victimTeam": "ally",
+              "tradedBy": "Me"
+            },
+            {
+              "t": 100,
+              "kind": "ally_kill",
+              "killer": "Me",
+              "victim": "ulquiorra",
+              "killerTeam": "ally",
+              "victimTeam": "enemy"
+            },
+            {
+              "t": 110,
+              "kind": "kill",
+              "killer": "Fade",
+              "victim": "Chamber",
+              "killerTeam": "ally",
+              "victimTeam": "ally"
+            },
+            {
+              "t": 116,
+              "kind": "ally_kill",
+              "killer": "Me",
+              "victim": "Veto",
+              "killerTeam": "ally",
+              "victimTeam": "enemy"
+            },
+            {
+              "t": 117,
+              "kind": "ally_kill",
+              "killer": "lisa",
+              "victim": "Reyna",
+              "killerTeam": "ally",
+              "victimTeam": "enemy"
+            },
+            {
+              "t": 124,
+              "kind": "kill",
+              "killer": "Fade",
+              "victim": "lisa",
+              "killerTeam": "ally",
+              "victimTeam": "ally"
+            },
+            {
+              "t": 131,
+              "kind": "ally_kill",
+              "killer": "CLV | bam",
+              "victim": "zeytazin",
+              "killerTeam": "ally",
+              "victimTeam": "enemy"
+            },
+            {
+              "t": 137,
+              "kind": "kill",
+              "killer": "Fade",
+              "victim": "Me",
+              "killerTeam": "ally",
+              "victimTeam": "enemy"
+            },
+            {
+              "t": 149,
+              "kind": "kill",
+              "killer": "Fade",
+              "victim": "CLV | bam",
+              "killerTeam": "ally",
+              "victimTeam": "ally"
+            },
+            {
+              "t": 156,
+              "kind": "round_end"
+            },
+            {
+              "t": 161,
+              "kind": "round_start"
+            },
+            {
+              "t": 187,
+              "kind": "round_end"
+            },
+            {
+              "t": 193,
+              "kind": "round_start"
+            },
+            {
+              "t": 194,
+              "kind": "ally_death",
+              "killer": "zeytazin",
+              "victim": "woo",
+              "killerTeam": "enemy",
+              "victimTeam": "ally"
+            },
+            {
+              "t": 198,
+              "kind": "ally_death",
+              "killer": "ulquiorra",
+              "victim": "lisa",
+              "killerTeam": "enemy",
+              "victimTeam": "ally"
+            },
+            {
+              "t": 211,
+              "kind": "ally_death",
+              "killer": "ulquiorra",
+              "victim": "CLV|bam",
+              "killerTeam": "enemy",
+              "victimTeam": "ally"
+            },
+            {
+              "t": 221,
+              "kind": "death",
+              "killer": "Me",
+              "victim": "Fade",
+              "killerTeam": "ally",
+              "victimTeam": "ally"
+            },
+            {
+              "t": 229,
+              "kind": "ally_kill",
+              "killer": "Me",
+              "victim": "ulquiorra",
+              "killerTeam": "ally",
+              "victimTeam": "enemy"
+            },
+            {
+              "t": 232,
+              "kind": "ally_kill",
+              "killer": "Me",
+              "victim": "Reyna",
+              "killerTeam": "ally",
+              "victimTeam": "enemy"
+            },
+            {
+              "t": 234,
+              "kind": "ally_death",
+              "killer": "zeytazin",
+              "victim": "Chamber",
+              "killerTeam": "enemy",
+              "victimTeam": "ally"
+            },
+            {
+              "t": 255,
+              "kind": "ally_death",
+              "killer": "zeytazin",
+              "victim": "Me",
+              "killerTeam": "enemy",
+              "victimTeam": "ally"
+            },
+            {
+              "t": 264,
+              "kind": "round_end"
+            },
+            {
+              "t": 279,
+              "kind": "round_start"
+            },
+            {
+              "t": 297,
+              "kind": "ally_death",
+              "killer": "ulquiorra",
+              "victim": "Me",
+              "killerTeam": "enemy",
+              "victimTeam": "ally"
+            },
+            {
+              "t": 299,
+              "kind": "death",
+              "killer": "lisa",
+              "victim": "Fade",
+              "killerTeam": "ally",
+              "victimTeam": "ally"
+            },
+            {
+              "t": 303,
+              "kind": "ally_kill",
+              "killer": "lisa",
+              "victim": "Reyna",
+              "killerTeam": "ally",
+              "victimTeam": "enemy"
+            },
+            {
+              "t": 313,
+              "kind": "ally_kill",
+              "killer": "bam",
+              "victim": "ulquiorra",
+              "killerTeam": "ally",
+              "victimTeam": "enemy"
+            },
+            {
+              "t": 314,
+              "kind": "ally_death",
+              "killer": "Veto",
+              "victim": "lisa",
+              "killerTeam": "enemy",
+              "victimTeam": "ally"
+            },
+            {
+              "t": 318,
+              "kind": "ally_kill",
+              "killer": "woo",
+              "victim": "zeytazin",
+              "killerTeam": "ally",
+              "victimTeam": "enemy"
+            },
+            {
+              "t": 321,
+              "kind": "ally_kill",
+              "killer": "Chamber",
+              "victim": "Veto",
+              "killerTeam": "ally",
+              "victimTeam": "enemy"
+            },
+            {
+              "t": 326,
+              "kind": "round_end"
+            },
+            {
+              "t": 333,
+              "kind": "round_start"
+            },
+            {
+              "t": 376,
+              "kind": "ally_death",
+              "killer": "Reyna",
+              "victim": "Me",
+              "killerTeam": "enemy",
+              "victimTeam": "ally"
+            },
+            {
+              "t": 378,
+              "kind": "round_end"
+            },
+            {
+              "t": 379,
+              "kind": "ally_kill",
+              "killer": "lisa",
+              "victim": "Veto",
+              "killerTeam": "ally",
+              "victimTeam": "enemy"
+            },
+            {
+              "t": 383,
+              "kind": "ally_kill",
+              "killer": "CLV | bam",
+              "victim": "zeytazin",
+              "killerTeam": "ally",
+              "victimTeam": "enemy"
+            },
+            {
+              "t": 388,
+              "kind": "ally_death",
+              "killer": "ulquiorra",
+              "victim": "lisa",
+              "killerTeam": "enemy",
+              "victimTeam": "ally"
+            }
+          ],
+          "theories": "T1 testing: Crosshair positioning and aim stability (0:23)\nT2 testing: Peeking too wide around corners (2:04)\nT3 supported: Crosshair below head level (3:41, 4:59)",
+          "asks": [],
+          "rejected": [
+            [
+              "Cite at least 3 separate moments you looked at that show the habit (you have 2). Moments where they got it right go in contrast, not evidence. If fewer than 3 moments show it, finish with found false.",
+              "Crosshair height can be measured, so back this with at least 3 measure_aim readings where an enemy was in view (you have 1). Or name a different habit, or none."
+            ],
+            [
+              "You haven't looked closely at 2:29. Look with frames or measure_aim, or cite a moment you did look at.",
+              "Cite at least 3 separate moments you looked at that show the habit (you have 1). Moments where they got it right go in contrast, not evidence. If fewer than 3 moments show it, finish with found false."
+            ]
+          ],
+          "steps": [
+            {
+              "name": "scan",
+              "args": "{\"to\":\"6:28\",\"from\":\"0:00\"}"
+            },
+            {
+              "name": "frames",
+              "args": "{\"region\":\"full\",\"fps\":6,\"at\":\"0:22\"}"
+            },
+            {
+              "name": "note",
+              "args": "{\"id\":\"T1\",\"status\":\"testing\",\"theory\":\"Crosshair positioning and aim stability\",\"evidence\":[{\"what\":\"secured a kill on bam\",\"t\":\"0:23\"}]}"
+            },
+            {
+              "name": "frames",
+              "args": "{\"at\":\"2:04\",\"region\":\"full\",\"fps\":6}"
+            },
+            {
+              "name": "note",
+              "args": "{\"id\":\"T2\",\"evidence\":[{\"t\":\"2:04\",\"what\":\"wide swung past the corner exposing multiple angles simultaneously\"}],\"theory\":\"Peeking too wide around corners\",\"sta"
+            },
+            {
+              "name": "frames",
+              "args": "{\"at\":\"3:41\",\"fps\":6,\"region\":\"full\"}"
+            },
+            {
+              "name": "measure_aim",
+              "args": "{\"at\":\"3:41\"}"
+            },
+            {
+              "name": "note",
+              "args": "{\"theory\":\"Crosshair below head level\",\"evidence\":[{\"t\":\"3:41\",\"what\":\"crosshair sat below head level when engaging the enemy\"}],\"id\":\"T3\",\"status\":\"testing\"}"
+            },
+            {
+              "name": "frames",
+              "args": "{\"at\":\"4:59\",\"region\":\"full\",\"fps\":6}"
+            },
+            {
+              "name": "note",
+              "args": "{\"evidence\":[{\"t\":\"4:59\",\"what\":\"kept crosshair low while pushing up B ramp\"}],\"theory\":\"Crosshair below head level\",\"status\":\"supported\",\"id\":\"T3\"}"
+            },
+            {
+              "name": "finish",
+              "args": "{\"why\":\"When enemies appeared, the crosshair rested below head height, forcing upward corrections that cost valuable fractions of a second in duels.\",\"progress\""
+            },
+            {
+              "name": "measure_aim",
+              "args": "{\"at\":\"0:23\"}"
+            },
+            {
+              "name": "measure_aim",
+              "args": "{\"at\":\"2:04\"}"
+            },
+            {
+              "name": "measure_aim",
+              "args": "{\"at\":\"4:59\"}"
+            },
+            {
+              "name": "finish",
+              "args": "{\"progress\":\"unclear\",\"confidence\":\"high\",\"contrast\":[{\"t\":\"0:23\",\"what\":\"secured an engagement with better positioning\"}],\"recheck\":\"Check corner-clearing tech"
+            },
+            {
+              "name": "frames",
+              "args": "{\"at\":\"2:29\",\"fps\":6,\"region\":\"full\"}"
+            },
+            {
+              "name": "finish",
+              "args": "{\"contrast\":[{\"what\":\"cleared and engaged a tight angle cleanly\",\"t\":\"0:20\"}],\"habit\":\"Peeking too wide\",\"habit_id\":\"wide_peek\",\"why\":\"Swinging wide past corner"
+            }
+          ],
+          "seconds": 236.6,
+          "usage": {
+            "calls": 41,
+            "polls": 0,
+            "files": 0,
+            "rateLimited": 3,
+            "failed": 0,
+            "blocked": 0,
+            "models": {
+              "gemini-3.5-flash-lite": 38,
+              "gemini-3.1-flash-lite": 2,
+              "gemini-flash-lite-latest": 1
+            }
+          },
+          "score": {
+            "verdict": "false positive: wide_peek",
+            "falsePositive": true,
+            "counted": true
+          }
+        },
+        "pipeline": {
+          "found": true,
+          "habitId": "crosshair_low",
+          "evidence": [
+            {
+              "t": 40.4,
+              "what": "crosshair 14.72 heads below"
+            },
+            {
+              "t": 254.4,
+              "what": "crosshair 6.34 heads below"
+            },
+            {
+              "t": 296.4,
+              "what": "crosshair 15.04 heads below"
+            },
+            {
+              "t": 375.4,
+              "what": "crosshair 1.67 heads below"
+            }
+          ],
+          "aim": {
+            "n": 4,
+            "heads": 10.53,
+            "dyDeg": 8.26,
+            "atHead": 0,
+            "bands": {
+              "low": 3,
+              "chest": 1
+            }
+          },
+          "measures": [
+            {
+              "t": 40.4,
+              "heads": 14.72,
+              "dyDeg": 11.88,
+              "dxDeg": 4.57,
+              "headPx": 12.4,
+              "band": "low",
+              "small": false
+            },
+            {
+              "t": 136.4,
+              "found": false
+            },
+            {
+              "t": 254.4,
+              "heads": 6.34,
+              "dyDeg": 4.64,
+              "dxDeg": 2.97,
+              "headPx": 11.1,
+              "band": "low",
+              "small": false
+            },
+            {
+              "t": 296.4,
+              "heads": 15.04,
+              "dyDeg": 19.89,
+              "dxDeg": 4.74,
+              "headPx": 20.8,
+              "band": "low",
+              "small": false
+            },
+            {
+              "t": 375.4,
+              "heads": 1.67,
+              "dyDeg": 0.94,
+              "dxDeg": 4.8,
+              "headPx": 8.5,
+              "band": "chest",
+              "small": false
+            }
+          ],
+          "deaths": 5,
+          "looks": 5,
+          "events": [
+            {
+              "t": 18,
+              "kind": "ally_kill",
+              "killer": "lisa",
+              "victim": "ulquiorra",
+              "killerTeam": "ally",
+              "victimTeam": "enemy"
+            },
+            {
+              "t": 20,
+              "kind": "ally_death",
+              "killer": "Fade",
+              "victim": "lisa",
+              "killerTeam": "enemy",
+              "victimTeam": "ally"
+            },
+            {
+              "t": 23,
+              "kind": "ally_death",
+              "killer": "Fade",
+              "victim": "CLV | bam",
+              "killerTeam": "enemy",
+              "victimTeam": "ally"
+            },
+            {
+              "t": 41,
+              "kind": "death",
+              "killer": "Fade",
+              "victim": "Me",
+              "killerTeam": "enemy",
+              "victimTeam": "ally"
+            },
+            {
+              "t": 44,
+              "kind": "ally_death",
+              "killer": "zeytazin",
+              "victim": "woo",
+              "killerTeam": "enemy",
+              "victimTeam": "ally",
+              "tradedBy": "Chamber"
+            },
+            {
+              "t": 49,
+              "kind": "ally_kill",
+              "killer": "Chamber",
+              "victim": "zeytazin",
+              "killerTeam": "ally",
+              "victimTeam": "enemy"
+            },
+            {
+              "t": 49,
+              "kind": "ally_death",
+              "killer": "Reyna",
+              "victim": "Chamber",
+              "killerTeam": "enemy",
+              "victimTeam": "ally"
+            },
+            {
+              "t": 95,
+              "kind": "ally_death",
+              "killer": "ulquiorra",
+              "victim": "woo",
+              "killerTeam": "enemy",
+              "victimTeam": "ally",
+              "tradedBy": "Me"
+            },
+            {
+              "t": 100,
+              "kind": "kill",
+              "killer": "Me",
+              "victim": "ulquiorra",
+              "killerTeam": "ally",
+              "victimTeam": "enemy"
+            },
+            {
+              "t": 110,
+              "kind": "ally_death",
+              "killer": "Fade",
+              "victim": "Chamber",
+              "killerTeam": "enemy",
+              "victimTeam": "ally"
+            },
+            {
+              "t": 116,
+              "kind": "kill",
+              "killer": "Me",
+              "victim": "Veto",
+              "killerTeam": "ally",
+              "victimTeam": "enemy"
+            },
+            {
+              "t": 117,
+              "kind": "ally_kill",
+              "killer": "lisa",
+              "victim": "Reyna",
+              "killerTeam": "ally",
+              "victimTeam": "enemy"
+            },
+            {
+              "t": 124,
+              "kind": "ally_death",
+              "killer": "Fade",
+              "victim": "lisa",
+              "killerTeam": "enemy",
+              "victimTeam": "ally"
+            },
+            {
+              "t": 131,
+              "kind": "ally_kill",
+              "killer": "CLV|bam",
+              "victim": "zeytazin",
+              "killerTeam": "ally",
+              "victimTeam": "enemy"
+            },
+            {
+              "t": 137,
+              "kind": "death",
+              "killer": "Fade",
+              "victim": "Me",
+              "killerTeam": "enemy",
+              "victimTeam": "ally"
+            },
+            {
+              "t": 149,
+              "kind": "ally_death",
+              "killer": "Fade",
+              "victim": "CLV | bam",
+              "killerTeam": "enemy",
+              "victimTeam": "ally"
+            },
+            {
+              "t": 194,
+              "kind": "ally_death",
+              "killer": "zeytazin",
+              "victim": "woo",
+              "killerTeam": "enemy",
+              "victimTeam": "ally"
+            },
+            {
+              "t": 198,
+              "kind": "ally_death",
+              "killer": "ulquiorra",
+              "victim": "lisa",
+              "killerTeam": "enemy",
+              "victimTeam": "ally"
+            },
+            {
+              "t": 211,
+              "kind": "ally_death",
+              "killer": "ulquiorra",
+              "victim": "CLV | bam",
+              "killerTeam": "enemy",
+              "victimTeam": "ally"
+            },
+            {
+              "t": 221,
+              "kind": "kill",
+              "killer": "Me",
+              "victim": "Fade",
+              "killerTeam": "ally",
+              "victimTeam": "enemy"
+            },
+            {
+              "t": 229,
+              "kind": "kill",
+              "killer": "Me",
+              "victim": "ulquiorra",
+              "killerTeam": "ally",
+              "victimTeam": "enemy"
+            },
+            {
+              "t": 232,
+              "kind": "kill",
+              "killer": "Me",
+              "victim": "Reyna",
+              "killerTeam": "ally",
+              "victimTeam": "enemy"
+            },
+            {
+              "t": 234,
+              "kind": "ally_death",
+              "killer": "zeytazin",
+              "victim": "Chamber",
+              "killerTeam": "enemy",
+              "victimTeam": "ally"
+            },
+            {
+              "t": 255,
+              "kind": "death",
+              "killer": "zeytazin",
+              "victim": "Me",
+              "killerTeam": "enemy",
+              "victimTeam": "ally"
+            },
+            {
+              "t": 297,
+              "kind": "death",
+              "killer": "ulquiorra",
+              "victim": "Me",
+              "killerTeam": "enemy",
+              "victimTeam": "ally"
+            },
+            {
+              "t": 299,
+              "kind": "ally_kill",
+              "killer": "lisa",
+              "victim": "Fade",
+              "killerTeam": "ally",
+              "victimTeam": "enemy"
+            },
+            {
+              "t": 303,
+              "kind": "ally_kill",
+              "killer": "lisa",
+              "victim": "Reyna",
+              "killerTeam": "ally",
+              "victimTeam": "enemy"
+            },
+            {
+              "t": 313,
+              "kind": "ally_kill",
+              "killer": "bam",
+              "victim": "ulquiorra",
+              "killerTeam": "ally",
+              "victimTeam": "enemy"
+            },
+            {
+              "t": 314,
+              "kind": "ally_death",
+              "killer": "Veto",
+              "victim": "lisa",
+              "killerTeam": "enemy",
+              "victimTeam": "ally"
+            },
+            {
+              "t": 318,
+              "kind": "ally_kill",
+              "killer": "woo",
+              "victim": "zeytazin",
+              "killerTeam": "ally",
+              "victimTeam": "enemy"
+            },
+            {
+              "t": 321,
+              "kind": "ally_kill",
+              "killer": "Chamber",
+              "victim": "Veto",
+              "killerTeam": "ally",
+              "victimTeam": "enemy"
+            },
+            {
+              "t": 376,
+              "kind": "death",
+              "killer": "Reyna",
+              "victim": "Me",
+              "killerTeam": "enemy",
+              "victimTeam": "ally"
+            },
+            {
+              "t": 379,
+              "kind": "ally_kill",
+              "killer": "lisa",
+              "victim": "Veto",
+              "killerTeam": "ally",
+              "victimTeam": "enemy"
+            },
+            {
+              "t": 383,
+              "kind": "ally_kill",
+              "killer": "CLV | bam",
+              "victim": "zeytazin",
+              "killerTeam": "ally",
+              "victimTeam": "enemy"
+            },
+            {
+              "t": 384,
+              "kind": "ally_kill",
+              "killer": "zeytazin",
+              "victim": "zeytazin",
+              "killerTeam": "ally",
+              "victimTeam": "enemy"
+            },
+            {
+              "t": 388,
+              "kind": "ally_death",
+              "killer": "ulquiorra",
+              "victim": "lisa",
+              "killerTeam": "enemy",
+              "victimTeam": "ally"
+            }
+          ],
+          "steps": [
+            {
+              "name": "scan",
+              "args": "{\"from\":\"0:00\",\"to\":\"6:28\"}"
+            },
+            {
+              "name": "measure_aim",
+              "args": "{\"at\":\"0:40.4\"}"
+            },
+            {
+              "name": "measure_aim",
+              "args": "{\"at\":\"2:16.4\"}"
+            },
+            {
+              "name": "measure_aim",
+              "args": "{\"at\":\"4:14.4\"}"
+            },
+            {
+              "name": "measure_aim",
+              "args": "{\"at\":\"4:56.4\"}"
+            },
+            {
+              "name": "measure_aim",
+              "args": "{\"at\":\"6:15.4\"}"
+            }
+          ],
+          "seconds": 69.2,
+          "usage": {
+            "calls": 21,
+            "polls": 0,
+            "files": 0,
+            "rateLimited": 2,
+            "failed": 0,
+            "blocked": 0,
+            "models": {
+              "gemini-3.5-flash-lite": 21
+            }
+          },
+          "score": {
+            "verdict": "false positive: crosshair_low",
+            "falsePositive": true,
+            "counted": true
+          }
+        },
+        "gemini-agentic": {
+          "model": "gemini-3.5-flash-lite",
+          "status": "completed",
+          "id": "v1_ChdNdmpUYXU3NkhjSy15dE1QMzRqQ2dBcxIXTXZqVGF1NzZIY0steXRNUDM0akNnQXM",
+          "requests": {
+            "create": 1,
+            "polls": 1
+          },
+          "tokens": {
+            "total_tokens": 27799,
+            "total_input_tokens": 580,
+            "input_tokens_by_modality": [
+              {
+                "modality": "text",
+                "tokens": 580
+              }
+            ],
+            "total_cached_tokens": 0,
+            "total_output_tokens": 255,
+            "total_tool_use_tokens": 26964,
+            "tool_use_tokens_by_modality": [
+              {
+                "modality": "video",
+                "tokens": 25674
+              },
+              {
+                "modality": "text",
+                "tokens": 1290
+              }
+            ],
+            "total_thought_tokens": 0
+          },
+          "looks": 2,
+          "stepTypes": [
+            "user_input",
+            "processing_call",
+            "processing_result",
+            "processing_call",
+            "processing_result",
+            "thought",
+            "model_output"
+          ],
+          "steps": [
+            {
+              "type": "user_input",
+              "content": [
+                {
+                  "uri": "https://generativelanguage.googleapis.com/v1beta/files/3dllaqinsbs6",
+                  "mime_type": "video/webm",
+                  "type": "video",
+                  "processing": "agentic"
+                },
+                {
+                  "text": "This is a recording of one Valorant match from the player's own screen (a small silent copy), 6:28 long. Find the one habit that cost this player the most fights, and prove it with moments from the video. If no single habit stands out, say so: a wrong diagnosis is worse than none.\n\nHow Valorant looks on screen:\n- The crosshair is always at the screen center.\n- The kill feed (top right) lists kille…",
+                  "type": "text"
+                }
+              ]
+            },
+            {
+              "id": "call_2859363",
+              "type": "processing_call"
+            },
+            {
+              "call_id": "call_2859363",
+              "type": "processing_result"
+            },
+            {
+              "id": "call_2859375",
+              "type": "processing_call"
+            },
+            {
+              "call_id": "call_2859375",
+              "type": "processing_result"
+            },
+            {
+              "type": "thought"
+            },
+            {
+              "content": [
+                {
+                  "text": "```json\n{\"found\": true, \"habit_id\": \"crosshair_low\", \"habit\": \"Crosshair below head level\", \"why\": \"The player consistently keeps their crosshair near chest or stomach height when walking around corners, forcing them to flick upward when enemies appear and losing crucial split-second reaction time in gunfights.\", \"evidence\": [{\"t\": \"0:40\", \"what\": \"Player holds crosshair at chest/torso level while…",
+                  "type": "text"
+                }
+              ],
+              "type": "model_output"
+            }
+          ],
+          "errors": null,
+          "found": true,
+          "habitId": "crosshair_low",
+          "habit": "Crosshair below head level",
+          "why": "The player consistently keeps their crosshair near chest or stomach height when walking around corners, forcing them to flick upward when enemies appear and losing crucial split-second reaction time in gunfights.",
+          "evidence": [
+            {
+              "t": 40,
+              "what": "Player holds crosshair at chest/torso level while rounding the corner and shoots the enemy's body."
+            },
+            {
+              "t": 231,
+              "what": "Player swings around the corner with crosshair pointed well below head height, needing an upward correction."
+            },
+            {
+              "t": 368,
+              "what": "Player's crosshair is aimed low while peeking, leading to a body shot engagement where they get killed."
+            }
+          ],
+          "text": "```json\n{\"found\": true, \"habit_id\": \"crosshair_low\", \"habit\": \"Crosshair below head level\", \"why\": \"The player consistently keeps their crosshair near chest or stomach height when walking around corners, forcing them to flick upward when enemies appear and losing crucial split-second reaction time in gunfights.\", \"evidence\": [{\"t\": \"0:40\", \"what\": \"Player holds crosshair at chest/torso level while rounding the corner and shoots the enemy's body.\"}, {\"t\": \"3:51\", \"what\": \"Player swings around the corner with crosshair pointed well below head height, needing an upward correction.\"}, {\"t\": \"6:08\", \"what\": \"Player's crosshair is aimed low while peeking, leading to a body shot engagement where they get killed.\"}]}\n```",
+          "seconds": 7.7,
+          "usage": {
+            "calls": 1,
+            "polls": 1,
+            "files": 0,
+            "rateLimited": 0,
+            "failed": 0,
+            "blocked": 0,
+            "models": {
+              "gemini-3.5-flash-lite": 1
+            }
+          },
+          "score": {
+            "verdict": "false positive: crosshair_low",
+            "falsePositive": true,
+            "counted": true
+          }
+        }
+      },
+      "setup": {
+        "duration": 388.1,
+        "size": "2170x1162",
+        "proxyMb": 11.86,
+        "proxySeconds": 29.7,
+        "uploadSeconds": 17.2,
+        "usage": {
+          "calls": 0,
+          "polls": 0,
+          "files": 5,
+          "rateLimited": 0,
+          "failed": 0,
+          "blocked": 0,
+          "models": {}
+        }
+      }
+    }
+  ],
+  "finished": "2026-10-17T22:35:39.640Z",
+  "summary": {
+    "agent": {
+      "plantedFound": "0/0",
+      "falsePositives": "1/1",
+      "noResult": 0,
+      "calls": 41,
+      "seconds": 236.6
+    },
+    "pipeline": {
+      "plantedFound": "0/0",
+      "falsePositives": "1/1",
+      "noResult": 0,
+      "calls": 21,
+      "seconds": 69.2
+    },
+    "gemini-agentic": {
+      "plantedFound": "0/0",
+      "falsePositives": "1/1",
+      "noResult": 0,
+      "calls": 1,
+      "seconds": 7.7
+    }
+  },
+  "totals": {
+    "modelCalls": 63,
+    "uploadRequests": 5,
+    "models": {
+      "gemini-3.5-flash-lite": 60,
+      "gemini-3.1-flash-lite": 2,
+      "gemini-flash-lite-latest": 1
+    }
+  }
+}

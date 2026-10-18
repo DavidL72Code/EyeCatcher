@@ -43,24 +43,32 @@ const ev = (t, what) => ({ t, what });
 
 // The coach's turns, in order. The run's heads differ so the second review can be compared with the first.
 let heads = [];
+const FINDING = { found: true, habit_id: 'crosshair_low', habit: 'Crosshair below head level', why: 'Your crosshair sat at chest height when enemies appeared, so they shot first.', drill: 'Ten minutes walking corners in a custom game with the crosshair at head height.', recheck: 'Measure first sight in five duels.' };
+const EVIDENCE = [ev('0:13.8', 'Chest height as Enemy 1 appears'), ev('0:46.8', 'Same at the doorway'), ev('2:13.6', 'Again before the last death')];
 const coach = [
-  () => call(['scan', { from: '0:00', to: '2:30' }]),
-  () => call(['measure_aim', { at: '0:14.2' }]),
-  () => call(['note', { theory: 'Crosshair sits low', status: 'testing', evidence: [ev('0:14', 'chest height at first sight')] }]),
-  () => call(['ask_player', { question: 'Did you expect someone at that corner?', at: '0:14', options: ['Yes', 'No'] }]),
-  () => call(['measure_aim', { at: '0:47.1', more: ['2:15'] }]),
-  () => call(['finish', { found: true, habit_id: 'crosshair_low', habit: 'Crosshair below head level', why: 'Your crosshair sat at chest height when enemies appeared, so they shot first.', drill: 'Ten minutes walking corners in a custom game with the crosshair at head height.', recheck: 'Measure first sight in five duels.', evidence: [ev('0:14.2', 'a'), ev('0:47.1', 'b'), ev('1:30', 'never looked here')] }]),
-  () => call(['finish', { found: true, habit_id: 'crosshair_low', habit: 'Crosshair below head level', why: 'Your crosshair sat at chest height when enemies appeared, so they shot first.', drill: 'Ten minutes walking corners in a custom game with the crosshair at head height.', recheck: 'Measure first sight in five duels.', evidence: [ev('0:14.2', 'Chest height as Enemy 1 appears'), ev('0:47.1', 'Same at the doorway'), ev('2:14.0', 'Again before the last death')] }]),
-  () => call(['frames', { at: '0:31', before: 1, after: 0.5, fps: 4, region: 'aim' }]),
-  () => call(['note', { id: 'T1', status: 'supported', evidence: [ev('0:31', 'on the head in a fight they won')] }]),
-  () => call(['finish', { found: true, habit_id: 'crosshair_low', habit: 'Crosshair below head level', why: 'Your crosshair sat at chest height when enemies appeared, so they shot first.', drill: 'Ten minutes walking corners in a custom game with the crosshair at head height.', recheck: 'Measure first sight in five duels.', progress: 'unclear', evidence: [ev('0:14.2', 'Chest height as Enemy 1 appears'), ev('0:47.1', 'Same at the doorway'), ev('2:14.0', 'Again before the last death')], contrast: [ev('0:31', 'On the head, and the fight was won')] }]),
+  () => call(['scan', { from: '0:00', to: '2:30', why: 'every fight in the match' }]),
+  () => call(['measure_aim', { at: '0:13.8', why: 'crosshair height before the first death' }]),
+  () => call(['ask_player', { question: 'Did you expect someone at that corner?', at: '0:14', options: ['Yes', 'No'], why: 'whether that angle was a surprise', notes: [{ theory: 'Crosshair sits low', status: 'testing', evidence: [ev('0:13.8', 'chest height at first sight')] }] }]),
+  () => call(['measure_aim', { at: '0:46.8', more: ['2:13.6', '2:15'], why: 'the same before the other deaths' }]),
+  () => call(['finish', { ...FINDING, evidence: [...EVIDENCE.slice(0, 2), ev('1:30', 'never looked here')] }]),
+  () => call(['finish', { ...FINDING, evidence: EVIDENCE }]),
+  () => call(['frames', { at: '0:31', before: 1, after: 0.5, fps: 4, region: 'aim', why: 'a fight they won' }]),
+  () => call(['measure_aim', { at: '0:30.6', why: 'aim in the fight they won', notes: [{ id: 'T1', status: 'supported', evidence: [ev('0:31', 'on the head in a fight they won')] }] }]),
+  () => call(['finish', { ...FINDING, progress: 'unclear', evidence: EVIDENCE, contrast: [ev('0:31', 'On the head, and the fight was won')] }]),
 ];
-const seen = { agentBodies: [], scans: 0, heads: 0, uploads: 0, starts: 0 };
+const seen = { agentBodies: [], scans: 0, heads: 0, headCalls: [], feedCalls: 0, uploads: 0, starts: 0 };
 
 function gemini(body) {
   const parts = body.contents?.[0]?.parts || [];
   if (parts.some((p) => p.fileData)) { seen.scans++; seen.scanBody = body; return text({ events: scanEvents }); }
-  if (!body.tools) { const h = heads[seen.heads++ % heads.length], b = headBox(h); return text({ enemies: [{ head_2d: [0, 950, 40, 990], body_2d: [600, 0, 700, 20] }, { head_2d: b, body_2d: [b[0], b[1] - 10, b[2] + 200, b[3] + 10] }] }); }
+  const prompt = parts.map((p) => p.text || '').join(' ');
+  // the synthetic kill feed's names aren't known here, so the scan falls back to the low-detail pass
+  if (!body.tools && /kill feed/.test(prompt)) { seen.feedCalls++; return text({ rows: [] }); }
+  if (!body.tools) {
+    const n = parts.filter((p) => p.inlineData).length;
+    seen.headCalls.push(n);
+    return text({ images: Array.from({ length: n }, (_, i) => { const b = headBox(heads[seen.heads++ % heads.length]); return { image: i + 1, enemies: [{ head_2d: [0, 950, 40, 990], body_2d: [600, 0, 700, 20] }, { head_2d: b, body_2d: [b[0], b[1] - 10, b[2] + 200, b[3] + 10] }] }; }) });
+  }
   seen.agentBodies.push(body);
   const turn = body.contents.filter((c) => c.role === 'model').length;
   return (coach[turn] || coach.at(-1))();
@@ -109,7 +117,10 @@ try {
   check(ticks === truth.duels.length, `timeline shows every kill and death (${ticks})`);
   check(await page.locator('.round').count() === truth.rounds.length, 'timeline shows the rounds');
   check(await page.locator('.theory.testing').count() === 1, 'the board shows a theory being tested');
-  check(/0:14\.2 · 2\.2 heads low/.test(await page.locator('.strip figcaption').first().innerText()), 'the measured frame shows its number');
+  check(await page.locator('.beat').first().locator('.beat-kind').innerText() === 'Question' && await page.locator('.beat').count() === 3, 'the breakdown has a card per step, newest first');
+  check(await page.locator('.beat.scan .beat-why').innerText() === 'every fight in the match' && /^3 kills, 5 deaths, 0 teammates down$/.test(await page.locator('.beat.scan .beat-out').innerText()), "the scan card says what it checked and what it found");
+  check(/^2\.2 heads low$/.test(await page.locator('.beat.measure_aim figcaption').first().innerText()) && await page.locator('.beat.measure_aim .box').count() === 1, 'the aim card shows the measured frame, its box, and its number');
+  check(/New theory Crosshair sits low\s*0:13 chest height at first sight/.test(await page.locator('.beat.measure_aim .beat-take').innerText()), "the coach's take lands on the card it was about");
   const firstAgent = seen.agentBodies[0];
   check(/<data>I lose the first duel a lot<\/data>/.test(firstAgent.systemInstruction.parts[0].text), "the player's note reaches the coach as data");
   check(!/First find|then measure|Step 1/i.test(firstAgent.systemInstruction.parts[0].text), 'the brief gives no order of steps');
@@ -120,14 +131,18 @@ try {
   const askReply = seen.agentBodies.map(lastResults).flat().find((r) => r.name === 'ask_player');
   check(askReply?.response.result.answer === '<data>No</data>', "the player's answer goes back to the coach");
   const measured = seen.agentBodies.map(lastResults).flat().filter((r) => r.name === 'measure_aim').flatMap((r) => r.response.result.measured || [r.response.result]);
-  check(!measured[0].warnings && /kill feed shows the fight ending \(2:15 death\)/.test(measured[2].warnings?.[0]), 'measuring at the kill-feed time, not first sight, comes with a warning');
-  const firstFinish = after(6).find((r) => r.name === 'finish')?.response.result;
+  check(/the player was dead then \(the kill feed shows their death at 2:15\)/.test(measured[3]?.skipped) && measured.filter((m) => m.found).length === 4, 'a moment after their death is skipped instead of measured');
+  check(JSON.stringify(seen.headCalls) === '[1,2,1]', `one head call per measure_aim, every moment in it (${JSON.stringify(seen.headCalls)})`);
+  check(/before_finish/.test(JSON.stringify(after(4))) && /look at a fight they won \(kills at 0:32, 1:24, 1:59\)/.test(measured[1] && JSON.stringify(after(4))), 'every look says what finish will still ask for');
+  const outs = await page.locator('.how .beat-out').evaluateAll((els) => els.map((e) => e.textContent).join(' | '));
+  check(/2:15\.0 skipped: you were dead \(2:15\)/.test(outs), `the breakdown shows the skipped moment (${outs})`);
+  const firstFinish = after(5).find((r) => r.name === 'finish')?.response.result;
   check(firstFinish?.ok === false && firstFinish.problems.some((p) => /haven't looked closely at 1:30/.test(p)), 'a finish citing an unseen moment is sent back');
-  const secondFinish = after(7).find((r) => r.name === 'finish')?.response.result;
+  const secondFinish = after(6).find((r) => r.name === 'finish')?.response.result;
   check(secondFinish?.ok === false && /haven't looked at a fight they won \(kills at 0:32, 1:24, 1:59\)/.test(secondFinish.problems[0]), 'a finish that never checked a won fight is sent back once');
-  const framesTurn = seen.agentBodies[8].contents.at(-1).parts;
+  const framesTurn = seen.agentBodies[7].contents.at(-1).parts;
   check(framesTurn.filter((p) => p.inlineData).length === 7 && framesTurn[0].functionResponse.response.result.images === '7 attached', 'frames reach the coach as pictures, not JSON');
-  const imgsLater = seen.agentBodies[9].contents.flatMap((c) => c.parts).filter((p) => p.inlineData).length;
+  const imgsLater = seen.agentBodies[8].contents.flatMap((c) => c.parts).filter((p) => p.inlineData).length;
   check(imgsLater === 0, 'old pictures are dropped from later turns');
   check(await page.locator('.verdict h2').innerText() === 'CROSSHAIR BELOW HEAD LEVEL', 'verdict names the habit');
   check(await page.locator('.metric b').innerText() === '2.2', 'the metric is the measured median (2.2 heads)');
@@ -137,6 +152,9 @@ try {
   check(await page.locator('#status').isHidden(), 'the spinner is gone when done');
   check(/0:31\s*On the head, and the fight was won/.test(await page.locator('.contrast').innerText()), 'moments they got right show apart from the evidence');
   check(await page.locator('.how .theory.supported').count() === 1, 'the board is kept under How it got here');
+  const calls = 9 + 1 + seen.feedCalls + 3;
+  check(await page.locator('.how summary').innerText() === `How it got here: ${calls} calls, 5 looks`, `the review counts its model calls (${calls}: 9 turns, the scan's ${1 + seen.feedCalls}, 3 aim)`);
+  check(await page.locator('.how .beat').count() === 9, 'the breakdown folds into How it got here');
   await page.click('.evidence li:nth-child(2) button');
   await page.waitForFunction(() => document.querySelector('#video').currentTime > 44);
   check(true, 'clicking evidence plays that moment');
@@ -145,13 +163,14 @@ try {
 
   console.log('second review: the re-check');
   seen.agentBodies.length = 0;
+  seen.heads = 0;
   heads = [1.0, 0.9, 1.1];
   await page.goto(base);
   check(/Working on Crosshair below head level/.test(await page.locator('#working').innerText()), 'the start screen shows the habit being worked on');
   await page.setInputFiles('#fileInput', fixture);
   await page.waitForSelector('.question:not([hidden])', { timeout: 60000 });
   check(seen.uploads === 1, 'the same recording reuses its uploaded scan copy');
-  check(/They are working on Crosshair below head level/.test(seen.agentBodies[0].systemInstruction.parts[0].text) && /Baseline: Crosshair 2\.2 heads below the head, median of 3 duels/.test(seen.agentBodies[0].systemInstruction.parts[0].text), 'the coach is told the habit and its baseline');
+  check(/They are working on Crosshair below head level/.test(seen.agentBodies[0].systemInstruction.parts[0].text) && /Baseline: Crosshair 2\.2 heads below the head, median of 4 duels/.test(seen.agentBodies[0].systemInstruction.parts[0].text), 'the coach is told the habit and its baseline');
   await page.click('.question [data-skip]');
   await page.waitForSelector('#verdict:not([hidden])', { timeout: 60000 });
   check(/Crosshair below head level: better than before \(2\.2 to 1\.0 heads\)/.test(await page.locator('.progress').innerText()), 'progress is measured against the baseline in code');

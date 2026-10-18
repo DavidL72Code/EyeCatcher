@@ -1,0 +1,143 @@
+{
+  "started": "2026-10-17T23:37:49.107Z",
+  "budget": {
+    "looks": 30,
+    "turns": 30
+  },
+  "maxCallsPerRecording": 80,
+  "recordings": [
+    {
+      "file": "../tests/fixtures/match.mp4",
+      "plantedHabit": "crosshair_low",
+      "systems": {
+        "pipeline": {
+          "error": "Gemini's free limit is used up on every model. Try again in a few minutes, or tomorrow if it's the daily limit.",
+          "steps": [
+            {
+              "name": "scan",
+              "args": "{\"from\":\"0:00\",\"to\":\"2:30\"}"
+            },
+            {
+              "name": "frames",
+              "args": "{\"at\":\"0:14.0, 0:13.5, 0:13.0, 0:12.5\"}"
+            },
+            {
+              "name": "measure_aim",
+              "args": "{\"at\":\"0:14.0\"}"
+            },
+            {
+              "name": "frames",
+              "args": "{\"at\":\"0:47.0, 0:46.5, 0:46.0, 0:45.5\"}"
+            },
+            {
+              "name": "measure_aim",
+              "args": "{\"at\":\"0:47.0\"}"
+            }
+          ],
+          "seconds": 478.8,
+          "usage": {
+            "calls": 18,
+            "polls": 0,
+            "files": 0,
+            "rateLimited": 2,
+            "failed": 12,
+            "blocked": 0,
+            "models": {
+              "gemini-3.5-flash-lite": 1,
+              "gemini-3.1-flash-lite": 16,
+              "gemini-flash-lite-latest": 1
+            }
+          },
+          "score": {
+            "verdict": "no result",
+            "counted": false
+          },
+          "evidenceOnDuels": null
+        }
+      },
+      "setup": {
+        "duration": 150,
+        "size": "1280x720",
+        "proxyMb": 0.63,
+        "proxySeconds": 6.6,
+        "uploadSeconds": 3.9,
+        "usage": {
+          "calls": 0,
+          "polls": 0,
+          "files": 3,
+          "rateLimited": 0,
+          "failed": 0,
+          "blocked": 0,
+          "models": {}
+        }
+      }
+    },
+    {
+      "file": "recordings/Screen Recording 2026-10-17 at 6.13.34 PM.mov",
+      "plantedHabit": null,
+      "systems": {
+        "pipeline": {
+          "error": "Gemini is busy right now. Try again in a minute.",
+          "steps": [
+            {
+              "name": "scan",
+              "args": "{\"from\":\"0:00\",\"to\":\"6:28\"}"
+            }
+          ],
+          "seconds": 224.3,
+          "usage": {
+            "calls": 15,
+            "polls": 0,
+            "files": 0,
+            "rateLimited": 0,
+            "failed": 9,
+            "blocked": 0,
+            "models": {
+              "gemini-3.1-flash-lite": 15
+            }
+          },
+          "score": {
+            "verdict": "no result",
+            "counted": false
+          },
+          "evidenceOnDuels": null
+        }
+      },
+      "setup": {
+        "duration": 388.1,
+        "size": "2170x1162",
+        "proxyMb": 11.86,
+        "proxySeconds": 38.7,
+        "uploadSeconds": 23.2,
+        "usage": {
+          "calls": 0,
+          "polls": 0,
+          "files": 8,
+          "rateLimited": 0,
+          "failed": 0,
+          "blocked": 0,
+          "models": {}
+        }
+      }
+    }
+  ],
+  "finished": "2026-10-17T23:50:52.897Z",
+  "summary": {
+    "pipeline": {
+      "plantedFound": "0/0",
+      "falsePositives": "0/0",
+      "noResult": 2,
+      "calls": 33,
+      "seconds": 703.1
+    }
+  },
+  "totals": {
+    "modelCalls": 33,
+    "uploadRequests": 11,
+    "models": {
+      "gemini-3.5-flash-lite": 1,
+      "gemini-3.1-flash-lite": 31,
+      "gemini-flash-lite-latest": 1
+    }
+  }
+}

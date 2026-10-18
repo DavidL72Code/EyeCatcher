@@ -1,0 +1,974 @@
+{
+  "started": "2026-10-18T00:00:55.840Z",
+  "budget": {
+    "looks": 30,
+    "turns": 30
+  },
+  "maxCallsPerRecording": 150,
+  "recordings": [
+    {
+      "file": "../tests/fixtures/match.mp4",
+      "plantedHabit": "crosshair_low",
+      "systems": {
+        "pipeline": {
+          "found": true,
+          "habitId": "crosshair_low",
+          "evidence": [
+            {
+              "t": 14,
+              "what": "crosshair 2.24 heads below"
+            },
+            {
+              "t": 47,
+              "what": "crosshair 1.98 heads below"
+            },
+            {
+              "t": 66,
+              "what": "crosshair 2.22 heads below"
+            },
+            {
+              "t": 101,
+              "what": "crosshair 1.75 heads below"
+            },
+            {
+              "t": 134,
+              "what": "crosshair 2.06 heads below"
+            }
+          ],
+          "aim": {
+            "n": 5,
+            "heads": 2.06,
+            "dyDeg": 4.44,
+            "atHead": 0,
+            "bands": {
+              "chest": 5
+            }
+          },
+          "measures": [
+            {
+              "t": 14,
+              "feedT": 15,
+              "checked": [
+                {
+                  "t": 12.5,
+                  "live": true
+                },
+                {
+                  "t": 13,
+                  "live": true
+                },
+                {
+                  "t": 13.5,
+                  "live": true
+                },
+                {
+                  "t": 14,
+                  "live": true
+                }
+              ],
+              "heads": 2.24,
+              "dyDeg": 4.44,
+              "dxDeg": 13.22,
+              "headPx": 18.1,
+              "band": "chest",
+              "small": false,
+              "box": [
+                378,
+                711,
+                423,
+                756
+              ]
+            },
+            {
+              "t": 47,
+              "feedT": 48,
+              "checked": [
+                {
+                  "t": 45.5,
+                  "live": true
+                },
+                {
+                  "t": 46,
+                  "live": true
+                },
+                {
+                  "t": 46.5,
+                  "live": true
+                },
+                {
+                  "t": 47,
+                  "live": true
+                }
+              ],
+              "heads": 1.98,
+              "dyDeg": 4.02,
+              "dxDeg": 13.52,
+              "headPx": 18.5,
+              "band": "chest",
+              "small": false,
+              "box": [
+                387,
+                713,
+                433,
+                765
+              ]
+            },
+            {
+              "t": 66,
+              "feedT": 67,
+              "checked": [
+                {
+                  "t": 64.5,
+                  "live": true
+                },
+                {
+                  "t": 65,
+                  "live": true
+                },
+                {
+                  "t": 65.5,
+                  "live": true
+                },
+                {
+                  "t": 66,
+                  "live": true
+                }
+              ],
+              "heads": 2.22,
+              "dyDeg": 4.79,
+              "dxDeg": 13.27,
+              "headPx": 19.7,
+              "band": "chest",
+              "small": false,
+              "box": [
+                368,
+                711,
+                417,
+                758
+              ]
+            },
+            {
+              "t": 101,
+              "feedT": 102,
+              "checked": [
+                {
+                  "t": 99.5,
+                  "live": true
+                },
+                {
+                  "t": 100,
+                  "live": true
+                },
+                {
+                  "t": 100.5,
+                  "live": true
+                },
+                {
+                  "t": 101,
+                  "live": true
+                }
+              ],
+              "heads": 1.75,
+              "dyDeg": 3.78,
+              "dxDeg": 13.49,
+              "headPx": 19.7,
+              "band": "chest",
+              "small": false,
+              "box": [
+                391,
+                712,
+                440,
+                765
+              ]
+            },
+            {
+              "t": 134,
+              "feedT": 135,
+              "checked": [
+                {
+                  "t": 132.5,
+                  "live": true
+                },
+                {
+                  "t": 133,
+                  "live": true
+                },
+                {
+                  "t": 133.5,
+                  "live": true
+                },
+                {
+                  "t": 134,
+                  "live": true
+                }
+              ],
+              "heads": 2.06,
+              "dyDeg": 4.55,
+              "dxDeg": 13.24,
+              "headPx": 20.2,
+              "band": "chest",
+              "small": false,
+              "box": [
+                373,
+                710,
+                423,
+                758
+              ]
+            }
+          ],
+          "deaths": 5,
+          "looks": 10,
+          "events": [
+            {
+              "t": 0,
+              "kind": "round_start"
+            },
+            {
+              "t": 40,
+              "kind": "round_start"
+            },
+            {
+              "t": 80,
+              "kind": "round_start"
+            },
+            {
+              "t": 120,
+              "kind": "round_start"
+            },
+            {
+              "t": 15,
+              "kind": "death"
+            },
+            {
+              "t": 32,
+              "kind": "kill"
+            },
+            {
+              "t": 48,
+              "kind": "death"
+            },
+            {
+              "t": 67,
+              "kind": "death"
+            },
+            {
+              "t": 102,
+              "kind": "death"
+            },
+            {
+              "t": 119,
+              "kind": "kill"
+            },
+            {
+              "t": 135,
+              "kind": "death"
+            }
+          ],
+          "steps": [
+            {
+              "name": "scan",
+              "args": "{\"from\":\"0:00\",\"to\":\"2:30\"}"
+            },
+            {
+              "name": "frames",
+              "args": "{\"at\":\"0:14.0, 0:13.5, 0:13.0, 0:12.5\"}"
+            },
+            {
+              "name": "measure_aim",
+              "args": "{\"at\":\"0:14.0\"}"
+            },
+            {
+              "name": "frames",
+              "args": "{\"at\":\"0:47.0, 0:46.5, 0:46.0, 0:45.5\"}"
+            },
+            {
+              "name": "measure_aim",
+              "args": "{\"at\":\"0:47.0\"}"
+            },
+            {
+              "name": "frames",
+              "args": "{\"at\":\"1:06.0, 1:05.5, 1:05.0, 1:04.5\"}"
+            },
+            {
+              "name": "measure_aim",
+              "args": "{\"at\":\"1:06.0\"}"
+            },
+            {
+              "name": "frames",
+              "args": "{\"at\":\"1:41.0, 1:40.5, 1:40.0, 1:39.5\"}"
+            },
+            {
+              "name": "measure_aim",
+              "args": "{\"at\":\"1:41.0\"}"
+            },
+            {
+              "name": "frames",
+              "args": "{\"at\":\"2:14.0, 2:13.5, 2:13.0, 2:12.5\"}"
+            },
+            {
+              "name": "measure_aim",
+              "args": "{\"at\":\"2:14.0\"}"
+            }
+          ],
+          "seconds": 976.9,
+          "usage": {
+            "calls": 24,
+            "polls": 0,
+            "files": 0,
+            "rateLimited": 1,
+            "failed": 12,
+            "blocked": 0,
+            "models": {
+              "gemini-3.5-flash-lite": 1,
+              "gemini-3.1-flash-lite": 23
+            }
+          },
+          "score": {
+            "verdict": "found",
+            "hit": true,
+            "counted": true
+          },
+          "evidenceOnDuels": "5/5"
+        }
+      },
+      "setup": {
+        "duration": 150,
+        "size": "1280x720",
+        "proxyMb": 0.63,
+        "proxySeconds": 5.8,
+        "uploadSeconds": 6.4,
+        "usage": {
+          "calls": 0,
+          "polls": 0,
+          "files": 4,
+          "rateLimited": 0,
+          "failed": 0,
+          "blocked": 0,
+          "models": {}
+        }
+      }
+    },
+    {
+      "file": "recordings/Screen Recording 2026-10-17 at 6.13.34 PM.mov",
+      "plantedHabit": null,
+      "systems": {
+        "pipeline": {
+          "found": false,
+          "habitId": null,
+          "evidence": [],
+          "aim": {
+            "n": 4,
+            "heads": -0.15,
+            "dyDeg": -0.17,
+            "atHead": 2,
+            "bands": {
+              "head": 2,
+              "above": 1,
+              "chest": 1
+            }
+          },
+          "measures": [
+            {
+              "t": 40,
+              "feedT": 41,
+              "checked": [
+                {
+                  "t": 38.5,
+                  "live": true
+                },
+                {
+                  "t": 39,
+                  "live": true
+                },
+                {
+                  "t": 39.5,
+                  "live": true
+                },
+                {
+                  "t": 40,
+                  "live": true
+                }
+              ],
+              "heads": -0.53,
+              "dyDeg": -0.57,
+              "dxDeg": 4.34,
+              "headPx": 16.3,
+              "band": "head",
+              "small": false,
+              "box": [
+                500,
+                569,
+                525,
+                582
+              ]
+            },
+            {
+              "t": null,
+              "feedT": 138,
+              "checked": [
+                {
+                  "t": 135.5,
+                  "live": false
+                },
+                {
+                  "t": 136,
+                  "live": false
+                },
+                {
+                  "t": 136.5,
+                  "live": false
+                },
+                {
+                  "t": 137,
+                  "live": false
+                }
+              ],
+              "skipped": "no live frame among the candidates"
+            },
+            {
+              "t": 254,
+              "feedT": 256,
+              "checked": [
+                {
+                  "t": 253.5,
+                  "live": true
+                },
+                {
+                  "t": 254,
+                  "live": true
+                },
+                {
+                  "t": 254.5,
+                  "live": false
+                },
+                {
+                  "t": 255,
+                  "live": false
+                }
+              ],
+              "heads": 0.24,
+              "dyDeg": 0.23,
+              "dxDeg": 4.29,
+              "headPx": 14.3,
+              "band": "head",
+              "small": false,
+              "box": [
+                483,
+                568,
+                505,
+                581
+              ]
+            },
+            {
+              "t": 296,
+              "feedT": 297,
+              "checked": [
+                {
+                  "t": 294.5,
+                  "live": true
+                },
+                {
+                  "t": 295,
+                  "live": true
+                },
+                {
+                  "t": 295.5,
+                  "live": true
+                },
+                {
+                  "t": 296,
+                  "live": true
+                }
+              ],
+              "heads": -1.61,
+              "dyDeg": -2.43,
+              "dxDeg": 3.05,
+              "headPx": 22.8,
+              "band": "above",
+              "small": false,
+              "box": [
+                538,
+                543,
+                573,
+                563
+              ]
+            },
+            {
+              "t": 375,
+              "feedT": 376,
+              "checked": [
+                {
+                  "t": 373.5,
+                  "live": true
+                },
+                {
+                  "t": 374,
+                  "live": true
+                },
+                {
+                  "t": 374.5,
+                  "live": true
+                },
+                {
+                  "t": 375,
+                  "live": true
+                }
+              ],
+              "heads": 1.18,
+              "dyDeg": 1.07,
+              "dxDeg": 3.94,
+              "headPx": 13.7,
+              "band": "chest",
+              "small": false,
+              "box": [
+                464,
+                561,
+                485,
+                576
+              ]
+            }
+          ],
+          "deaths": 5,
+          "looks": 9,
+          "events": [
+            {
+              "t": 0,
+              "kind": "round_start"
+            },
+            {
+              "t": 54,
+              "kind": "round_end"
+            },
+            {
+              "t": 57,
+              "kind": "round_start"
+            },
+            {
+              "t": 152,
+              "kind": "round_end"
+            },
+            {
+              "t": 156,
+              "kind": "round_start"
+            },
+            {
+              "t": 261,
+              "kind": "round_end"
+            },
+            {
+              "t": 262,
+              "kind": "round_start"
+            },
+            {
+              "t": 328,
+              "kind": "round_end"
+            },
+            {
+              "t": 329,
+              "kind": "round_start"
+            },
+            {
+              "t": 378,
+              "kind": "round_end"
+            },
+            {
+              "t": 18,
+              "kind": "ally_kill",
+              "killer": "lisa",
+              "victim": "ulquiorra",
+              "killerTeam": "ally",
+              "victimTeam": "enemy"
+            },
+            {
+              "t": 25,
+              "kind": "ally_death",
+              "killer": "Fade",
+              "victim": "CLV | bam",
+              "killerTeam": "enemy",
+              "victimTeam": "ally"
+            },
+            {
+              "t": 41,
+              "kind": "death",
+              "killer": "Fade",
+              "victim": "Me",
+              "killerTeam": "enemy",
+              "victimTeam": "ally"
+            },
+            {
+              "t": 45,
+              "kind": "ally_death",
+              "killer": "zeytazin",
+              "victim": "woo",
+              "killerTeam": "enemy",
+              "victimTeam": "ally",
+              "tradedBy": "Chamber"
+            },
+            {
+              "t": 50,
+              "kind": "ally_kill",
+              "killer": "Chamber",
+              "victim": "zeytazin",
+              "killerTeam": "ally",
+              "victimTeam": "enemy"
+            },
+            {
+              "t": 50,
+              "kind": "ally_death",
+              "killer": "Reyna",
+              "victim": "Chamber",
+              "killerTeam": "enemy",
+              "victimTeam": "ally"
+            },
+            {
+              "t": 95,
+              "kind": "ally_death",
+              "killer": "ulquiorra",
+              "victim": "woo",
+              "killerTeam": "enemy",
+              "victimTeam": "ally",
+              "tradedBy": "Me"
+            },
+            {
+              "t": 100,
+              "kind": "kill",
+              "killer": "Me",
+              "victim": "ulqiorra",
+              "killerTeam": "ally",
+              "victimTeam": "enemy"
+            },
+            {
+              "t": 112,
+              "kind": "ally_death",
+              "killer": "Fade",
+              "victim": "Chamber",
+              "killerTeam": "enemy",
+              "victimTeam": "ally"
+            },
+            {
+              "t": 116,
+              "kind": "kill",
+              "killer": "Me",
+              "victim": "Veto",
+              "killerTeam": "ally",
+              "victimTeam": "enemy"
+            },
+            {
+              "t": 117,
+              "kind": "ally_kill",
+              "killer": "lisa",
+              "victim": "Reyna",
+              "killerTeam": "ally",
+              "victimTeam": "enemy"
+            },
+            {
+              "t": 124,
+              "kind": "ally_death",
+              "killer": "Fade",
+              "victim": "lisa",
+              "killerTeam": "enemy",
+              "victimTeam": "ally"
+            },
+            {
+              "t": 138,
+              "kind": "death",
+              "killer": "Fade",
+              "victim": "Me",
+              "killerTeam": "enemy",
+              "victimTeam": "ally"
+            },
+            {
+              "t": 149,
+              "kind": "ally_death",
+              "killer": "Fade",
+              "victim": "CLV | bam",
+              "killerTeam": "enemy",
+              "victimTeam": "ally"
+            },
+            {
+              "t": 194,
+              "kind": "ally_death",
+              "killer": "zeytazin",
+              "victim": "woo",
+              "killerTeam": "enemy",
+              "victimTeam": "ally"
+            },
+            {
+              "t": 198,
+              "kind": "ally_death",
+              "killer": "ulquiorra",
+              "victim": "lisa",
+              "killerTeam": "enemy",
+              "victimTeam": "ally"
+            },
+            {
+              "t": 210,
+              "kind": "ally_death",
+              "killer": "ulquiorra",
+              "victim": "CLV | bam",
+              "killerTeam": "enemy",
+              "victimTeam": "ally"
+            },
+            {
+              "t": 212,
+              "kind": "ally_death",
+              "killer": "ulquiorra",
+              "victim": "bam",
+              "killerTeam": "enemy",
+              "victimTeam": "ally"
+            },
+            {
+              "t": 221,
+              "kind": "kill",
+              "killer": "Me",
+              "victim": "Fade",
+              "killerTeam": "ally",
+              "victimTeam": "enemy"
+            },
+            {
+              "t": 229,
+              "kind": "kill",
+              "killer": "Me",
+              "victim": "ulquiorra",
+              "killerTeam": "ally",
+              "victimTeam": "enemy"
+            },
+            {
+              "t": 232,
+              "kind": "kill",
+              "killer": "Me",
+              "victim": "Reyna",
+              "killerTeam": "ally",
+              "victimTeam": "enemy"
+            },
+            {
+              "t": 234,
+              "kind": "ally_death",
+              "killer": "zeytazin",
+              "victim": "Chamber",
+              "killerTeam": "enemy",
+              "victimTeam": "ally"
+            },
+            {
+              "t": 256,
+              "kind": "death",
+              "killer": "zeytazin",
+              "victim": "Me",
+              "killerTeam": "enemy",
+              "victimTeam": "ally"
+            },
+            {
+              "t": 297,
+              "kind": "death",
+              "killer": "ulquiorra",
+              "victim": "Me",
+              "killerTeam": "enemy",
+              "victimTeam": "ally"
+            },
+            {
+              "t": 299,
+              "kind": "ally_kill",
+              "killer": "lisa",
+              "victim": "Fade",
+              "killerTeam": "ally",
+              "victimTeam": "enemy"
+            },
+            {
+              "t": 303,
+              "kind": "ally_kill",
+              "killer": "lisa",
+              "victim": "Reyna",
+              "killerTeam": "ally",
+              "victimTeam": "enemy"
+            },
+            {
+              "t": 313,
+              "kind": "ally_kill",
+              "killer": "CLY | bam",
+              "victim": "ulquiorra",
+              "killerTeam": "ally",
+              "victimTeam": "enemy"
+            },
+            {
+              "t": 314,
+              "kind": "ally_death",
+              "killer": "Veto",
+              "victim": "lisa",
+              "killerTeam": "enemy",
+              "victimTeam": "ally"
+            },
+            {
+              "t": 318,
+              "kind": "ally_kill",
+              "killer": "woo",
+              "victim": "zeytazin",
+              "killerTeam": "ally",
+              "victimTeam": "enemy"
+            },
+            {
+              "t": 321,
+              "kind": "ally_kill",
+              "killer": "Chamber",
+              "victim": "Veto",
+              "killerTeam": "ally",
+              "victimTeam": "enemy"
+            },
+            {
+              "t": 376,
+              "kind": "death",
+              "killer": "Reyna",
+              "victim": "Me",
+              "killerTeam": "enemy",
+              "victimTeam": "ally"
+            },
+            {
+              "t": 379,
+              "kind": "ally_kill",
+              "killer": "lisa",
+              "victim": "Veto",
+              "killerTeam": "ally",
+              "victimTeam": "enemy"
+            },
+            {
+              "t": 383,
+              "kind": "ally_kill",
+              "killer": "CLV | bam",
+              "victim": "zeytazin",
+              "killerTeam": "ally",
+              "victimTeam": "enemy"
+            },
+            {
+              "t": 384,
+              "kind": "ally_kill",
+              "killer": "zeytazin",
+              "victim": "zeytazin",
+              "killerTeam": "ally",
+              "victimTeam": "enemy"
+            },
+            {
+              "t": 388,
+              "kind": "ally_death",
+              "killer": "ulquiorra",
+              "victim": "lisa",
+              "killerTeam": "enemy",
+              "victimTeam": "ally"
+            }
+          ],
+          "steps": [
+            {
+              "name": "scan",
+              "args": "{\"from\":\"0:00\",\"to\":\"6:28\"}"
+            },
+            {
+              "name": "frames",
+              "args": "{\"at\":\"0:40.0, 0:39.5, 0:39.0, 0:38.5\"}"
+            },
+            {
+              "name": "measure_aim",
+              "args": "{\"at\":\"0:40.0\"}"
+            },
+            {
+              "name": "frames",
+              "args": "{\"at\":\"2:17.0, 2:16.5, 2:16.0, 2:15.5\"}"
+            },
+            {
+              "name": "frames",
+              "args": "{\"at\":\"4:15.0, 4:14.5, 4:14.0, 4:13.5\"}"
+            },
+            {
+              "name": "measure_aim",
+              "args": "{\"at\":\"4:14.0\"}"
+            },
+            {
+              "name": "frames",
+              "args": "{\"at\":\"4:56.0, 4:55.5, 4:55.0, 4:54.5\"}"
+            },
+            {
+              "name": "measure_aim",
+              "args": "{\"at\":\"4:56.0\"}"
+            },
+            {
+              "name": "frames",
+              "args": "{\"at\":\"6:15.0, 6:14.5, 6:14.0, 6:13.5\"}"
+            },
+            {
+              "name": "measure_aim",
+              "args": "{\"at\":\"6:15.0\"}"
+            }
+          ],
+          "seconds": 212.5,
+          "usage": {
+            "calls": 20,
+            "polls": 0,
+            "files": 0,
+            "rateLimited": 0,
+            "failed": 3,
+            "blocked": 0,
+            "models": {
+              "gemini-3.1-flash-lite": 20
+            }
+          },
+          "score": {
+            "verdict": "clean",
+            "falsePositive": false,
+            "counted": true
+          },
+          "evidenceOnDuels": null,
+          "scanRecall": {
+            "kills": {
+              "found": "5/5",
+              "extra": []
+            },
+            "deaths": {
+              "found": "5/5",
+              "extra": []
+            }
+          },
+          "killfeedScore": {
+            "found": "32/36",
+            "teamsRight": "31/32",
+            "notReal": [
+              "1:40 Me>ulqiorra",
+              "3:32 ulquiorra>bam",
+              "5:13 CLY | bam>ulquiorra"
+            ]
+          }
+        }
+      },
+      "setup": {
+        "duration": 388.1,
+        "size": "2170x1162",
+        "proxyMb": 11.86,
+        "proxySeconds": 16.1,
+        "uploadSeconds": 17,
+        "usage": {
+          "calls": 0,
+          "polls": 0,
+          "files": 5,
+          "rateLimited": 0,
+          "failed": 0,
+          "blocked": 0,
+          "models": {}
+        }
+      }
+    }
+  ],
+  "finished": "2026-10-18T00:21:35.453Z",
+  "summary": {
+    "pipeline": {
+      "plantedFound": "1/1",
+      "falsePositives": "0/1",
+      "noResult": 0,
+      "calls": 44,
+      "seconds": 1189.4
+    }
+  },
+  "totals": {
+    "modelCalls": 44,
+    "uploadRequests": 9,
+    "models": {
+      "gemini-3.5-flash-lite": 1,
+      "gemini-3.1-flash-lite": 43
+    }
+  }
+}

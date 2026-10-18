@@ -8,11 +8,16 @@
     "killfeed": [0.7, 0.06, 0.29, 0.26],
     "minimap": [0.0, 0.0, 0.27, 0.44],
     "scoreboard": [0.36, 0.0, 0.28, 0.1],
-    "health": [0.3, 0.86, 0.4, 0.14]
+    "health": [0.3, 0.86, 0.4, 0.14],
+    "ammo": [0.64, 0.91, 0.16, 0.07]
   },
   "killfeedColors": { "ally": [140, 190], "enemy": [340, 12] },
-  "killfeedGrid": { "top": 0.106, "pitch": 0.1376, "height": 0.116, "portrait": 0.14 },
-  "regionNotes": "Fractions of a 16:9 screen with the default HUD. Positions are approximate and move with HUD settings. killfeedGrid places kill-feed rows as fractions of the killfeed region's height.",
+  "killfeedGrid": { "top": 0.106, "pitch": 0.1376, "height": 0.116, "portrait": 0.14, "newRows": "bottom" },
+  "killfeedMine": "the row has the yellow outline or chevron that marks the player's own kills and deaths; a yellow character portrait doesn't count",
+  "hudText": { "bright": 190, "sat": 0.22 },
+  "deadFor": { "rounds": 30, "respawn": 4 },
+  "hudHidesOnDeath": true,
+  "regionNotes": "Fractions of a 16:9 screen with the default HUD. Positions are approximate and move with HUD settings. killfeedGrid places kill-feed rows as fractions of the killfeed region's height. newRows: where new kill-feed rows join (bottom or top). killfeedMine: how the player's own rows are marked. ammo holds the magazine count, the biggest number there, drawn in hudText color (brightness and the most saturation); a habit with needsShots is checked against it. hudHidesOnDeath: the ammo digits vanish the moment the player dies, which times a death whose kill-feed line shows late. deadFor: seconds a death keeps the player out, for round modes (the rest of a round plus the buy phase) and respawn modes like deathmatch (approximate).",
   "cues": [
     "The crosshair is always at the screen center.",
     "The kill feed (top right) lists killer, weapon, and victim for a few seconds. Lines with the player in them have a yellow border.",
@@ -37,12 +42,14 @@
     {
       "id": "moving_shots",
       "name": "Shooting while moving",
+      "needsShots": true,
       "signs": "Firing before the character has stopped, so the first bullets spread off target. In Valorant, moving shots are very inaccurate.",
       "drill": "In the Range: strafe, tap the opposite key to stop, fire one shot, and repeat 100 times. Then a deathmatch where you only fire after you have stopped."
     },
     {
       "id": "long_spray",
       "name": "Spraying at long range",
+      "needsShots": true,
       "signs": "Holding the trigger past the first few bullets at long range, where recoil sends the rest over the target.",
       "drill": "In the Range, at the far targets: taps or bursts of 2 to 3 bullets only for 10 minutes. Then a deathmatch tapping at anything past mid range."
     },

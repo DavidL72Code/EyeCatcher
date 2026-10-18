@@ -87,7 +87,7 @@
   // ---------- budget ----------
   // A look is one close look: frames or a measurement. A turn is one model call, from a small daily allowance.
   class BudgetError extends Error {}
-  const createBudget = ({ looks = 40, turns = 30 } = {}) => ({ looks, turns, used: { looks: 0, turns: 0 } });
+  const createBudget = ({ looks = 24, turns = 12 } = {}) => ({ looks, turns, used: { looks: 0, turns: 0 } });
   const left = (b) => ({ looks: b.looks - b.used.looks, turns: b.turns - b.used.turns });
   function spend(b, kind, n = 1) {
     if (left(b)[kind] < n) throw new BudgetError(kind === 'looks' ? 'No looks left. Finish with what you have seen.' : 'No turns left.');
@@ -107,13 +107,56 @@
   }
   const seen = (ledger, t) => ledger.looks.some((l) => t >= l.from - SLACK && t <= l.to + SLACK);
 
-  /** The problems with a finish call, or [] when it can stand. Sent back to the agent to fix. */
-  function checkFinish(args, { ledger, duration = Infinity, habits = [], measures = [] }) {
+  // ---------- when the player is dead ----------
+  // After the player dies the screen shows a death recap, then a teammate's view, until the next round: no crosshair of
+  // the player's to measure, and nothing they did. Kill-feed deaths are timed to a quarter second (agent.js feedStrips),
+  // deaths from the low-detail pass to the second.
+  const KILL_LEAD = 3; // seconds: a kill means they were alive and fighting this long before its line
+  /**
+   * How long a death keeps the player out, from the game profile's deadFor: the rest of a round (rounds) when the scan
+   * found round starts, a respawn (respawn) when it found none, as in deathmatch. 5 s without a profile value.
+   */
+  const deadForOf = (profile, events) => ((events || []).some((e) => e.kind === 'round_start') ? profile?.deadFor?.rounds : profile?.deadFor?.respawn) ?? 5;
+  /**
+   * The player's death that t falls after, or null. A death runs from the last moment its kill-feed line wasn't there
+   * (after; 1 s before the line when that isn't known) to the next round start, KILL_LEAD s before the player's next
+   * kill (a revive, or a death that was misread), or deadFor s (deadForOf).
+   */
+  function deathAt(events, t, deadFor = 5) {
+    for (const d of events || []) {
+      if (d.kind !== 'death' || t <= (Number.isFinite(d.after) ? d.after : d.t - 1)) continue;
+      const until = Math.min(d.t + deadFor, ...events.filter((e) => e.t > d.t && (e.kind === 'round_start' || e.kind === 'kill')).map((e) => (e.kind === 'kill' ? e.t - KILL_LEAD : e.t)));
+      if (t < until) return d;
+    }
+    return null;
+  }
+
+  // ---------- retries ----------
+  // Re-measuring a fight a moment earlier, again and again, hunts for the reading a theory wants. A second try is fair
+  // (the first can land on the kill-feed line or the death), a third isn't.
+  const MAX_TRIES = 2;
+  /** The player's fight a moment belongs to: the first of their kills or deaths whose kill-feed line comes within 4 s after it. */
+  const fightOf = (events, t) => (events || []).find((e) => (e.kind === 'kill' || e.kind === 'death') && e.t >= t - 0.5 && e.t - t <= 4) || null;
+  /** Why measuring at t is refused, or '': MAX_TRIES tries in its fight already (within 1.5 s outside any fight). tried: earlier times. */
+  function retryRefusal(events, tried, t) {
+    const f = fightOf(events, t);
+    const same = (tried || []).filter((x) => (f ? fightOf(events, x) === f : Math.abs(x - t) < 1.5));
+    if (same.length < MAX_TRIES) return '';
+    return `You've measured ${f ? `the fight that ends at ${mmss(f.t)} (${f.kind === 'kill' ? 'their kill' : 'their death'})` : `around ${mmss(t)}`} ${same.length} times already (${same.map((x) => mmss(x, true)).join(', ')}). Another try a moment earlier won't change what it shows: measure a different fight, or decide with what you have.`;
+  }
+
+  /**
+   * The problems with a finish call, or [] when it can stand. Sent back to the agent to fix. shots: [{ t, fired }] from
+   * the ammo counter for the cited moments, for a habit the profile marks needsShots.
+   */
+  function checkFinish(args, { ledger, duration = Infinity, habits = [], measures = [], events = [], deadFor = 5, shots = [] }) {
     const problems = [];
     if (args?.found === false) {
       if (text(args.why).length < 20) problems.push('Say why no single habit stands out (why, one or two sentences).');
       return problems;
     }
+    // the death itself can be evidence (dying alone); seconds later the screen is a recap or a teammate's view
+    const afterDeath = (t) => { const d = deathAt(events, t, deadFor); return d && t > d.t + 2 ? `At ${mmss(t)} the player was dead (they died about ${mmss(d.t)}), so the screen shows someone else. Cite moments from their own view.` : ''; };
     const ids = [...habits.map((h) => h.id), 'other'];
     if (!text(args?.habit)) problems.push('Name the habit (habit).');
     if (!ids.includes(args?.habit_id)) problems.push(`habit_id must be one of: ${ids.join(', ')}.`);
@@ -126,8 +169,18 @@
       if (!Number.isFinite(t) || t < 0 || t > duration + 1) { problems.push(`${e?.t ?? '?'} isn't a time in this match.`); continue; }
       if (!text(e.what)) problems.push(`Say what happens at ${mmss(t)}.`);
       if (!seen(ledger, t)) { problems.push(`You haven't looked closely at ${mmss(t)}. Look with frames or measure_aim, or cite a moment you did look at.`); continue; }
+      if (afterDeath(t)) { problems.push(afterDeath(t)); continue; }
       if (kept.some((x) => Math.abs(x - t) < MIN_GAP)) { problems.push(`${mmss(t)} is the same moment as other evidence.`); continue; }
       kept.push(t);
+    }
+    // a habit about how they fire needs moments where they fired: an ammo counter that never moved says they didn't
+    const habit = habits.find((h) => h.id === args?.habit_id);
+    if (habit?.needsShots) {
+      for (const t of [...kept]) {
+        if (shots.find((x) => Math.abs(x.t - t) < 0.05)?.fired !== false) continue;
+        problems.push(`At ${mmss(t)} the ammo counter doesn't change, so the player didn't fire and the moment can't show ${habit.name ? habit.name.toLowerCase() : habit.id}. If the moments you looked at don't show it, drop the theory (notes, status dropped) and name a habit they do show, or finish with found false.`);
+        kept.splice(kept.indexOf(t), 1);
+      }
     }
     if (kept.length < MIN_EVIDENCE) problems.push(`Cite at least ${MIN_EVIDENCE} separate moments you looked at that show the habit (you have ${kept.length}). Moments where they got it right go in contrast, not evidence. If fewer than ${MIN_EVIDENCE} moments show it, finish with found false.`);
     // a moment can show the habit or its opposite, not both
@@ -135,13 +188,14 @@
       const t = parseTime(c?.t);
       if (!Number.isFinite(t) || t < 0 || t > duration + 1) { problems.push(`${c?.t ?? '?'} in contrast isn't a time in this match.`); continue; }
       if (!seen(ledger, t)) problems.push(`You haven't looked closely at ${mmss(t)} (in contrast).`);
+      else if (afterDeath(t)) problems.push(afterDeath(t));
       if (kept.some((x) => Math.abs(x - t) < MIN_GAP)) problems.push(`${mmss(t)} is in both evidence and contrast. Keep it where it belongs.`);
     }
     // a habit the profile measures by aim has to agree with the aim the coach measured
-    if (habits.find((h) => h.id === args?.habit_id)?.measuredBy === 'aim') {
+    if (habit?.measuredBy === 'aim') {
       const sum = summarizeAim(measures);
-      if (!(sum?.n >= 3)) problems.push(`Crosshair height can be measured, so back this with at least 3 measure_aim readings where an enemy was in view (you have ${sum?.n || 0}). Or name a different habit, or none.`);
-      else if (sum.heads <= 0.75) problems.push(`Your measurements put the crosshair at head level (median ${sum.heads} heads over ${sum.n} duels). Show measurements where it was low, or name a different habit, or none.`);
+      if (!(sum?.n >= 3)) problems.push(`Crosshair height can be measured, so back this with at least 3 measure_aim readings where an enemy was in view (you have ${sum?.n || 0}). If the fights don't give 3, drop the theory and name a habit the evidence shows, or finish with found false.`);
+      else if (sum.heads <= 0.75) problems.push(`Your measurements put the crosshair at head level (median ${sum.heads} heads over ${sum.n} duels), so this isn't the habit. Drop the theory (notes, status dropped) and name a habit the evidence shows, or finish with found false.`);
       for (const t of kept) {
         const m = measures.find((x) => Math.abs(x.t - t) <= 1 && Number.isFinite(x.heads));
         if (m && m.heads <= 0.75) problems.push(`At ${mmss(t)} you measured the crosshair at head level (${m.heads} heads), so that moment doesn't show this habit.`);
@@ -156,23 +210,33 @@
   function cleanEvidence(list) {
     return (Array.isArray(list) ? list : []).map((e) => ({ t: parseTime(e?.t), what: text(e?.what).slice(0, 200) })).filter((e) => Number.isFinite(e.t));
   }
-  /** Adds or updates a theory. Returns the new board and what changed: new, updated, or the status it moved to. */
-  function applyNote(board, { id, theory, status, evidence }) {
+  /**
+   * Adds or updates a theory. Returns the new board and what changed: new, updated, or the status it moved to. With a
+   * ledger, a theory is supported only once one of its moments was looked at closely; until then it stays testing, and
+   * problem says why.
+   */
+  function applyNote(board, { id, theory, status, evidence }, { ledger } = {}) {
     if (!STATUSES.includes(status)) throw new Error(`status must be one of: ${STATUSES.join(', ')}.`);
     const next = board.map((x) => ({ ...x, evidence: [...x.evidence], history: [...x.history] }));
     const found = next.find((x) => (id && x.id === id) || (theory && norm(x.theory) === norm(theory)));
     const ev = cleanEvidence(evidence);
+    const all = [...(found?.evidence || []), ...ev];
+    let problem = '';
+    if (status === 'supported' && ledger && !all.some((e) => seen(ledger, e.t))) {
+      status = 'testing';
+      problem = `${found?.id || 'The new theory'} stays testing: none of its moments were looked at closely yet. Mark it supported once a look shows it.`;
+    }
     if (found) {
       const was = found.status;
       found.status = status;
       for (const e of ev) if (!found.evidence.some((o) => Math.abs(o.t - e.t) < 0.5)) found.evidence.push(e);
       if (was !== status) found.history.push(status);
-      return { board: next, theory: found, change: was === status ? 'updated' : status };
+      return { board: next, theory: found, change: was === status ? 'updated' : status, ...(problem ? { problem } : {}) };
     }
     if (!text(theory)) throw new Error(id ? `No theory ${id}. Give the theory text to add it.` : 'Name the theory.');
     const added = { id: `T${next.length + 1}`, theory: text(theory).slice(0, 160), status, evidence: ev, history: [status] };
     next.push(added);
-    return { board: next, theory: added, change: 'new' };
+    return { board: next, theory: added, change: 'new', ...(problem ? { problem } : {}) };
   }
   const boardBrief = (board) => board.map((x) => `${x.id} ${x.status}: ${x.theory}${x.evidence.length ? ` (${x.evidence.map((e) => mmss(e.t)).join(', ')})` : ''}`).join('\n');
 
@@ -198,12 +262,13 @@
     list = list.filter((e) => e.t >= from - 3 && e.t <= to + 3).map((e) => ({ ...e, t: round(Math.max(0, e.t), 1) }));
     return mergeEvents([], list);
   }
-  const eventsBrief = (events) => events.map((e) => `${mmss(e.t)} ${e.kind}${e.text ? `: ${e.text}` : ''}`).join('\n');
+  const eventsBrief = (events) => events.map((e) => `${mmss(e.t, !Number.isInteger(e.t))} ${e.kind}${e.text ? `: ${e.text}` : ''}`).join('\n');
 
   // ---------- the kill feed ----------
   // Gemini reads kill-feed names well but mixes up the team colors behind them, so the colors come from pixels here.
   // Hues in degrees; Valorant draws your team teal and the enemy red.
   const FEED_COLORS = { ally: [140, 190], enemy: [340, 12] };
+  const TAIL = 0.35; // share of the kill feed's width that fingerprints a row's right end
   const inHue = (h, [a, b]) => (a <= b ? h >= a && h <= b : h >= a || h <= b);
   // 1 and 2: clearly ally or enemy. 3 and 4: the same hues, muted, as the game draws the ends of a row behind names
   // and portraits; trusted only inside a row already found from clear color.
@@ -217,8 +282,8 @@
 
   /**
    * The kill-feed rows in one crop, top to bottom: { y0, y1, left, right, fp }. left and right are the team color behind
-   * the killer and the victim ('ally', 'enemy', or null); fp fingerprints the row's two ends, where the names are, so a
-   * row can be told apart from new ones. img is { data (RGBA), width, height }, like ImageData.
+   * the killer and the victim ('ally', 'enemy', or null); fp fingerprints the row's right end, where the victim's name
+   * and portrait are, so a row can be told apart from new ones. img is { data (RGBA), width, height }, like ImageData.
    * grid { top, pitch, height, portrait } places the rows as fractions of the crop height, as the game draws them, and
    * portrait is the share of the width at the right edge taken by the victim's portrait; a slot holds a
    * row when a quarter or more of its right three-quarters is team color. Without a grid, rows are found as bands of
@@ -301,25 +366,89 @@
         return ally > enemy * 1.5 ? 'ally' : enemy > ally * 1.5 ? 'enemy' : null;
       };
       const span = Math.max(1, x1 - x0), edge = Math.round(span * 0.3);
-      // a coarse picture of each end, where the names and portraits are: two rows with the same killer still differ at
-      // the victim's end. Eight strips of mean brightness per end.
-      const strips = (a, b) => Array.from({ length: 8 }, (_, k) => {
-        const s0 = Math.round(a + ((b - a) * k) / 8), s1 = Math.max(s0, Math.round(a + ((b - a) * (k + 1)) / 8) - 1);
-        let sum = 0, n = 0;
-        for (let y = y0; y <= y1; y++) for (let x = s0; x <= s1; x++) { const i = (y * w + x) * 4; sum += d[i] * 0.3 + d[i + 1] * 0.59 + d[i + 2] * 0.11; n++; }
-        return Math.round(sum / Math.max(1, n));
-      });
-      const end = Math.round(span * 0.4);
+      // The victim's name as white text: for each column between the portrait and the weapon side of the right end, how
+      // white it is (gray pixels past 160, weighted by how bright). Text keeps its shape whatever shows through behind
+      // the feed; graded rather than all-or-nothing, so a small, soft recording still has a shape.
+      const fp = [];
+      for (let x = Math.max(0, x1 - Math.round(w * TAIL)); x < x1 - Math.round(w * (grid?.portrait || 0)); x++) {
+        let n = 0;
+        for (let y = y0; y <= y1; y++) { const i = (y * w + x) * 4, mx = Math.max(d[i], d[i + 1], d[i + 2]); if (mx > 160 && (mx - Math.min(d[i], d[i + 1], d[i + 2])) / mx < 0.25) n += mx - 160; }
+        fp.push(n);
+      }
       // a kill is always between the teams: one color at both ends means the background showed through, so neither
       // end can be trusted
       let left = slot.left !== undefined ? slot.left : side(x0, x0 + edge), right = slot.right !== undefined ? slot.right : side(x1 - edge, x1);
       if (left && left === right) left = right = null;
-      return { y0, y1, x0, x1, left, right, fp: [strips(x0, x0 + end), strips(x1 - end, x1)] };
+      return { y0, y1, x0, x1, left, right, fp };
     });
   }
-  /** Whether a crop shows a row the previous sampled crop didn't, so only crops with new kills go to Gemini. */
-  const near = (a, b) => a.reduce((sum, x, i) => sum + Math.abs(x - b[i]), 0) / a.length < 14;
-  const hasNewRow = (prev, cur) => cur.some((r) => !prev.some((p) => p.left === r.left && p.right === r.right && near(p.fp[0], r.fp[0]) && near(p.fp[1], r.fp[1])));
+  /** For each pixel line of a kill-feed crop, how many of its pixels are clearly one team's color. */
+  function teamLines(img, colors = FEED_COLORS) {
+    const { data: d, width: w, height: h } = img, lines = new Array(h).fill(0);
+    for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) { const i = (y * w + x) * 4, k = pixelTeam(d[i], d[i + 1], d[i + 2], colors); if (k === 1 || k === 2) lines[y]++; }
+    return lines;
+  }
+  /** Runs of pixel lines that are mostly one team's color, as a kill-feed row is: [{ y0, y1 }]. lines from teamLines. */
+  function colorBands(lines, w) {
+    const bands = [];
+    let y0 = -1;
+    for (let y = 0; y <= lines.length; y++) {
+      if (y < lines.length && lines[y] > w * 0.18) { if (y0 < 0) y0 = y; continue; }
+      if (y0 >= 0 && y - y0 >= 9) bands.push({ y0, y1: y - 1 });
+      y0 = -1;
+    }
+    return bands;
+  }
+  /**
+   * The grid moved to where this recording draws its rows. A stream layout or a scaled HUD can shift the feed, and a
+   * slot that misses part of its row reads the name columns as no color. bands: colorBands from frames spread over the
+   * recording; h: the crop height. Only bands about a row tall count (an overlay bar doesn't), the row height becomes
+   * theirs, and the top is the one that starts the most of them on a slot. Fewer than 3 such bands: the grid as it is.
+   */
+  function fitGrid(grid, bands, h) {
+    const tall = grid.height * h, pitch = grid.pitch * h;
+    const rows = bands.filter((b) => b.y1 - b.y0 + 1 >= tall * 0.75 && b.y1 - b.y0 + 1 <= tall * 1.35);
+    if (rows.length < 3) return grid;
+    let best = 0, score = -1;
+    for (let top = 0; top < pitch; top += 0.5) {
+      const s = rows.reduce((sum, b) => { const off = (((b.y0 - top) % pitch) + pitch) % pitch; return sum + Math.max(0, 3 - Math.min(off, pitch - off)); }, 0);
+      if (s > score) { score = s; best = top; }
+    }
+    return { ...grid, top: best / h, height: median(rows.map((b) => b.y1 - b.y0 + 1)) / h };
+  }
+  /** How different two rows' name shapes are, 0 (the same) to 1, at the best shift of up to 3 pixels. */
+  function rowDistance(a, b) {
+    let best = 1;
+    for (let s = -3; s <= 3; s++) {
+      let diff = 0, sum = 0;
+      for (let i = Math.max(0, -s); i < a.length && i + s < b.length; i++) { diff += Math.abs(a[i] - b[i + s]); sum += a[i] + b[i + s]; }
+      if (sum) best = Math.min(best, diff / sum);
+    }
+    return best;
+  }
+  const SAME_ROW = 0.3;
+  // Two readings of one row, p earlier than r: the same victim's name, no side read as the other team, and not moved
+  // against the feed. newRows (the profile grid's) says where new kills join: at the bottom, older rows only move up as
+  // rows above them leave; at the top, they only move down.
+  function sameRow(p, r, newRows = 'bottom') {
+    const tol = (r.y1 - r.y0) * 0.3, moved = newRows === 'top' ? r.y0 >= p.y0 - tol : r.y0 <= p.y0 + tol;
+    return moved && rowDistance(p.fp, r.fp) < SAME_ROW && !(p.left && r.left && p.left !== r.left) && !(p.right && r.right && p.right !== r.right);
+  }
+  /**
+   * The rows in one crop that weren't in the feed a moment ago, so each kill-feed line is read once. A row that left the
+   * feed never comes back, so `keep` only bridges a second or two when a flash or smoke hides it.
+   * recent: what an earlier call returned ([] to start). Returns { fresh, recent }.
+   */
+  function freshRows(recent, rows, t, { keep = 3, newRows = 'bottom' } = {}) {
+    const live = recent.filter((r) => t - r.t <= keep), used = new Set(), fresh = [];
+    for (const r of rows) {
+      const k = live.findIndex((p, i) => !used.has(i) && sameRow(p, r, newRows));
+      if (k >= 0) { used.add(k); live[k] = { ...r, t }; continue; }
+      fresh.push(r);
+      used.add(live.push({ ...r, t }) - 1);
+    }
+    return { fresh, recent: live };
+  }
 
   const nameKey = (s) => String(s || '').toLowerCase().replace(/[^a-z0-9]/g, '');
   function editDistance(a, b) {
@@ -346,16 +475,14 @@
   }
 
   /**
-   * Sightings from one crop: Gemini's rows (names, top to bottom) matched to the rows code found in its pixels. Faded
-   * old rows at the top are the ones Gemini skips, so the two lists are matched from the bottom.
+   * Sightings from one read of numbered row strips: Gemini's names for each line, with that row's team colors from
+   * pixels. strips: [{ t, after, left, right }] in line order, line 1 first; after is the last time the row wasn't there.
    */
-  function feedSightings(t, read, pixelRows) {
-    const rows = (Array.isArray(read) ? read : []).filter((r) => text(r?.killer) && text(r?.victim));
-    const offset = pixelRows.length - rows.length;
-    return rows.map((r, i) => {
-      const px = pixelRows[i + offset];
-      return { t, killer: text(r.killer), victim: text(r.victim), killerSide: px?.left ?? null, victimSide: px?.right ?? null, mine: !!r.yellow_border };
-    });
+  function feedSightings(read, strips) {
+    return (Array.isArray(read) ? read : [])
+      .map((r) => ({ r, s: strips[r?.line - 1] }))
+      .filter(({ r, s }) => s && text(r.killer) && text(r.victim))
+      .map(({ r, s }) => ({ t: s.t, ...(Number.isFinite(s.after) ? { after: s.after } : {}), killer: text(r.killer), victim: text(r.victim), killerSide: s.left ?? null, victimSide: s.right ?? null, mine: !!r.players_own }));
   }
 
   /**
@@ -400,7 +527,7 @@
       if (!killerTeam) killerTeam = other(victimTeam);
       if (!victimTeam) victimTeam = other(killerTeam);
       const kind = killerIsPlayer ? 'kill' : victimIsPlayer ? 'death' : victimTeam === 'ally' ? 'ally_death' : killerTeam === 'ally' ? 'ally_kill' : 'other';
-      return { t: round(g.list[0].t, 1), kind, killer, victim, killerTeam, victimTeam, killerIsPlayer, victimIsPlayer, seen: g.list.length, player };
+      return { t: round(g.list[0].t, 2), ...(Number.isFinite(g.list[0].after) ? { after: g.list[0].after } : {}), kind, killer, victim, killerTeam, victimTeam, killerIsPlayer, victimIsPlayer, seen: g.list.length, player };
     });
     // A flash or smoke over the kill feed can tint one reading. Names seen on one team again and again outvote it; a
     // name on both teams (both can pick the same agent) is never trusted this way.
@@ -438,6 +565,47 @@
     }
     for (const e of events) e.text = feedText(e);
     return { player, events };
+  }
+
+  // ---------- shots, from the ammo counter ----------
+  // The magazine count is the biggest number in the profile's ammo region, and it drops by one with every bullet. Code
+  // finds its digits by the HUD's text color (the profile's hudText, white by default) and records their shape, so a
+  // shot is a change of shape.
+  const HUD_TEXT = { bright: 190, sat: 0.22 }; // white
+  /** The magazine digits' shape in one ammo crop: { x0, x1, mag } (a column profile), or null with no digits. */
+  function ammoReading({ data: d, width: w, height: h }, hud = HUD_TEXT) {
+    const on = (i) => { const mx = Math.max(d[i], d[i + 1], d[i + 2]); return mx > hud.bright && (mx - Math.min(d[i], d[i + 1], d[i + 2])) / mx < hud.sat; };
+    const top = new Array(w).fill(-1), bot = new Array(w).fill(-1);
+    for (let x = 0; x < w; x++) for (let y = 0; y < h; y++) if (on((y * w + x) * 4)) { if (top[x] < 0) top[x] = y; bot[x] = y; }
+    const tall = top.map((t, x) => (t < 0 ? 0 : bot[x] - t + 1)), max = Math.max(...tall);
+    if (max < h * 0.2) return null;
+    // the magazine digits are the tallest glyphs; separators and the reserve count are shorter
+    const cols = tall.map((v, x) => (v >= max * 0.75 ? x : -1)).filter((x) => x >= 0);
+    const x0 = cols[0], x1 = cols.at(-1), y0 = Math.min(...cols.map((x) => top[x])), y1 = Math.max(...cols.map((x) => bot[x]));
+    const mag = [];
+    for (let x = x0; x <= x1; x++) { let n = 0; for (let y = y0; y <= y1; y++) if (on((y * w + x) * 4)) n++; mag.push(n); }
+    return { x0, x1, mag };
+  }
+  const AMMO_SAME = 0.2;
+  const ammoChanged = (a, b) => Math.abs(a.mag.length - b.mag.length) > 2 || Math.abs(a.x0 - b.x0) > 2 || rowDistance(a.mag, b.mag) >= AMMO_SAME;
+  /**
+   * Whether the player fired over a stretch, from ammo readings [{ t, reading }] in time order. Background showing behind
+   * the HUD digits (a bright gun skin, a wall) changes their outline from frame to frame, so only steady readings count:
+   * ones the next two frames read the same. The magazine at the first steady reading against the last says whether any
+   * bullet left it; a swap or reload also reads as a change, so a change is never proof of firing, while no change is
+   * proof of not firing. changes: the steady changes in between, roughly one a shot. null when the steady readings
+   * span less than 60% of the stretch, since a burst could hide in the part that never read steadily.
+   */
+  function shotsFired(readings) {
+    const steady = [];
+    for (let i = 0; i + 2 < readings.length; i++) {
+      const [a, b, c] = [readings[i], readings[i + 1], readings[i + 2]].map((x) => x.reading);
+      if (a && b && c && !ammoChanged(a, b) && !ammoChanged(b, c)) steady.push(readings[i]);
+    }
+    if (steady.length < 2 || steady.at(-1).t - steady[0].t < 0.6 * (readings.at(-1).t - readings[0].t)) return null;
+    let changes = 0;
+    for (let i = 1; i < steady.length; i++) if (ammoChanged(steady[i - 1].reading, steady[i].reading)) changes++;
+    return { fired: ammoChanged(steady[0].reading, steady.at(-1).reading), changes, from: steady[0].t, to: steady.at(-1).t };
   }
 
   // ---------- looks ----------
@@ -486,10 +654,10 @@
   const api = {
     mmss, parseTime, median, round, clamp, aimBand, aimOffset, headOnBody, summarizeAim, aimText,
     BudgetError, createBudget, left, spend, budgetLine,
-    SLACK, MIN_EVIDENCE, createLedger, recordLook, seen, checkFinish,
+    SLACK, MIN_EVIDENCE, createLedger, recordLook, seen, deadForOf, deathAt, MAX_TRIES, fightOf, retryRefusal, checkFinish,
     STATUSES, applyNote, boardBrief, KINDS, normalizeEvents, mergeEvents, eventsBrief,
-    FEED_COLORS, pixelTeam, killfeedRows, hasNewRow, nameKey, sameName, feedSightings, choosePlayer, buildKillfeed,
-    MAX_FRAMES, framePlan, regionRect,
+    FEED_COLORS, pixelTeam, killfeedRows, teamLines, colorBands, fitGrid, rowDistance, sameRow, freshRows, nameKey, sameName, feedSightings, choosePlayer, buildKillfeed,
+    ammoReading, shotsFired, MAX_FRAMES, framePlan, regionRect,
     emptyHistory, addMatch, acceptHabit, dropHabit, compareAim, historyBrief,
   };
   root.ThirdeyeCore = api;

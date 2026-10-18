@@ -29,9 +29,9 @@ flowchart LR
 |---|---|---|
 | `scan({from, to})` | A separate Gemini call watches that part of the proxy at 1 fps and returns events with MM:SS times: rounds, kills, deaths, who traded. | ~66 tokens per second of video watched (measured). 0 looks. |
 | `frames({t, span, fps, region})` | Grabs frames from the original video in the browser (Mediabunny on WebCodecs). `region` names a part of the screen from the game profile, such as `center`, `minimap`, or `killfeed`. Returns them as images. | 1 look. 0 API calls. |
-| `measure_aim({t})` | Gemini draws a box around the enemy head nearest the crosshair in a center crop. Code converts the gap to the screen center into degrees using the game's FOV (Valorant: 103° horizontal). | 1 look. 1 call. |
+| `measure_aim({t, more})` | Gemini draws a box around the enemy head nearest the crosshair in a center crop, for up to 6 moments in one call. Code converts the gap to the screen center into degrees using the game's FOV (Valorant: 103° horizontal). | 1 look per moment. 1 call. |
 | `ask_player({question, t})` | Shows the clip at `t` and pauses the run until the player answers. | Waits on the player. |
-| `note({theory, status, evidence})` | Records a theory as testing, supported, or dropped, with timestamps. It shows on the theory board and in the eval logs. | Free. |
+| `notes` on every tool | Records theories as testing, supported, or dropped, with timestamps, alongside the next step (Oct 17: a separate `note` tool cost a turn each, 4 to 6 of a run's 14 to 17). | Free. |
 | `finish({habit, evidence, drill, recheck})` | Ends the run. Code sends it back with the problems when something fails a check (see below). | Ends the run. |
 
 Two rules keep the cost bounded:
@@ -107,5 +107,5 @@ Thirdeye is its own repository with its own `package.json`. Playwright is listed
 
 - **Post-game only.** Live advice, overlays during play, or reading game memory would break Riot's rules and risk anti-cheat flags.
 - **Video limits.** Low bitrate, unusual HUD settings, or a crosshair placed off-center hurt detection. Report these failures honestly.
-- **Free-tier quota.** Each turn is one request, and an eval of 20 matches at about 40 turns each could use a whole day's quota. Spread runs across days and save each run's log.
+- **Free-tier quota.** Each turn is one request. Oct 17 reviews took 23 to 49 calls (turns, kill-feed reads, one call per aim moment, retries); the turn cap is now 12 and reads are batched, so an eval of 20 matches still needs spreading across days. Save each run's log.
 - **Files API.** Files are deleted after 48 hours (that's fine, since the proxy is rebuilt from the original) and are limited to 2 GB each on the free tier.

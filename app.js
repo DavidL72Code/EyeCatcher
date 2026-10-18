@@ -5,7 +5,7 @@
   const G = window.Gemini, C = window.ThirdeyeCore, V = window.ThirdeyeVideo, A = window.ThirdeyeAgent;
   G.preferEnv = true;
   const STORE = 'thirdeye.v1', UPLOADS = 'thirdeye.uploads', NAME = 'thirdeye.player';
-  const BUDGET = { looks: 30, turns: 30 };
+  const BUDGET = { looks: 24, turns: 12 };
   const REGION_NAMES = { aim: 'aim area', killfeed: 'kill feed', minimap: 'minimap', scoreboard: 'scoreboard', health: 'health bar' };
   const PROGRESS = { better: 'better than before', same: 'about the same as before', worse: 'worse than before', unclear: "couldn't tell this match" };
 
@@ -82,7 +82,7 @@
     $('review').hidden = false;
     const player = $('playerName').value.trim();
     write(NAME, player);
-    run = { id: uid(), file, game, goal: $('goal').value.trim(), player, workingOn: history.habit, abort: new AbortController(), steps: [], looks: 0, turns: 0 };
+    run = { id: uid(), file, game, goal: $('goal').value.trim(), player, workingOn: history.habit, abort: new AbortController(), looks: 0, turns: 0, calls: 0, beat: null };
     resetReview();
     if (vid.src) URL.revokeObjectURL(vid.src);
     vid.src = URL.createObjectURL(file);
@@ -123,36 +123,77 @@
   }
 
   function resetReview() {
-    ['track', 'axis', 'strip', 'board', 'verdict', 'question'].forEach((id) => { $(id).innerHTML = ''; });
-    ['strip', 'board', 'verdict', 'question', 'meter'].forEach((id) => { $(id).hidden = true; });
+    ['track', 'axis', 'beats', 'board', 'verdict', 'question'].forEach((id) => { $(id).innerHTML = ''; });
+    ['breakdown', 'board', 'verdict', 'question', 'meter'].forEach((id) => { $(id).hidden = true; });
+    $('rail').append($('breakdown')); // a finished review keeps it under How it got here
     $('eyeMark').hidden = true;
   }
 
   const LINES = {
     scan: (a) => `Reading the kill feed ${a.from}–${a.to}`,
     frames: (a) => `Looking at ${a.at}${a.region && a.region !== 'full' ? `, ${REGION_NAMES[a.region] || a.region}` : ''}`,
-    measure_aim: (a) => `Measuring aim at ${a.at}`,
+    measure_aim: (a) => `Measuring aim at ${a.at}${a.more?.length ? ` and ${a.more.length} more` : ''}`,
     ask_player: () => 'Waiting for you',
-    note: () => 'Updating its theories',
     finish: () => 'Checking the finding',
   };
   function onStep(s) {
-    if (s.type === 'think') { run.turns++; setStatus(run.turns === 1 ? 'Deciding where to look' : 'Deciding what to check next'); }
-    if (s.type === 'call') {
-      setStatus(LINES[s.name]?.(s.args) || s.name, s.name === 'ask_player' ? 'waiting' : '');
-      run.steps.push(`${s.name}${s.args.at ? ` ${s.args.at}` : s.args.from ? ` ${s.args.from}–${s.args.to}` : ''}${s.args.region ? ` (${s.args.region})` : ''}${s.args.theory ? `: ${s.args.theory}` : ''}`);
-    }
-    if (s.type === 'error') run.steps.push(`  ${s.name} failed: ${s.error}`);
+    if (s.type === 'think') { run.turns++; run.calls++; drawMeter(); setStatus(run.turns === 1 ? 'Deciding where to look' : 'Deciding what to check next'); }
+    if (s.type === 'call') setStatus(LINES[s.name]?.(s.args) || s.name, s.name === 'ask_player' ? 'waiting' : '');
+    if (s.type === 'error') beatOut(`Didn't work: ${short(s.error)}`, 'warn');
   }
 
   function onEvent(e) {
     if (e.type === 'scanning' && e.progress != null) setStatus(`Reading the kill feed ${C.mmss(e.from)}–${C.mmss(e.to)}`, '', `${Math.round(e.progress * 100)}%`);
-    if (e.type === 'scan') { drawEvents(e.events); addMark('scanned', e.from, e.to); }
+    if (e.type === 'step') beatStart(e);
+    if (e.type === 'scan') { drawEvents(e.events); addMark('scanned', e.from, e.to); run.calls += e.calls; drawMeter(); beatOut(scanLine(e.counts)); }
     if (e.type === 'look') { run.looks++; addMark(e.kind === 'measure' ? 'look measure' : 'look', e.from, e.to); moveEye((e.from + e.to) / 2); drawMeter(); }
-    if (e.type === 'frames') showStrip(e.frames);
-    if (e.type === 'measure') showStrip([e.shot], e);
-    if (e.type === 'note') drawBoard($('board'), e.board, true);
-    if (e.type === 'rejected') { setStatus('Finding sent back for more evidence'); run.steps.push(`  finish sent back: ${e.problems.join(' ')}`); }
+    if (e.type === 'aim_call') { run.calls++; drawMeter(); }
+    if (e.type === 'frames') beatShots(e.frames.filter((_, i, all) => all.length <= 4 || i % Math.ceil(all.length / 4) === 0), e.t);
+    if (e.type === 'measure') beatShots([e.shot], e.t, e);
+    if (e.type === 'shots' && e.fired != null) beatOut(`${C.mmss(e.t, true)}: ${e.fired ? 'fired (ammo counter moved)' : 'no shots (ammo counter never moved)'}`, 'muted');
+    if (e.type === 'refused') beatOut(`${C.mmss(e.t, true)} not measured: this fight was tried twice`, 'muted');
+    if (e.type === 'skipped') beatOut(`${C.mmss(e.t, true)} skipped: you were dead (${C.mmss(e.death)})`, 'muted');
+    if (e.type === 'note') { drawBoard($('board'), e.board, true); beatTake(e.theory, e.change); }
+    if (e.type === 'rejected') { setStatus('Finding sent back'); beatOut(`Sent back: ${short(e.problems[0])}`, 'warn'); }
+    if (e.type === 'accepted') beatOut('Passed the evidence checks', 'muted');
+  }
+
+  // ---------- the breakdown: one card per step, as it happens ----------
+  // A card says what the coach checks (its own words), what it saw (frames, a measured box), and what it made of it. The
+  // coach writes its take on a look with its next step, so theory changes land on the card before the new one.
+  const KIND = { scan: 'Kill feed', frames: 'Close look', measure_aim: 'Aim check', ask_player: 'Question', finish: 'Finding' };
+  const short = (text) => { const first = String(text).split(/(?<=\.)\s/)[0]; return first.length > 110 ? `${first.slice(0, 107)}…` : first; };
+  const scanLine = (c) => `${c.your_kills} kill${c.your_kills === 1 ? '' : 's'}, ${c.your_deaths} death${c.your_deaths === 1 ? '' : 's'}, ${c.teammate_deaths} teammate${c.teammate_deaths === 1 ? '' : 's'} down`;
+  function beatStart({ name, why }) {
+    $('breakdown').hidden = false;
+    const li = document.createElement('li');
+    li.className = `beat ${name}`;
+    li.innerHTML = `<p class="beat-kind">${KIND[name] || esc(name)}</p>${why ? `<p class="beat-why">${esc(why)}</p>` : ''}<div class="beat-shots"></div><div class="beat-outs"></div><ul class="beat-take"></ul>`;
+    $('beats').prepend(li);
+    run.beat = li;
+    li.times = [];
+  }
+  function beatShots(frames, t, measure) {
+    const box = run.beat?.querySelector('.beat-shots');
+    if (!box) return;
+    const m = measure?.measure, b = m?.box;
+    run.beat.times.push(t);
+    const group = document.createElement('figure');
+    group.className = measure ? 'shot-group aim' : 'shot-group';
+    group.innerHTML = `<button class="t-btn at" type="button" data-t="${t}">${C.mmss(t, true)}</button><div class="shots">${frames.map((f) => `<div class="shot"><img src="${f.url}" alt="Frame at ${C.mmss(f.t, true)}" />${b ? `<span class="box" style="top:${b[0] / 10}%;left:${b[1] / 10}%;height:${(b[2] - b[0]) / 10}%;width:${(b[3] - b[1]) / 10}%"></span>` : ''}</div>`).join('')}</div>${measure ? `<figcaption>${m ? `${Math.abs(m.heads).toFixed(1)} heads ${m.heads >= 0.75 ? 'low' : m.heads <= -0.75 ? 'high' : 'on the head'}` : 'no enemy in view'}</figcaption>` : ''}`;
+    box.append(group);
+  }
+  function beatOut(text, cls = '') {
+    const box = run.beat?.querySelector('.beat-outs');
+    if (box) box.insertAdjacentHTML('beforeend', `<p class="beat-out ${cls}">${esc(text)}</p>`);
+  }
+  function beatTake(theory, change) {
+    const box = run.beat?.querySelector('.beat-take');
+    if (!box || !theory) return;
+    const said = change === 'new' ? 'New theory' : change === 'updated' ? 'More for' : { supported: 'Backed up', dropped: 'Dropped', testing: 'Testing again' }[change] || change;
+    // what the coach wrote about the moments on this card
+    const seen = theory.evidence.filter((e) => e.what && run.beat.times.some((x) => Math.abs(x - e.t) <= 1.5)).slice(-2);
+    box.insertAdjacentHTML('beforeend', `<li class="${theory.status}"><span class="said">${esc(said)}</span> ${esc(theory.theory)}${seen.map((e) => `<span class="saw"><button class="t-btn" type="button" data-t="${e.t}">${C.mmss(e.t)}</button> ${esc(e.what)}</span>`).join('')}</li>`);
   }
 
   // ---------- timeline ----------
@@ -195,7 +236,7 @@
   function drawMeter() {
     $('meter').hidden = false;
     $('meterTicks').innerHTML = Array.from({ length: BUDGET.looks }, (_, i) => `<i class="${i < run.looks ? 'on' : ''}"></i>`).join('');
-    $('meterText').textContent = `${run.looks} of ${BUDGET.looks} looks`;
+    $('meterText').textContent = `${run.looks} look${run.looks === 1 ? '' : 's'} · ${run.calls} call${run.calls === 1 ? '' : 's'}`;
   }
 
   function paintPlayhead() {
@@ -233,16 +274,6 @@
   vid.addEventListener('seeking', () => { if (clipEnd != null && Math.abs(vid.currentTime - clipEnd) > 6) clipEnd = null; });
 
   // ---------- rail ----------
-  function showStrip(frames, measure) {
-    const s = $('strip');
-    s.hidden = false;
-    s.innerHTML = frames.map((f) => {
-      const m = measure?.measure, b = m?.box;
-      const box = b ? `<span class="box" style="top:${b[0] / 10}%;left:${b[1] / 10}%;height:${(b[2] - b[0]) / 10}%;width:${(b[3] - b[1]) / 10}%"></span>` : '';
-      const note = measure ? (m ? ` · ${Math.abs(m.heads).toFixed(1)} heads ${m.heads >= 0 ? 'low' : 'high'}` : ' · no head') : '';
-      return `<figure><div class="shot"><img src="${f.url}" alt="Frame at ${C.mmss(f.t, true)}" />${box}</div><figcaption>${C.mmss(f.t, true)}${note}</figcaption></figure>`;
-    }).join('');
-  }
   function timesHtml(evidence) {
     return evidence.map((e) => `<button class="t-btn" type="button" data-t="${e.t}" title="${esc(e.what)}">${C.mmss(e.t)}</button>`).join('');
   }
@@ -267,7 +298,7 @@
         if (q.hidden) return;
         q.hidden = true;
         q.innerHTML = '';
-        run.steps.push(`  asked "${question}": ${answer || 'skipped'}`);
+        beatOut(answer ? `You said: ${answer}` : 'You skipped it', 'muted');
         resolve(answer);
       };
       q.querySelectorAll('[data-i]').forEach((b) => { b.onclick = () => done(options[+b.dataset.i]); });
@@ -281,14 +312,14 @@
   // ---------- the verdict ----------
   async function showResult(r) {
     stopStatus();
-    ['question', 'strip', 'board', 'meter'].forEach((id) => { $(id).hidden = true; });
+    ['question', 'board', 'meter'].forEach((id) => { $(id).hidden = true; });
     $('eyeMark').hidden = true;
     const match = { id: run.id, date: today(), name: run.video.name, game: run.game.id, found: r.found, habit: r.habit, habitId: r.habitId, drill: r.drill, recheck: r.recheck, aim: r.aim, progress: r.progress, stats: r.stats, status: 'new' };
     history = C.addMatch(history, match);
     write(STORE, history);
 
     const v = $('verdict');
-    const how = `<details class="how"><summary>How it got here: ${r.stats.turns} calls, ${r.stats.looks} looks</summary><div class="board"></div><ol class="steps">${run.steps.map((s) => `<li>${esc(s.trim())}</li>`).join('')}</ol></details>`;
+    const how = `<details class="how"><summary>How it got here: ${run.calls} calls, ${r.stats.looks} looks</summary><div class="board"></div></details>`;
     const working = run.workingOn && r.progress ? `<p class="progress ${r.progress}">${esc(run.workingOn.name)}: ${PROGRESS[r.progress]}${r.progressFrom === 'measured' ? ` (${Math.abs(run.workingOn.baseline.heads).toFixed(1)} to ${Math.abs(r.aim.heads).toFixed(1)} heads)` : ''}</p>` : '';
     if (!r.found) {
       v.innerHTML = `<p class="label">${r.stopped ? 'Review stopped' : 'The verdict'}</p><h2><span class="pen">${r.stopped ? 'No verdict yet' : 'No single habit stood out'}</span></h2>${working}<p class="why">${esc(r.why)}</p>
@@ -310,6 +341,7 @@
     v.hidden = false;
     penStroke(v.querySelector('.pen'));
     drawBoard(v.querySelector('.how .board'), r.board, false);
+    v.querySelector('.how').append($('breakdown'));
     $('againBtn')?.addEventListener('click', () => start(run.file));
     v.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
 

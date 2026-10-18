@@ -10,5 +10,11 @@
     "plantedHabit": null,
     "truth": "recordings/yt-vyse-ascent.truth.json",
     "note": "Real footage: first 14:10 of YouTube NZ1LABTSaTY (Im Muted, Vyse on Ascent, 22-kill game), screen-recorded at 1290x726. Nothing planted; a skilled player, so a named habit needs checking by hand rather than counting as wrong."
+  },
+  {
+    "file": "recordings/Screen Recording 2026-10-17 at 6.13.34 PM.mov",
+    "plantedHabit": null,
+    "note": "Real footage: 6:28 screen recording of a TenZ stream VOD (Valorant, unranked pro-level play), 2170x1162 with a webcam overlay, sponsor ads, and a dark strip on the left, so the game picture sits about 3% right of center. Nothing planted; a named habit needs checking by hand rather than counting as wrong.",
+    "truth": "recordings/tenz-stream.truth.json"
   }
 ]
