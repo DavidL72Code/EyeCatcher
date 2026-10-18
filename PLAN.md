@@ -1,5 +1,7 @@
 # Thirdeye: architecture plan
 
+> Oct 18, 2026: game profiles are gone. Each game is learned from its recording (`learn.js`), and measuring is done by genre in code (shooters; chess with `chess-reader.js` and Stockfish). README.md describes the current design; this plan is the original one, kept for its reasoning.
+
 Thirdeye watches a recording of your match after it ends, finds the one habit costing you the most fights, shows you the moments that prove it, gives you a drill, and checks your next matches to see whether it's improving.
 
 The input is recorded gameplay video, so the agent works for almost any game. Valorant is the first game, done deeply. Other games are added as data, not code.

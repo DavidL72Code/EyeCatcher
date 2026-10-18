@@ -1,5 +1,5 @@
 // Live check against the real Gemini API on the synthetic match (npm run fixture first). Spends about 25 requests:
-// one upload, one scan, one head box per duel, and one full review. Reports what each piece measured against the
+// learning the game, one upload, one scan, one head box per duel, and one full review. Reports what each piece measured against the
 // fixture's ground truth and saves the details to tests/out/. Synthetic footage, so it checks the pipeline, not
 // accuracy on real game video.
 import { chromium } from 'playwright';
@@ -23,9 +23,11 @@ try {
     const C = window.ThirdeyeCore, V = window.ThirdeyeVideo, A = window.ThirdeyeAgent;
     const clock = () => performance.now();
     const out = {};
-    const profile = await (await fetch('games/valorant.json')).json();
     const blob = await (await fetch(`tests/fixtures/${truth.file}`)).blob();
     const video = await V.open(new File([blob], truth.file, { type: blob.type }));
+    // the game is learned from the recording, as in the app
+    const { profile } = await window.ThirdeyeLearn.learnGame({ video });
+    out.learned = { game: profile.name, genre: profile.genre, regions: Object.keys(profile.regions), habits: profile.habits.map((h) => h.id) };
 
     let t0 = clock();
     const proxy = await V.makeProxy(video);
@@ -46,13 +48,13 @@ try {
     };
 
     const frame = { w: video.width, h: video.height }, crop = C.regionRect(profile, 'aim', frame);
-    const f = frame.w / 2 / Math.tan((profile.fovH * Math.PI) / 360);
+    const f = frame.w / 2 / Math.tan((103 * Math.PI) / 360); // the fixture's FOV
     const degOf = (heads) => (Math.atan((heads * truth.headPx) / f) * 180) / Math.PI;
     out.aim = [];
     for (const d of truth.duels) {
       const [shot] = await V.grab(video, [d.t + 0.3], { crop, maxDim: 1024, quality: 0.9 });
       const box = await A.findHead(shot, {});
-      const m = box ? C.aimOffset({ box, crop, frame, fovH: profile.fovH }) : null;
+      const m = box ? C.aimOffset({ box, crop, frame, fovH: profile.fovH || 103 }) : null; // the fixture is drawn at 103°
       out.aim.push({ t: d.t, truth: d.heads, measured: m?.heads ?? null, errHeads: m ? +(m.heads - d.heads).toFixed(2) : null, errDeg: m ? +(m.dyDeg - degOf(d.heads)).toFixed(2) : null });
     }
     const errs = out.aim.filter((a) => a.errDeg != null).map((a) => Math.abs(a.errDeg)).sort((a, b) => a - b);

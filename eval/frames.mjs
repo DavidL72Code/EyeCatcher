@@ -26,9 +26,11 @@ try {
   await page.goto(`http://localhost:${PORT}/`);
   await page.evaluate(() => { const i = document.createElement('input'); i.type = 'file'; i.id = 'f'; i.hidden = true; document.body.append(i); });
   await page.setInputFiles('#f', path.resolve(file));
+  // PROFILE=learned: draw and crop by what learn.js learned from this recording (saved by eval/run.mjs or learncheck)
+  if (process.env.PROFILE === 'learned') await page.evaluate((p) => { window.__profile = p; }, JSON.parse(fs.readFileSync(path.join(path.dirname(path.resolve(file)), `${path.basename(file, path.extname(file))}.learned.json`), 'utf8')));
   const images = await page.evaluate(async ({ mode, rest }) => {
     const C = window.ThirdeyeCore, V = window.ThirdeyeVideo;
-    const profile = await (await fetch('games/valorant.json')).json();
+    const profile = window.__profile || (await (await fetch('games/valorant.json')).json());
     const video = await V.open(document.getElementById('f').files[0]);
     const frame = { w: video.width, h: video.height };
     const jpeg = async (canvas) => (await V.toJpeg(canvas, 0.85)).data;

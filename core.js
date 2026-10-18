@@ -131,6 +131,21 @@
     return null;
   }
 
+  // ---------- why a finish was sent back ----------
+  // Each send-back as a kind of reason, so the same reason counts again whatever moment or move it names.
+  const PROBLEM_KINDS = [
+    ['unseen', /haven't looked closely/],
+    ['too_few', /Cite at least \d+ separate moments/],
+    ['aim_count', /at least \d+ measure_aim readings/],
+    ['aim_level', /crosshair on the (head|body)/],
+    ['engine', /the engine scores|no move of theirs/],
+    ['no_shots', /ammo counter doesn't change/],
+    ['after_death', /the player was dead/],
+    ['won_fight', /haven't looked at a fight they won/],
+    ['same_moment', /same moment as other evidence|in both evidence and contrast/],
+  ];
+  const problemKind = (text) => PROBLEM_KINDS.find(([, re]) => re.test(text))?.[0] || 'other';
+
   // ---------- retries ----------
   // Re-measuring a fight a moment earlier, again and again, hunts for the reading a theory wants. A second try is fair
   // (the first can land on the kill-feed line or the death), a third isn't.
@@ -149,7 +164,11 @@
    * The problems with a finish call, or [] when it can stand. Sent back to the agent to fix. shots: [{ t, fired }] from
    * the ammo counter for the cited moments, for a habit the profile marks needsShots.
    */
-  function checkFinish(args, { ledger, duration = Infinity, habits = [], measures = [], events = [], deadFor = 5, shots = [] }) {
+  // How far below the head center the crosshair can sit before it's low, by where good players aim in the game (the
+  // research's aimTarget): at heads, past the head itself; at bodies, below the body (about the waist).
+  const LOW_FROM = { head: 0.75, body: 3.5 };
+  const TARGET_WORD = { head: 'the head', body: 'the body' };
+  function checkFinish(args, { ledger, duration = Infinity, habits = [], measures = [], events = [], deadFor = 5, shots = [], aimTarget = 'head' }) {
     const problems = [];
     if (args?.found === false) {
       if (text(args.why).length < 20) problems.push('Say why no single habit stands out (why, one or two sentences).');
@@ -191,14 +210,23 @@
       else if (afterDeath(t)) problems.push(afterDeath(t));
       if (kept.some((x) => Math.abs(x - t) < MIN_GAP)) problems.push(`${mmss(t)} is in both evidence and contrast. Keep it where it belongs.`);
     }
-    // a habit the profile measures by aim has to agree with the aim the coach measured
+    // a habit an engine checks (chess) cites the player's own moves, and the engine has to call each one a mistake
+    if (habit?.measuredBy === 'engine') {
+      for (const t of kept) {
+        const m = events.filter((e) => e.kind === 'move' && Math.abs(e.t - t) <= 2).sort((a, b) => Math.abs(a.t - t) - Math.abs(b.t - t))[0];
+        if (!m) problems.push(`There's no move of theirs at ${mmss(t)}. Cite the moments their moves land.`);
+        else if (!m.grade) problems.push(`At ${mmss(t)} the engine scores ${m.san} as fine (it gave away ${m.loss} centipawns), so that move doesn't show this habit. Drop the theory and name a habit the evidence shows, or finish with found false.`);
+      }
+    }
+    // a habit the profile measures by aim has to agree with the aim the coach measured, judged against where good
+    // players aim in this game
     if (habit?.measuredBy === 'aim') {
-      const sum = summarizeAim(measures);
+      const sum = summarizeAim(measures), low = LOW_FROM[aimTarget] ?? LOW_FROM.head, where = TARGET_WORD[aimTarget] ?? TARGET_WORD.head;
       if (!(sum?.n >= 3)) problems.push(`Crosshair height can be measured, so back this with at least 3 measure_aim readings where an enemy was in view (you have ${sum?.n || 0}). If the fights don't give 3, drop the theory and name a habit the evidence shows, or finish with found false.`);
-      else if (sum.heads <= 0.75) problems.push(`Your measurements put the crosshair at head level (median ${sum.heads} heads over ${sum.n} duels), so this isn't the habit. Drop the theory (notes, status dropped) and name a habit the evidence shows, or finish with found false.`);
+      else if (sum.heads <= low) problems.push(`Your measurements put the crosshair on ${where}, where good players in this game aim (median ${sum.heads} heads below the head over ${sum.n} fights), so this isn't the habit. Drop the theory (notes, status dropped) and name a habit the evidence shows, or finish with found false.`);
       for (const t of kept) {
         const m = measures.find((x) => Math.abs(x.t - t) <= 1 && Number.isFinite(x.heads));
-        if (m && m.heads <= 0.75) problems.push(`At ${mmss(t)} you measured the crosshair at head level (${m.heads} heads), so that moment doesn't show this habit.`);
+        if (m && m.heads <= low) problems.push(`At ${mmss(t)} you measured the crosshair on ${where} (${m.heads} heads below the head), so that moment doesn't show this habit.`);
       }
     }
     return problems;
@@ -242,10 +270,12 @@
 
   // ---------- events from a scan ----------
   // kill and death are the player's own; ally_death and ally_kill are teammates'
-  const KINDS = ['kill', 'death', 'ally_death', 'ally_kill', 'round_start', 'round_end', 'other'];
+  // move and opponent_move are chess moves, each with the engine's grade for it
+  const KINDS = ['kill', 'death', 'ally_death', 'ally_kill', 'round_start', 'round_end', 'engagement', 'move', 'opponent_move', 'other'];
   function mergeEvents(a, b) {
     const out = [];
-    for (const e of [...a, ...b].sort((x, y) => x.t - y.t)) if (!out.some((o) => o.kind === e.kind && Math.abs(o.t - e.t) < 2 && nameKey(o.victim) === nameKey(e.victim))) out.push(e);
+    // two chess moves of one side can land within 2 s in a fast game, so a numbered ply is its own event
+    for (const e of [...a, ...b].sort((x, y) => x.t - y.t)) if (!out.some((o) => o.kind === e.kind && Math.abs(o.t - e.t) < 2 && nameKey(o.victim) === nameKey(e.victim) && o.ply === e.ply)) out.push(e);
     return out;
   }
   /** Cleans a scan's events: valid times inside the scanned stretch, known kinds, no repeats. */
@@ -262,7 +292,7 @@
     list = list.filter((e) => e.t >= from - 3 && e.t <= to + 3).map((e) => ({ ...e, t: round(Math.max(0, e.t), 1) }));
     return mergeEvents([], list);
   }
-  const eventsBrief = (events) => events.map((e) => `${mmss(e.t, !Number.isInteger(e.t))} ${e.kind}${e.text ? `: ${e.text}` : ''}`).join('\n');
+  const eventsBrief = (events) => events.map((e) => `${mmss(e.t, !Number.isInteger(e.t))}${e.kind === 'engagement' ? `–${mmss(e.to, !Number.isInteger(e.to))}` : ''} ${e.kind}${e.text ? `: ${e.text}` : ''}`).join('\n');
 
   // ---------- the kill feed ----------
   // Gemini reads kill-feed names well but mixes up the team colors behind them, so the colors come from pixels here.
@@ -382,10 +412,10 @@
       return { y0, y1, x0, x1, left, right, fp };
     });
   }
-  /** For each pixel line of a kill-feed crop, how many of its pixels are clearly one team's color. */
-  function teamLines(img, colors = FEED_COLORS) {
+  /** For each pixel line of a kill-feed crop, how many of its pixels are clearly one team's color (muted: or a muted shade). */
+  function teamLines(img, colors = FEED_COLORS, { muted = false } = {}) {
     const { data: d, width: w, height: h } = img, lines = new Array(h).fill(0);
-    for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) { const i = (y * w + x) * 4, k = pixelTeam(d[i], d[i + 1], d[i + 2], colors); if (k === 1 || k === 2) lines[y]++; }
+    for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) { const i = (y * w + x) * 4, k = pixelTeam(d[i], d[i + 1], d[i + 2], colors); if (k && (muted || k <= 2)) lines[y]++; }
     return lines;
   }
   /** Runs of pixel lines that are mostly one team's color, as a kill-feed row is: [{ y0, y1 }]. lines from teamLines. */
@@ -608,6 +638,67 @@
     return { fired: ammoChanged(steady[0].reading, steady.at(-1).reading), changes, from: steady[0].t, to: steady.at(-1).t };
   }
 
+  // ---------- engagements ----------
+  // A fight is the unit a coach judges: taking it, its position and timing, breaking off. Kills and deaths alone miss
+  // the fights no one fell in, which can still decide a match.
+  /**
+   * When the player fired, from ammo readings over a stretch: each change between two steady readings (the next two
+   * frames read the same). Automatic fire changes the digits faster than they hold steady, so a burst shows as one
+   * change at its end: these mark firing, not each round.
+   */
+  function fireTimes(readings) {
+    const steady = [];
+    for (let i = 0; i + 2 < readings.length; i++) {
+      const [a, b, c] = [readings[i], readings[i + 1], readings[i + 2]].map((x) => x.reading);
+      if (a && b && c && !ammoChanged(a, b) && !ammoChanged(b, c)) steady.push(readings[i]);
+    }
+    const times = [];
+    for (let i = 1; i < steady.length; i++) if (ammoChanged(steady[i - 1].reading, steady[i].reading)) times.push(steady[i].t);
+    return times;
+  }
+  /** Firing times grouped into fights: bursts less than `gap` s apart are one. [{ from, to, bursts }], `pad` s around each. */
+  function groupFights(times, { gap = 8, pad = 1.5 } = {}) {
+    const out = [];
+    for (const t of [...times].sort((x, y) => x - y)) {
+      const last = out.at(-1);
+      if (last && t - last.to <= gap) { last.to = t; last.bursts++; } else out.push({ from: t, to: t, bursts: 1 });
+    }
+    return out.map((f) => ({ from: round(Math.max(0, f.from - pad), 1), to: round(f.to + pad, 1), bursts: f.bursts }));
+  }
+  /**
+   * Fights as one list of engagement events, from what the low-detail pass saw (seen), the player's kills and deaths
+   * (events), damage they dealt read off a damage counter (hits), and firing read off the ammo counter (firing).
+   * Counter changes alone aren't a fight: a reload, a weapon swap, or picking up ammo changes the ammo counter, and a
+   * learned "damage" box can hold another number that changes. So firing and hits only extend a fight that the pass, a
+   * kill, or a death shows.
+   * Overlapping ones become one, spanning all. Each takes its outcome (won, lost, none) from the pass, else from the
+   * player's kills and deaths inside it: a death means lost, a kill won, neither none.
+   */
+  function mergeFights(firing = [], seen = [], events = [], hits = []) {
+    const valid = (f) => Number.isFinite(f.from) && Number.isFinite(f.to) && f.to >= f.from;
+    const anchors = [
+      ...seen.filter(valid).map((f) => ({ ...f, source: 'seen' })),
+      ...events.filter((e) => e.kind === 'kill' || e.kind === 'death').map((e) => ({ from: e.t - 4, to: e.t + 1, source: e.kind })),
+    ];
+    const near = (f, a) => f.from <= a.to + 3 && f.to >= a.from - 3;
+    const backed = [...firing.filter(valid).map((f) => ({ ...f, source: 'firing' })), ...hits.filter(valid).map((f) => ({ from: f.from, to: f.to, source: 'hits', hits: f.bursts }))].filter((f) => anchors.some((a) => near(f, a)));
+    const all = [...anchors, ...backed].sort((x, y) => x.from - y.from);
+    const merged = [];
+    for (const f of all) {
+      const last = merged.at(-1);
+      if (last && f.from <= last.to + 1) {
+        last.to = Math.max(last.to, f.to); last.bursts += f.source === 'firing' ? f.bursts || 0 : 0; last.hits += f.hits || 0;
+        if (f.outcome) last.outcome ||= f.outcome; if (f.text) last.text ||= f.text; last.sources.add(f.source);
+      } else merged.push({ ...f, bursts: f.source === 'firing' ? f.bursts || 0 : 0, hits: f.hits || 0, sources: new Set([f.source]) });
+    }
+    return merged.map((f) => {
+      const inside = (kind) => events.some((e) => e.kind === kind && e.t >= f.from - 1 && e.t <= f.to + 3);
+      const outcome = ['won', 'lost', 'none'].includes(f.outcome) ? f.outcome : inside('death') ? 'lost' : inside('kill') ? 'won' : 'none';
+      const said = [outcome === 'none' ? 'no one fell' : outcome, f.hits ? `dealt damage ${f.hits} time${f.hits === 1 ? '' : 's'}` : null, f.bursts ? `fired in ${f.bursts} burst${f.bursts === 1 ? '' : 's'}` : null, f.text].filter(Boolean).join('; ');
+      return { t: round(f.from, 1), from: round(f.from, 1), to: round(f.to, 1), kind: 'engagement', outcome, bursts: f.bursts, hits: f.hits, seenBy: [...f.sources].sort().join('+'), text: said };
+    });
+  }
+
   // ---------- looks ----------
   const MAX_FRAMES = 12;
   /** The frame times for one look: up to MAX_FRAMES spread over [t - before, t + after], inside the video. */
@@ -630,7 +721,15 @@
   const emptyHistory = () => ({ habit: null, matches: [] });
   const addMatch = (history, match) => ({ ...history, matches: [...(history.matches || []), match].slice(-30) });
   // The player decides which habit to work on. An aim habit's baseline is that match's aim numbers.
-  const acceptHabit = (history, match) => ({ ...history, habit: { id: match.habitId, name: match.habit, drill: match.drill, recheck: match.recheck, since: match.date, matchId: match.id, baseline: match.aim || null } });
+  const acceptHabit = (history, match) => ({ ...history, habit: { id: match.habitId, name: match.habit, game: match.game || null, drill: match.drill, recheck: match.recheck, since: match.date, matchId: match.id, baseline: match.aim || null } });
+  /**
+   * The history as one game sees it: the habit being worked on only when it came from this game, and only this game's
+   * reviews. A chess review shouldn't be told about a shooter habit. Games compare by name, ignoring case.
+   */
+  function historyFor(history, game) {
+    const same = (g) => String(g || '').toLowerCase() === String(game || '').toLowerCase();
+    return { ...history, habit: history?.habit && same(history.habit.game ?? history.habit.gameId) ? history.habit : null, matches: (history?.matches || []).filter((m) => same(m.game)) };
+  }
   const dropHabit = (history) => ({ ...history, habit: null });
   /** better, same, or worse against the baseline: half a head of change over 3 or more duels each counts. */
   function compareAim(baseline, now) {
@@ -654,11 +753,11 @@
   const api = {
     mmss, parseTime, median, round, clamp, aimBand, aimOffset, headOnBody, summarizeAim, aimText,
     BudgetError, createBudget, left, spend, budgetLine,
-    SLACK, MIN_EVIDENCE, createLedger, recordLook, seen, deadForOf, deathAt, MAX_TRIES, fightOf, retryRefusal, checkFinish,
+    SLACK, MIN_EVIDENCE, createLedger, recordLook, seen, deadForOf, deathAt, MAX_TRIES, fightOf, retryRefusal, problemKind, checkFinish,
     STATUSES, applyNote, boardBrief, KINDS, normalizeEvents, mergeEvents, eventsBrief,
     FEED_COLORS, pixelTeam, killfeedRows, teamLines, colorBands, fitGrid, rowDistance, sameRow, freshRows, nameKey, sameName, feedSightings, choosePlayer, buildKillfeed,
-    ammoReading, shotsFired, MAX_FRAMES, framePlan, regionRect,
-    emptyHistory, addMatch, acceptHabit, dropHabit, compareAim, historyBrief,
+    ammoReading, shotsFired, fireTimes, groupFights, mergeFights, MAX_FRAMES, framePlan, regionRect,
+    emptyHistory, addMatch, acceptHabit, historyFor, dropHabit, compareAim, historyBrief,
   };
   root.ThirdeyeCore = api;
   if (typeof module !== 'undefined') module.exports = api;

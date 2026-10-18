@@ -79,7 +79,9 @@ function killfeedScore(events, kf) {
 function score(r, rec) {
   if (!r || r.error || r.refused || r.unparsed) return { verdict: r?.refused ? 'refused' : 'no result', counted: false };
   if (rec.plantedHabit) {
-    const hit = r.found && r.habitId === rec.plantedHabit;
+    // learned habits are named by the learn call, so a planted habit can be matched by meaning (plantedMatch, a regex
+    // over the habit's id and name) as well as by id
+    const hit = r.found && (r.habitId === rec.plantedHabit || (!!rec.plantedMatch && new RegExp(rec.plantedMatch, 'i').test(`${r.habitId} ${r.habit || ''}`)));
     return { verdict: hit ? 'found' : r.found ? `wrong: ${r.habitId}` : r.stopped ? 'missed (out of turns)' : 'missed', hit, counted: true };
   }
   return { verdict: r.found ? `false positive: ${r.habitId}` : 'clean', falsePositive: !!r.found, counted: true };
@@ -158,24 +160,39 @@ try {
     phase = `${n}:setup`;
     await page.setInputFiles('#eval-file', file);
     try {
-      row.setup = await page.evaluate(async ({ game, name }) => {
+      // The game is learned from the recording, as in the app (one model call, counted in setup). EVAL_LEARNED=cached
+      // uses the profile eval/learncheck.mjs saved next to the recording instead, for repeat runs.
+      const cachedPath = path.join(path.dirname(file), `${path.basename(file, path.extname(file))}.learned.json`);
+      const cached = process.env.EVAL_LEARNED === 'cached' && fs.existsSync(cachedPath) ? JSON.parse(fs.readFileSync(cachedPath, 'utf8')) : null;
+      row.setup = await page.evaluate(async ({ name, cached }) => {
         const V = window.ThirdeyeVideo, clock = () => performance.now();
-        const profile = await (await fetch(`games/${game}.json`)).json();
         const video = await V.open(document.getElementById('eval-file').files[0]);
         let t0 = clock();
+        const learned = cached ? null : await window.ThirdeyeLearn.learnGame({ video });
+        const profile = cached || learned.profile;
+        window.__learned = { profile, raw: learned?.raw || null, research: learned?.research || null };
+        const learnSeconds = (clock() - t0) / 1000;
+        t0 = clock();
         const proxy = await V.makeProxy(video);
         const proxySeconds = (clock() - t0) / 1000;
         t0 = clock();
         const file = await V.upload(proxy, { name });
         window.__eval = { video, file, profile };
-        return { duration: +video.duration.toFixed(1), size: `${video.width}x${video.height}`, proxyMb: +(proxy.size / 1e6).toFixed(2), proxySeconds: +proxySeconds.toFixed(1), uploadSeconds: +((clock() - t0) / 1000).toFixed(1) };
-      }, { game: rec.game || 'valorant', name: `thirdeye-eval-${path.basename(file)}` });
+        return { game: profile.name, genre: profile.genre, learned: cached ? 'cached' : 'fresh', learnSeconds: +learnSeconds.toFixed(1), killfeed: profile.layout?.killfeed || (profile.regions.killfeed ? 'boxed' : 'none'), duration: +video.duration.toFixed(1), size: `${video.width}x${video.height}`, proxyMb: +(proxy.size / 1e6).toFixed(2), proxySeconds: +proxySeconds.toFixed(1), uploadSeconds: +((clock() - t0) / 1000).toFixed(1) };
+      }, { name: `thirdeye-eval-${path.basename(file)}`, cached });
     } catch (e) {
       row.setup = { error: e.message };
     }
     row.setup.usage = usage(phase);
+    // what was learned, next to the recording, for checking by eye (eval/frames.mjs info draws it with PROFILE=learned)
+    if (!row.setup.error) {
+      const got = await page.evaluate(() => window.__learned);
+      const base = path.join(path.dirname(file), path.basename(file, path.extname(file)));
+      if (got?.raw) { fs.writeFileSync(`${base}.learned.json`, JSON.stringify(got.profile, null, 2)); fs.writeFileSync(`${base}.learn-raw.json`, JSON.stringify(got.raw, null, 2)); }
+      if (got?.research) { fs.writeFileSync(`${base}.research.json`, JSON.stringify(got.research, null, 2)); console.log(`  research (${got.research.researched ? `web, ${got.research.sources.length} sources` : `model knowledge; search failed: ${got.research.searchError || '?'}`}): rewards ${got.research.rewards}; aim at ${got.research.aimTarget}; priorities: ${got.research.priorities.join(' | ')}`); }
+    }
     if (row.setup.error) { console.log(`  setup failed: ${row.setup.error}`); continue; }
-    console.log(`  scan copy ${row.setup.proxyMb} MB in ${row.setup.proxySeconds} s, uploaded in ${row.setup.uploadSeconds} s`);
+    console.log(`  learned ${row.setup.game} (${row.setup.genre}, ${row.setup.learned}, kill feed ${row.setup.killfeed}) in ${row.setup.learnSeconds} s; scan copy ${row.setup.proxyMb} MB in ${row.setup.proxySeconds} s, uploaded in ${row.setup.uploadSeconds} s`);
 
     const runs = {
       agent: () => page.evaluate(async (budget) => {
@@ -198,9 +215,9 @@ try {
             onNotice: (n) => live(`  (${n})`),
           });
           return {
-            found: r.found, habitId: r.habitId ?? null, habit: r.habit || '', why: r.why, stopped: !!r.stopped, confidence: r.confidence,
+            found: r.found, habitId: r.habitId ?? null, habit: r.habit || '', why: r.why, stopped: !!r.stopped, confidence: r.confidence, moves: (r.events || []).filter((e) => e.kind === 'move').map((e) => ({ t: e.t, san: e.san, grade: e.grade, loss: e.loss })),
             evidence: (r.evidence || []).map((e) => ({ t: e.t, what: e.what })), contrast: r.contrast || [], aim: r.aim, measures: r.measures.map((m) => ({ t: m.t, heads: m.heads, band: m.band, headPx: m.headPx, box: m.box })),
-            looks: r.stats.looks, turns: r.stats.turns, skipped: r.stats.skipped, stats: r.stats, events: (r.events || []).map((e) => ({ t: e.t, kind: e.kind, killer: e.killer, victim: e.victim, killerTeam: e.killerTeam, victimTeam: e.victimTeam, tradedBy: e.tradedBy })),
+            looks: r.stats.looks, turns: r.stats.turns, skipped: r.stats.skipped, stats: r.stats, events: (r.events || []).map((e) => ({ t: e.t, kind: e.kind, killer: e.killer, victim: e.victim, killerTeam: e.killerTeam, victimTeam: e.victimTeam, tradedBy: e.tradedBy, ...(e.kind === 'engagement' ? { from: e.from, to: e.to, outcome: e.outcome, bursts: e.bursts, hits: e.hits, seenBy: e.seenBy, text: e.text } : {}) })),
             drill: r.drill || '', recheck: r.recheck || '', theories: C.boardBrief(r.board), asks, rejected, steps, seconds: (performance.now() - t0) / 1000,
           };
         } catch (e) {

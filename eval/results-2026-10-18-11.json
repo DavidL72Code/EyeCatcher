@@ -1,0 +1,2155 @@
+{
+  "started": "2026-10-18T21:13:23.097Z",
+  "budget": {
+    "looks": 24,
+    "turns": 12
+  },
+  "maxCallsPerRecording": 80,
+  "recordings": [
+    {
+      "file": "recordings/yt-vyse-ascent.mov",
+      "plantedHabit": null,
+      "systems": {
+        "agent": {
+          "found": false,
+          "habitId": null,
+          "habit": "",
+          "why": "The review ran out of turns before it could settle on a habit.",
+          "stopped": true,
+          "moves": [],
+          "evidence": [],
+          "contrast": [],
+          "aim": {
+            "n": 2,
+            "heads": 5.59,
+            "dyDeg": 8.96,
+            "atHead": 0,
+            "bands": {
+              "low": 1,
+              "above": 1
+            }
+          },
+          "measures": [
+            {
+              "t": 325,
+              "heads": 11.93,
+              "band": "low",
+              "headPx": 15.1,
+              "box": [
+                39,
+                656,
+                76,
+                692
+              ]
+            },
+            {
+              "t": 811.8,
+              "heads": -0.76,
+              "band": "above",
+              "headPx": 13,
+              "box": [
+                507,
+                512,
+                539,
+                538
+              ]
+            }
+          ],
+          "looks": 7,
+          "turns": 12,
+          "skipped": 3,
+          "stats": {
+            "turns": 12,
+            "looks": 7,
+            "scanTokens": 56100,
+            "scanCalls": 1,
+            "aimCalls": 3,
+            "hudCalls": 0,
+            "skipped": 3,
+            "refused": 3,
+            "asks": 0,
+            "calls": 16
+          },
+          "events": [
+            {
+              "t": 0,
+              "kind": "round_start"
+            },
+            {
+              "t": 4.5,
+              "kind": "engagement",
+              "from": 4.5,
+              "to": 38.8,
+              "outcome": "none",
+              "bursts": 16,
+              "hits": 1,
+              "seenBy": "firing+hits",
+              "text": "no one fell; dealt damage 1 time; fired in 16 bursts"
+            },
+            {
+              "t": 73,
+              "kind": "engagement",
+              "from": 73,
+              "to": 77,
+              "outcome": "none",
+              "bursts": 0,
+              "hits": 0,
+              "seenBy": "seen",
+              "text": "no one fell; Player trades shots near B site"
+            },
+            {
+              "t": 78.5,
+              "kind": "engagement",
+              "from": 78.5,
+              "to": 109.3,
+              "outcome": "none",
+              "bursts": 2,
+              "hits": 11,
+              "seenBy": "firing+hits",
+              "text": "no one fell; dealt damage 11 times; fired in 2 bursts"
+            },
+            {
+              "t": 117,
+              "kind": "engagement",
+              "from": 117,
+              "to": 172.5,
+              "outcome": "none",
+              "bursts": 1,
+              "hits": 17,
+              "seenBy": "firing+hits",
+              "text": "no one fell; dealt damage 17 times; fired in 1 burst"
+            },
+            {
+              "t": 140,
+              "kind": "round_end"
+            },
+            {
+              "t": 152,
+              "kind": "round_start"
+            },
+            {
+              "t": 174,
+              "kind": "engagement",
+              "from": 174,
+              "to": 177,
+              "outcome": "none",
+              "bursts": 1,
+              "hits": 0,
+              "seenBy": "firing",
+              "text": "no one fell; fired in 1 burst"
+            },
+            {
+              "t": 206.3,
+              "kind": "engagement",
+              "from": 206.3,
+              "to": 213,
+              "outcome": "lost",
+              "bursts": 2,
+              "hits": 1,
+              "seenBy": "firing+hits+seen",
+              "text": "lost; dealt damage 1 time; fired in 2 bursts; Player defeated in A window"
+            },
+            {
+              "t": 241.8,
+              "kind": "engagement",
+              "from": 241.8,
+              "to": 258.5,
+              "outcome": "none",
+              "bursts": 2,
+              "hits": 4,
+              "seenBy": "firing+hits",
+              "text": "no one fell; dealt damage 4 times; fired in 2 bursts"
+            },
+            {
+              "t": 271.3,
+              "kind": "engagement",
+              "from": 271.3,
+              "to": 274.3,
+              "outcome": "none",
+              "bursts": 0,
+              "hits": 1,
+              "seenBy": "hits",
+              "text": "no one fell; dealt damage 1 time"
+            },
+            {
+              "t": 282.3,
+              "kind": "engagement",
+              "from": 282.3,
+              "to": 291,
+              "outcome": "none",
+              "bursts": 0,
+              "hits": 2,
+              "seenBy": "hits",
+              "text": "no one fell; dealt damage 2 times"
+            },
+            {
+              "t": 317.8,
+              "kind": "engagement",
+              "from": 317.8,
+              "to": 320.8,
+              "outcome": "none",
+              "bursts": 1,
+              "hits": 0,
+              "seenBy": "firing",
+              "text": "no one fell; fired in 1 burst"
+            },
+            {
+              "t": 322,
+              "kind": "engagement",
+              "from": 322,
+              "to": 327,
+              "outcome": "lost",
+              "bursts": 0,
+              "hits": 0,
+              "seenBy": "death",
+              "text": "lost"
+            },
+            {
+              "t": 326,
+              "kind": "death"
+            },
+            {
+              "t": 354.5,
+              "kind": "engagement",
+              "from": 354.5,
+              "to": 361.8,
+              "outcome": "none",
+              "bursts": 0,
+              "hits": 3,
+              "seenBy": "hits",
+              "text": "no one fell; dealt damage 3 times"
+            },
+            {
+              "t": 364,
+              "kind": "engagement",
+              "from": 364,
+              "to": 372.8,
+              "outcome": "none",
+              "bursts": 4,
+              "hits": 0,
+              "seenBy": "firing+seen",
+              "text": "no one fell; fired in 4 bursts; Exchange at B main"
+            },
+            {
+              "t": 379.5,
+              "kind": "engagement",
+              "from": 379.5,
+              "to": 382.5,
+              "outcome": "none",
+              "bursts": 0,
+              "hits": 1,
+              "seenBy": "hits",
+              "text": "no one fell; dealt damage 1 time"
+            },
+            {
+              "t": 394,
+              "kind": "engagement",
+              "from": 394,
+              "to": 400,
+              "outcome": "none",
+              "bursts": 0,
+              "hits": 0,
+              "seenBy": "death+seen",
+              "text": "no one fell; B main shootout"
+            },
+            {
+              "t": 399,
+              "kind": "death"
+            },
+            {
+              "t": 400,
+              "kind": "round_end"
+            },
+            {
+              "t": 404.5,
+              "kind": "engagement",
+              "from": 404.5,
+              "to": 423.5,
+              "outcome": "none",
+              "bursts": 5,
+              "hits": 5,
+              "seenBy": "firing+hits",
+              "text": "no one fell; dealt damage 5 times; fired in 5 bursts"
+            },
+            {
+              "t": 406,
+              "kind": "round_start"
+            },
+            {
+              "t": 461,
+              "kind": "engagement",
+              "from": 461,
+              "to": 464,
+              "outcome": "none",
+              "bursts": 0,
+              "hits": 1,
+              "seenBy": "hits",
+              "text": "no one fell; dealt damage 1 time"
+            },
+            {
+              "t": 469.8,
+              "kind": "engagement",
+              "from": 469.8,
+              "to": 480,
+              "outcome": "lost",
+              "bursts": 2,
+              "hits": 3,
+              "seenBy": "death+firing+hits+seen",
+              "text": "lost; dealt damage 3 times; fired in 2 bursts; Player shot at A site"
+            },
+            {
+              "t": 479,
+              "kind": "death"
+            },
+            {
+              "t": 480,
+              "kind": "round_end"
+            },
+            {
+              "t": 484.5,
+              "kind": "engagement",
+              "from": 484.5,
+              "to": 496.8,
+              "outcome": "none",
+              "bursts": 0,
+              "hits": 7,
+              "seenBy": "hits",
+              "text": "no one fell; dealt damage 7 times"
+            },
+            {
+              "t": 486,
+              "kind": "round_start"
+            },
+            {
+              "t": 507,
+              "kind": "engagement",
+              "from": 507,
+              "to": 524,
+              "outcome": "none",
+              "bursts": 3,
+              "hits": 2,
+              "seenBy": "firing+hits",
+              "text": "no one fell; dealt damage 2 times; fired in 3 bursts"
+            },
+            {
+              "t": 526.5,
+              "kind": "engagement",
+              "from": 526.5,
+              "to": 537.5,
+              "outcome": "none",
+              "bursts": 1,
+              "hits": 2,
+              "seenBy": "firing+hits",
+              "text": "no one fell; dealt damage 2 times; fired in 1 burst"
+            },
+            {
+              "t": 552,
+              "kind": "engagement",
+              "from": 552,
+              "to": 555,
+              "outcome": "none",
+              "bursts": 0,
+              "hits": 0,
+              "seenBy": "seen",
+              "text": "no one fell; Skirmish at B main smoke"
+            },
+            {
+              "t": 569,
+              "kind": "engagement",
+              "from": 569,
+              "to": 573,
+              "outcome": "none",
+              "bursts": 0,
+              "hits": 0,
+              "seenBy": "seen",
+              "text": "no one fell; Exchange near B main"
+            },
+            {
+              "t": 599.5,
+              "kind": "engagement",
+              "from": 599.5,
+              "to": 611,
+              "outcome": "lost",
+              "bursts": 2,
+              "hits": 6,
+              "seenBy": "death+firing+hits",
+              "text": "lost; dealt damage 6 times; fired in 2 bursts"
+            },
+            {
+              "t": 610,
+              "kind": "round_end"
+            },
+            {
+              "t": 610,
+              "kind": "death"
+            },
+            {
+              "t": 614.8,
+              "kind": "engagement",
+              "from": 614.8,
+              "to": 648.8,
+              "outcome": "none",
+              "bursts": 2,
+              "hits": 10,
+              "seenBy": "firing+hits",
+              "text": "no one fell; dealt damage 10 times; fired in 2 bursts"
+            },
+            {
+              "t": 616,
+              "kind": "round_start"
+            },
+            {
+              "t": 657,
+              "kind": "engagement",
+              "from": 657,
+              "to": 669.3,
+              "outcome": "lost",
+              "bursts": 0,
+              "hits": 3,
+              "seenBy": "hits+seen",
+              "text": "lost; dealt damage 3 times; Player defeated at A tree"
+            },
+            {
+              "t": 671,
+              "kind": "engagement",
+              "from": 671,
+              "to": 679,
+              "outcome": "none",
+              "bursts": 3,
+              "hits": 0,
+              "seenBy": "firing",
+              "text": "no one fell; fired in 3 bursts"
+            },
+            {
+              "t": 723.3,
+              "kind": "engagement",
+              "from": 723.3,
+              "to": 728.3,
+              "outcome": "none",
+              "bursts": 1,
+              "hits": 3,
+              "seenBy": "firing+hits",
+              "text": "no one fell; dealt damage 3 times; fired in 1 burst"
+            },
+            {
+              "t": 733.5,
+              "kind": "engagement",
+              "from": 733.5,
+              "to": 736.5,
+              "outcome": "none",
+              "bursts": 0,
+              "hits": 1,
+              "seenBy": "hits",
+              "text": "no one fell; dealt damage 1 time"
+            },
+            {
+              "t": 743.5,
+              "kind": "engagement",
+              "from": 743.5,
+              "to": 749.3,
+              "outcome": "none",
+              "bursts": 0,
+              "hits": 2,
+              "seenBy": "hits",
+              "text": "no one fell; dealt damage 2 times"
+            },
+            {
+              "t": 757,
+              "kind": "engagement",
+              "from": 757,
+              "to": 761.3,
+              "outcome": "none",
+              "bursts": 0,
+              "hits": 2,
+              "seenBy": "hits",
+              "text": "no one fell; dealt damage 2 times"
+            },
+            {
+              "t": 770,
+              "kind": "engagement",
+              "from": 770,
+              "to": 789.3,
+              "outcome": "won",
+              "bursts": 2,
+              "hits": 5,
+              "seenBy": "firing+hits+seen",
+              "text": "won; dealt damage 5 times; fired in 2 bursts; Player eliminates enemy at Mid"
+            },
+            {
+              "t": 811,
+              "kind": "engagement",
+              "from": 811,
+              "to": 816.5,
+              "outcome": "won",
+              "bursts": 1,
+              "hits": 0,
+              "seenBy": "firing+seen",
+              "text": "won; fired in 1 burst; Final elimination securing round win"
+            },
+            {
+              "t": 813,
+              "kind": "round_end"
+            },
+            {
+              "t": 819,
+              "kind": "round_start"
+            },
+            {
+              "t": 821.5,
+              "kind": "engagement",
+              "from": 821.5,
+              "to": 834.8,
+              "outcome": "none",
+              "bursts": 0,
+              "hits": 3,
+              "seenBy": "hits",
+              "text": "no one fell; dealt damage 3 times"
+            },
+            {
+              "t": 843,
+              "kind": "engagement",
+              "from": 843,
+              "to": 850.8,
+              "outcome": "none",
+              "bursts": 1,
+              "hits": 3,
+              "seenBy": "firing+hits",
+              "text": "no one fell; dealt damage 3 times; fired in 1 burst"
+            }
+          ],
+          "drill": "",
+          "recheck": "",
+          "theories": "T1 supported: Player aims below head level or has bad crosshair placement (5:26, 7:59)",
+          "asks": [],
+          "rejected": [
+            [
+              "Cite at least 3 separate moments you looked at that show the habit (you have 2). Moments where they got it right go in contrast, not evidence. If fewer than 3 moments show it, finish with found false.",
+              "Crosshair height can be measured, so back this with at least 3 measure_aim readings where an enemy was in view (you have 2). If the fights don't give 3, drop the theory and name a habit the evidence shows, or finish with found false."
+            ]
+          ],
+          "steps": [
+            {
+              "name": "scan",
+              "args": "{\"notes\":[{\"status\":\"testing\",\"id\":\"T1\",\"theory\":\"Player aims below head level or has bad crosshair placement\"}],\"to\":\"14:10\",\"why\":\"Find all round starts and c"
+            },
+            {
+              "name": "frames",
+              "args": "{\"notes\":[{\"theory\":\"Player aims below head level or has bad crosshair placement\",\"status\":\"supported\",\"id\":\"T1\"}],\"fps\":6,\"region\":\"aim\",\"before\":2,\"after\":1,\""
+            },
+            {
+              "name": "measure_aim",
+              "args": "{\"notes\":[{\"status\":\"supported\",\"theory\":\"Player aims below head level or has bad crosshair placement\",\"id\":\"T1\"}],\"more\":[\"7:58.7\"],\"at\":\"7:58.5\",\"why\":\"Measur"
+            },
+            {
+              "name": "measure_aim",
+              "args": "{\"more\":[\"7:57.6\"],\"why\":\"Measure crosshair height right before the A site fight ends\",\"notes\":[{\"id\":\"T1\",\"theory\":\"Player aims below head level or has bad cro"
+            },
+            {
+              "name": "frames",
+              "args": "{\"before\":1,\"region\":\"aim\",\"notes\":[{\"status\":\"supported\",\"theory\":\"Player aims below head level or has bad crosshair placement\",\"id\":\"T1\"}],\"at\":\"12:50\",\"after"
+            },
+            {
+              "name": "measure_aim",
+              "args": "{\"notes\":[{\"status\":\"supported\",\"theory\":\"Player aims below head level or has bad crosshair placement\",\"id\":\"T1\"}],\"why\":\"Measure crosshair placement against en"
+            },
+            {
+              "name": "frames",
+              "args": "{\"fps\":6,\"after\":1,\"why\":\"Check crosshair height when fighting Sage\",\"notes\":[{\"id\":\"T1\",\"theory\":\"Player aims below head level or has bad crosshair placement\","
+            },
+            {
+              "name": "measure_aim",
+              "args": "{\"at\":\"5:25.0\",\"notes\":[{\"status\":\"supported\",\"theory\":\"Player aims below head level or has bad crosshair placement\",\"id\":\"T1\"}],\"why\":\"Measure crosshair height"
+            },
+            {
+              "name": "measure_aim",
+              "args": "{\"notes\":[{\"theory\":\"Player aims below head level or has bad crosshair placement\",\"id\":\"T1\",\"status\":\"supported\"}],\"at\":\"5:24.5\",\"why\":\"Measure crosshair height"
+            },
+            {
+              "name": "frames",
+              "args": "{\"region\":\"aim\",\"notes\":[{\"id\":\"T1\",\"theory\":\"Player aims below head level or has bad crosshair placement\",\"status\":\"supported\"}],\"before\":1,\"at\":\"13:31\",\"after"
+            },
+            {
+              "name": "measure_aim",
+              "args": "{\"notes\":[{\"theory\":\"Player aims below head level or has bad crosshair placement\",\"id\":\"T1\",\"status\":\"supported\"}],\"why\":\"Measure crosshair height during the fi"
+            },
+            {
+              "name": "finish",
+              "args": "{\"evidence\":[{\"what\":\"Player is eliminated by Sage with crosshair resting significantly below head height (lower body level)\",\"better\":\"Raise the crosshair to h"
+            }
+          ],
+          "seconds": 218,
+          "usage": {
+            "calls": 16,
+            "polls": 0,
+            "files": 0,
+            "rateLimited": 0,
+            "failed": 0,
+            "blocked": 0,
+            "models": {
+              "gemini-3.5-flash-lite": 16
+            }
+          },
+          "score": {
+            "verdict": "clean",
+            "falsePositive": false,
+            "counted": true
+          },
+          "evidenceOnDuels": null,
+          "scanRecall": {
+            "kills": {
+              "found": "0/9",
+              "extra": []
+            },
+            "deaths": {
+              "found": "3/6",
+              "extra": [
+                "10:10"
+              ]
+            }
+          },
+          "killfeedScore": {
+            "found": "0/41",
+            "teamsRight": "0/0",
+            "notReal": []
+          }
+        }
+      },
+      "setup": {
+        "game": "Valorant",
+        "genre": "shooter",
+        "learned": "fresh",
+        "learnSeconds": 23.6,
+        "killfeed": "measured, but it found 44 new rows a minute at the busiest stretch, more than a match has kills",
+        "duration": 850.5,
+        "size": "1290x726",
+        "proxyMb": 27.13,
+        "proxySeconds": 42.7,
+        "uploadSeconds": 44.5,
+        "usage": {
+          "calls": 3,
+          "polls": 0,
+          "files": 13,
+          "rateLimited": 0,
+          "failed": 0,
+          "blocked": 0,
+          "models": {
+            "gemini-3.5-flash-lite": 2,
+            "gemini-2.5-flash-lite": 1
+          }
+        }
+      }
+    },
+    {
+      "file": "recordings/Screen Recording 2026-10-17 at 6.13.34 PM.mov",
+      "plantedHabit": null,
+      "systems": {
+        "agent": {
+          "found": true,
+          "habitId": "w_keying_into_sites",
+          "habit": "W-keying into sites",
+          "why": "Shooting while continuously moving forward causes shots to miss entirely and makes you an easy target in gunfights, costing crucial opening duels and rounds.",
+          "stopped": false,
+          "confidence": "high",
+          "moves": [],
+          "evidence": [
+            {
+              "t": 99.3,
+              "what": "Fires while moving forward into an engagement"
+            },
+            {
+              "t": 138.5,
+              "what": "Fires while moving into B Site and gets eliminated by Fade"
+            },
+            {
+              "t": 375.3,
+              "what": "W-keys into A Site while shooting on the move and loses the duel"
+            }
+          ],
+          "contrast": [
+            {
+              "t": 228.8,
+              "what": "Stops moving to take clean shots and secures a multi-kill"
+            }
+          ],
+          "aim": null,
+          "measures": [],
+          "looks": 10,
+          "turns": 6,
+          "skipped": 0,
+          "stats": {
+            "turns": 6,
+            "looks": 10,
+            "scanTokens": 25608,
+            "scanCalls": 3,
+            "aimCalls": 1,
+            "hudCalls": 0,
+            "skipped": 0,
+            "refused": 0,
+            "asks": 0,
+            "calls": 10
+          },
+          "events": [
+            {
+              "t": 0,
+              "kind": "round_start"
+            },
+            {
+              "t": 17.25,
+              "kind": "ally_kill",
+              "killer": "lisa",
+              "victim": "ulquiorra",
+              "killerTeam": "ally",
+              "victimTeam": "enemy"
+            },
+            {
+              "t": 19.25,
+              "kind": "ally_death",
+              "killer": "Fade",
+              "victim": "lisa",
+              "killerTeam": "enemy",
+              "victimTeam": "ally"
+            },
+            {
+              "t": 24.75,
+              "kind": "ally_death",
+              "killer": "Fade",
+              "victim": "CLV | bam",
+              "killerTeam": "enemy",
+              "victimTeam": "ally"
+            },
+            {
+              "t": 36.3,
+              "kind": "engagement",
+              "from": 36.3,
+              "to": 41.3,
+              "outcome": "lost",
+              "bursts": 0,
+              "hits": 0,
+              "seenBy": "death+seen",
+              "text": "lost; TenZ engages Chamber at B Link and gets eliminated by Fade"
+            },
+            {
+              "t": 40.25,
+              "kind": "death",
+              "killer": "Fade",
+              "victim": "Me",
+              "killerTeam": "enemy",
+              "victimTeam": "ally"
+            },
+            {
+              "t": 48.25,
+              "kind": "ally_death",
+              "killer": "Reyna",
+              "victim": "Chamber",
+              "killerTeam": "enemy",
+              "victimTeam": "ally"
+            },
+            {
+              "t": 50.75,
+              "kind": "ally_kill",
+              "killer": "Chamber",
+              "victim": "zeytazin",
+              "killerTeam": "ally",
+              "victimTeam": "enemy"
+            },
+            {
+              "t": 56,
+              "kind": "round_end"
+            },
+            {
+              "t": 85,
+              "kind": "round_start"
+            },
+            {
+              "t": 89.3,
+              "kind": "engagement",
+              "from": 89.3,
+              "to": 103.8,
+              "outcome": "won",
+              "bursts": 3,
+              "hits": 0,
+              "seenBy": "firing+kill",
+              "text": "won; fired in 3 bursts"
+            },
+            {
+              "t": 95.75,
+              "kind": "ally_death",
+              "killer": "ulquiorra",
+              "victim": "woo",
+              "killerTeam": "enemy",
+              "victimTeam": "ally",
+              "tradedBy": "Me"
+            },
+            {
+              "t": 99.25,
+              "kind": "kill",
+              "killer": "Me",
+              "victim": "ulquiorra",
+              "killerTeam": "ally",
+              "victimTeam": "enemy"
+            },
+            {
+              "t": 109.3,
+              "kind": "engagement",
+              "from": 109.3,
+              "to": 127,
+              "outcome": "none",
+              "bursts": 6,
+              "hits": 0,
+              "seenBy": "firing+kill+seen",
+              "text": "no one fell; fired in 6 bursts; TenZ exchanges shots with enemy from B Tower"
+            },
+            {
+              "t": 111.25,
+              "kind": "ally_death",
+              "killer": "Fade",
+              "victim": "Chamber",
+              "killerTeam": "enemy",
+              "victimTeam": "ally"
+            },
+            {
+              "t": 115.5,
+              "kind": "kill",
+              "killer": "Me",
+              "victim": "Veto",
+              "killerTeam": "ally",
+              "victimTeam": "enemy"
+            },
+            {
+              "t": 116.75,
+              "kind": "ally_kill",
+              "killer": "lisa",
+              "victim": "Reyna",
+              "killerTeam": "ally",
+              "victimTeam": "enemy"
+            },
+            {
+              "t": 123.25,
+              "kind": "ally_death",
+              "killer": "Fade",
+              "victim": "lisa",
+              "killerTeam": "enemy",
+              "victimTeam": "ally"
+            },
+            {
+              "t": 131.75,
+              "kind": "ally_kill",
+              "killer": "CLV | bam",
+              "victim": "zeytazin",
+              "killerTeam": "ally",
+              "victimTeam": "enemy"
+            },
+            {
+              "t": 134.5,
+              "kind": "engagement",
+              "from": 134.5,
+              "to": 139.5,
+              "outcome": "lost",
+              "bursts": 1,
+              "hits": 0,
+              "seenBy": "death+firing",
+              "text": "lost; fired in 1 burst"
+            },
+            {
+              "t": 138.5,
+              "kind": "death",
+              "killer": "Fade",
+              "victim": "Me",
+              "killerTeam": "enemy",
+              "victimTeam": "ally"
+            },
+            {
+              "t": 147,
+              "kind": "engagement",
+              "from": 147,
+              "to": 149,
+              "outcome": "lost",
+              "bursts": 0,
+              "hits": 0,
+              "seenBy": "seen",
+              "text": "lost; TenZ fights Fade on B Site and is eliminated"
+            },
+            {
+              "t": 148.75,
+              "kind": "ally_death",
+              "killer": "Fade",
+              "victim": "CLV | bam",
+              "killerTeam": "enemy",
+              "victimTeam": "ally"
+            },
+            {
+              "t": 156,
+              "kind": "round_end"
+            },
+            {
+              "t": 180,
+              "kind": "round_start"
+            },
+            {
+              "t": 193.5,
+              "kind": "ally_death",
+              "killer": "zeytazin",
+              "victim": "woo",
+              "killerTeam": "enemy",
+              "victimTeam": "ally"
+            },
+            {
+              "t": 197.75,
+              "kind": "ally_death",
+              "killer": "ulquiorra",
+              "victim": "lisa",
+              "killerTeam": "enemy",
+              "victimTeam": "ally"
+            },
+            {
+              "t": 209.75,
+              "kind": "ally_death",
+              "killer": "ulquiorra",
+              "victim": "CLV | bam",
+              "killerTeam": "enemy",
+              "victimTeam": "ally"
+            },
+            {
+              "t": 216.3,
+              "kind": "engagement",
+              "from": 216.3,
+              "to": 221.5,
+              "outcome": "won",
+              "bursts": 1,
+              "hits": 0,
+              "seenBy": "firing+kill",
+              "text": "won; fired in 1 burst"
+            },
+            {
+              "t": 220.25,
+              "kind": "kill",
+              "killer": "Me",
+              "victim": "Fade",
+              "killerTeam": "ally",
+              "victimTeam": "enemy"
+            },
+            {
+              "t": 224.8,
+              "kind": "engagement",
+              "from": 224.8,
+              "to": 237.8,
+              "outcome": "won",
+              "bursts": 4,
+              "hits": 0,
+              "seenBy": "firing+kill+seen",
+              "text": "won; fired in 4 bursts; TenZ engages and kills Reyna near Defender Side Spawn"
+            },
+            {
+              "t": 228.75,
+              "kind": "kill",
+              "killer": "Me",
+              "victim": "ulquiorra",
+              "killerTeam": "ally",
+              "victimTeam": "enemy"
+            },
+            {
+              "t": 231.75,
+              "kind": "kill",
+              "killer": "Me",
+              "victim": "Reyna",
+              "killerTeam": "ally",
+              "victimTeam": "enemy"
+            },
+            {
+              "t": 233.25,
+              "kind": "ally_death",
+              "killer": "zeytazin",
+              "victim": "Chamber",
+              "killerTeam": "enemy",
+              "victimTeam": "ally"
+            },
+            {
+              "t": 251.3,
+              "kind": "engagement",
+              "from": 251.3,
+              "to": 256.3,
+              "outcome": "lost",
+              "bursts": 0,
+              "hits": 0,
+              "seenBy": "death",
+              "text": "lost"
+            },
+            {
+              "t": 255.25,
+              "kind": "death",
+              "killer": "zeytazin",
+              "victim": "Me",
+              "killerTeam": "enemy",
+              "victimTeam": "ally"
+            },
+            {
+              "t": 256,
+              "kind": "round_end"
+            },
+            {
+              "t": 281,
+              "kind": "round_start"
+            },
+            {
+              "t": 292.3,
+              "kind": "engagement",
+              "from": 292.3,
+              "to": 297.3,
+              "outcome": "none",
+              "bursts": 1,
+              "hits": 0,
+              "seenBy": "death+firing+seen",
+              "text": "no one fell; fired in 1 burst; TenZ spots and shoots at enemy from A Main"
+            },
+            {
+              "t": 296.25,
+              "kind": "death",
+              "killer": "ulquiorra",
+              "victim": "Me",
+              "killerTeam": "enemy",
+              "victimTeam": "ally"
+            },
+            {
+              "t": 298.25,
+              "kind": "ally_kill",
+              "killer": "lisa",
+              "victim": "Fade",
+              "killerTeam": "ally",
+              "victimTeam": "enemy"
+            },
+            {
+              "t": 302.25,
+              "kind": "ally_kill",
+              "killer": "lisa",
+              "victim": "Reyna",
+              "killerTeam": "ally",
+              "victimTeam": "enemy"
+            },
+            {
+              "t": 312.75,
+              "kind": "ally_kill",
+              "killer": "CLV | bam",
+              "victim": "ulquiorra",
+              "killerTeam": "ally",
+              "victimTeam": "enemy"
+            },
+            {
+              "t": 313.25,
+              "kind": "ally_death",
+              "killer": "Veto",
+              "victim": "lisa",
+              "killerTeam": "enemy",
+              "victimTeam": "ally"
+            },
+            {
+              "t": 317.75,
+              "kind": "ally_kill",
+              "killer": "woo",
+              "victim": "zeytazin",
+              "killerTeam": "ally",
+              "victimTeam": "enemy"
+            },
+            {
+              "t": 318,
+              "kind": "engagement",
+              "from": 318,
+              "to": 320,
+              "outcome": "none",
+              "bursts": 0,
+              "hits": 0,
+              "seenBy": "seen",
+              "text": "no one fell; TenZ fights enemies near Mid Shops"
+            },
+            {
+              "t": 320.5,
+              "kind": "ally_kill",
+              "killer": "Chamber",
+              "victim": "Veto",
+              "killerTeam": "ally",
+              "victimTeam": "enemy"
+            },
+            {
+              "t": 326,
+              "kind": "round_end"
+            },
+            {
+              "t": 333,
+              "kind": "round_start"
+            },
+            {
+              "t": 371.3,
+              "kind": "engagement",
+              "from": 371.3,
+              "to": 376.3,
+              "outcome": "lost",
+              "bursts": 0,
+              "hits": 0,
+              "seenBy": "death+seen",
+              "text": "lost; TenZ engages Reyna on A Site and gets eliminated"
+            },
+            {
+              "t": 375.25,
+              "kind": "death",
+              "killer": "Reyna",
+              "victim": "Me",
+              "killerTeam": "enemy",
+              "victimTeam": "ally"
+            },
+            {
+              "t": 378.75,
+              "kind": "ally_kill",
+              "killer": "lisa",
+              "victim": "Veto",
+              "killerTeam": "ally",
+              "victimTeam": "enemy"
+            },
+            {
+              "t": 382.25,
+              "kind": "ally_kill",
+              "killer": "CLV | bam",
+              "victim": "zeytazin",
+              "killerTeam": "ally",
+              "victimTeam": "enemy"
+            },
+            {
+              "t": 387.25,
+              "kind": "ally_death",
+              "killer": "ulquiorra",
+              "victim": "lisa",
+              "killerTeam": "enemy",
+              "victimTeam": "ally"
+            }
+          ],
+          "drill": "Practice counter-strafing and stopping completely before shooting in the Range to avoid movement inaccuracy.",
+          "recheck": "Focus on clean stops and counter-strafes before shooting in the next match.",
+          "theories": "T1 testing: Aim placement is consistently below head level during engagements",
+          "asks": [],
+          "rejected": [
+            [
+              "At 0:40 the ammo counter doesn't change, so the player didn't fire and the moment can't show w-keying into sites. If the moments you looked at don't show it, drop the theory (notes, status dropped) and name a habit they do show, or finish with found false.",
+              "Cite at least 3 separate moments you looked at that show the habit (you have 2). Moments where they got it right go in contrast, not evidence. If fewer than 3 moments show it, finish with found false.",
+              "You haven't looked closely at 3:48 (in contrast)."
+            ]
+          ],
+          "steps": [
+            {
+              "name": "scan",
+              "args": "{\"to\":\"6:28\",\"why\":\"Checking kill feed and round starts across the entire match\",\"from\":\"0:00\"}"
+            },
+            {
+              "name": "measure_aim",
+              "args": "{\"notes\":[{\"id\":\"T1\",\"theory\":\"Aim placement is consistently below head level during engagements\",\"status\":\"testing\"}],\"more\":[\"1:38.0\",\"2:17.5\",\"3:39.0\",\"4:55."
+            },
+            {
+              "name": "frames",
+              "args": "{\"why\":\"Checking crosshair placement and movement habits in gunfights\",\"before\":1,\"notes\":[{\"status\":\"testing\",\"id\":\"T1\",\"theory\":\"Crosshair placement is often "
+            },
+            {
+              "name": "finish",
+              "args": "{\"recheck\":\"Focus on clean stops and counter-strafes before shooting in the next match.\",\"found\":true,\"progress\":\"same\",\"habit\":\"W-keying into sites\",\"contrast\""
+            },
+            {
+              "name": "frames",
+              "args": "{\"region\":\"full\",\"notes\":[{\"status\":\"supported\",\"theory\":\"Player frequently shoots while moving forward without stopping\",\"id\":\"T1\"}],\"at\":\"3:48.8\",\"fps\":6,\"aft"
+            },
+            {
+              "name": "finish",
+              "args": "{\"why\":\"Shooting while continuously moving forward causes shots to miss entirely and makes you an easy target in gunfights, costing crucial opening duels and ro"
+            }
+          ],
+          "seconds": 175.4,
+          "usage": {
+            "calls": 10,
+            "polls": 0,
+            "files": 0,
+            "rateLimited": 0,
+            "failed": 0,
+            "blocked": 0,
+            "models": {
+              "gemini-3.5-flash-lite": 10
+            }
+          },
+          "score": {
+            "verdict": "false positive: w_keying_into_sites",
+            "falsePositive": true,
+            "counted": true
+          },
+          "evidenceOnDuels": "3/3",
+          "scanRecall": {
+            "kills": {
+              "found": "5/5",
+              "extra": []
+            },
+            "deaths": {
+              "found": "5/5",
+              "extra": []
+            }
+          },
+          "killfeedScore": {
+            "found": "34/36",
+            "teamsRight": "34/34",
+            "notReal": []
+          }
+        }
+      },
+      "setup": {
+        "game": "Valorant",
+        "genre": "shooter",
+        "learned": "fresh",
+        "learnSeconds": 23.3,
+        "killfeed": "measured",
+        "duration": 388.1,
+        "size": "2170x1162",
+        "proxyMb": 11.86,
+        "proxySeconds": 38,
+        "uploadSeconds": 22.5,
+        "usage": {
+          "calls": 1,
+          "polls": 0,
+          "files": 5,
+          "rateLimited": 0,
+          "failed": 0,
+          "blocked": 0,
+          "models": {
+            "gemini-3.5-flash-lite": 1
+          }
+        }
+      }
+    },
+    {
+      "file": "../tests/fixtures/chess-blunders.mp4",
+      "plantedHabit": "time_pressure_blunders",
+      "systems": {
+        "agent": {
+          "found": true,
+          "habitId": "playing_without_a_plan",
+          "habit": "Playing without a plan and missing tactical threats under pressure",
+          "why": "Making hasty moves without a coherent plan or checking opponent threats leads to sudden material loss and ruined positions.",
+          "stopped": false,
+          "confidence": "high",
+          "moves": [
+            {
+              "t": 2,
+              "san": "e4",
+              "grade": null,
+              "loss": 68
+            },
+            {
+              "t": 6,
+              "san": "exd5",
+              "grade": "mistake",
+              "loss": 108
+            },
+            {
+              "t": 10,
+              "san": "d4",
+              "grade": null,
+              "loss": 61
+            },
+            {
+              "t": 14,
+              "san": "Nf3",
+              "grade": null,
+              "loss": 54
+            },
+            {
+              "t": 18,
+              "san": "Be2",
+              "grade": null,
+              "loss": 75
+            },
+            {
+              "t": 22,
+              "san": "O-O",
+              "grade": null,
+              "loss": 18
+            },
+            {
+              "t": 26,
+              "san": "h3",
+              "grade": null,
+              "loss": 89
+            },
+            {
+              "t": 30,
+              "san": "Be3",
+              "grade": null,
+              "loss": 61
+            },
+            {
+              "t": 34,
+              "san": "c3",
+              "grade": null,
+              "loss": 57
+            },
+            {
+              "t": 38,
+              "san": "Nbd2",
+              "grade": null,
+              "loss": 49
+            },
+            {
+              "t": 42,
+              "san": "Ng5",
+              "grade": "mistake",
+              "loss": 100
+            },
+            {
+              "t": 46,
+              "san": "c4",
+              "grade": null,
+              "loss": 60
+            },
+            {
+              "t": 50,
+              "san": "Bxh5",
+              "grade": null,
+              "loss": 49
+            },
+            {
+              "t": 54,
+              "san": "Be2",
+              "grade": null,
+              "loss": 53
+            },
+            {
+              "t": 58,
+              "san": "Nxc4",
+              "grade": null,
+              "loss": 36
+            },
+            {
+              "t": 62,
+              "san": "Bd2",
+              "grade": "mistake",
+              "loss": 197
+            },
+            {
+              "t": 66,
+              "san": "Nf3",
+              "grade": null,
+              "loss": 63
+            },
+            {
+              "t": 70,
+              "san": "b4",
+              "grade": "mistake",
+              "loss": 144
+            },
+            {
+              "t": 74,
+              "san": "Nce5",
+              "grade": "blunder",
+              "loss": 488
+            },
+            {
+              "t": 78,
+              "san": "dxe5",
+              "grade": null,
+              "loss": 94
+            },
+            {
+              "t": 82,
+              "san": "Bxa6",
+              "grade": "blunder",
+              "loss": 530
+            },
+            {
+              "t": 86,
+              "san": "a4",
+              "grade": null,
+              "loss": 63
+            },
+            {
+              "t": 90,
+              "san": "Nd4",
+              "grade": "mistake",
+              "loss": 190
+            },
+            {
+              "t": 94,
+              "san": "Qxa1",
+              "grade": null,
+              "loss": 1
+            },
+            {
+              "t": 98,
+              "san": "Rb1",
+              "grade": "blunder",
+              "loss": 478
+            },
+            {
+              "t": 102,
+              "san": "Be3",
+              "grade": null,
+              "loss": 22
+            },
+            {
+              "t": 106,
+              "san": "Rb2",
+              "grade": "blunder",
+              "loss": 284
+            },
+            {
+              "t": 110,
+              "san": "Kh2",
+              "grade": null,
+              "loss": 52
+            },
+            {
+              "t": 114,
+              "san": "Kh1",
+              "grade": "blunder",
+              "loss": 370
+            },
+            {
+              "t": 118,
+              "san": "Qe1",
+              "grade": null,
+              "loss": 63
+            },
+            {
+              "t": 122,
+              "san": "Bb6",
+              "grade": "blunder",
+              "loss": 439
+            },
+            {
+              "t": 126,
+              "san": "f3",
+              "grade": null,
+              "loss": 44
+            }
+          ],
+          "evidence": [
+            {
+              "t": 74,
+              "what": "You played 19. Nce5, a blunder that loses material and worsens your position."
+            },
+            {
+              "t": 82,
+              "what": "You played 21. Bxa6, a blunder that loses your bishop for a pawn."
+            },
+            {
+              "t": 107,
+              "what": "You played 27. Rb2, a blunder that gives away your rook's defense and leads to further material loss."
+            }
+          ],
+          "contrast": [],
+          "aim": null,
+          "measures": [],
+          "looks": 3,
+          "turns": 5,
+          "skipped": 0,
+          "stats": {
+            "turns": 5,
+            "looks": 3,
+            "scanTokens": 8712,
+            "scanCalls": 1,
+            "aimCalls": 0,
+            "hudCalls": 0,
+            "skipped": 0,
+            "refused": 0,
+            "asks": 0,
+            "calls": 6
+          },
+          "events": [
+            {
+              "t": 2,
+              "kind": "move"
+            },
+            {
+              "t": 4,
+              "kind": "opponent_move"
+            },
+            {
+              "t": 6,
+              "kind": "move"
+            },
+            {
+              "t": 8,
+              "kind": "opponent_move"
+            },
+            {
+              "t": 10,
+              "kind": "move"
+            },
+            {
+              "t": 12,
+              "kind": "opponent_move"
+            },
+            {
+              "t": 14,
+              "kind": "move"
+            },
+            {
+              "t": 16,
+              "kind": "opponent_move"
+            },
+            {
+              "t": 18,
+              "kind": "move"
+            },
+            {
+              "t": 20,
+              "kind": "opponent_move"
+            },
+            {
+              "t": 22,
+              "kind": "move"
+            },
+            {
+              "t": 24,
+              "kind": "opponent_move"
+            },
+            {
+              "t": 26,
+              "kind": "move"
+            },
+            {
+              "t": 28,
+              "kind": "opponent_move"
+            },
+            {
+              "t": 30,
+              "kind": "move"
+            },
+            {
+              "t": 32,
+              "kind": "opponent_move"
+            },
+            {
+              "t": 34,
+              "kind": "move"
+            },
+            {
+              "t": 36,
+              "kind": "opponent_move"
+            },
+            {
+              "t": 38,
+              "kind": "move"
+            },
+            {
+              "t": 40,
+              "kind": "opponent_move"
+            },
+            {
+              "t": 42,
+              "kind": "move"
+            },
+            {
+              "t": 44,
+              "kind": "opponent_move"
+            },
+            {
+              "t": 46,
+              "kind": "move"
+            },
+            {
+              "t": 48,
+              "kind": "opponent_move"
+            },
+            {
+              "t": 50,
+              "kind": "move"
+            },
+            {
+              "t": 52,
+              "kind": "opponent_move"
+            },
+            {
+              "t": 54,
+              "kind": "move"
+            },
+            {
+              "t": 56,
+              "kind": "opponent_move"
+            },
+            {
+              "t": 58,
+              "kind": "move"
+            },
+            {
+              "t": 60,
+              "kind": "opponent_move"
+            },
+            {
+              "t": 62,
+              "kind": "move"
+            },
+            {
+              "t": 64,
+              "kind": "opponent_move"
+            },
+            {
+              "t": 66,
+              "kind": "move"
+            },
+            {
+              "t": 68,
+              "kind": "opponent_move"
+            },
+            {
+              "t": 70,
+              "kind": "move"
+            },
+            {
+              "t": 72,
+              "kind": "opponent_move"
+            },
+            {
+              "t": 74,
+              "kind": "move"
+            },
+            {
+              "t": 76,
+              "kind": "opponent_move"
+            },
+            {
+              "t": 78,
+              "kind": "move"
+            },
+            {
+              "t": 80,
+              "kind": "opponent_move"
+            },
+            {
+              "t": 82,
+              "kind": "move"
+            },
+            {
+              "t": 84,
+              "kind": "opponent_move"
+            },
+            {
+              "t": 86,
+              "kind": "move"
+            },
+            {
+              "t": 88,
+              "kind": "opponent_move"
+            },
+            {
+              "t": 90,
+              "kind": "move"
+            },
+            {
+              "t": 92,
+              "kind": "opponent_move"
+            },
+            {
+              "t": 94,
+              "kind": "move"
+            },
+            {
+              "t": 96,
+              "kind": "opponent_move"
+            },
+            {
+              "t": 98,
+              "kind": "move"
+            },
+            {
+              "t": 100,
+              "kind": "opponent_move"
+            },
+            {
+              "t": 102,
+              "kind": "move"
+            },
+            {
+              "t": 104,
+              "kind": "opponent_move"
+            },
+            {
+              "t": 106,
+              "kind": "move"
+            },
+            {
+              "t": 108,
+              "kind": "opponent_move"
+            },
+            {
+              "t": 110,
+              "kind": "move"
+            },
+            {
+              "t": 112,
+              "kind": "opponent_move"
+            },
+            {
+              "t": 114,
+              "kind": "move"
+            },
+            {
+              "t": 116,
+              "kind": "opponent_move"
+            },
+            {
+              "t": 118,
+              "kind": "move"
+            },
+            {
+              "t": 120,
+              "kind": "opponent_move"
+            },
+            {
+              "t": 122,
+              "kind": "move"
+            },
+            {
+              "t": 124,
+              "kind": "opponent_move"
+            },
+            {
+              "t": 126,
+              "kind": "move"
+            },
+            {
+              "t": 128,
+              "kind": "opponent_move"
+            }
+          ],
+          "drill": "Before making a move, pause to check if any piece is hanging or if the opponent is attacking a critical target, especially in time trouble.",
+          "recheck": "Check whether you maintain piece coordination and check opponent threats before playing in time trouble.",
+          "theories": "T1 testing: Playing without a plan / tactical oversights under pressure",
+          "asks": [],
+          "rejected": [],
+          "steps": [
+            {
+              "name": "scan",
+              "args": "{\"from\":\"0:00\",\"why\":\"scan the entire game to see all moves and engine evaluations\",\"to\":\"2:12\"}"
+            },
+            {
+              "name": "frames",
+              "args": "{\"at\":\"1:14\",\"notes\":[{\"status\":\"testing\",\"theory\":\"Playing without a plan / tactical oversights under pressure\",\"id\":\"T1\"}],\"why\":\"check the board state at the"
+            },
+            {
+              "name": "frames",
+              "args": "{\"notes\":[{\"status\":\"supported\",\"theory\":\"Playing without a plan / tactical oversights under pressure\",\"id\":\"T1\"}],\"why\":\"check the board state at the 1:22 blun"
+            },
+            {
+              "name": "frames",
+              "args": "{\"at\":\"1:47\",\"notes\":[{\"id\":\"T1\",\"status\":\"supported\",\"theory\":\"Playing without a plan / tactical oversights under pressure\"}],\"why\":\"check the board state at t"
+            },
+            {
+              "name": "finish",
+              "args": "{\"why\":\"Making hasty moves without a coherent plan or checking opponent threats leads to sudden material loss and ruined positions.\",\"found\":true,\"habit_id\":\"pl"
+            }
+          ],
+          "seconds": 29.4,
+          "usage": {
+            "calls": 6,
+            "polls": 0,
+            "files": 0,
+            "rateLimited": 0,
+            "failed": 0,
+            "blocked": 0,
+            "models": {
+              "gemini-3.5-flash-lite": 6
+            }
+          },
+          "score": {
+            "verdict": "wrong: playing_without_a_plan",
+            "hit": false,
+            "counted": true
+          }
+        }
+      },
+      "setup": {
+        "game": "Chess",
+        "genre": "chess",
+        "learned": "fresh",
+        "learnSeconds": 9.4,
+        "killfeed": "none",
+        "duration": 132,
+        "size": "1280x720",
+        "proxyMb": 0.53,
+        "proxySeconds": 4.3,
+        "uploadSeconds": 6.4,
+        "usage": {
+          "calls": 2,
+          "polls": 0,
+          "files": 4,
+          "rateLimited": 0,
+          "failed": 0,
+          "blocked": 0,
+          "models": {
+            "gemini-3.5-flash-lite": 1,
+            "gemini-2.5-flash-lite": 1
+          }
+        }
+      }
+    },
+    {
+      "file": "recordings/Screen Recording 2026-10-18 at 4.22.30 PM.mov",
+      "plantedHabit": null,
+      "systems": {
+        "agent": {
+          "found": true,
+          "habitId": "reloading_in_the_open",
+          "habit": "Reloading in the open",
+          "why": "Reloading in the open leaves you completely vulnerable and unable to return fire for crucial seconds, which can easily cost you gunfights against alert opponents.",
+          "stopped": false,
+          "confidence": "high",
+          "moves": [],
+          "evidence": [
+            {
+              "t": 48,
+              "what": "Player reloads in an open hallway without cover"
+            },
+            {
+              "t": 110,
+              "what": "Player stands out in the open to reload their weapon"
+            },
+            {
+              "t": 260,
+              "what": "Player stands out in the open path while reloading/engaging enemies"
+            }
+          ],
+          "contrast": [
+            {
+              "t": 345,
+              "what": "Player uses a building corner for cover during a gunfight"
+            }
+          ],
+          "aim": null,
+          "measures": [],
+          "looks": 4,
+          "turns": 7,
+          "skipped": 0,
+          "stats": {
+            "turns": 7,
+            "looks": 4,
+            "scanTokens": 24354,
+            "scanCalls": 1,
+            "aimCalls": 0,
+            "hudCalls": 0,
+            "skipped": 0,
+            "refused": 0,
+            "asks": 0,
+            "calls": 8
+          },
+          "events": [
+            {
+              "t": 4,
+              "kind": "engagement",
+              "from": 4,
+              "to": 35.8,
+              "outcome": "won",
+              "bursts": 0,
+              "hits": 8,
+              "seenBy": "hits+kill+seen",
+              "text": "won; dealt damage 8 times; Player engages enemy squad indoors and wins"
+            },
+            {
+              "t": 8,
+              "kind": "kill"
+            },
+            {
+              "t": 19,
+              "kind": "kill"
+            },
+            {
+              "t": 43,
+              "kind": "engagement",
+              "from": 43,
+              "to": 68.3,
+              "outcome": "won",
+              "bursts": 4,
+              "hits": 6,
+              "seenBy": "firing+hits+kill+seen",
+              "text": "won; dealt damage 6 times; fired in 4 bursts; Player pushes and wipes enemy squad on stairs"
+            },
+            {
+              "t": 47,
+              "kind": "kill"
+            },
+            {
+              "t": 55,
+              "kind": "kill"
+            },
+            {
+              "t": 81.8,
+              "kind": "engagement",
+              "from": 81.8,
+              "to": 88.5,
+              "outcome": "none",
+              "bursts": 0,
+              "hits": 2,
+              "seenBy": "hits",
+              "text": "no one fell; dealt damage 2 times"
+            },
+            {
+              "t": 106.5,
+              "kind": "engagement",
+              "from": 106.5,
+              "to": 119.3,
+              "outcome": "none",
+              "bursts": 4,
+              "hits": 2,
+              "seenBy": "firing+hits",
+              "text": "no one fell; dealt damage 2 times; fired in 4 bursts"
+            },
+            {
+              "t": 122.8,
+              "kind": "engagement",
+              "from": 122.8,
+              "to": 142,
+              "outcome": "none",
+              "bursts": 3,
+              "hits": 5,
+              "seenBy": "firing+hits",
+              "text": "no one fell; dealt damage 5 times; fired in 3 bursts"
+            },
+            {
+              "t": 144,
+              "kind": "engagement",
+              "from": 144,
+              "to": 147,
+              "outcome": "none",
+              "bursts": 1,
+              "hits": 0,
+              "seenBy": "firing",
+              "text": "no one fell; fired in 1 burst"
+            },
+            {
+              "t": 148.5,
+              "kind": "engagement",
+              "from": 148.5,
+              "to": 173.8,
+              "outcome": "none",
+              "bursts": 1,
+              "hits": 7,
+              "seenBy": "firing+hits",
+              "text": "no one fell; dealt damage 7 times; fired in 1 burst"
+            },
+            {
+              "t": 160,
+              "kind": "round_start"
+            },
+            {
+              "t": 176.8,
+              "kind": "engagement",
+              "from": 176.8,
+              "to": 179.8,
+              "outcome": "none",
+              "bursts": 1,
+              "hits": 0,
+              "seenBy": "firing",
+              "text": "no one fell; fired in 1 burst"
+            },
+            {
+              "t": 182,
+              "kind": "engagement",
+              "from": 182,
+              "to": 207.3,
+              "outcome": "none",
+              "bursts": 1,
+              "hits": 7,
+              "seenBy": "firing+hits",
+              "text": "no one fell; dealt damage 7 times; fired in 1 burst"
+            },
+            {
+              "t": 213,
+              "kind": "engagement",
+              "from": 213,
+              "to": 220.5,
+              "outcome": "none",
+              "bursts": 0,
+              "hits": 3,
+              "seenBy": "hits",
+              "text": "no one fell; dealt damage 3 times"
+            },
+            {
+              "t": 223.8,
+              "kind": "engagement",
+              "from": 223.8,
+              "to": 242.3,
+              "outcome": "none",
+              "bursts": 4,
+              "hits": 3,
+              "seenBy": "firing+hits",
+              "text": "no one fell; dealt damage 3 times; fired in 4 bursts"
+            },
+            {
+              "t": 253,
+              "kind": "engagement",
+              "from": 253,
+              "to": 286.5,
+              "outcome": "none",
+              "bursts": 3,
+              "hits": 10,
+              "seenBy": "firing+hits+kill+seen",
+              "text": "no one fell; dealt damage 10 times; fired in 3 bursts; Player trades shots with enemy outside building"
+            },
+            {
+              "t": 257,
+              "kind": "kill"
+            },
+            {
+              "t": 273,
+              "kind": "kill"
+            },
+            {
+              "t": 275,
+              "kind": "kill"
+            },
+            {
+              "t": 300.8,
+              "kind": "engagement",
+              "from": 300.8,
+              "to": 308.8,
+              "outcome": "none",
+              "bursts": 0,
+              "hits": 3,
+              "seenBy": "hits",
+              "text": "no one fell; dealt damage 3 times"
+            },
+            {
+              "t": 310.5,
+              "kind": "engagement",
+              "from": 310.5,
+              "to": 313.5,
+              "outcome": "none",
+              "bursts": 1,
+              "hits": 0,
+              "seenBy": "firing",
+              "text": "no one fell; fired in 1 burst"
+            },
+            {
+              "t": 339.8,
+              "kind": "engagement",
+              "from": 339.8,
+              "to": 349.3,
+              "outcome": "none",
+              "bursts": 2,
+              "hits": 4,
+              "seenBy": "firing+hits",
+              "text": "no one fell; dealt damage 4 times; fired in 2 bursts"
+            },
+            {
+              "t": 355,
+              "kind": "engagement",
+              "from": 355,
+              "to": 368,
+              "outcome": "won",
+              "bursts": 0,
+              "hits": 5,
+              "seenBy": "hits+kill+seen",
+              "text": "won; dealt damage 5 times; Player fights enemies in hallway corridor and secures squad wipe"
+            },
+            {
+              "t": 359,
+              "kind": "kill"
+            },
+            {
+              "t": 365,
+              "kind": "kill"
+            }
+          ],
+          "drill": "Practice ducking behind hard cover or using movement abilities before pressing the reload key in every engagement.",
+          "recheck": "Check if the player consistently uses hard cover before starting their weapon reload animations during fights in the next match.",
+          "theories": "T1 supported: Player overextends in fights without team support (0:48, 1:50, 4:20, 5:45)",
+          "asks": [],
+          "rejected": [
+            [
+              "Say what to check in the next match (recheck).",
+              "You haven't looked closely at 5:45 (in contrast)."
+            ]
+          ],
+          "steps": [
+            {
+              "name": "scan",
+              "args": "{\"notes\":[{\"id\":\"T1\",\"theory\":\"Player overextends in fights without team support\",\"status\":\"testing\"}],\"why\":\"scan match timeline to find key combat and looting"
+            },
+            {
+              "name": "frames",
+              "args": "{\"before\":1,\"why\":\"check reload habits during combat near the stairs fight\",\"fps\":6,\"region\":\"full\",\"at\":\"0:48\",\"notes\":[{\"theory\":\"Player reloads in the open d"
+            },
+            {
+              "name": "frames",
+              "args": "{\"notes\":[{\"theory\":\"Player reloads in the open during fights\",\"status\":\"testing\",\"evidence\":[{\"t\":\"1:50\",\"what\":\"Player reloads out in the open in an area with"
+            },
+            {
+              "name": "frames",
+              "args": "{\"before\":1,\"notes\":[{\"id\":\"T1\",\"status\":\"testing\",\"theory\":\"Player reloads in the open during fights\",\"evidence\":[{\"what\":\"Player stands out in the open during"
+            },
+            {
+              "name": "finish",
+              "args": "{\"confidence\":\"high\",\"contrast\":[{\"what\":\"Player uses a building corner for cover during a gunfight\",\"t\":\"5:45\"}],\"evidence\":[{\"t\":\"0:48\",\"better\":\"Duck behind "
+            },
+            {
+              "name": "frames",
+              "args": "{\"at\":\"5:45\",\"notes\":[{\"status\":\"supported\",\"evidence\":[{\"what\":\"Player uses a building corner for cover during a gunfight\",\"t\":\"5:45\"}],\"id\":\"T1\",\"theory\":\"Pla"
+            },
+            {
+              "name": "finish",
+              "args": "{\"contrast\":[{\"what\":\"Player uses a building corner for cover during a gunfight\",\"t\":\"5:45\"}],\"habit\":\"Reloading in the open\",\"confidence\":\"high\",\"found\":true,\""
+            }
+          ],
+          "seconds": 153,
+          "usage": {
+            "calls": 8,
+            "polls": 0,
+            "files": 0,
+            "rateLimited": 0,
+            "failed": 0,
+            "blocked": 0,
+            "models": {
+              "gemini-3.5-flash-lite": 8
+            }
+          },
+          "score": {
+            "verdict": "false positive: reloading_in_the_open",
+            "falsePositive": true,
+            "counted": true
+          }
+        }
+      },
+      "setup": {
+        "game": "Apex Legends",
+        "genre": "shooter",
+        "learned": "fresh",
+        "learnSeconds": 16.7,
+        "killfeed": "no team colors near \"white\" and \"white\"",
+        "duration": 369.6,
+        "size": "2170x1162",
+        "proxyMb": 11.3,
+        "proxySeconds": 20.2,
+        "uploadSeconds": 20.2,
+        "usage": {
+          "calls": 3,
+          "polls": 0,
+          "files": 7,
+          "rateLimited": 0,
+          "failed": 0,
+          "blocked": 0,
+          "models": {
+            "gemini-3.5-flash-lite": 2,
+            "gemini-2.5-flash-lite": 1
+          }
+        }
+      }
+    }
+  ],
+  "finished": "2026-10-18T21:27:35.532Z",
+  "summary": {
+    "agent": {
+      "plantedFound": "0/1",
+      "falsePositives": "2/3",
+      "noResult": 0,
+      "calls": 40,
+      "seconds": 575.8
+    }
+  },
+  "totals": {
+    "modelCalls": 40,
+    "uploadRequests": 29,
+    "models": {
+      "gemini-3.5-flash-lite": 46,
+      "gemini-2.5-flash-lite": 3
+    }
+  }
+}

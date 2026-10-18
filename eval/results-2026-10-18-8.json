@@ -1,0 +1,1197 @@
+{
+  "started": "2026-10-18T19:51:58.069Z",
+  "budget": {
+    "looks": 24,
+    "turns": 12
+  },
+  "maxCallsPerRecording": 80,
+  "recordings": [
+    {
+      "file": "../tests/fixtures/chess-blunders.mp4",
+      "plantedHabit": "time_pressure_blunders",
+      "systems": {
+        "agent": {
+          "found": true,
+          "habitId": "blunder_pieces",
+          "habit": "Important pieces like the queen or rook are left undefended and captured on the board.",
+          "why": "Leaving important pieces undefended under pressure cost key material and the game.",
+          "stopped": false,
+          "confidence": "high",
+          "moves": [
+            {
+              "t": 2,
+              "san": "e4",
+              "grade": null,
+              "loss": 68
+            },
+            {
+              "t": 6,
+              "san": "exd5",
+              "grade": "mistake",
+              "loss": 108
+            },
+            {
+              "t": 10,
+              "san": "d4",
+              "grade": null,
+              "loss": 61
+            },
+            {
+              "t": 14,
+              "san": "Nf3",
+              "grade": null,
+              "loss": 54
+            },
+            {
+              "t": 18,
+              "san": "Be2",
+              "grade": null,
+              "loss": 75
+            },
+            {
+              "t": 22,
+              "san": "O-O",
+              "grade": null,
+              "loss": 18
+            },
+            {
+              "t": 26,
+              "san": "h3",
+              "grade": null,
+              "loss": 89
+            },
+            {
+              "t": 30,
+              "san": "Be3",
+              "grade": null,
+              "loss": 61
+            },
+            {
+              "t": 34,
+              "san": "c3",
+              "grade": null,
+              "loss": 57
+            },
+            {
+              "t": 38,
+              "san": "Nbd2",
+              "grade": null,
+              "loss": 49
+            },
+            {
+              "t": 42,
+              "san": "Ng5",
+              "grade": "mistake",
+              "loss": 100
+            },
+            {
+              "t": 46,
+              "san": "c4",
+              "grade": null,
+              "loss": 60
+            },
+            {
+              "t": 50,
+              "san": "Bxh5",
+              "grade": null,
+              "loss": 49
+            },
+            {
+              "t": 54,
+              "san": "Be2",
+              "grade": null,
+              "loss": 53
+            },
+            {
+              "t": 58,
+              "san": "Nxc4",
+              "grade": null,
+              "loss": 36
+            },
+            {
+              "t": 62,
+              "san": "Bd2",
+              "grade": "mistake",
+              "loss": 197
+            },
+            {
+              "t": 66,
+              "san": "Nf3",
+              "grade": null,
+              "loss": 63
+            },
+            {
+              "t": 70,
+              "san": "b4",
+              "grade": "mistake",
+              "loss": 144
+            },
+            {
+              "t": 74,
+              "san": "Nce5",
+              "grade": "blunder",
+              "loss": 488
+            },
+            {
+              "t": 78,
+              "san": "dxe5",
+              "grade": null,
+              "loss": 94
+            },
+            {
+              "t": 82,
+              "san": "Bxa6",
+              "grade": "blunder",
+              "loss": 530
+            },
+            {
+              "t": 86,
+              "san": "a4",
+              "grade": null,
+              "loss": 63
+            },
+            {
+              "t": 90,
+              "san": "Nd4",
+              "grade": "mistake",
+              "loss": 190
+            },
+            {
+              "t": 94,
+              "san": "Qxa1",
+              "grade": null,
+              "loss": 1
+            },
+            {
+              "t": 98,
+              "san": "Rb1",
+              "grade": "blunder",
+              "loss": 478
+            },
+            {
+              "t": 102,
+              "san": "Be3",
+              "grade": null,
+              "loss": 22
+            },
+            {
+              "t": 106,
+              "san": "Rb2",
+              "grade": "blunder",
+              "loss": 284
+            },
+            {
+              "t": 110,
+              "san": "Kh2",
+              "grade": null,
+              "loss": 52
+            },
+            {
+              "t": 114,
+              "san": "Kh1",
+              "grade": "blunder",
+              "loss": 370
+            },
+            {
+              "t": 118,
+              "san": "Qe1",
+              "grade": null,
+              "loss": 63
+            },
+            {
+              "t": 122,
+              "san": "Bb6",
+              "grade": "blunder",
+              "loss": 439
+            },
+            {
+              "t": 126,
+              "san": "f3",
+              "grade": null,
+              "loss": 44
+            }
+          ],
+          "evidence": [
+            {
+              "t": 99,
+              "what": "You play 25. Rb1, a blunder giving away 4.8 pawns"
+            },
+            {
+              "t": 107,
+              "what": "You play 27. Rb2, a blunder giving away 2.8 pawns"
+            },
+            {
+              "t": 123,
+              "what": "You play 31. Bb6, a blunder giving away 4.4 pawns"
+            }
+          ],
+          "contrast": [],
+          "aim": null,
+          "measures": [],
+          "looks": 5,
+          "turns": 8,
+          "skipped": 0,
+          "stats": {
+            "turns": 8,
+            "looks": 5,
+            "scanTokens": 8712,
+            "scanCalls": 1,
+            "aimCalls": 0,
+            "hudCalls": 0,
+            "skipped": 0,
+            "refused": 0,
+            "asks": 0,
+            "calls": 9
+          },
+          "events": [
+            {
+              "t": 2,
+              "kind": "move"
+            },
+            {
+              "t": 4,
+              "kind": "opponent_move"
+            },
+            {
+              "t": 6,
+              "kind": "move"
+            },
+            {
+              "t": 8,
+              "kind": "opponent_move"
+            },
+            {
+              "t": 10,
+              "kind": "move"
+            },
+            {
+              "t": 12,
+              "kind": "opponent_move"
+            },
+            {
+              "t": 14,
+              "kind": "move"
+            },
+            {
+              "t": 16,
+              "kind": "opponent_move"
+            },
+            {
+              "t": 18,
+              "kind": "move"
+            },
+            {
+              "t": 20,
+              "kind": "opponent_move"
+            },
+            {
+              "t": 22,
+              "kind": "move"
+            },
+            {
+              "t": 24,
+              "kind": "opponent_move"
+            },
+            {
+              "t": 26,
+              "kind": "move"
+            },
+            {
+              "t": 28,
+              "kind": "opponent_move"
+            },
+            {
+              "t": 30,
+              "kind": "move"
+            },
+            {
+              "t": 32,
+              "kind": "opponent_move"
+            },
+            {
+              "t": 34,
+              "kind": "move"
+            },
+            {
+              "t": 36,
+              "kind": "opponent_move"
+            },
+            {
+              "t": 38,
+              "kind": "move"
+            },
+            {
+              "t": 40,
+              "kind": "opponent_move"
+            },
+            {
+              "t": 42,
+              "kind": "move"
+            },
+            {
+              "t": 44,
+              "kind": "opponent_move"
+            },
+            {
+              "t": 46,
+              "kind": "move"
+            },
+            {
+              "t": 48,
+              "kind": "opponent_move"
+            },
+            {
+              "t": 50,
+              "kind": "move"
+            },
+            {
+              "t": 52,
+              "kind": "opponent_move"
+            },
+            {
+              "t": 54,
+              "kind": "move"
+            },
+            {
+              "t": 56,
+              "kind": "opponent_move"
+            },
+            {
+              "t": 58,
+              "kind": "move"
+            },
+            {
+              "t": 60,
+              "kind": "opponent_move"
+            },
+            {
+              "t": 62,
+              "kind": "move"
+            },
+            {
+              "t": 64,
+              "kind": "opponent_move"
+            },
+            {
+              "t": 66,
+              "kind": "move"
+            },
+            {
+              "t": 68,
+              "kind": "opponent_move"
+            },
+            {
+              "t": 70,
+              "kind": "move"
+            },
+            {
+              "t": 72,
+              "kind": "opponent_move"
+            },
+            {
+              "t": 74,
+              "kind": "move"
+            },
+            {
+              "t": 76,
+              "kind": "opponent_move"
+            },
+            {
+              "t": 78,
+              "kind": "move"
+            },
+            {
+              "t": 80,
+              "kind": "opponent_move"
+            },
+            {
+              "t": 82,
+              "kind": "move"
+            },
+            {
+              "t": 84,
+              "kind": "opponent_move"
+            },
+            {
+              "t": 86,
+              "kind": "move"
+            },
+            {
+              "t": 88,
+              "kind": "opponent_move"
+            },
+            {
+              "t": 90,
+              "kind": "move"
+            },
+            {
+              "t": 92,
+              "kind": "opponent_move"
+            },
+            {
+              "t": 94,
+              "kind": "move"
+            },
+            {
+              "t": 96,
+              "kind": "opponent_move"
+            },
+            {
+              "t": 98,
+              "kind": "move"
+            },
+            {
+              "t": 100,
+              "kind": "opponent_move"
+            },
+            {
+              "t": 102,
+              "kind": "move"
+            },
+            {
+              "t": 104,
+              "kind": "opponent_move"
+            },
+            {
+              "t": 106,
+              "kind": "move"
+            },
+            {
+              "t": 108,
+              "kind": "opponent_move"
+            },
+            {
+              "t": 110,
+              "kind": "move"
+            },
+            {
+              "t": 112,
+              "kind": "opponent_move"
+            },
+            {
+              "t": 114,
+              "kind": "move"
+            },
+            {
+              "t": 116,
+              "kind": "opponent_move"
+            },
+            {
+              "t": 118,
+              "kind": "move"
+            },
+            {
+              "t": 120,
+              "kind": "opponent_move"
+            },
+            {
+              "t": 122,
+              "kind": "move"
+            },
+            {
+              "t": 124,
+              "kind": "opponent_move"
+            },
+            {
+              "t": 126,
+              "kind": "move"
+            },
+            {
+              "t": 128,
+              "kind": "opponent_move"
+            }
+          ],
+          "drill": "Always check all possible captures and checks for both sides before confirming a move.",
+          "recheck": "Check piece safety before every move in the next match.",
+          "theories": "T1 testing: Time management issues in the endgame",
+          "asks": [],
+          "rejected": [
+            [
+              "At 2:05 the engine scores f3 as fine (it gave away 44 centipawns), so that move doesn't show this habit. Drop the theory and name a habit the evidence shows, or finish with found false.",
+              "At 2:07 the engine scores f3 as fine (it gave away 44 centipawns), so that move doesn't show this habit. Drop the theory and name a habit the evidence shows, or finish with found false.",
+              "There's no move of theirs at 2:09. Cite the moments their moves land."
+            ],
+            [
+              "You haven't looked closely at 1:38. Look with frames or measure_aim, or cite a moment you did look at.",
+              "You haven't looked closely at 2:02. Look with frames or measure_aim, or cite a moment you did look at.",
+              "Cite at least 3 separate moments you looked at that show the habit (you have 1). Moments where they got it right go in contrast, not evidence. If fewer than 3 moments show it, finish with found false."
+            ]
+          ],
+          "steps": [
+            {
+              "name": "scan",
+              "args": "{\"to\":\"2:12\",\"from\":\"0:00\",\"why\":\"Scan the entire game to see moves, mistakes, blunders, and time management patterns.\"}"
+            },
+            {
+              "name": "frames",
+              "args": "{\"at\":\"2:05\",\"why\":\"Check the board and clock state near the end of the game\"}"
+            },
+            {
+              "name": "frames",
+              "args": "{\"why\":\"Check the final moment when the clock runs out\",\"at\":\"2:09\"}"
+            },
+            {
+              "name": "finish",
+              "args": "{\"confidence\":\"high\",\"notes\":[{\"status\":\"supported\",\"theory\":\"Time management issues in the endgame\",\"id\":\"T1\"}],\"recheck\":\"Monitor remaining time in the final "
+            },
+            {
+              "name": "frames",
+              "args": "{\"notes\":[{\"status\":\"supported\",\"theory\":\"Hanging pieces under time pressure\",\"id\":\"T1\"}],\"why\":\"Check the blunder at move 27 where a piece is hung under low ti"
+            },
+            {
+              "name": "finish",
+              "args": "{\"notes\":[{\"status\":\"supported\",\"theory\":\"Hanging pieces under time pressure\",\"id\":\"T1\"}],\"progress\":\"same\",\"habit\":\"Important pieces like the queen or rook are"
+            },
+            {
+              "name": "frames",
+              "args": "{\"at\":\"1:38\",\"more\":[\"2:02\"],\"why\":\"Check moves 25 and 31 blunders where pieces are left undefended\",\"notes\":[{\"theory\":\"Hanging pieces under time pressure\",\"id"
+            },
+            {
+              "name": "finish",
+              "args": "{\"found\":true,\"notes\":[{\"theory\":\"Hanging pieces under time pressure\",\"id\":\"T1\",\"status\":\"supported\"}],\"confidence\":\"high\",\"why\":\"Leaving important pieces undef"
+            }
+          ],
+          "seconds": 40.2,
+          "usage": {
+            "calls": 9,
+            "polls": 0,
+            "files": 0,
+            "rateLimited": 0,
+            "failed": 0,
+            "blocked": 0,
+            "models": {
+              "gemini-3.5-flash-lite": 9
+            }
+          },
+          "score": {
+            "verdict": "wrong: blunder_pieces",
+            "hit": false,
+            "counted": true
+          }
+        }
+      },
+      "setup": {
+        "game": "Chess.com online match",
+        "genre": "chess",
+        "learned": "fresh",
+        "learnSeconds": 3.4,
+        "killfeed": "none",
+        "duration": 132,
+        "size": "1280x720",
+        "proxyMb": 0.53,
+        "proxySeconds": 1,
+        "uploadSeconds": 5.8,
+        "usage": {
+          "calls": 1,
+          "polls": 0,
+          "files": 4,
+          "rateLimited": 0,
+          "failed": 0,
+          "blocked": 0,
+          "models": {
+            "gemini-3.5-flash-lite": 1
+          }
+        }
+      }
+    },
+    {
+      "file": "../tests/fixtures/chess-clean.mp4",
+      "plantedHabit": null,
+      "systems": {
+        "agent": {
+          "found": false,
+          "habitId": "other",
+          "habit": "",
+          "why": "No single habit clearly cost the match, as the mistakes were isolated opening inaccuracies rather than a repeated pattern of blunders or severe structural neglect.",
+          "stopped": false,
+          "confidence": "low",
+          "moves": [
+            {
+              "t": 2,
+              "san": "Nf3",
+              "grade": null,
+              "loss": 61
+            },
+            {
+              "t": 6,
+              "san": "d4",
+              "grade": null,
+              "loss": 63
+            },
+            {
+              "t": 10,
+              "san": "e3",
+              "grade": "mistake",
+              "loss": 109
+            },
+            {
+              "t": 14,
+              "san": "c4",
+              "grade": null,
+              "loss": 58
+            },
+            {
+              "t": 18,
+              "san": "Nc3",
+              "grade": null,
+              "loss": 56
+            },
+            {
+              "t": 22,
+              "san": "Be2",
+              "grade": null,
+              "loss": 57
+            },
+            {
+              "t": 26,
+              "san": "O-O",
+              "grade": null,
+              "loss": 66
+            },
+            {
+              "t": 30,
+              "san": "Nb5",
+              "grade": "mistake",
+              "loss": 134
+            },
+            {
+              "t": 34,
+              "san": "Nxd6",
+              "grade": null,
+              "loss": 37
+            },
+            {
+              "t": 38,
+              "san": "Bxc4",
+              "grade": null,
+              "loss": 49
+            },
+            {
+              "t": 42,
+              "san": "Be2",
+              "grade": null,
+              "loss": 88
+            },
+            {
+              "t": 46,
+              "san": "Nxd4",
+              "grade": null,
+              "loss": 37
+            },
+            {
+              "t": 50,
+              "san": "b3",
+              "grade": null,
+              "loss": 62
+            },
+            {
+              "t": 54,
+              "san": "Qxd4",
+              "grade": null,
+              "loss": 34
+            },
+            {
+              "t": 58,
+              "san": "exd4",
+              "grade": null,
+              "loss": 24
+            },
+            {
+              "t": 62,
+              "san": "Be3",
+              "grade": null,
+              "loss": 31
+            },
+            {
+              "t": 66,
+              "san": "Rac1",
+              "grade": null,
+              "loss": 29
+            },
+            {
+              "t": 70,
+              "san": "Rfd1",
+              "grade": null,
+              "loss": 23
+            },
+            {
+              "t": 74,
+              "san": "f3",
+              "grade": null,
+              "loss": 7
+            },
+            {
+              "t": 78,
+              "san": "Kf2",
+              "grade": null,
+              "loss": 37
+            },
+            {
+              "t": 82,
+              "san": "a4",
+              "grade": null,
+              "loss": 18
+            },
+            {
+              "t": 86,
+              "san": "a5",
+              "grade": null,
+              "loss": 32
+            },
+            {
+              "t": 90,
+              "san": "Kxe3",
+              "grade": null,
+              "loss": 35
+            },
+            {
+              "t": 94,
+              "san": "h3",
+              "grade": null,
+              "loss": 71
+            },
+            {
+              "t": 98,
+              "san": "g3",
+              "grade": null,
+              "loss": 33
+            },
+            {
+              "t": 102,
+              "san": "f4",
+              "grade": null,
+              "loss": 77
+            },
+            {
+              "t": 106,
+              "san": "Kxf4",
+              "grade": null,
+              "loss": 73
+            },
+            {
+              "t": 110,
+              "san": "Rc5",
+              "grade": null,
+              "loss": 37
+            },
+            {
+              "t": 114,
+              "san": "d5",
+              "grade": null,
+              "loss": 42
+            },
+            {
+              "t": 118,
+              "san": "Rdxd5",
+              "grade": null,
+              "loss": 0
+            },
+            {
+              "t": 122,
+              "san": "Rc2",
+              "grade": null,
+              "loss": 29
+            },
+            {
+              "t": 126,
+              "san": "Rd2",
+              "grade": null,
+              "loss": 17
+            }
+          ],
+          "evidence": [],
+          "contrast": [],
+          "aim": null,
+          "measures": [],
+          "looks": 8,
+          "turns": 9,
+          "skipped": 0,
+          "stats": {
+            "turns": 9,
+            "looks": 8,
+            "scanTokens": 8712,
+            "scanCalls": 1,
+            "aimCalls": 0,
+            "hudCalls": 0,
+            "skipped": 0,
+            "refused": 0,
+            "asks": 0,
+            "calls": 10
+          },
+          "events": [
+            {
+              "t": 2,
+              "kind": "move"
+            },
+            {
+              "t": 4,
+              "kind": "opponent_move"
+            },
+            {
+              "t": 6,
+              "kind": "move"
+            },
+            {
+              "t": 8,
+              "kind": "opponent_move"
+            },
+            {
+              "t": 10,
+              "kind": "move"
+            },
+            {
+              "t": 12,
+              "kind": "opponent_move"
+            },
+            {
+              "t": 14,
+              "kind": "move"
+            },
+            {
+              "t": 16,
+              "kind": "opponent_move"
+            },
+            {
+              "t": 18,
+              "kind": "move"
+            },
+            {
+              "t": 20,
+              "kind": "opponent_move"
+            },
+            {
+              "t": 22,
+              "kind": "move"
+            },
+            {
+              "t": 24,
+              "kind": "opponent_move"
+            },
+            {
+              "t": 26,
+              "kind": "move"
+            },
+            {
+              "t": 28,
+              "kind": "opponent_move"
+            },
+            {
+              "t": 30,
+              "kind": "move"
+            },
+            {
+              "t": 32,
+              "kind": "opponent_move"
+            },
+            {
+              "t": 34,
+              "kind": "move"
+            },
+            {
+              "t": 36,
+              "kind": "opponent_move"
+            },
+            {
+              "t": 38,
+              "kind": "move"
+            },
+            {
+              "t": 40,
+              "kind": "opponent_move"
+            },
+            {
+              "t": 42,
+              "kind": "move"
+            },
+            {
+              "t": 44,
+              "kind": "opponent_move"
+            },
+            {
+              "t": 46,
+              "kind": "move"
+            },
+            {
+              "t": 48,
+              "kind": "opponent_move"
+            },
+            {
+              "t": 50,
+              "kind": "move"
+            },
+            {
+              "t": 52,
+              "kind": "opponent_move"
+            },
+            {
+              "t": 54,
+              "kind": "move"
+            },
+            {
+              "t": 56,
+              "kind": "opponent_move"
+            },
+            {
+              "t": 58,
+              "kind": "move"
+            },
+            {
+              "t": 60,
+              "kind": "opponent_move"
+            },
+            {
+              "t": 62,
+              "kind": "move"
+            },
+            {
+              "t": 64,
+              "kind": "opponent_move"
+            },
+            {
+              "t": 66,
+              "kind": "move"
+            },
+            {
+              "t": 68,
+              "kind": "opponent_move"
+            },
+            {
+              "t": 70,
+              "kind": "move"
+            },
+            {
+              "t": 72,
+              "kind": "opponent_move"
+            },
+            {
+              "t": 74,
+              "kind": "move"
+            },
+            {
+              "t": 76,
+              "kind": "opponent_move"
+            },
+            {
+              "t": 78,
+              "kind": "move"
+            },
+            {
+              "t": 80,
+              "kind": "opponent_move"
+            },
+            {
+              "t": 82,
+              "kind": "move"
+            },
+            {
+              "t": 84,
+              "kind": "opponent_move"
+            },
+            {
+              "t": 86,
+              "kind": "move"
+            },
+            {
+              "t": 88,
+              "kind": "opponent_move"
+            },
+            {
+              "t": 90,
+              "kind": "move"
+            },
+            {
+              "t": 92,
+              "kind": "opponent_move"
+            },
+            {
+              "t": 94,
+              "kind": "move"
+            },
+            {
+              "t": 96,
+              "kind": "opponent_move"
+            },
+            {
+              "t": 98,
+              "kind": "move"
+            },
+            {
+              "t": 100,
+              "kind": "opponent_move"
+            },
+            {
+              "t": 102,
+              "kind": "move"
+            },
+            {
+              "t": 104,
+              "kind": "opponent_move"
+            },
+            {
+              "t": 106,
+              "kind": "move"
+            },
+            {
+              "t": 108,
+              "kind": "opponent_move"
+            },
+            {
+              "t": 110,
+              "kind": "move"
+            },
+            {
+              "t": 112,
+              "kind": "opponent_move"
+            },
+            {
+              "t": 114,
+              "kind": "move"
+            },
+            {
+              "t": 116,
+              "kind": "opponent_move"
+            },
+            {
+              "t": 118,
+              "kind": "move"
+            },
+            {
+              "t": 120,
+              "kind": "opponent_move"
+            },
+            {
+              "t": 122,
+              "kind": "move"
+            },
+            {
+              "t": 124,
+              "kind": "opponent_move"
+            },
+            {
+              "t": 126,
+              "kind": "move"
+            },
+            {
+              "t": 128,
+              "kind": "opponent_move"
+            }
+          ],
+          "drill": "",
+          "recheck": "Monitor tactical consistency in future games.",
+          "theories": "T1 dropped: Mistakes tied to pawn/piece exchanges without long-term structure planning",
+          "asks": [],
+          "rejected": [
+            [
+              "At 1:54 the engine scores d5 as fine (it gave away 42 centipawns), so that move doesn't show this habit. Drop the theory and name a habit the evidence shows, or finish with found false."
+            ],
+            [
+              "At 0:58 the engine scores exd4 as fine (it gave away 24 centipawns), so that move doesn't show this habit. Drop the theory and name a habit the evidence shows, or finish with found false."
+            ],
+            [
+              "You haven't looked closely at 0:54. Look with frames or measure_aim, or cite a moment you did look at.",
+              "Cite at least 3 separate moments you looked at that show the habit (you have 2). Moments where they got it right go in contrast, not evidence. If fewer than 3 moments show it, finish with found false."
+            ],
+            [
+              "At 1:54 the engine scores d5 as fine (it gave away 42 centipawns), so that move doesn't show this habit. Drop the theory and name a habit the evidence shows, or finish with found false."
+            ]
+          ],
+          "steps": [
+            {
+              "name": "scan",
+              "args": "{\"why\":\"Get the full move list and engine evaluations for the entire match\",\"from\":\"0:00\",\"to\":\"2:12\"}"
+            },
+            {
+              "name": "frames",
+              "args": "{\"more\":[\"0:30\",\"1:54\"],\"region\":\"board\",\"before\":1,\"at\":\"0:10\",\"fps\":6,\"after\":0.5,\"why\":\"Check the board state at the player's mistakes and key tactical momen"
+            },
+            {
+              "name": "finish",
+              "args": "{\"habit_id\":\"pawn_structure_neglect\",\"notes\":[{\"theory\":\"Mistakes tied to pawn/piece exchanges without long-term structure planning\",\"id\":\"T1\",\"status\":\"support"
+            },
+            {
+              "name": "frames",
+              "args": "{\"before\":1,\"fps\":6,\"why\":\"Examine the board at 0:10, 0:30, and 0:58 where structural decisions or exchanges occurred\",\"at\":\"0:10\",\"region\":\"board\",\"more\":[\"0:3"
+            },
+            {
+              "name": "finish",
+              "args": "{\"progress\":\"unclear\",\"habit_id\":\"pawn_structure_neglect\",\"why\":\"The player's mistakes in this match stem from committing to pawn moves and piece exchanges that"
+            },
+            {
+              "name": "finish",
+              "args": "{\"drill\":\"Practice rapid calculation in bullet and blitz formats to maintain accuracy under low time.\",\"notes\":[{\"theory\":\"Mistakes under time pressure\",\"id\":\"T"
+            },
+            {
+              "name": "frames",
+              "args": "{\"fps\":6,\"more\":[\"1:54\"],\"region\":\"board\",\"before\":1,\"at\":\"0:54\",\"notes\":[{\"id\":\"T1\",\"theory\":\"Mistakes under time pressure\",\"status\":\"supported\"}],\"why\":\"Check"
+            },
+            {
+              "name": "finish",
+              "args": "{\"notes\":[{\"id\":\"T1\",\"theory\":\"Mistakes tied to pawn structure and piece coordination in the opening/middlegame\",\"status\":\"supported\"}],\"progress\":\"unclear\",\"fo"
+            },
+            {
+              "name": "finish",
+              "args": "{\"progress\":\"unclear\",\"found\":false,\"notes\":[{\"status\":\"dropped\",\"theory\":\"No single consistent habit stands out across the match.\",\"id\":\"T1\"}],\"why\":\"No single"
+            }
+          ],
+          "seconds": 45.7,
+          "usage": {
+            "calls": 10,
+            "polls": 0,
+            "files": 0,
+            "rateLimited": 0,
+            "failed": 0,
+            "blocked": 0,
+            "models": {
+              "gemini-3.5-flash-lite": 10
+            }
+          },
+          "score": {
+            "verdict": "clean",
+            "falsePositive": false,
+            "counted": true
+          }
+        }
+      },
+      "setup": {
+        "game": "Chess.com online match",
+        "genre": "chess",
+        "learned": "fresh",
+        "learnSeconds": 4,
+        "killfeed": "none",
+        "duration": 132,
+        "size": "1280x720",
+        "proxyMb": 0.52,
+        "proxySeconds": 5.7,
+        "uploadSeconds": 8.3,
+        "usage": {
+          "calls": 1,
+          "polls": 0,
+          "files": 5,
+          "rateLimited": 0,
+          "failed": 0,
+          "blocked": 0,
+          "models": {
+            "gemini-3.5-flash-lite": 1
+          }
+        }
+      }
+    }
+  ],
+  "finished": "2026-10-18T19:53:55.575Z",
+  "summary": {
+    "agent": {
+      "plantedFound": "0/1",
+      "falsePositives": "0/1",
+      "noResult": 0,
+      "calls": 19,
+      "seconds": 85.9
+    }
+  },
+  "totals": {
+    "modelCalls": 19,
+    "uploadRequests": 9,
+    "models": {
+      "gemini-3.5-flash-lite": 21
+    }
+  }
+}

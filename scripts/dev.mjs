@@ -69,7 +69,8 @@ http.createServer((req, res) => {
 
 let timer;
 fs.watch(root, { recursive: true }, (_, file) => {
-  if (!file || /(^|\/)(\.|node_modules|tests\/out)/.test(file)) return;
+  // eval logs and test fixtures change while reviews run; reloading for them would cut a review off
+  if (!file || /(^|\/)(\.|node_modules|tests\/out|tests\/fixtures|eval\/)/.test(file)) return;
   clearTimeout(timer);
   timer = setTimeout(() => clients.forEach((c) => c.write('data: reload\n\n')), 120);
 });

@@ -3,7 +3,8 @@
     "file": "../tests/fixtures/match.mp4",
     "plantedHabit": "crosshair_low",
     "truth": "../tests/fixtures/truth.json",
-    "note": "Synthetic 150 s match from npm run fixture: 8 duels, crosshair about 2 heads low on every death. Checks the plumbing, not accuracy on real footage."
+    "note": "Synthetic 150 s match from npm run fixture: 8 duels, crosshair about 2 heads low on every death. Checks the plumbing, not accuracy on real footage.",
+    "plantedMatch": "crosshair.*(low|placement)|aim"
   },
   {
     "file": "recordings/yt-vyse-ascent.mov",
@@ -16,5 +17,21 @@
     "plantedHabit": null,
     "note": "Real footage: 6:28 screen recording of a TenZ stream VOD (Valorant, unranked pro-level play), 2170x1162 with a webcam overlay, sponsor ads, and a dark strip on the left, so the game picture sits about 3% right of center. Nothing planted; a named habit needs checking by hand rather than counting as wrong.",
     "truth": "recordings/tenz-stream.truth.json"
+  },
+  {
+    "file": "../tests/fixtures/chess-blunders.mp4",
+    "plantedHabit": "time_pressure_blunders",
+    "plantedMatch": "(time|clock|pressure).*(blunder|mistake|hang)|(blunder|mistake|hang).*(time|clock|pressure)",
+    "note": "Synthetic chess (npm run fixture:chess): White, the player, blunders 250+ centipawns on every other move once its clock is under 30 s. Truth in tests/fixtures/chess-truth.json."
+  },
+  {
+    "file": "../tests/fixtures/chess-clean.mp4",
+    "plantedHabit": null,
+    "note": "Synthetic chess clean control: the same setup, no blunders (two small mistakes by the engine's depth-12 count)."
+  },
+  {
+    "file": "recordings/Screen Recording 2026-10-18 at 4.22.30 PM.mov",
+    "plantedHabit": null,
+    "note": "Blind test (Oct 18, 2026): the user added this recording without saying what it is. Unlabeled, so habits and fights are checked by eye afterwards."
   }
 ]

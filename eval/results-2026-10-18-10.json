@@ -1,0 +1,250 @@
+{
+  "started": "2026-10-18T21:05:57.436Z",
+  "budget": {
+    "looks": 24,
+    "turns": 12
+  },
+  "maxCallsPerRecording": 80,
+  "recordings": [
+    {
+      "file": "recordings/Screen Recording 2026-10-18 at 4.22.30 PM.mov",
+      "plantedHabit": null,
+      "systems": {
+        "agent": {
+          "found": false,
+          "habitId": "other",
+          "habit": "other",
+          "why": "The player played a strong match overall with multiple squad wipes and secured 9 kills without dying. While some minor positioning and resource management decisions could be optimized, no single recurring habit negatively impacted their performance or cost them the match.",
+          "stopped": false,
+          "confidence": "high",
+          "moves": [],
+          "evidence": [
+            {
+              "t": 66,
+              "what": "Player has low ammo and opts to heal in a corner instead of immediately re-engaging or repositioning aggressively"
+            },
+            {
+              "t": 272,
+              "what": "Player takes an open angle against multiple opponents while trading shots with limited cover available"
+            }
+          ],
+          "contrast": [
+            {
+              "t": 47,
+              "what": "Player secures a knock and wins the fight using precise tracking and positioning"
+            },
+            {
+              "t": 273,
+              "what": "Player secures a knock and assists in eliminating the enemy squad near cover"
+            }
+          ],
+          "aim": null,
+          "measures": [],
+          "looks": 3,
+          "turns": 3,
+          "skipped": 0,
+          "stats": {
+            "turns": 3,
+            "looks": 3,
+            "scanTokens": 24354,
+            "scanCalls": 1,
+            "aimCalls": 0,
+            "hudCalls": 0,
+            "skipped": 0,
+            "refused": 0,
+            "asks": 0,
+            "calls": 4
+          },
+          "events": [
+            {
+              "t": 8,
+              "kind": "engagement"
+            },
+            {
+              "t": 9,
+              "kind": "kill"
+            },
+            {
+              "t": 19,
+              "kind": "engagement"
+            },
+            {
+              "t": 20,
+              "kind": "kill"
+            },
+            {
+              "t": 43.8,
+              "kind": "engagement"
+            },
+            {
+              "t": 47,
+              "kind": "kill"
+            },
+            {
+              "t": 56,
+              "kind": "kill"
+            },
+            {
+              "t": 63.5,
+              "kind": "engagement"
+            },
+            {
+              "t": 81.8,
+              "kind": "engagement"
+            },
+            {
+              "t": 106.5,
+              "kind": "engagement"
+            },
+            {
+              "t": 132.3,
+              "kind": "engagement"
+            },
+            {
+              "t": 144,
+              "kind": "engagement"
+            },
+            {
+              "t": 152.8,
+              "kind": "engagement"
+            },
+            {
+              "t": 160,
+              "kind": "other"
+            },
+            {
+              "t": 183.3,
+              "kind": "engagement"
+            },
+            {
+              "t": 200.8,
+              "kind": "engagement"
+            },
+            {
+              "t": 229.5,
+              "kind": "engagement"
+            },
+            {
+              "t": 256,
+              "kind": "engagement"
+            },
+            {
+              "t": 257,
+              "kind": "kill"
+            },
+            {
+              "t": 271,
+              "kind": "engagement"
+            },
+            {
+              "t": 273,
+              "kind": "kill"
+            },
+            {
+              "t": 276,
+              "kind": "kill"
+            },
+            {
+              "t": 323,
+              "kind": "engagement"
+            },
+            {
+              "t": 341.5,
+              "kind": "engagement"
+            },
+            {
+              "t": 356,
+              "kind": "engagement"
+            },
+            {
+              "t": 359,
+              "kind": "kill"
+            },
+            {
+              "t": 365,
+              "kind": "kill"
+            }
+          ],
+          "drill": "Spend 10 minutes daily in the Firing Range focusing on smooth target tracking and recoil control without losing sight of surrounding cover, ensuring you do not over-expose yourself during gunfights.",
+          "recheck": "",
+          "theories": "T1 testing: Player takes fights effectively with good positioning and cover usage",
+          "asks": [],
+          "rejected": [],
+          "steps": [
+            {
+              "name": "scan",
+              "args": "{\"from\":\"0:00\",\"to\":\"6:09\",\"why\":\"Find all fights, deaths, and round events across the entire match to identify patterns.\"}"
+            },
+            {
+              "name": "frames",
+              "args": "{\"why\":\"Check positioning, cover usage, and aim during successful and neutral engagements.\",\"more\":[\"1:06\",\"4:33\"],\"after\":1,\"before\":1,\"fps\":6,\"at\":\"0:47\",\"not"
+            },
+            {
+              "name": "finish",
+              "args": "{\"contrast\":[{\"what\":\"Player secures a knock and wins the fight using precise tracking and positioning\",\"t\":\"0:47\"},{\"t\":\"4:33\",\"what\":\"Player secures a knock a"
+            }
+          ],
+          "seconds": 81.7,
+          "usage": {
+            "calls": 4,
+            "polls": 0,
+            "files": 0,
+            "rateLimited": 0,
+            "failed": 0,
+            "blocked": 0,
+            "models": {
+              "gemini-3.5-flash-lite": 4
+            }
+          },
+          "score": {
+            "verdict": "clean",
+            "falsePositive": false,
+            "counted": true
+          }
+        }
+      },
+      "setup": {
+        "game": "Apex Legends",
+        "genre": "shooter",
+        "learned": "fresh",
+        "learnSeconds": 34.9,
+        "killfeed": "no team colors near \"white\" and \"red\"",
+        "duration": 369.6,
+        "size": "2170x1162",
+        "proxyMb": 11.3,
+        "proxySeconds": 25.8,
+        "uploadSeconds": 13.9,
+        "usage": {
+          "calls": 2,
+          "polls": 0,
+          "files": 4,
+          "rateLimited": 0,
+          "failed": 0,
+          "blocked": 0,
+          "models": {
+            "gemini-3.5-flash-lite": 1,
+            "gemini-2.5-flash-lite": 1
+          }
+        }
+      }
+    }
+  ],
+  "finished": "2026-10-18T21:08:36.446Z",
+  "summary": {
+    "agent": {
+      "plantedFound": "0/0",
+      "falsePositives": "0/1",
+      "noResult": 0,
+      "calls": 4,
+      "seconds": 81.7
+    }
+  },
+  "totals": {
+    "modelCalls": 4,
+    "uploadRequests": 4,
+    "models": {
+      "gemini-3.5-flash-lite": 5,
+      "gemini-2.5-flash-lite": 1
+    }
+  }
+}

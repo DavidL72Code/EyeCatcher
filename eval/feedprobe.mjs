@@ -19,6 +19,7 @@ const recordings = [
 ].map(([v, t]) => ({ video: path.join(here, 'recordings', v), truth: JSON.parse(fs.readFileSync(path.join(here, 'recordings', t), 'utf8')) }));
 
 const round3 = (x) => Math.round(x * 1000) / 1000;
+const learnedPath = (video) => path.join(path.dirname(video), `${path.basename(video, path.extname(video))}.learned.json`);
 const PORT = 5198;
 const dev = spawn(process.execPath, [path.join(root, 'scripts/dev.mjs')], { env: { ...process.env, PORT: String(PORT) }, stdio: 'ignore' });
 for (let i = 0; i < 50; i++) { if (await fetch(`http://localhost:${PORT}/`).then((r) => r.ok, () => false)) break; await new Promise((r) => setTimeout(r, 100)); }
@@ -29,9 +30,11 @@ try {
     await page.goto(`http://localhost:${PORT}/`);
     await page.evaluate(() => { const i = document.createElement('input'); i.type = 'file'; i.id = 'f'; i.hidden = true; document.body.append(i); });
     await page.setInputFiles('#f', rec.video);
+    // PROFILE=learned: the profile eval/learncheck.mjs learned from this recording, instead of the hand-made answer key
+    if (process.env.PROFILE === 'learned') await page.evaluate((p) => { window.__profile = p; }, JSON.parse(fs.readFileSync(learnedPath(rec.video), 'utf8')));
     const r = await page.evaluate(async ({ to }) => {
       const V = window.ThirdeyeVideo, A = window.ThirdeyeAgent;
-      const profile = await (await fetch('games/valorant.json')).json();
+      const profile = window.__profile || (await (await fetch('games/valorant.json')).json());
       const video = await V.open(document.getElementById('f').files[0]);
       const end = Math.min(to, video.duration);
       const { strips, grid } = await A.feedStrips({ video, profile, from: 0, to: end });

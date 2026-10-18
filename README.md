@@ -1,8 +1,8 @@
 # Thirdeye
 
-A post-game coach that watches a recording of your match, finds the one habit costing you the most fights, shows you the moments that prove it, and gives you a drill. In your next match it checks whether the habit is getting better.
+A post-game coach that watches a recording of your match, finds the one habit losing you games, shows you the moments that prove it with what to do instead at each one, and gives you a drill. In your next match it checks whether the habit is getting better.
 
-It reads recorded gameplay video, so it can work for almost any game. Valorant is the first game profile.
+It learns each game from the recording itself, so there's no game profile to write. Once it knows the game, it looks up what matters in it (what the game rewards, what top players focus on, which fights are worth taking) instead of judging every game by one shooter's rules. It coaches fights, not only kills and deaths: a fight where nobody dies can still decide a match. Measuring is done in code by genre: shooters (kill feed, crosshair height, shots, dead time) and chess (every move read off the board and scored by Stockfish). Any other game still gets the generic tools: close looks, HUD reading, questions, and the evidence checks.
 
 ## Run it
 
@@ -12,25 +12,52 @@ npm run dev
 
 Open http://localhost:5177/. Put a free Gemini key in `.env` as `GEMINI_API_KEY=...`; the dev server passes it only to pages opened on this machine. Without one, the start screen asks for a key and keeps it in the browser.
 
-`npm run fixture` makes a 2.5-minute synthetic match (`tests/fixtures/`, not committed). Once it exists, the start screen offers it as a test match.
+`npm run fixture` makes a 2.5-minute synthetic shooter match and `npm run fixture:chess` two synthetic chess games, one with blunders planted under time pressure and one clean (`tests/fixtures/`, not committed). Once the shooter match exists, the start screen offers it as a test match.
 
 ## How it works
 
 1. **The recording stays on your device.** The browser decodes it with [Mediabunny](https://mediabunny.dev) (WebCodecs).
 2. **A small silent copy goes to Gemini.** It's 640 px wide at 2 frames a second, with no audio, so voice chat never leaves the device. It goes to the Gemini Files API, which deletes it after 48 hours.
-3. **The coach runs.** It's one Gemini agent loop (`agent.js` on the shared `runAgent` in `gemini.js`), on Flash-Lite models.
+3. **The game is learned** (`learn.js`, one model call, kept for a day per recording). Gemini sees 8 frames spread over the match and names the game and genre. It boxes what's on screen (kill feed, ammo, minimap, board, clocks…), says how key moments look, and lists habits with drills and what code can check each one with. Code then measures the rest from pixels:
+   - **Kill feed:** team colors are taken from inside the rows, and rows from bands that share an edge and a height. New-row direction is whichever way finds fewer new rows. A layout that finds more new rows a minute than a match has kills is thrown out, and scans fall back to a low-detail pass.
+   - **Chess board:** the exact 8×8 grid near the box, and which side is at the bottom.
+4. **What matters is looked up** (`researchGame` in `learn.js`, one call per game, kept for 30 days). Gemini 2.5 Flash-Lite with Google Search answers five things:
+   - what the game rewards (Apex ranked: placement and kills; Valorant: rounds);
+   - the 3 to 6 things top players focus on;
+   - when a fight is worth taking;
+   - where good players aim: head, body, tracking, or none;
+   - 5 to 7 costly mistakes, each with how it shows on screen and what code can check it with.
 
-The coach gets a goal, its tools and what each costs, a budget, the game profile, and the player's history. The prompt never lists an order of steps.
+   Those mistakes become the coach's habits, and the rewards become its goal. When search isn't available on the key, the same question goes to the model with no tools, and the app says the answer came from the model's own knowledge. The "Reading the screen" card shows the priorities and the sources.
+5. **The coach runs.** It's one Gemini agent loop (`agent.js` on the shared `runAgent` in `gemini.js`), on Flash-Lite models.
+
+The coach gets a goal, its tools and what each costs, a budget, the learned profile, and the player's history for this game. The prompt never lists an order of steps, and a tool the game has no use for isn't offered: no `measure_aim` without a first-person crosshair, no `read_hud` without a HUD element.
 
 | Tool | What it does | Cost |
 |---|---|---|
-| `scan` | Reads every kill-feed line in a stretch from the full-quality recording: the player's kills and deaths, and teammates' too, with each side's team and whether each death was traded within 5 s. A low-detail pass over the scan copy adds round starts. The video never enters the coach's own context. | 1 call per 32 kill-feed lines, plus 1; 0 looks |
+| `scan` | Reads every kill-feed line in a stretch from the full-quality recording: the player's kills and deaths, and teammates' too, with each side's team and whether each death was traded within 5 s. A low-detail pass over the scan copy adds round starts and the fights (below). The video never enters the coach's own context. | 1 call per 32 kill-feed lines, plus 1; 0 looks |
 | `frames` | Grabs frames around up to 3 moments from the full-quality recording, of the whole screen or a region (aim area, kill feed, minimap). The coach sees them for one turn; after that they're swapped for a note. | 1 look per moment, 0 calls |
 | `measure_aim` | Gemini boxes the enemy head nearest the crosshair at up to 6 moments, in one call. Code turns each box into head-heights and degrees using the game's FOV. A moment after the player's own death is skipped for free. | 1 look per moment, 1 call |
+| `read_hud` | Reads one learned screen element (a clock, a counter, the score) at up to 8 moments. Only offered when the game has one. | 1 call, 0 looks |
 | `ask_player` | One question about a moment, for what video can't show. The app plays the moment and the player taps an answer. At most 3 per review. | Waits for the player |
 | `finish` | Ends the review with one habit, or with "no single habit stood out". | Checked in code |
 
 Every tool also takes `why` (what this step checks, shown live in the breakdown) and `notes` (theory board changes). Notes ride along with the next step, so updating the board never costs a turn of its own.
+
+### Chess
+
+`scan` reads the game in code. `chess-reader.js` reads each square as empty, a white piece, or a black piece. Each change is matched to the legal move (chess.js) whose board explains it, so a last-move highlight never fools it, and two moves between samples are tried as a pair. Stockfish 10 (its asm.js build in a Web Worker) scores every position, so each of the player's moves gets its centipawn loss: a mistake at 100 or more, a blunder at 250. The player's clock at each graded move is read in one `read_hud` call. A habit the learn call marks as engine-checked can only cite the player's moves that the engine calls a mistake or worse.
+
+On the synthetic recordings, all 64 plies come back in order, timed to the frame they land in, and the blunder and mistake counts match a depth-12 Stockfish truth file (`npm run test:chess-video`). Real chess-site recordings are untested. A recording has to start from the starting position.
+
+### Fights, not only kills
+
+A fight where nobody dies can still decide a match: one that wasn't worth taking, or one taken from a bad spot. So `scan` returns fights as well as kill-feed lines:
+- **The low-detail pass lists them:** each fight's start, end, and outcome (won, lost, or no one fell), judged with the researched criteria for fights.
+- **Code stretches them:** it reads the ammo counter 4 times a second, and steady drops are shots. Shots, damage dealt (when the game has a damage counter), and the kill feed's kills and deaths extend a fight the pass saw or one around a kill or death.
+- **Shots alone don't make a fight.** Reloads and weapon swaps also change the ammo counter; on the Apex recording two "fights" made only of shots were a reload and a swap, checked by eye at 1:25 and 3:07.
+
+The timeline draws each fight as a band colored by outcome. The brief asks the coach to judge whether each fight was worth taking and how it was taken, not only who died, and the won-fight check counts won fights.
 
 ### Watching it work
 
@@ -56,37 +83,44 @@ It's a team game, so the coach needs every kill, not just the player's own. The 
 - **Shots.** Code reads the HUD ammo counter (the profile's `ammo` region) 2 s either side of each close look and says whether the player fired: the magazine digits at the first steady frame against the last. Background behind the digits can make them unreadable, and then the answer is "unclear", never "no shots". A habit the profile marks `needsShots` (spraying, shooting while moving) can't cite a moment with no shots. On 8 stretches labeled by eye in the two real recordings (`eval/shotprobe.mjs`), 7 read right and 1 short one read unclear; none read "no shots" wrongly.
 - **Said ahead.** Every look's result says what `finish` will still ask for (a won fight not yet looked at), so the coach rarely spends a turn on a rejected finish.
 - **Evidence.** `finish` is sent back if any cited moment wasn't looked at closely, or if it cites fewer than 3 separate moments.
-- **Aim habits match the numbers.** A habit the profile measures by aim (`measuredBy: "aim"`) needs at least 3 measurements with an enemy in view. It's sent back when those measurements put the crosshair at head level, or when a cited moment was measured at head level.
+- **Aim habits match the numbers, for this game.** `measure_aim` only reports where the crosshair sat (above the head, on it, upper or lower body) and never calls a spot right. A habit measured by aim needs at least 3 measurements with an enemy in view, and is judged against where the research says good players aim:
+  - **Head games** (Valorant): "low" means more than 0.75 head-heights below the head.
+  - **Body games:** "low" means below the body, about 3.5 head-heights down, and head level is never wrong.
+  - **Tracking games** (Apex): no height is checkable, so aim habits get no aim check and are judged by eye.
 - **Evidence shows the habit.** Moments where the player got it right go in a separate `contrast` list, which the verdict shows as "Where you got it right". A moment can't be in both lists. With fewer than 3 moments that show the habit, the coach is told to answer "no single habit".
 - **Real heads only.** A head box counts only if it sits at the top of a body box. Measurements where the enemy is very close come back with a warning.
 - **Won fights.** `finish` is sent back once if the coach never looked at a fight the player won, since a habit that shows up just as often in wins isn't what's losing fights. Finishing again keeps the answer.
 - **Measurement timing.** A measurement taken when the kill feed shows a won fight ending comes back with a warning. The scan times fights by their kill-feed line, but placement shows earlier, when the enemy first comes into view.
 - **Progress.** When the player is working on an aim habit, code compares this match's measured median with the baseline. Half a head of change, over at least 3 duels each, counts as better or worse. The coach's own opinion is used only when there are no numbers.
+- **Decide after two send-backs.** If `finish` is sent back twice for the same reason on the same habit (moments not looked at, too few moments, aim at the target height…), the coach is told to decide: its next call must be `finish`, and other tools are refused. If that answer still fails the checks, the review ends with no habit named, and the report says code made that call. It was added after a review of the Apex recording tried "low crosshair placement" three times.
 - **Post-game only.** Thirdeye never reads game memory and never runs during a match.
 
-The player decides which habit to work on ("Work on this" or "Not this"). History lives in `localStorage` on the device.
+The player decides which habit to work on ("Work on this" or "Not this"). The short history the coach reads lives in `localStorage`. Each review's full log (every step the coach drew, with the frames it looked at), its report, and a handle to the recording live in IndexedDB (`reviews.js`), so a past review reopens as the same screen: the recording pinned on the left, the report and the numbered log beside it. The handle comes from dropping the file or the browser's file picker; with the plain file input, the past review asks for the recording again and checks it's the same file by size. Everything stays on the device.
 
 ## Files
 
 ```
 index.html  styles.css  app.js   UI: start screen, review timeline, theory board, verdict, past reviews
+reviews.js                       past reviews in IndexedDB: log, frames, report, recording handle
 agent.js                         the coach: its brief, six tools, and the finish checks
 video.js                         decode frames, make the scan copy, upload to the Files API
 core.js                          pure logic: times, aim geometry, budget, evidence checks, theories, history
-games/valorant.json              the game profile: FOV, screen regions, cues, habits and drills
+learn.js                         learns a game from its recording: the learn call, what matters (research), then the kill-feed layout from pixels
+chess-reader.js                  reads chess moves off the board in code, and scores them with Stockfish
+games/valorant.json              the answer key for learning Valorant (never loaded by the app)
 gemini.js                        copied from hackathon/shared/gemini.js (REST client and agent loop)
 scripts/dev.mjs                  static dev server; makes env.js from .env
 tests/                           unit tests, the browser test, the live check, and the fixture maker
 ```
 
-Adding a game means writing a profile in `games/`; the code doesn't change. Besides the FOV, regions, cues, and habits, the profile says how the game draws what code reads: the kill feed's grid, team colors, which way new rows join (`newRows`), and how the player's own rows are marked (`killfeedMine`); the HUD text color (`hudText`); and how long a death keeps the player out (`deadFor`). A game without a field gets a safe default: no kill-feed grid falls back to color bands, no `ammo` region skips the shot check, and no `deadFor` assumes a 5 s respawn.
+There are no game profiles to write. `games/valorant.json` was hand-made for the first version and is now only the answer key `eval/learncheck.mjs` compares learned profiles against; the app never loads it. A new genre needs code (an instrument, as chess got); a new game in a known genre needs nothing.
 
 ## Tests
 
-| Command | What it runs | Result (Oct 16, 2026) |
+| Command | What it runs | Result (Oct 18, 2026) |
 |---|---|---|
-| `npm run test:unit` | 32 unit tests: aim geometry, the finish checks, the theory board, events, the kill-feed reader (rows on the grid, portraits, walls and flashes, new rows, names, teams, trades, finding the player), history, and how the agent loop handles pictures | 32 pass |
-| `npm run test:e2e` | 36 checks in Chrome on the synthetic match, with Gemini and the Files API mocked: upload, scan, timeline, questions, the finish checks, the verdict, the re-check against a baseline, and a phone-width layout | 36 pass |
+| `npm run test:unit` | 54 unit tests: aim geometry and aim targets, the finish checks and the decide rule, the theory board, events, the kill-feed reader, learning and research (with a failed search falling back), grouping shots into fights, history, chess reading and scoring, and how the agent loop handles pictures | 54 pass |
+| `npm run test:e2e` | 72 checks in Chrome on the synthetic shooter match and chess game, with Gemini and the Files API mocked: learning and research, upload, scan and fights, timeline, questions, the finish checks, the verdict, past reviews, the re-check against a baseline, and a phone-width layout | 72 pass |
 | `npm run test:live` | The real pipeline on the synthetic match, about 25 requests | Below |
 
 **Live check on the synthetic match** (one run, 720p at 30 fps, 150 s):
@@ -109,10 +143,26 @@ These numbers come from drawn shapes, not game footage.
 - **Teams:** 37 of 41 right in the best run. All four misses were teammate Febera's deaths: her portrait at the end of the row reads as the enemy color. The reader now skips the portrait, and those frames read correctly.
 - **Who the player is:** wrong in two of four full-match runs, first Killjoy (a yellow portrait), then the allied Omen (two Omens, plus a teammate's death taken for the player's). The current rule counts only teammates and combines yellow marks with the player's death screens. It passes the unit tests, but the live check ran out of Gemini's free daily quota. **Not verified on the real match yet.** Typing your in-game name on the start screen skips the guess.
 
+**Research and fights, live (Oct 18).** One eval run over four recordings with fresh learning and research: 40 model calls in all, plus 29 upload requests, in 9.6 minutes (`eval/results-2026-10-18-11.json`). None of these recordings has a planted habit except the chess one, so a named habit on the others counts as a false positive.
+
+| Recording | Calls | Fights (won / lost / no one fell) | Verdict | Checked by eye |
+|---|---|---|---|---|
+| Vyse, Valorant, 14 min | 16 | 35 (2 / 5 / 28) | Ran out of turns, no habit | Most "no one fell" fights came from a damage counter Valorant doesn't have; fixed since (below) |
+| TenZ, Valorant | 10 | 11 (3 / 5 / 3) | "W-keying into sites" | False positive. Code only checks that he fired; the moving forward was judged from frames |
+| Apex, the blind recording | 8 | 16 (3 / 0 / 13) | "Reloading in the open" | False. The cited moments were healing and riding ziplines |
+| Chess, planted blunders | 6 | none | "Playing without a plan and missing tactical threats under pressure" | Right moments (the engine check only lets it cite mistakes), but a vaguer name than the planted habit, so the eval scored it a miss |
+
+- **Research:** chess was searched and cited 6 sources (chess.com among them). Valorant and Apex fell back to the model's own knowledge; why the search failed wasn't logged then and is now. Apex's answer still put survival and placement first and set aim to "tracking", and the coach made no aim measurements in that review.
+- **Fixed since:** firing and damage now only extend a fight that has a kill, a death, or a sighting in it, after reloads, swaps, and Valorant's missing damage counter made fights out of nothing. That change hasn't been run live yet.
+
 **Next test:** a recording with a habit played on purpose, to see whether a strong habit gets caught.
 
 ## Limits
 
 - **Scan detail.** The scan watches one frame a second at low resolution. A fight that ends between frames, or a kill feed the model can't read, gets missed. A missed fight only lowers recall; the coach can still look closely anywhere.
-- **Head size.** Small heads, under 6 px, give rough measurements, and the tool says so. Stretched resolutions, a crosshair moved off center, or a custom HUD break the profile's assumptions.
+- **Head size.** Small heads, under 6 px, give rough measurements, and the tool says so. A head far to the side of the crosshair isn't counted. Stretched resolutions or a crosshair moved off center break the aim math.
+- **Learning varies.** The learn call's boxes and colors differ from call to call. On the low-resolution Vyse recording the learned kill feed ranged from 38/41 to 40/41 lines between calls. A new recording of a known game is the real test, and none has been tried yet.
+- **Other genres.** A MOBA, a fighting game, or a sports game gets the generic tools only: close looks, `read_hud`, questions, and the evidence checks. Measuring them needs an instrument written for the genre, as chess got.
+- **Habits judged by eye.** A habit no code check covers (W-keying, reloading in the open, playing without a plan) rests on the model's read of a few frames. On Oct 18 that read was wrong in 2 of the 3 habits it named.
+- **Search.** Google Search on the free key failed for 2 of 3 games on Oct 18, so their research came from the model's own knowledge. The app says when that happens.
 - **Quota.** Each turn is one request from Gemini's free daily allowance.

@@ -4,13 +4,13 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Thirdeye</title>
-  <meta name="description" content="A post-game coach that watches your match and finds the habit losing you fights." />
+  <meta name="description" content="A post-game coach that watches your match and finds the habit losing you games." />
   <meta name="theme-color" content="#0c0d0f" />
   <meta name="color-scheme" content="dark" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet" />
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%278%27 fill=%27%230c0d0f%27/%3E%3Cpath d=%27M4 16c3.5-5.5 7.5-8 12-8s8.5 2.5 12 8c-3.5 5.5-7.5 8-12 8s-8.5-2.5-12-8z%27 fill=%27none%27 stroke=%27%23ffd23f%27 stroke-width=%272.4%27/%3E%3Cpath d=%27M16 11v3.2M16 17.8V21M11 16h3.2M17.8 16H21%27 stroke=%27%23ffd23f%27 stroke-width=%272.4%27 stroke-linecap=%27round%27/%3E%3C/svg%3E" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230c0d0f'/%3E%3Cg fill='none' stroke='%23f2c64a' stroke-width='4.4' stroke-linecap='round'%3E%3Cpath d='M5 25.5H13.5C19 16.5 45 16.5 50.5 25.5H59'/%3E%3Cpath d='M5 31H13.5C19 40 45 40 50.5 31H59'/%3E%3Cpath d='M26.5 37.6V44.4C26.5 47.9 24.6 49.9 21.2 49.9'/%3E%3Cpath d='M33 38.2V48.6'/%3E%3Cpath d='M39.5 37.6V42.6C39.5 47.6 42.6 50.6 46.6 50.6C50.1 50.6 52.6 48.1 52.6 45C52.6 42.2 50.5 40.4 48.1 40.4C45.8 40.4 44.3 42.1 44.3 44'/%3E%3C/g%3E%3Ccircle cx='32' cy='28.2' r='6.8' fill='%23f2c64a'/%3E%3Ccircle cx='32' cy='28.2' r='2.8' fill='%230c0d0f'/%3E%3C/svg%3E" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
@@ -19,7 +19,8 @@ THESIS: The film room. Your match is the canvas and the coach marks it up in tel
 piece of evidence lands on the match timeline, so you can see where it looked and why it decided.
 OWN-WORLD: Near-black ground (#0c0d0f), graphite panels, chalk text, and one telestrator yellow (#ffd23f) with three jobs:
 the coach's marks, the primary action, and the working spinner. Death red and a muted teal
-(teammates' deaths) are the only other colors, and only on the timeline. Big Shoulders Display for the verdict and big numbers, JetBrains Mono for times, the platform sans for text.
+(teammates' deaths) are the only other colors, and only on the timeline. The one material is the brand mark: the
+Millennium eye in raised gold. Big Shoulders Display for the verdict and big numbers, JetBrains Mono for times, the platform sans for text.
 -->
   <svg width="0" height="0" style="position:absolute" aria-hidden="true">
     <defs>
@@ -29,20 +30,43 @@ the coach's marks, the primary action, and the working spinner. Death red and a 
         <feComponentTransfer in="n" result="grain"><feFuncA type="linear" slope="0.35" intercept="0.72" /></feComponentTransfer>
         <feComposite in="d" in2="grain" operator="in" />
       </filter>
-      <symbol id="eye" viewBox="0 0 32 32"><path d="M3 16c3.7-5.8 8-8.6 13-8.6s9.3 2.8 13 8.6c-3.7 5.8-8 8.6-13 8.6S6.7 21.8 3 16z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" /><path d="M16 10.6v3.3M16 18.1v3.3M10.6 16h3.3M18.1 16h3.3" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" /></symbol>
+      <!-- the eye of the Millennium items: lids that run out into side tabs, a solid iris, and the stems and spiral under it.
+           Flat in the pen color for small marks; raised gold for the brand mark. -->
+      <mask id="pupil" maskUnits="userSpaceOnUse" x="0" y="0" width="64" height="64"><rect width="64" height="64" fill="#fff" /><circle cx="32" cy="26.2" r="2.7" fill="#000" /></mask>
+      <linearGradient id="gold" gradientUnits="userSpaceOnUse" x1="0" y1="12" x2="0" y2="52">
+        <stop offset="0" stop-color="#fff4b8" /><stop offset="0.3" stop-color="#f6cf55" /><stop offset="0.55" stop-color="#d39a22" /><stop offset="0.8" stop-color="#8f5d0b" /><stop offset="1" stop-color="#d9a83a" />
+      </linearGradient>
+      <filter id="emboss" x="-15%" y="-15%" width="130%" height="140%" color-interpolation-filters="sRGB">
+        <feGaussianBlur in="SourceAlpha" stdDeviation="0.7" result="blur" />
+        <feSpecularLighting in="blur" surfaceScale="2.6" specularConstant="1.05" specularExponent="20" lighting-color="#fff8dc" result="spec"><feDistantLight azimuth="225" elevation="40" /></feSpecularLighting>
+        <feComposite in="spec" in2="SourceAlpha" operator="in" result="lit" />
+        <feComposite in="SourceGraphic" in2="lit" operator="arithmetic" k1="0" k2="1" k3="0.8" k4="0" result="shaded" />
+        <feDropShadow in="shaded" dx="0" dy="0.9" stdDeviation="0.7" flood-color="#000" flood-opacity="0.75" />
+      </filter>
+      <g id="eye-lines">
+        <path d="M5 23.5H13.5C19 14.5 45 14.5 50.5 23.5H59" /><path d="M5 29H13.5C19 38 45 38 50.5 29H59" />
+        <path d="M26.5 35.6V42.4C26.5 45.9 24.6 47.9 21.2 47.9" /><path d="M33 36.2V46.6" />
+        <path d="M39.5 35.6V40.6C39.5 45.6 42.6 48.6 46.6 48.6C50.1 48.6 52.6 46.1 52.6 43C52.6 40.2 50.5 38.4 48.1 38.4C45.8 38.4 44.3 40.1 44.3 42C44.3 43.6 45.5 44.7 46.9 44.6" />
+      </g>
+      <symbol id="eye" viewBox="3 12 58 40"><use href="#eye-lines" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" /><circle cx="32" cy="26.2" r="6.4" fill="currentColor" mask="url(#pupil)" /></symbol>
+      <symbol id="eye-gold" viewBox="3 12 58 40" overflow="visible"><g filter="url(#emboss)">
+        <path d="M13.5 26.25C19 17.4 45 17.4 50.5 26.25C45 35.1 19 35.1 13.5 26.25Z" fill="#140e03" />
+        <use href="#eye-lines" fill="none" stroke="url(#gold)" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" />
+        <circle cx="32" cy="26.2" r="6.4" fill="url(#gold)" mask="url(#pupil)" />
+      </g></symbol>
     </defs>
   </svg>
 
   <a class="skip" href="#main">Skip to content</a>
   <header class="top">
-    <a class="mark" href="./" aria-label="Thirdeye, start over"><svg aria-hidden="true"><use href="#eye" /></svg>thirdeye</a>
-    <button class="quiet" id="historyBtn" type="button" hidden>Past reviews <span id="historyCount"></span></button>
+    <a class="mark" href="./" aria-label="Thirdeye, start over"><svg aria-hidden="true"><use href="#eye-gold" /></svg>thirdeye</a>
+    <a class="quiet" id="historyBtn" href="#reviews" hidden>Past reviews <span id="historyCount"></span></a>
   </header>
 
   <main id="main" tabindex="-1">
     <section class="start" id="start" aria-labelledby="startTitle">
-      <h1 id="startTitle">Find the habit that's<br /><span class="pen">losing you fights.</span></h1>
-      <p class="lede">Drop in a match. It watches, then shows you why.</p>
+      <h1 id="startTitle">Find the habit that's<br /><span class="pen">losing you games.</span></h1>
+      <p class="lede">Drop in a match from any game. It watches, then shows you why.</p>
 
       <label class="drop" id="drop">
         <input id="fileInput" type="file" accept="video/*,.mkv" />
@@ -53,9 +77,6 @@ the coach's marks, the primary action, and the working spinner. Death red and a 
       </label>
 
       <div class="setup">
-        <label class="field game"><span>Game</span>
-          <select id="game"><option value="valorant">Valorant</option></select>
-        </label>
         <label class="field name"><span>Your in-game name</span>
           <input id="playerName" type="text" maxlength="40" autocomplete="off" placeholder="Optional" />
         </label>
@@ -78,15 +99,19 @@ the coach's marks, the primary action, and the working spinner. Death red and a 
     </section>
 
     <section class="review" id="review" aria-label="Match review" hidden>
-      <div class="stage">
-        <div class="player"><video id="video" playsinline controls preload="metadata"></video></div>
+      <nav class="crumbs" id="crumbs" aria-label="Past review" hidden></nav>
+      <div class="stage" id="stage">
+        <div class="player">
+          <video id="video" playsinline controls preload="metadata"></video>
+          <div class="reattach" id="reattach" hidden></div>
+        </div>
         <div class="timeline" id="timeline" role="slider" tabindex="0" aria-label="Match timeline" aria-valuemin="0" aria-valuemax="0" aria-valuenow="0">
           <div class="track" id="track"></div>
           <div class="eye-mark" id="eyeMark" hidden><svg><use href="#eye" /></svg></div>
           <div class="playhead" id="playhead"></div>
         </div>
         <div class="axis" id="axis" aria-hidden="true"></div>
-        <ul class="legend" aria-hidden="true"><li class="k-kill">Your kill</li><li class="k-death">Your death</li><li class="k-ally">Teammate died</li><li class="k-look">Looked at</li></ul>
+        <ul class="legend" id="legend" aria-hidden="true"><li class="k-kill">Your kill</li><li class="k-death">Your death</li><li class="k-ally">Teammate died</li><li class="k-fight">Fight</li><li class="k-look">Looked at</li></ul>
       </div>
 
       <aside class="rail" id="rail">
@@ -101,20 +126,28 @@ the coach's marks, the primary action, and the working spinner. Death red and a 
         <article class="verdict" id="verdict" hidden></article>
         <div class="board" id="board" hidden></div>
         <section class="breakdown" id="breakdown" aria-label="What the coach did, step by step" hidden><h3>The breakdown</h3><ol class="beats" id="beats" aria-live="polite"></ol></section>
+        <section class="log" id="log" hidden>
+          <details id="logBox"><summary id="logSummary">How it got here</summary><div class="log-body" id="logBody"><div class="board" id="finalBoard"></div></div></details>
+        </section>
       </aside>
     </section>
 
-    <dialog class="history" id="history" aria-labelledby="historyTitle">
-      <header><h2 id="historyTitle">Past reviews</h2><button class="quiet" type="button" data-close>Close</button></header>
-      <ol id="historyList"></ol>
-    </dialog>
+    <section class="reviews" id="reviews" aria-labelledby="reviewsTitle" hidden>
+      <h1 id="reviewsTitle">Past reviews</h1>
+      <ol class="cards" id="cards"></ol>
+    </section>
+
+    <dialog class="lightbox" id="lightbox" aria-label="Frame"><img id="lightboxImg" alt="" /><p id="lightboxCap"></p></dialog>
   </main>
 
   <script src="env.js"></script>
   <script src="gemini.js"></script>
   <script src="core.js"></script>
   <script src="video.js"></script>
+  <script src="learn.js"></script>
+  <script src="chess-reader.js"></script>
   <script src="agent.js"></script>
+  <script src="reviews.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

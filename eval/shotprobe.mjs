@@ -23,6 +23,7 @@ const LABELS = [
   { file: 'yt-vyse-ascent.mov', from: 397.6, to: 397.95, shots: 3, bursts: [3], note: '24 to 21, a short stretch' },
 ];
 
+const learnedPath = (video) => path.join(path.dirname(video), `${path.basename(video, path.extname(video))}.learned.json`);
 const PORT = 5194;
 const dev = spawn(process.execPath, [path.join(root, 'scripts/dev.mjs')], { env: { ...process.env, PORT: String(PORT) }, stdio: 'ignore' });
 for (let i = 0; i < 50; i++) { if (await fetch(`http://localhost:${PORT}/`).then((r) => r.ok, () => false)) break; await new Promise((r) => setTimeout(r, 100)); }
@@ -34,10 +35,12 @@ try {
     await page.goto(`http://localhost:${PORT}/`);
     await page.evaluate(() => { const i = document.createElement('input'); i.type = 'file'; i.id = 'f'; i.hidden = true; document.body.append(i); });
     await page.setInputFiles('#f', path.join(here, 'recordings', file));
+    // PROFILE=learned: the profile eval/learncheck.mjs learned from this recording, instead of the hand-made answer key
+    if (process.env.PROFILE === 'learned') await page.evaluate((p) => { window.__profile = p; }, JSON.parse(fs.readFileSync(learnedPath(path.join(here, 'recordings', file)), 'utf8')));
     const labels = LABELS.filter((l) => l.file === file);
     const got = await page.evaluate(async (labels) => {
       const A = window.ThirdeyeAgent, V = window.ThirdeyeVideo;
-      const profile = await (await fetch('games/valorant.json')).json();
+      const profile = window.__profile || (await (await fetch('games/valorant.json')).json());
       const video = await V.open(document.getElementById('f').files[0]);
       const out = [];
       for (const l of labels) out.push(await A.shotsAround({ video, profile, events: [], t: l.from, before: 0, after: l.to - l.from }));

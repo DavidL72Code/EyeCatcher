@@ -1,0 +1,244 @@
+{
+  "started": "2026-10-18T20:33:31.619Z",
+  "budget": {
+    "looks": 24,
+    "turns": 12
+  },
+  "maxCallsPerRecording": 80,
+  "recordings": [
+    {
+      "file": "recordings/Screen Recording 2026-10-18 at 4.22.30 PM.mov",
+      "plantedHabit": null,
+      "systems": {
+        "agent": {
+          "found": false,
+          "habitId": null,
+          "habit": "",
+          "why": "The review ran out of turns before it could settle on a habit.",
+          "stopped": true,
+          "moves": [],
+          "evidence": [],
+          "contrast": [],
+          "aim": {
+            "n": 2,
+            "heads": 1.03,
+            "dyDeg": 2.55,
+            "atHead": 0,
+            "bands": {
+              "chest": 2
+            }
+          },
+          "measures": [
+            {
+              "t": 359,
+              "heads": 1.15,
+              "band": "chest",
+              "headPx": 57.3,
+              "box": [
+                354,
+                443,
+                442,
+                509
+              ]
+            },
+            {
+              "t": 356.5,
+              "heads": 0.91,
+              "band": "chest",
+              "headPx": 33.9,
+              "box": [
+                426,
+                579,
+                478,
+                615
+              ]
+            }
+          ],
+          "looks": 22,
+          "turns": 12,
+          "skipped": 0,
+          "stats": {
+            "turns": 12,
+            "looks": 22,
+            "scanTokens": 24354,
+            "scanCalls": 1,
+            "aimCalls": 4,
+            "hudCalls": 0,
+            "skipped": 0,
+            "refused": 2,
+            "asks": 0,
+            "calls": 17
+          },
+          "events": [
+            {
+              "t": 9,
+              "kind": "kill"
+            },
+            {
+              "t": 20,
+              "kind": "kill"
+            },
+            {
+              "t": 47,
+              "kind": "kill"
+            },
+            {
+              "t": 52,
+              "kind": "kill"
+            },
+            {
+              "t": 55,
+              "kind": "kill"
+            },
+            {
+              "t": 142,
+              "kind": "other"
+            },
+            {
+              "t": 257,
+              "kind": "kill"
+            },
+            {
+              "t": 273,
+              "kind": "kill"
+            },
+            {
+              "t": 275,
+              "kind": "kill"
+            },
+            {
+              "t": 359,
+              "kind": "kill"
+            },
+            {
+              "t": 365,
+              "kind": "kill"
+            }
+          ],
+          "drill": "",
+          "recheck": "",
+          "theories": "T1 testing: Player has low crosshair placement while moving and turning corners.",
+          "asks": [],
+          "rejected": [
+            [
+              "Crosshair height can be measured, so back this with at least 3 measure_aim readings where an enemy was in view (you have 1). If the fights don't give 3, drop the theory and name a habit the evidence shows, or finish with found false."
+            ],
+            [
+              "Crosshair height can be measured, so back this with at least 3 measure_aim readings where an enemy was in view (you have 2). If the fights don't give 3, drop the theory and name a habit the evidence shows, or finish with found false."
+            ],
+            [
+              "Crosshair height can be measured, so back this with at least 3 measure_aim readings where an enemy was in view (you have 2). If the fights don't give 3, drop the theory and name a habit the evidence shows, or finish with found false."
+            ]
+          ],
+          "steps": [
+            {
+              "name": "scan",
+              "args": "{\"why\":\"Find all fights, eliminations, and round/ring events across the match.\",\"to\":\"6:09\",\"from\":\"0:00\"}"
+            },
+            {
+              "name": "frames",
+              "args": "{\"region\":\"aim\",\"more\":[\"0:47\",\"5:59\"],\"why\":\"Check crosshair placement during fights and movement.\",\"at\":\"0:20\",\"notes\":[{\"theory\":\"Player has low crosshair pl"
+            },
+            {
+              "name": "measure_aim",
+              "args": "{\"more\":[\"0:47.0\",\"5:59.0\"],\"at\":\"0:20.0\",\"why\":\"Measure crosshair height relative to enemy head at the start of engagements.\",\"notes\":[{\"theory\":\"Player has lo"
+            },
+            {
+              "name": "frames",
+              "args": "{\"more\":[\"0:45\",\"5:56\"],\"region\":\"full\",\"why\":\"Inspect crosshair placement just before engagement starts at three different fight moments.\",\"notes\":[{\"status\":\""
+            },
+            {
+              "name": "finish",
+              "args": "{\"evidence\":[{\"what\":\"Crosshairs are pointed down toward the floor/chest level while moving around corners before an engagement\",\"t\":\"0:18\"},{\"what\":\"Crosshairs"
+            },
+            {
+              "name": "measure_aim",
+              "args": "{\"more\":[\"0:45.5\",\"5:56.5\"],\"why\":\"Measure crosshair height just before engagements at three moments to satisfy measurement requirements for crosshair placement"
+            },
+            {
+              "name": "frames",
+              "args": "{\"notes\":[{\"status\":\"supported\",\"id\":\"T1\",\"theory\":\"Player has low crosshair placement when moving and entering fights.\"}],\"region\":\"full\",\"at\":\"0:18.5\",\"more\":"
+            },
+            {
+              "name": "finish",
+              "args": "{\"habit_id\":\"crosshair_placement\",\"habit\":\"Low Crosshair Placement\",\"progress\":\"same\",\"recheck\":\"Check crosshair height relative to expected enemy head level wh"
+            },
+            {
+              "name": "measure_aim",
+              "args": "{\"at\":\"0:09.0\",\"notes\":[{\"theory\":\"Player has low crosshair placement when moving and entering fights.\",\"status\":\"supported\",\"id\":\"T1\"}],\"why\":\"Measure aim at t"
+            },
+            {
+              "name": "frames",
+              "args": "{\"more\":[\"4:16.5\",\"4:32.5\"],\"region\":\"full\",\"why\":\"Look at frames around the newly measured moments to confirm crosshair placement.\",\"notes\":[{\"status\":\"support"
+            },
+            {
+              "name": "finish",
+              "args": "{\"habit\":\"Low Crosshair Placement\",\"progress\":\"same\",\"notes\":[{\"id\":\"T1\",\"theory\":\"Player has low crosshair placement when moving and entering fights.\",\"status\""
+            },
+            {
+              "name": "measure_aim",
+              "args": "{\"at\":\"5:58.0\",\"notes\":[{\"id\":\"T1\",\"status\":\"supported\",\"theory\":\"Player has low crosshair placement when moving and entering fights.\"}],\"why\":\"Get a third succ"
+            }
+          ],
+          "seconds": 184.1,
+          "usage": {
+            "calls": 17,
+            "polls": 0,
+            "files": 0,
+            "rateLimited": 0,
+            "failed": 0,
+            "blocked": 0,
+            "models": {
+              "gemini-3.5-flash-lite": 17
+            }
+          },
+          "score": {
+            "verdict": "clean",
+            "falsePositive": false,
+            "counted": true
+          }
+        }
+      },
+      "setup": {
+        "game": "Apex Legends",
+        "genre": "shooter",
+        "learned": "fresh",
+        "learnSeconds": 12.9,
+        "killfeed": "no team colors near \"white\" and \"red\"",
+        "duration": 369.6,
+        "size": "2170x1162",
+        "proxyMb": 11.3,
+        "proxySeconds": 26.8,
+        "uploadSeconds": 15.8,
+        "usage": {
+          "calls": 1,
+          "polls": 0,
+          "files": 5,
+          "rateLimited": 0,
+          "failed": 0,
+          "blocked": 0,
+          "models": {
+            "gemini-3.5-flash-lite": 1
+          }
+        }
+      }
+    }
+  ],
+  "finished": "2026-10-18T20:37:34.989Z",
+  "summary": {
+    "agent": {
+      "plantedFound": "0/0",
+      "falsePositives": "0/1",
+      "noResult": 0,
+      "calls": 17,
+      "seconds": 184.1
+    }
+  },
+  "totals": {
+    "modelCalls": 17,
+    "uploadRequests": 5,
+    "models": {
+      "gemini-3.5-flash-lite": 18
+    }
+  }
+}

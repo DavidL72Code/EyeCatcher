@@ -176,11 +176,15 @@ test('history keeps the accepted habit and compares the next match to its baseli
   assert.equal(C.historyBrief(C.emptyHistory()), 'First review for this player.');
 });
 
-test('an aim habit has to agree with the aim the coach measured', () => {
+test('an aim habit has to agree with the aim the coach measured, by where good players aim in the game', () => {
   const atHead = [{ t: 10.2, heads: 0.1 }, { t: 40.5, heads: -0.2 }, { t: 70.3, heads: 0.3 }];
   const p = C.checkFinish(good, { ledger: looked(), duration: 120, habits: HABITS, measures: atHead });
-  assert.ok(p.some((x) => /put the crosshair at head level \(median 0\.1 heads over 3 duels\)/.test(x)));
-  assert.ok(p.some((x) => /At 0:10 you measured the crosshair at head level \(0\.1 heads\)/.test(x)));
+  assert.ok(p.some((x) => /put the crosshair on the head, where good players in this game aim \(median 0\.1 heads below the head over 3 fights\)/.test(x)));
+  assert.ok(p.some((x) => /At 0:10 you measured the crosshair on the head \(0\.1 heads below the head\)/.test(x)));
+  // where good players aim at the body (Apex), two heads down is the chest: right, not low
+  const body = C.checkFinish(good, { ledger: looked(), duration: 120, habits: HABITS, measures: LOW, aimTarget: 'body' });
+  assert.ok(body.some((x) => /on the body, where good players in this game aim \(median 2\.1 heads below the head/.test(x)), 'chest aim is right in a body-aim game');
+  assert.deepEqual(C.checkFinish(good, { ledger: looked(), duration: 120, habits: HABITS, measures: LOW.map((m) => ({ ...m, heads: m.heads + 2.5 })), aimTarget: 'body' }), [], 'below the waist is low even there');
   assert.deepEqual(C.checkFinish(good, { ledger: looked(), duration: 120, habits: HABITS, measures: LOW }), []);
   const eyeballed = C.checkFinish(good, { ledger: looked(), duration: 120, habits: HABITS, measures: [{ t: 10.2, heads: 2.1 }] });
   assert.ok(eyeballed.some((x) => /at least 3 measure_aim readings where an enemy was in view \(you have 1\)/.test(x)), 'a measurable habit needs measurements');
@@ -412,4 +416,142 @@ test('finish sent back on the numbers says to drop the theory or find none', () 
   const low = C.checkFinish(good, { ledger: looked(), duration: 120, habits: HABITS, measures: [{ t: 10.2, heads: 0.1 }, { t: 40.5, heads: 0.2 }, { t: 70.3, heads: 0 }] });
   assert.ok(low.some((x) => /so this isn't the habit\. Drop the theory .* or finish with found false/.test(x)));
   assert.ok(!low.some((x) => /Show measurements where it was low/.test(x)), 'never invites hunting for low readings');
+});
+
+// ---------- learning a game (learn.js) ----------
+const L = createRequire(import.meta.url)('../learn.js');
+
+test("the learn call's boxes become padded screen regions, one per element", () => {
+  const r = L.mergeBoxes([
+    { name: 'kill_feed', frame: 1, box: [100, 700, 200, 980] }, { name: 'kill_feed', frame: 3, box: [110, 690, 210, 990] }, { name: 'kill_feed', frame: 5, box: [90, 710, 400, 970] },
+    { name: 'ammo', frame: 2, box: [930, 690, 960, 760] }, { name: 'nonsense', frame: 1, box: [0, 0, 10, 10] }, { name: 'minimap', frame: 1, box: [5, 5, 5, 300] },
+  ], 0);
+  assert.deepEqual(r.killfeed, [0.7, 0.1, 0.28, 0.11], 'the median of each edge, so one odd box doesn\'t move it');
+  assert.deepEqual(r.ammo, [0.69, 0.93, 0.07, 0.03]);
+  assert.equal(r.nonsense, undefined);
+  assert.equal(r.minimap, undefined, 'a box with no height is dropped');
+  const padded = L.mergeBoxes([{ name: 'ammo', frame: 1, box: [950, 980, 1000, 1000] }]);
+  assert.ok(padded.ammo[0] + padded.ammo[2] <= 1 && padded.ammo[1] + padded.ammo[3] <= 1, 'padding stays on screen');
+});
+
+test('the profile comes from the learn call, with only the checks code can do', () => {
+  const raw = {
+    game: 'Some Shooter', genre: 'shooter', first_person: true, crosshair_center: true, fov_h: 103, team_game: true, rounds: false, respawn_seconds: 3,
+    elements: [{ name: 'kill_feed', frame: 1, box: [60, 700, 320, 990] }, { name: 'ammo', frame: 1, box: [930, 690, 960, 760] }],
+    ally_color: 'teal', enemy_color: 'red', ally_rgb: [80, 200, 170], enemy_rgb: [225, 75, 85], cues: ['A skull shows on a kill.'], key_moments: 'kills and deaths',
+    habits: [
+      { id: 'Crosshair Low', name: 'Crosshair below head level', signs: 's', drill: 'd', checked_by: 'aim' },
+      { id: 'spray', name: 'Spraying', signs: 's', drill: 'd', checked_by: 'shots' },
+      { id: 'spray', name: 'Again', signs: 's', drill: 'd', checked_by: 'none' },
+      { id: 'peek', name: 'Wide peeks', signs: 's', drill: 'd', checked_by: 'telepathy' },
+    ],
+  };
+  const p = L.toProfile(raw, undefined, { aimTarget: 'head', mistakes: raw.habits, priorities: ['aim'] });
+  assert.equal(p.name, 'Some Shooter');
+  assert.deepEqual(p.regions.aim, L.AIM, 'a first-person view with a center crosshair gets the aim area');
+  assert.ok(p.regions.killfeed && p.regions.ammo);
+  assert.deepEqual(p.habits.map((h) => [h.id, !!h.measuredBy, !!h.needsShots]), [['crosshair_low', true, false], ['spray', false, true], ['peek', false, false]], 'ids are cleaned and deduped, and an unknown check is ignored');
+  assert.deepEqual(p.deadFor, { rounds: 30, respawn: 3 });
+  assert.equal(p.fovH, 103);
+  assert.deepEqual(p.colorHues, { ally: 165, enemy: 356 });
+  const chess = L.toProfile({ game: 'Chess', genre: 'chess', first_person: false, crosshair_center: false, elements: [{ name: 'board', frame: 1, box: [100, 300, 900, 700] }], habits: [{ id: 'x', name: 'Blunders', signs: 's', drill: 'd', checked_by: 'aim' }] });
+  assert.equal(chess.regions.aim, undefined, 'no aim area outside first person');
+  assert.equal(chess.habits[0].measuredBy, undefined, "aim can't check a habit when there's no aim area");
+  assert.equal(chess.fovH, null);
+  const tracking = L.toProfile(raw, undefined, { aimTarget: 'tracking', mistakes: raw.habits });
+  assert.equal(tracking.habits[0].measuredBy, undefined, "where staying on target matters more than height, aim height can't check a habit");
+});
+
+test('research on what matters is cleaned, and says when it came without the web', () => {
+  const r = L.cleanResearch({ rewards: 'Ranked points for placement and kills', priorities: ['Positioning', 'Picking fights', '', 'Third parties'], engagements: 'Take fights you can finish before a third party arrives.', aim_target: 'body', mistakes: [{ name: 'Taking open fights', signs: 'Shooting from open ground', cost: 'Third-partied', drill: 'Fight from cover', checked_by: 'none' }, { name: 'Spraying', signs: 's', cost: 'c', drill: 'd', checked_by: 'telepathy' }] }, ['aim', 'shots'], { sources: [{ title: 'ea.com', uri: 'https://ea.com/x' }], researched: true });
+  assert.deepEqual(r.priorities, ['Positioning', 'Picking fights', 'Third parties']);
+  assert.equal(r.aimTarget, 'body');
+  assert.equal(r.mistakes[1].checked_by, 'none', 'an unknown check is dropped');
+  assert.equal(r.researched, true);
+  assert.equal(L.cleanResearch({ priorities: [], mistakes: [] }, ['aim']), null, 'nothing usable');
+});
+
+test('without web search, research falls back to the model and says so', async () => {
+  globalThis.Gemini = {
+    grounded: async () => { throw Object.assign(new Error('not available'), { status: 404 }); },
+    generate: async () => ({}),
+    textOf: () => JSON.stringify({ rewards: 'Rounds', priorities: ['Trading'], engagements: '', aim_target: 'head', mistakes: [{ name: 'No trades', signs: 's', cost: 'c', drill: 'd', checked_by: 'none' }] }),
+    parseJSON: JSON.parse,
+  };
+  const r = await L.researchGame({ name: 'Test Game ' + Date.now(), genre: 'shooter' });
+  assert.equal(r.researched, false);
+  assert.deepEqual(r.sources, []);
+  assert.equal(r.mistakes[0].name, 'No trades');
+  delete globalThis.Gemini;
+});
+
+test('fights come from firing and from what the low-detail pass saw, with how each ended', () => {
+  assert.deepEqual(C.groupFights([10, 11, 15, 40, 41.5]), [{ from: 8.5, to: 16.5, bursts: 3 }, { from: 38.5, to: 43, bursts: 2 }]);
+  const events = [{ t: 16, kind: 'kill' }, { t: 90, kind: 'death' }];
+  const firing = C.groupFights([10, 11, 15, 40, 41.5, 70, 71]);
+  const fights = C.mergeFights(firing, [{ from: 39, to: 45, outcome: 'none', text: 'traded shots across the ridge' }, { from: 86, to: 91, text: '' }], events);
+  assert.deepEqual(fights.map((f) => [f.from, f.to, f.outcome, f.seenBy]), [[8.5, 17, 'won', 'firing+kill'], [38.5, 45, 'none', 'firing+seen'], [86, 91, 'lost', 'death+seen']]);
+  assert.ok(!fights.some((f) => f.from > 60 && f.from < 80), 'firing with nothing else (a reload, a swap) is no fight');
+  assert.match(fights[1].text, /no one fell; fired in 2 bursts; traded shots across the ridge/);
+  assert.deepEqual(C.mergeFights(firing, [], [], C.groupFights([69.5, 72])), [], 'counter changes alone, ammo or damage, are no fight');
+  const hit = C.mergeFights([], [{ from: 68, to: 70, text: '' }], [], C.groupFights([69.5, 72]));
+  assert.deepEqual(hit.map((f) => [f.from, f.to, f.hits, f.seenBy]), [[68, 73.5, 2, 'hits+seen']], 'landed hits extend a fight the pass saw');
+  assert.match(C.eventsBrief([fights[0]]), /^0:08\.5–0:17 engagement: won; fired in 3 bursts$/);
+});
+
+test('team colors are the hue peaks nearest the colors the learn call reported', () => {
+  const bins = new Array(36).fill(0);
+  bins[1] = 300; bins[2] = 900; bins[3] = 400; // an orange wall, the biggest thing on screen
+  bins[16] = 500; bins[35] = 350; bins[0] = 300; // teal and red rows
+  assert.deepEqual(L.teamHues(bins, {}, { ally: 160, enemy: 355 }), { ally: [140, 190], enemy: [330, 20] });
+  assert.equal(L.teamHues(bins, { ally: 'purple', enemy: 'red' }), null, 'no peak near purple: the feed is not read');
+  assert.equal(L.rgbHue([80, 200, 170]), 165);
+  assert.equal(L.rgbHue([128, 128, 130]), null, 'gray has no hue');
+  assert.equal(L.nameHue('Teal green'), 170);
+});
+
+test('kill-feed rows are the bands that share an edge and a height', () => {
+  const row = (y0, x0, x1, h = 20) => ({ y0, y1: y0 + h - 1, x0, x1, cols: [] });
+  const frames = [
+    [row(10, 100, 380), row(34, 160, 380), row(200, 5, 300)], // two rows, and scenery
+    [row(10, 120, 381), row(34, 90, 379), row(58, 140, 380)],
+    [row(10, 110, 380), row(150, 20, 395, 60)], // a tall block of scenery
+  ];
+  const r = L.alignedRows(frames, (b) => b.y0 < 70, 400);
+  assert.equal(r.height, 20);
+  assert.equal(r.pitch, 24);
+  assert.equal(r.rows.flat().length, 6, 'the scenery bands neither end on the shared edge nor have a row\'s height');
+  assert.equal(r.top, 10);
+  assert.equal(L.alignedRows([[row(10, 100, 380)]], () => true, 400), null, 'too few rows to say');
+  assert.equal(L.portraitShare([[...Array(80).fill(0.9), ...Array(20).fill(0.1)]], 100), 0, 'rows ending in color have no portrait');
+});
+
+test("a chess habit cites the player's own moves, each one the engine calls a mistake", () => {
+  const habits = [{ id: 'time_blunders', name: 'Blunders under time pressure', measuredBy: 'engine' }];
+  const events = [{ t: 10, kind: 'move', san: 'Nf3', loss: 20, grade: null }, { t: 40.5, kind: 'move', san: 'Qxb7', loss: 480, grade: 'blunder' }, { t: 70, kind: 'move', san: 'Bxa6', loss: 140, grade: 'mistake' }, { t: 72, kind: 'opponent_move', san: 'Qxa6', loss: 0, grade: null }];
+  const args = { ...good, habit_id: 'time_blunders', habit: 'Blunders under time pressure', evidence: [{ t: '0:10', what: 'a' }, { t: '0:40.5', what: 'b' }, { t: '1:10', what: 'c' }] };
+  const problems = C.checkFinish(args, { ledger: looked(), duration: 120, habits, events });
+  assert.ok(problems.some((x) => /At 0:10 the engine scores Nf3 as fine \(it gave away 20 centipawns\)/.test(x)));
+  assert.equal(problems.filter((x) => /engine/.test(x)).length, 1, 'the blunder and the mistake stand');
+  const nothing = C.checkFinish({ ...args, evidence: [{ t: '1:11', what: 'c' }, ...args.evidence.slice(1)] }, { ledger: C.recordLook(looked(), { from: 110, to: 112, kind: 'frames' }), duration: 120, habits, events: events.filter((e) => e.t !== 70) });
+  assert.ok(nothing.some((x) => /There's no move of theirs at 1:11/.test(x)));
+});
+
+test('a habit being worked on applies only to the game it came from', () => {
+  let h = C.addMatch(C.emptyHistory(), { id: 'm1', game: 'Valorant', habit: 'Crosshair low' });
+  h = C.acceptHabit(h, { id: 'm1', game: 'Valorant', habitId: 'crosshair_low', habit: 'Crosshair low', date: '2026-10-18' });
+  h = C.addMatch(h, { id: 'm2', game: 'Chess', habit: 'Blunders' });
+  assert.equal(C.historyFor(h, 'valorant').habit.id, 'crosshair_low');
+  assert.equal(C.historyFor(h, 'Chess').habit, null, 'a chess review is not told about a shooter habit');
+  assert.deepEqual(C.historyFor(h, 'Chess').matches.map((m) => m.id), ['m2']);
+});
+
+test('send-back reasons group by kind, whatever moment they name', () => {
+  const twice = C.checkFinish({ ...good, habit_id: 'crosshair_low' }, { ledger: looked(), duration: 120, habits: HABITS, measures: LOW.slice(0, 2) });
+  const thrice = C.checkFinish({ ...good, habit_id: 'crosshair_low' }, { ledger: looked(), duration: 120, habits: HABITS, measures: LOW.slice(0, 1) });
+  assert.equal(C.problemKind(twice.find((x) => /measure_aim/.test(x))), 'aim_count');
+  assert.equal(C.problemKind(thrice.find((x) => /measure_aim/.test(x))), 'aim_count', 'a different count is the same reason');
+  assert.equal(C.problemKind("You haven't looked closely at 1:30. Look with frames or measure_aim, or cite a moment you did look at."), 'unseen');
+  assert.equal(C.problemKind('At 0:34 the engine scores c3 as fine (it gave away 20 centipawns)'), 'engine');
+  assert.equal(C.problemKind('Name the habit (habit).'), 'other');
 });
