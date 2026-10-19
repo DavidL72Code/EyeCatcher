@@ -12,6 +12,49 @@ npm run dev
 
 Open http://localhost:5177/. Put a free Gemini key in `.env` as `GEMINI_API_KEY=...`; the dev server passes it only to pages opened on this machine. Without one, the start screen asks for a key and keeps it in the browser.
 
+### The backend
+
+```bash
+npm run backend
+```
+
+The desktop app doesn't hold a Gemini key: it sends its Gemini requests to Thirdeye's backend (`server/index.mjs`), which adds the key on its side. The backend reads `GEMINI_API_KEY` from its environment, or from `.env` when it runs on your machine, at http://127.0.0.1:8787/. `desktop/config.json` says where the app finds it; set `THIRDEYE_BACKEND` to point one launch elsewhere, or to `direct` to use the key in `.env` instead.
+
+To put it online, push this repo to GitHub, then in Render choose New > Blueprint and pick the repo (`render.yaml`). Set `GEMINI_API_KEY` when Render asks, and put the service's address in `desktop/config.json`. Render's free plan sleeps after 15 minutes idle and takes about a minute to wake, so the app pings `/health` when it opens. A paid plan stays awake.
+
+Because its address is public, the backend is locked down:
+- **The key stays on the server.** It lives only in the server's environment. The app never sees it, and neither does Gemini's upload session address, which stays on the server.
+- **Only Thirdeye's requests go through.** That means generateContent on the app's own models, with only the request fields and tools the app sends, plus the scan-copy upload and status checks on uploads made through it. Everything else gets a 404 before it reaches Gemini.
+- **Other websites are refused.** A request from any page other than the app gets a 403, so another site can't spend the key through its visitors' browsers.
+- **Limits:**
+  - 30 requests a minute and 200 a day per address, which is about 5 reviews;
+  - 6 uploads a day per address;
+  - 2,000 requests and 100 uploads a day for the whole server;
+  - 12 MB per request, 256 MB per upload, and 16,384 tokens per reply, thinking included, so no single call can run up a big bill.
+  
+  Every limit is an environment variable. The limit replies look like Gemini's own, so the app waits out a short one and reports a used-up day plainly.
+- **Nothing is kept.** Requests and replies aren't stored or logged; the log has only each request's kind, status, and time. Uploads stream through without being held in memory.
+
+What it can't stop:
+- **Fake callers:** with no accounts, someone who copies the app's requests can still use the backend, within the per-address limits.
+- **Restarts reset counts:** the limits are counted in memory, so a restart, including Render waking from sleep, starts them over.
+- **Shared quota:** everyone shares the key's quota, so a free key's daily allowance covers far fewer people than a paid one.
+
+What protects the page itself, in the browser and the desktop app:
+- **The key goes only to Thirdeye's own page.** With the key in `.env` and no backend, any page open in the browser could otherwise load `env.js` as a script and read the key. The server now sends the key only when the browser marks the request same-origin (`Sec-Fetch-Site`), which a page can't fake. Every response also carries `Cross-Origin-Resource-Policy: same-origin`.
+- **All code ships with the app.** Mediabunny, chess.js, and Stockfish live in `vendor/`, copied from the exact npm versions by `npm run vendor`, with their licenses and SHA-256 hashes in `vendor/manifest.json`. Nothing loads from a CDN.
+  - Stockfish is GPL-3.0. It ships unchanged, as its own program in a worker, with its license, and the manifest says where its source is.
+- **A Content Security Policy** lets the page run only its own scripts and talk only to itself and Gemini, or the backend. A script that got in couldn't load more or send recordings or reviews anywhere else.
+- **Only `https` links:** research links that aren't `https` become plain text.
+
+### As a desktop app
+
+```bash
+npm run desktop
+```
+
+The same page in an Electron window (`desktop/`). It runs the dev server inside itself on port 5170, so its saved reviews stay put between launches, and set `THIRDEYE_PORT` if that port is taken. What it adds is memory for where recordings are on disk, the way Medal-style clip apps work: a past review streams the original file, with no copy and no "Allow" prompt, and offers to show it in Finder. If a recording moved, the review asks for it once and remembers the new place. The first time you add a recording, it asks whether to keep your recordings in a Thirdeye folder (Movies › Thirdeye). With a yes, each recording is copied there. On the same disk the copy is instant and takes no extra space. Your original stays where it is, and the start screen gets a button that opens the folder. The page can only name recordings the player dropped or picked; the app refuses to stream any other file. Its reviews are separate from the browser version's. There's no packaged `.app` yet.
+
 `npm run fixture` makes a 2.5-minute synthetic shooter match and `npm run fixture:chess` two synthetic chess games, one with blunders planted under time pressure and one clean (`tests/fixtures/`, not committed). Once the shooter match exists, the start screen offers it as a test match.
 
 ## How it works
@@ -95,13 +138,16 @@ It's a team game, so the coach needs every kill, not just the player's own. The 
 - **Decide after two send-backs.** If `finish` is sent back twice for the same reason on the same habit (moments not looked at, too few moments, aim at the target height…), the coach is told to decide: its next call must be `finish`, and other tools are refused. If that answer still fails the checks, the review ends with no habit named, and the report says code made that call. It was added after a review of the Apex recording tried "low crosshair placement" three times.
 - **Post-game only.** Thirdeye never reads game memory and never runs during a match.
 
-The player decides which habit to work on ("Work on this" or "Not this"). The short history the coach reads lives in `localStorage`. Each review's full log (every step the coach drew, with the frames it looked at), its report, and a handle to the recording live in IndexedDB (`reviews.js`), so a past review reopens as the same screen: the recording pinned on the left, the report and the numbered log beside it. The handle comes from dropping the file or the browser's file picker; with the plain file input, the past review asks for the recording again and checks it's the same file by size. Everything stays on the device.
+The player decides which habit to work on ("Work on this" or "Not this"). The short history the coach reads lives in `localStorage`. Each review's full log (every step the coach drew, with the frames it looked at), its report, and a handle to the recording live in IndexedDB (`reviews.js`), so a past review reopens as the same screen: the recording pinned on the left, the report and the numbered log beside it. The Past reviews page puts each game on its own shelf, with the game played most recently first. Chips at the top jump to each shelf, and a shelf says which habit you're working on in that game. The recording itself is copied into the browser's private storage (OPFS) for the 3 most recent recordings, so those reviews play without asking. For older ones it uses the file handle (from a drop or the browser's file picker), and otherwise asks for the file and checks it's the same one by size. Everything stays on the device.
+
+Each key moment in the report is a full frame marked up like a telestrator (`report.js`): the problem circled in red, the fix in yellow, with an arrow between them. A moment the coach measured is marked in code from the measurement (the crosshair, and the enemy head it was measured on), at no model cost. Other moments are marked by one model call over all their frames. Each moment also says how it was found (the log step that measured or saw it, the ammo counter, the match record line) and what to do instead. Watching a moment plays up to it, then holds on that frame with the same marks over the video.
 
 ## Files
 
 ```
 index.html  styles.css  app.js   UI: start screen, review timeline, theory board, verdict, past reviews
-reviews.js                       past reviews in IndexedDB: log, frames, report, recording handle
+reviews.js                       past reviews in IndexedDB: log, frames, report, recording handle; recording copies in OPFS
+report.js                        key moments marked up: problem and fix on each frame
 agent.js                         the coach: its brief, six tools, and the finish checks
 video.js                         decode frames, make the scan copy, upload to the Files API
 core.js                          pure logic: times, aim geometry, budget, evidence checks, theories, history
@@ -109,7 +155,12 @@ learn.js                         learns a game from its recording: the learn cal
 chess-reader.js                  reads chess moves off the board in code, and scores them with Stockfish
 games/valorant.json              the answer key for learning Valorant (never loaded by the app)
 gemini.js                        copied from hackathon/shared/gemini.js (REST client and agent loop)
-scripts/dev.mjs                  static dev server; makes env.js from .env
+scripts/dev.mjs                  static dev server; makes env.js from .env, sets the page's security policy; the desktop app runs it too
+scripts/vendor.mjs               copies the pinned libraries into vendor/ with their licenses and hashes
+vendor/                          Mediabunny, chess.js, Stockfish: the only third-party code the page runs
+desktop/                         the Electron app: main.mjs (window, server, remembered recordings, the Thirdeye folder), preload.cjs (the page's bridge), config.json (where the backend is)
+server/index.mjs                 the backend: holds the Gemini key and forwards only Thirdeye's requests, rate-limited
+render.yaml                      deploys the backend on Render
 tests/                           unit tests, the browser test, the live check, and the fixture maker
 ```
 
@@ -119,8 +170,9 @@ There are no game profiles to write. `games/valorant.json` was hand-made for the
 
 | Command | What it runs | Result (Oct 18, 2026) |
 |---|---|---|
-| `npm run test:unit` | 54 unit tests: aim geometry and aim targets, the finish checks and the decide rule, the theory board, events, the kill-feed reader, learning and research (with a failed search falling back), grouping shots into fights, history, chess reading and scoring, and how the agent loop handles pictures | 54 pass |
-| `npm run test:e2e` | 72 checks in Chrome on the synthetic shooter match and chess game, with Gemini and the Files API mocked: learning and research, upload, scan and fights, timeline, questions, the finish checks, the verdict, past reviews, the re-check against a baseline, and a phone-width layout | 72 pass |
+| `npm run test:unit` | 66 unit tests. The backend's: only Thirdeye's requests pass, the key never comes back out, other sites are refused, per-address limits ignore a forged `X-Forwarded-For`, uploads go through a session that stays on the server, and reply length and server-wide uploads are capped. The rest: aim geometry and aim targets, the finish checks and the decide rule, the theory board, events, the kill-feed reader, learning and research (with a failed search falling back), grouping shots into fights, history, chess reading and scoring, and how the agent loop handles pictures | 66 pass |
+| `npm run test:e2e` | 85 checks in Chrome, under the app's own server and its security policy on the synthetic shooter match and chess game, with Gemini and the Files API mocked: learning and research, upload, scan and fights, timeline, questions, the finish checks, the verdict and its marked-up key moments, past reviews drawn from their saved logs with the recording reattached, the re-check against a baseline, a phone-width layout, the key going to no other site, and no code loading from outside the app | 85 pass |
+| `npm run test:desktop` | 20 checks in Electron. Gemini goes only through the backend, with no key in the page, and the page's policy lets it reach nothing else. With a yes, recordings are copied to the Thirdeye folder with the same date, never twice, and the original stays. Also: a picked recording is remembered by its path and streamed in parts, files the player never gave it are refused, a past review streams its recording after a restart with nothing copied, and a recording that moved is asked for and remembered at its new place. No model calls | 20 pass |
 | `npm run test:live` | The real pipeline on the synthetic match, about 25 requests | Below |
 
 **Live check on the synthetic match** (one run, 720p at 30 fps, 150 s):

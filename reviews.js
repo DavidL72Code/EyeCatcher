@@ -51,5 +51,39 @@
     }
   }
 
-  root.ThirdeyeReviews = { save, get, thumbs, keep };
+  // ---------- the recordings themselves ----------
+  // A copy of each recording goes into the browser's private storage, so a past review plays without asking for the
+  // file. Only the most recent few are kept: recordings run to gigabytes.
+  const KEEP_RECORDINGS = 3;
+  const recordingKey = (v) => `${v.size}-${v.lastModified}`;
+  const folder = async () => (await navigator.storage.getDirectory()).getDirectoryHandle('recordings', { create: true });
+
+  /** The saved copy of a recording ({ size, lastModified }), or null. A copy cut short is ignored. */
+  async function recording(v) {
+    try {
+      const file = await (await (await folder()).getFileHandle(recordingKey(v))).getFile();
+      return file.size === v.size ? file : null;
+    } catch { return null; }
+  }
+
+  /** Copies a recording into storage unless it's there already or won't fit. Resolves true when it's kept. */
+  async function keepRecording(file) {
+    if (!navigator.storage?.getDirectory) return false;
+    if (await recording(file)) return true;
+    const { quota = 0, usage = 0 } = (await navigator.storage.estimate?.()) || {};
+    if (quota - usage < file.size * 1.2) return false;
+    navigator.storage.persist?.().catch(() => {});
+    const out = await (await (await folder()).getFileHandle(recordingKey(file), { create: true })).createWritable();
+    await file.stream().pipeTo(out);
+    return true;
+  }
+
+  /** Deletes saved recordings other than those of the given reviews' videos, newest first, past the first few. */
+  async function keepRecordings(videos) {
+    const want = new Set([...new Set(videos.filter(Boolean).map(recordingKey))].slice(0, KEEP_RECORDINGS));
+    const dir = await folder();
+    for await (const name of dir.keys()) if (!want.has(name)) await dir.removeEntry(name).catch(() => {});
+  }
+
+  root.ThirdeyeReviews = { save, get, thumbs, keep, recording, keepRecording, keepRecordings };
 })(window);

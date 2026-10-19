@@ -30,6 +30,12 @@ Millennium eye in raised gold. Big Shoulders Display for the verdict and big num
         <feComponentTransfer in="n" result="grain"><feFuncA type="linear" slope="0.35" intercept="0.72" /></feComponentTransfer>
         <feComposite in="d" in2="grain" operator="in" />
       </filter>
+      <!-- the telestrator pen on frames: a slow wobble, and a shadow so marks read on bright scenes -->
+      <filter id="tele" x="-10%" y="-10%" width="120%" height="120%" color-interpolation-filters="sRGB">
+        <feTurbulence type="fractalNoise" baseFrequency="0.012" numOctaves="2" seed="4" result="n" />
+        <feDisplacementMap in="SourceGraphic" in2="n" scale="10" xChannelSelector="R" yChannelSelector="G" result="w" />
+        <feDropShadow in="w" dx="0" dy="3" stdDeviation="3" flood-color="#000" flood-opacity="0.6" />
+      </filter>
       <!-- the eye of the Millennium items: lids that run out into side tabs, a solid iris, and the stems and spiral under it.
            Flat in the pen color for small marks; raised gold for the brand mark. -->
       <mask id="pupil" maskUnits="userSpaceOnUse" x="0" y="0" width="64" height="64"><rect width="64" height="64" fill="#fff" /><circle cx="32" cy="26.2" r="2.7" fill="#000" /></mask>
@@ -94,7 +100,7 @@ Millennium eye in raised gold. Big Shoulders Display for the verdict and big num
 
       <div class="foot">
         <p>Post-game only. The sound, with any voice chat, never leaves this device.</p>
-        <button class="quiet" id="sampleBtn" type="button" hidden>Use the synthetic test match</button>
+        <span class="foot-actions"><button class="quiet" id="libraryBtn" type="button" hidden></button><button class="quiet" id="sampleBtn" type="button" hidden>Use the synthetic test match</button></span>
       </div>
     </section>
 
@@ -103,6 +109,7 @@ Millennium eye in raised gold. Big Shoulders Display for the verdict and big num
       <div class="stage" id="stage">
         <div class="player">
           <video id="video" playsinline controls preload="metadata"></video>
+          <div class="vmarks" id="vmarks" hidden></div>
           <div class="reattach" id="reattach" hidden></div>
         </div>
         <div class="timeline" id="timeline" role="slider" tabindex="0" aria-label="Match timeline" aria-valuemin="0" aria-valuemax="0" aria-valuenow="0">
@@ -134,7 +141,7 @@ Millennium eye in raised gold. Big Shoulders Display for the verdict and big num
 
     <section class="reviews" id="reviews" aria-labelledby="reviewsTitle" hidden>
       <h1 id="reviewsTitle">Past reviews</h1>
-      <ol class="cards" id="cards"></ol>
+      <div class="shelves" id="shelves"></div>
     </section>
 
     <dialog class="lightbox" id="lightbox" aria-label="Frame"><img id="lightboxImg" alt="" /><p id="lightboxCap"></p></dialog>
@@ -148,6 +155,7 @@ Millennium eye in raised gold. Big Shoulders Display for the verdict and big num
   <script src="chess-reader.js"></script>
   <script src="agent.js"></script>
   <script src="reviews.js"></script>
+  <script src="report.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

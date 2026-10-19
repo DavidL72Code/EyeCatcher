@@ -1,6 +1,8 @@
 /* Gemini REST client used by both apps.
  * Talks to the real Gemini Developer API from the browser with the user's own free key
  * (from Settings, stored only in this browser's localStorage, or from the app's .env via `npm run dev`). No SDK, no build step.
+ * Thirdeye's copy can also go through a backend that holds the key (THIRDEYE_BACKEND, server/index.mjs): then the page
+ * has no key at all.
  */
 (function (root) {
   const API = 'https://generativelanguage.googleapis.com/v1beta/models/';
@@ -26,7 +28,9 @@
   function setKey(k) { try { localStorage.setItem(KEY_STORE, (k || '').trim()); } catch {} }
   function getModel() { return storedModel() || ENV.GEMINI_MODEL || FALLBACK_MODELS[0]; }
   function setModel(m) { try { localStorage.setItem(MODEL_STORE, (m || '').trim()); } catch {} }
-  function hasKey() { return !!getKey(); }
+  // a backend that adds the key on its side (Thirdeye's server): requests go there, with no key from the page
+  function backend() { return String(api.backend || ENV.THIRDEYE_BACKEND || '').replace(/\/+$/, ''); }
+  function hasKey() { return !!backend() || !!getKey(); }
   function keySource() { if (api.preferEnv && ENV.GEMINI_API_KEY) return 'env'; return storedKey() ? 'settings' : ENV.GEMINI_API_KEY ? 'env' : ''; }
 
   class GeminiError extends Error {
@@ -49,9 +53,10 @@
     const stop = () => ctrl.abort(); signal?.addEventListener('abort', stop, { once: true });
     let res, text;
     try {
-      res = await fetch(API + encodeURIComponent(model) + ':generateContent', {
+      const via = backend();
+      res = await fetch((via ? `${via}/gemini/v1beta/models/` : API) + encodeURIComponent(model) + ':generateContent', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'x-goog-api-key': getKey() },
+        headers: via ? { 'Content-Type': 'application/json' } : { 'Content-Type': 'application/json', 'x-goog-api-key': getKey() },
         body: JSON.stringify(body),
         signal: ctrl.signal,
       });
@@ -59,7 +64,7 @@
     } catch (e) {
       if (e.name === 'AbortError' && !signal?.aborted) throw new GeminiError(`${model} took over ${Math.round(api.timeoutMs / 1000)} s to answer.`, 504);
       // a dropped connection or a failed DNS lookup has no status: retry it like a busy model
-      if (e.name === 'TypeError') throw Object.assign(new GeminiError(`Couldn't reach Gemini (${e.message}).`, 0), { network: true });
+      if (e.name === 'TypeError') throw Object.assign(new GeminiError(backend() ? "Couldn't reach Thirdeye's server. Check the connection, or try again in a minute while it wakes up." : `Couldn't reach Gemini (${e.message}).`, 0), { network: true });
       throw e;
     } finally { clearTimeout(timer); signal?.removeEventListener('abort', stop); }
     let json = null;
@@ -136,6 +141,9 @@
     }
     // every model failed: say what happened in plain words; the raw message stays on .details. A used-up quota or a
     // busy model explains the failure better than the last model in the list being retired.
+    // Thirdeye's backend speaks for itself: its own limits, or that it can't be reached
+    if (sawQuota && /Thirdeye/.test(JSON.stringify(sawQuota.details || ''))) throw new GeminiError(sawQuota.message, 429, sawQuota.details);
+    if (sawBusy?.network && backend()) throw new GeminiError(sawBusy.message, 0, sawBusy.details);
     if (sawQuota) throw new GeminiError(search ? 'Gemini\'s free web searches are used up for now (the daily limit is small). Try again in a few minutes, or tomorrow.' : 'Gemini\'s free limit is used up on every model. Try again in a few minutes, or tomorrow if it\'s the daily limit.', 429, sawQuota.details);
     if (sawBusy) throw new GeminiError('Gemini is busy right now. Try again in a minute.', sawBusy.status, sawBusy.details);
     throw lastErr;
@@ -350,6 +358,6 @@
   const PHONE = /(?<![\w+-])(?:\+\d{1,3}[\s.-]?\(?\d{1,4}\)?(?:[\s.-]?\d{2,4}){2,4}|\(?\d{3}\)?[\s.-]\d{3}[\s.-]\d{4})(?![\w-])/g;
   const redact = (text) => String(text ?? '').replace(/[\w.+-]+@[\w-]+\.[\w.-]+/g, '[email hidden]').replace(PHONE, '[number hidden]');
 
-  const api = root.Gemini = { preferEnv: false, SAFETY, untrusted, guardRequest, redact, timeoutMs: 60000, getKey, setKey, getModel, setModel, hasKey, storedKey, storedModel, keySource, generate, json, grounded, runAgent, parseJSON, textOf, fileToInline, fileToPart, loadImage, GeminiError, FALLBACK_MODELS, SEARCH_MODELS, isLite };
+  const api = root.Gemini = { preferEnv: false, backend: '', SAFETY, untrusted, guardRequest, redact, timeoutMs: 60000, getKey, setKey, getModel, setModel, hasKey, backendUrl: backend, storedKey, storedModel, keySource, generate, json, grounded, runAgent, parseJSON, textOf, fileToInline, fileToPart, loadImage, GeminiError, FALLBACK_MODELS, SEARCH_MODELS, isLite };
   if (typeof module !== 'undefined') module.exports = root.Gemini;
 })(typeof window !== 'undefined' ? window : globalThis);

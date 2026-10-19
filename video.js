@@ -3,7 +3,7 @@
  * at ever leave the device; the recording's audio, with any voice chat, never does.
  * Times here are seconds from the start of the recording. */
 (function (root) {
-  const MEDIABUNNY = 'https://cdn.jsdelivr.net/npm/mediabunny@1.61.0/dist/bundles/mediabunny.min.mjs';
+  const MEDIABUNNY = './vendor/mediabunny.min.mjs'; // mediabunny@1.61.0, shipped with the app (npm run vendor)
   const FILES = 'https://generativelanguage.googleapis.com/upload/v1beta/files';
   const API = 'https://generativelanguage.googleapis.com/v1beta/';
   let mb;
@@ -115,10 +115,12 @@
    * Returns { uri, mimeType, name }.
    */
   async function upload(blob, { name = 'thirdeye-scan', onProgress, signal } = {}) {
-    const key = root.Gemini.getKey();
-    if (!key) throw new Error('Add a Gemini API key first.');
-    const start = await send(FILES, {
-      headers: { 'x-goog-api-key': key, 'X-Goog-Upload-Protocol': 'resumable', 'X-Goog-Upload-Command': 'start', 'X-Goog-Upload-Header-Content-Length': String(blob.size), 'X-Goog-Upload-Header-Content-Type': blob.type, 'Content-Type': 'application/json' },
+    // through Thirdeye's backend when there is one: it adds the key, so none is sent from here
+    const via = root.Gemini.backendUrl(), key = via ? '' : root.Gemini.getKey();
+    if (!via && !key) throw new Error('Add a Gemini API key first.');
+    const auth = key ? { 'x-goog-api-key': key } : {};
+    const start = await send(via ? `${via}/gemini/upload/v1beta/files` : FILES, {
+      headers: { ...auth, 'X-Goog-Upload-Protocol': 'resumable', 'X-Goog-Upload-Command': 'start', 'X-Goog-Upload-Header-Content-Length': String(blob.size), 'X-Goog-Upload-Header-Content-Type': blob.type, 'Content-Type': 'application/json' },
       body: JSON.stringify({ file: { display_name: name } }), signal,
     });
     const target = start.getResponseHeader('x-goog-upload-url');
@@ -129,7 +131,7 @@
     for (let tries = 0; file.state === 'PROCESSING' && tries < 90; tries++) {
       await sleep(2000);
       if (signal?.aborted) throw stopped();
-      file = await (await fetch(API + file.name, { headers: { 'x-goog-api-key': key }, signal })).json();
+      file = await (await fetch((via ? `${via}/gemini/v1beta/` : API) + file.name, { headers: auth, signal })).json();
     }
     if (file.state !== 'ACTIVE') throw new Error(`Gemini couldn't process the scan copy (${file.state || 'no state'}).`);
     return { uri: file.uri, mimeType: file.mimeType, name: file.name };

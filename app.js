@@ -3,7 +3,9 @@
  * and puts its questions to the player. Everything a review draws is kept in its log, so a past review is the same
  * screen drawn again from that log, with the recording, frames, and report. */
 (function () {
-  const G = window.Gemini, C = window.ThirdeyeCore, V = window.ThirdeyeVideo, A = window.ThirdeyeAgent, L = window.ThirdeyeLearn, R = window.ThirdeyeReviews;
+  const G = window.Gemini, C = window.ThirdeyeCore, V = window.ThirdeyeVideo, A = window.ThirdeyeAgent, L = window.ThirdeyeLearn, R = window.ThirdeyeReviews, K = window.ThirdeyeReport;
+  // the desktop app (desktop/preload.cjs): it remembers where each recording is on disk, so nothing is copied
+  const D = window.thirdeyeDesktop || null;
   G.preferEnv = true;
   const STORE = 'thirdeye.v1', UPLOADS = 'thirdeye.uploads', NAME = 'thirdeye.player', LEARNED = 'thirdeye.learned';
   const BUDGET = { looks: 24, turns: 12 };
@@ -79,7 +81,9 @@
       $('working').innerHTML = `<svg aria-hidden="true"><use href="#eye" /></svg><p>Working on <b>${esc(h.name)}</b> since ${niceDate(h.since)}. Your next review checks it.</p><button class="quiet" type="button" id="dropHabit">Stop</button>`;
       $('dropHabit').onclick = () => { history = C.dropHabit(history); write(STORE, history); renderStart(); };
     }
-    $('historyBtn').hidden = !history.matches.length || (run && !run.done && !run.replay);
+    $('historyBtn').hidden = !!(run && !run.done && !run.replay);
+    // the desktop app's Thirdeye folder, once the player chose to keep recordings there
+    D?.library().then((where) => { $('libraryBtn').hidden = !where; $('libraryBtn').textContent = 'Recordings folder'; $('libraryBtn').title = where || ''; }, () => {});
     $('historyCount').textContent = history.matches.length || '';
   }
 
@@ -95,7 +99,7 @@
     }
   }
   const withPicker = (input, use) => input.addEventListener('click', (e) => {
-    if (!window.showOpenFilePicker || input.dataset.plain) return;
+    if (!window.showOpenFilePicker || D || input.dataset.plain) return;
     e.preventDefault();
     pickRecording(input).then((p) => p && use(p.file, p.handle));
   });
@@ -107,8 +111,8 @@
     el.addEventListener('drop', (e) => { e.preventDefault(); const handle = droppedHandle(e), f = e.dataTransfer?.files?.[0]; if (f) use(f, handle); });
   }
 
-  dropTarget($('drop'), (f, h) => start(f, h));
-  withPicker($('fileInput'), (f, h) => start(f, h));
+  dropTarget($('drop'), (f, handle) => start(f, { handle }));
+  withPicker($('fileInput'), (f, handle) => start(f, { handle }));
   $('fileInput').addEventListener('change', (e) => { const f = e.target.files[0]; e.target.value = ''; if (f) start(f); });
   $('keyBox').addEventListener('submit', (e) => { e.preventDefault(); G.setKey($('keyInput').value); $('keyInput').value = ''; renderStart(); });
   $('sampleBtn').addEventListener('click', async () => {
@@ -118,7 +122,8 @@
   fetch('tests/fixtures/match.mp4', { method: 'HEAD' }).then((r) => { $('sampleBtn').hidden = !r.ok; }, () => {});
 
   // ---------- a review ----------
-  async function start(file, handle = null) {
+  // place: where the recording is on disk, when that's known already (a past review's recording, reviewed again)
+  async function start(file, { handle = null, place = null } = {}) {
     if (!G.hasKey()) { show('start'); $('keyBox').hidden = false; $('keyInput').focus(); return; }
     if (location.hash) window.history.pushState(null, '', location.pathname + location.search);
     show('review');
@@ -127,6 +132,9 @@
     run = { id: uid(), file, handle: null, game: null, goal: $('goal').value.trim(), player, workingOn: null, abort: new AbortController(), looks: 0, turns: 0, calls: 0, beat: null, log: [] };
     const mine = run;
     Promise.resolve(handle).then((h) => { if (h?.kind === 'file') mine.handle = h; }, () => {});
+    mine.place = place ? Promise.resolve(place) : D ? D.remember(file).catch(() => null) : Promise.resolve(null);
+    // a recording the desktop app can find again by its path isn't copied
+    mine.kept = mine.place.then((p) => !p && R.keepRecording(file)).catch((e) => { console.warn("The recording couldn't be kept for past reviews.", e); return false; });
     resetReview();
     renderStart();
     setVideo(file);
@@ -201,7 +209,8 @@
     // what matters in this game, and where that came from
     const r = profile.research;
     if (r) {
-      const sources = (r.sources || []).map((x) => `<a href="${esc(x.uri)}" target="_blank" rel="noopener noreferrer">${esc(x.title)}</a>`).join(', ');
+      // only web links: a source address can't become a script
+      const sources = (r.sources || []).map((x) => (/^https:\/\//i.test(x.uri) ? `<a href="${esc(x.uri)}" target="_blank" rel="noopener noreferrer">${esc(x.title)}</a>` : esc(x.title))).join(', ');
       run.beat.querySelector('.beat-outs').insertAdjacentHTML('beforeend', `<div class="matters"><p class="beat-out"><b>What matters in ${esc(profile.name)}:</b> ${r.priorities.slice(0, 4).map(esc).join(' · ')}</p><p class="beat-out muted">${r.researched ? `From ${r.sources.length} source${r.sources.length === 1 ? '' : 's'}: ${sources}` : "From the model's own knowledge: web search wasn't available"}</p></div>`);
     }
   }
@@ -231,13 +240,15 @@
     $('review').classList.remove('done', 'bare');
     $('stage').hidden = false;
     $('eyeMark').hidden = true;
+    hideVideoMarks();
     stopStatus();
   }
 
-  function setVideo(file) {
-    if (vid.src) URL.revokeObjectURL(vid.src);
-    vid.src = URL.createObjectURL(file);
-    run.file = file;
+  function setVideo(file) { setVideoUrl(URL.createObjectURL(file)); run.file = file; }
+  function setVideoUrl(url) {
+    if (vid.src.startsWith('blob:')) URL.revokeObjectURL(vid.src);
+    vid.src = url;
+    run.file = null;
     $('reattach').hidden = true;
   }
 
@@ -262,12 +273,13 @@
     if (e.type === 'learned') drawLearned(e);
     if (e.type === 'scanning' && e.progress != null) setStatus(`Reading the match ${C.mmss(e.from)}–${C.mmss(e.to)}`, '', `${Math.round(e.progress * 100)}%`);
     if (e.type === 'step') beatStart(e);
-    if (e.type === 'scan') { drawEvents(e.events); addMark('scanned', e.from, e.to); run.calls += e.calls; drawMeter(); beatOut(scanLine(e.counts)); }
+    if (e.type === 'scan') { run.events = e.events; drawEvents(e.events); addMark('scanned', e.from, e.to); run.calls += e.calls; drawMeter(); beatOut(scanLine(e.counts)); }
     if (e.type === 'look') { run.looks++; addMark(e.kind === 'measure' ? 'look measure' : 'look', e.from, e.to); moveEye((e.from + e.to) / 2); drawMeter(); }
     if (e.type === 'aim_call') { run.calls++; drawMeter(); }
     if (e.type === 'hud') { run.calls++; drawMeter(); beatShots(e.shots, e.values[0]?.t ?? 0); beatOut(e.values.map((v) => `${C.mmss(v.t, true)} ${v.value ?? '(unreadable)'}`).join(' · ')); }
     if (e.type === 'frames') beatShots(shown(e.frames), e.t);
     if (e.type === 'measure') beatShots([e.shot], e.t, e);
+    if (e.type === 'shots') (run.shotsAt ||= []).push({ t: e.t, fired: e.fired });
     if (e.type === 'shots' && e.fired != null) beatOut(`${C.mmss(e.t, true)}: ${e.fired ? 'fired (ammo counter moved)' : 'no shots (ammo counter never moved)'}`, 'muted');
     if (e.type === 'refused') beatOut(`${C.mmss(e.t, true)} not measured: this fight was tried twice`, 'muted');
     if (e.type === 'skipped') beatOut(`${C.mmss(e.t, true)} skipped: you were dead (${C.mmss(e.death)})`, 'muted');
@@ -403,15 +415,22 @@
     vid.currentTime = Math.max(0, Math.min(t, run.video.duration));
     paintPlayhead();
   }
-  let clipEnd = null;
-  function playClip(from, to) {
+  let clipEnd = null, clipThen = null;
+  function playClip(from, to, then = null) {
     if (!hasVideo()) return nudge();
     clipEnd = to;
+    clipThen = then;
     seek(from);
     vid.play().catch(() => {});
   }
-  vid.addEventListener('timeupdate', () => { if (clipEnd != null && vid.currentTime >= clipEnd) { vid.pause(); clipEnd = null; } });
-  vid.addEventListener('seeking', () => { if (clipEnd != null && Math.abs(vid.currentTime - clipEnd) > 6) clipEnd = null; });
+  vid.addEventListener('timeupdate', () => {
+    if (clipEnd == null || vid.currentTime < clipEnd) return;
+    vid.pause();
+    const then = clipThen;
+    clipEnd = clipThen = null;
+    then?.();
+  });
+  vid.addEventListener('seeking', () => { if (clipEnd != null && Math.abs(vid.currentTime - clipEnd) > 6) clipEnd = clipThen = null; });
   // a past review without its recording: point at where to load it
   function nudge() {
     const r = $('reattach');
@@ -445,6 +464,10 @@
       seek(t);
       return $('stage').scrollIntoView({ block: 'nearest', behavior: 'smooth' });
     }
+    const key = e.target.closest('[data-key]');
+    if (key && run?.keys) return watchKey(+key.dataset.key);
+    const stepLink = e.target.closest('[data-step]');
+    if (stepLink) return showStep(+stepLink.dataset.step);
     const b = e.target.closest('[data-t]');
     if (b && run?.video) { const t = +b.dataset.t; playClip(t - 2, t + 1.5); }
   });
@@ -477,29 +500,45 @@
   async function finishReview(r) {
     stopStatus();
     run.done = true;
-    const match = { id: run.id, date: today(), name: run.video.name, game: run.game.name, found: r.found, habit: r.habit, habitId: r.habitId, drill: r.drill, recheck: r.recheck, aim: r.aim, progress: r.progress, stats: r.stats, status: 'new' };
+    const match = { id: run.id, date: today(), name: run.video.name, video: { size: run.video.size, lastModified: run.video.file.lastModified }, game: run.game.name, found: r.found, habit: r.habit, habitId: r.habitId, drill: r.drill, recheck: r.recheck, aim: r.aim, progress: r.progress, stats: r.stats, status: 'new' };
     history = C.addMatch(history, match);
     write(STORE, history);
     files.set(run.id, run.file);
     window.history.replaceState(null, '', `#review/${run.id}`);
+    const moments = reportMoments(r);
+    run.keys = moments.map((e) => ({ t: e.t }));
     renderReport(r, match);
     renderStart();
 
-    const moments = reportMoments(r);
-    const thumbs = moments.length ? (await V.grab(run.video, moments.map((e) => e.t), { maxDim: 320, quality: 0.72 }).catch(() => [])).map((s) => ({ t: s.t, url: s.url })) : [];
-    paintThumbs(thumbs);
-    const v = run.video, learned = run.log.find(([, e]) => e.type === 'learned')?.[1];
+    // each key moment: its frame first, marked from measurements, then the rest marked in one model call
+    const mine = run, v = run.video;
+    const { keys, shots } = await K.prepare({ video: v, profile: run.game, moments, measures: r.measures }).catch(() => ({ keys: run.keys, shots: [] }));
+    if (mine !== run) return;
+    run.keys = keys;
+    keys.forEach((_, i) => paintKey(i));
+    const before = keys.map((k) => !!(k.problem || k.fix));
+    const called = await K.mark({ keys, shots, moments, profile: run.game, habit: r.found ? r.habit : '', signal: run.abort.signal }).catch(() => 0);
+    if (mine !== run) return;
+    if (called) { run.calls += called; paintLogSummary(r); }
+    keys.forEach((k, i) => { if (!before[i] && (k.problem || k.fix)) paintKey(i); });
+
+    const learned = run.log.find(([, e]) => e.type === 'learned')?.[1];
     const record = {
       id: run.id, date: match.date, calls: run.calls, goal: run.goal, player: run.player, workingOn: run.workingOn, game: run.game,
       video: { name: v.name, size: v.size, lastModified: v.file.lastModified, duration: v.duration },
-      result: slim(r), log: run.log, thumbs, handle: run.handle,
+      result: slim(r), log: run.log, keys: slim(keys), handle: run.handle, path: (await mine.place)?.path || null,
     };
     recent.set(run.id, record);
     try {
-      await R.save(record, thumbs[0]?.url || (learned && await smaller(learned.shot.url)));
+      const cover = keys.find((k) => k.shot)?.shot.url || learned?.shot.url;
+      await R.save(record, cover && (await smaller(cover)));
       await R.keep(history.matches.map((m) => m.id));
+      if (await mine.kept) await R.keepRecordings(videosOfRecent());
     } catch (e) { console.warn("This review's log couldn't be saved on this device.", e); }
   }
+
+  // the recordings of the newest reviews, newest first: those copies are kept
+  const videosOfRecent = () => [...history.matches].reverse().map((m) => m.video);
 
   // the moments the report shows with a frame: the habit's, or with no habit, what to do better
   const reportMoments = (r) => (r.found ? r.evidence : r.fixes || []);
@@ -511,8 +550,18 @@
     $('eyeMark').hidden = true;
     const v = $('verdict');
     const working = run.workingOn && r.progress ? `<p class="progress ${r.progress}">${esc(run.workingOn.name)}: ${PROGRESS[r.progress]}${r.progressFrom === 'measured' ? ` (${Math.abs(run.workingOn.baseline.heads).toFixed(1)} to ${Math.abs(r.aim.heads).toFixed(1)} heads)` : ''}</p>` : '';
+    // the log first: each key moment says which of its steps found it
+    const steps = $('beats').children.length;
+    $('log').hidden = !steps && !r.board?.length;
+    drawBoard($('finalBoard'), r.board || [], false);
+    $('logBody').append($('breakdown'));
+    [...$('beats').children].reverse().forEach((li) => $('beats').append(li));
+    $('logBox').open = past;
+    paintLogSummary(r);
+
     const moments = reportMoments(r), instead = moments.some((e) => e.better);
-    const list = moments.length ? `<ol class="evidence">${moments.map((e, i) => `<li><button type="button" data-t="${e.t}"><span class="thumb" data-thumb="${i}"><span class="n">${i + 1}</span></span><span class="m"><span class="tt">${C.mmss(e.t)}</span><span class="wt">${esc(e.what)}</span>${e.better ? `<span class="bt"><span class="k">Instead</span> ${esc(e.better)}</span>` : ''}</span></button></li>`).join('')}</ol>` : '';
+    run.moments = moments;
+    const list = moments.length ? `<ol class="keys">${moments.map((_, i) => keyHtml(i)).join('')}</ol>` : '';
     const again = '<button class="pill primary" type="button" id="againBtn">Review again</button>';
     if (!r.found) {
       v.innerHTML = `<p class="label">${r.stopped ? 'Review stopped' : 'The verdict'}</p><h2><span class="pen">${r.stopped ? 'No verdict yet' : 'No single habit stood out'}</span></h2>${working}${r.why ? `<p class="why">${esc(r.why)}</p>` : ''}
@@ -534,23 +583,15 @@
     }
     v.hidden = false;
     penStroke(v.querySelector('.pen'));
-    $('againBtn')?.addEventListener('click', () => (run.file ? start(run.file, run.handle || run.rec?.handle) : nudge()));
+    $('againBtn')?.addEventListener('click', reviewAgain);
 
-    // the log: every theory it tested, then every step in order, open on a past review
-    const steps = $('beats').children.length;
-    $('log').hidden = !steps && !r.board?.length;
-    $('logSummary').textContent = `How it got here: ${run.calls} calls, ${r.stats?.looks ?? run.looks} looks`;
-    drawBoard($('finalBoard'), r.board || [], false);
-    $('logBody').append($('breakdown'));
-    [...$('beats').children].reverse().forEach((li) => $('beats').append(li));
-    $('logBox').open = past;
     if (!past) v.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
 
     moments.forEach((e, i) => {
       const pin = document.createElement('button');
       pin.className = 'pin';
       pin.type = 'button';
-      pin.dataset.t = e.t;
+      pin.dataset.key = i;
       pin.style.left = pct(e.t);
       pin.style.animationDelay = `${i * 80}ms`;
       pin.textContent = i + 1;
@@ -559,9 +600,140 @@
     });
   }
 
-  function paintThumbs(thumbs) {
-    thumbs.forEach((s, i) => { const el = $('verdict').querySelector(`[data-thumb="${i}"]`); if (el) el.style.backgroundImage = `url(${s.url})`; });
+  async function reviewAgain() {
+    if (run.file) return start(run.file, { handle: run.handle || run.rec?.handle, place: run.rec?.path ? { path: run.rec.path } : null });
+    if (!run.url) return nudge();
+    const btn = $('againBtn'), v = run.rec.video;
+    btn.disabled = true;
+    btn.textContent = 'Opening the recording';
+    const blob = await (await fetch(run.url)).blob();
+    start(new File([blob], v.name, { type: blob.type, lastModified: v.lastModified }), { place: { path: run.rec.path } });
   }
+
+  function paintLogSummary(r) {
+    $('logSummary').textContent = `How it got here: ${run.calls} calls, ${r.stats?.looks ?? run.looks} looks`;
+  }
+
+  // ---------- key moments: the frame at each, marked up like a telestrator ----------
+  function keyHtml(i) {
+    const e = run.moments[i], k = run.keys?.[i] || {}, how = howKnew(e.t, k);
+    return `<li class="key" id="key-${i}">
+      <figure class="key-frame${k.shot ? '' : ' loading'}" data-key="${i}">${k.shot ? `<img src="${k.shot.url}" alt="The frame at ${C.mmss(e.t, true)}" />${marksHtml(k)}` : ''}<span class="n">${i + 1}</span><span class="watch">Watch</span></figure>
+      <div class="key-body">
+        <p class="key-when"><button class="t-btn" type="button" data-key="${i}">${C.mmss(e.t, true)}</button></p>
+        <p class="key-what">${esc(e.what)}</p>
+        ${how ? `<p class="key-how"><span class="k">How it knew</span> ${how}</p>` : ''}
+        ${e.better ? `<p class="key-fix"><span class="k">Fix</span> ${esc(e.better)}</p>` : ''}
+      </div>
+    </li>`;
+  }
+  function paintKey(i) {
+    const li = $(`key-${i}`);
+    if (li) li.outerHTML = keyHtml(i);
+  }
+
+  // which steps of the log found the moment, what they measured, and what the match record says then
+  function howKnew(t, k) {
+    const steps = [...$('beats').children].map((li, i) => ({ li, n: String(i + 1).padStart(2, '0') })).filter(({ li }) => (li.times || []).some((x) => Math.abs(x - t) <= 1.5));
+    const link = ({ n }) => `<button class="step-link" type="button" data-step="${+n}">step ${n}</button>`;
+    const aim = steps.find(({ li }) => li.classList.contains('measure_aim')), looked = steps.filter(({ li }) => !li.classList.contains('measure_aim'));
+    const out = [];
+    if (k.measured && k.note) out.push(`${esc(k.note)}${aim ? ` in ${link(aim)}` : ''}`);
+    if (looked.length) out.push(`${out.length ? 'seen' : 'Seen'} up close in ${looked.slice(0, 2).map(link).join(' and ')}`);
+    const fired = run.shotsAt?.find((x) => Math.abs(x.t - t) < 0.05 && x.fired != null);
+    if (fired) out.push(fired.fired ? 'the ammo counter shows they fired' : "the ammo counter shows they didn't fire");
+    const line = (run.events || []).find((x) => Math.abs(x.t - t) <= 2 && ((x.kind === 'move' && x.grade) || ['kill', 'death'].includes(x.kind)));
+    if (line?.text) out.push(`the match record: ${esc(line.text)}`);
+    return out.join('; ');
+  }
+  function showStep(n) {
+    const li = $('beats').children[n - 1];
+    if (!li) return;
+    $('logBox').open = true;
+    li.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    li.classList.remove('flash');
+    void li.offsetWidth;
+    li.classList.add('flash');
+  }
+
+  // a hand-drawn loop: a little more than once around, the way a pen circles something
+  function loop(cx, cy, rx, ry) {
+    const pts = Array.from({ length: 41 }, (_, i) => {
+      const a = -1.9 + (i / 40) * (2 * Math.PI + 0.45), wob = 1 + 0.04 * Math.sin(3 * a + 1);
+      return `${(cx + Math.cos(a) * rx * wob).toFixed(1)} ${(cy + Math.sin(a) * ry * wob).toFixed(1)}`;
+    });
+    return `M${pts.join('L')}`;
+  }
+  // Marks are drawn in the frame's own proportions, so loops stay round and arrows straight; labels sit on top in HTML.
+  // The problem is circled in red, the fix in the pen color, with an arrow from one to the other.
+  function marksHtml(k) {
+    const W = Math.round(1000 * (k.aspect || 16 / 9)), H = 1000, p = k.problem, f = k.fix;
+    if (!p && !f) return '';
+    const ring = (b, pad) => ({ cx: ((b[1] + b[3]) / 2) * W, cy: ((b[0] + b[2]) / 2) * H, rx: ((b[3] - b[1]) * W * 1.25) / 2 + pad, ry: ((b[2] - b[0]) * H * 1.25) / 2 + pad });
+    const n = (v) => v.toFixed(1), svg = [], chips = [];
+    let from = null, to = null;
+    if (p?.box) { from = ring(p.box, 22); svg.push(`<path class="bad" pathLength="1" d="${loop(from.cx, from.cy, from.rx, from.ry)}" />`); }
+    if (p?.point) {
+      const cx = p.point[0] * W, cy = p.point[1] * H;
+      from = { cx, cy, rx: 30, ry: 30 };
+      svg.push(`<circle class="bad" pathLength="1" cx="${n(cx)}" cy="${n(cy)}" r="26" /><path class="bad cross" d="M${n(cx - 50)} ${n(cy)}h18M${n(cx + 32)} ${n(cy)}h18M${n(cx)} ${n(cy - 50)}v18M${n(cx)} ${n(cy + 32)}v18" />`);
+    }
+    if (f?.box) { to = ring(f.box, 16); svg.push(`<path class="good" pathLength="1" d="${loop(to.cx, to.cy, to.rx, to.ry)}" />`); }
+    if (from && to) {
+      const dx = to.cx - from.cx, dy = to.cy - from.cy, len = Math.hypot(dx, dy), ux = dx / len, uy = dy / len;
+      const edge = (r) => 1 / Math.hypot(ux / r.rx, uy / r.ry);
+      const a = edge(from) + 10, b = edge(to) + 12;
+      if (len > a + b + 30) {
+        const s = [from.cx + ux * a, from.cy + uy * a], e = [to.cx - ux * b, to.cy - uy * b], bend = 0.15 * (len - a - b);
+        const c = [(s[0] + e[0]) / 2 - uy * bend, (s[1] + e[1]) / 2 + ux * bend];
+        const tl = Math.hypot(e[0] - c[0], e[1] - c[1]), tx = (e[0] - c[0]) / tl, ty = (e[1] - c[1]) / tl, L = 36, A = 0.5;
+        const head = (sgn) => [e[0] - L * (tx * Math.cos(A) - sgn * ty * Math.sin(A)), e[1] - L * (ty * Math.cos(A) + sgn * tx * Math.sin(A))];
+        svg.push(`<path class="good arrow" pathLength="1" d="M${n(s[0])} ${n(s[1])}Q${n(c[0])} ${n(c[1])} ${n(e[0])} ${n(e[1])}" /><path class="good tip" d="M${head(1).map(n).join(' ')}L${n(e[0])} ${n(e[1])}L${head(-1).map(n).join(' ')}" />`);
+      }
+    }
+    // Labels go on the far sides of their marks (the lower mark's below it, the higher one's above), flipped at the
+    // frame's edges and kept off its sides.
+    const chip = (r, cls, text, prefer) => {
+      const below = prefer === 'below' ? (r.cy + r.ry) / H < 0.84 : (r.cy - r.ry) / H < 0.16;
+      const y = below ? (r.cy + r.ry) / H : (r.cy - r.ry) / H;
+      chips.push(`<span class="chip ${cls}${below ? '' : ' up'}" style="left:${Math.min(84, Math.max(16, (r.cx / W) * 100)).toFixed(1)}%;top:${(y * 100).toFixed(1)}%">${esc(text)}</span>`);
+    };
+    const problemLower = !from || !to || from.cy >= to.cy;
+    if (p && from) chip(from, 'bad', p.label, problemLower ? 'below' : 'above');
+    if (f && to) chip(to, 'good', f.label, problemLower ? 'above' : 'below');
+    return `<svg class="marks" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-hidden="true"><g filter="url(#tele)">${svg.join('')}</g></svg>${chips.join('')}`;
+  }
+
+  // Watching a key moment plays up to it, then holds on that frame with its marks drawn over the video.
+  let markedAt = null;
+  function watchKey(i) {
+    const e = run.moments?.[i];
+    if (!e) return;
+    timeline.querySelectorAll('.pin').forEach((p) => p.classList.toggle('on', +p.dataset.key === i));
+    if (!hasVideo()) return nudge();
+    hideVideoMarks();
+    $('stage').scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    playClip(Math.max(0, e.t - 2.5), e.t, () => {
+      markedAt = e.t;
+      vid.currentTime = e.t;
+      const v = $('vmarks'), k = run.keys?.[i];
+      if (!k || !(k.problem || k.fix)) return;
+      v.innerHTML = marksHtml(k);
+      v.hidden = false;
+      placeVideoMarks();
+    });
+  }
+  function hideVideoMarks() { $('vmarks').hidden = true; $('vmarks').innerHTML = ''; markedAt = null; }
+  // over the picture itself, not the black bars around it
+  function placeVideoMarks() {
+    const el = $('vmarks');
+    if (el.hidden) return;
+    const pw = vid.clientWidth, ph = vid.clientHeight, vw = vid.videoWidth || 16, vh = vid.videoHeight || 9, s = Math.min(pw / vw, ph / vh);
+    Object.assign(el.style, { width: `${vw * s}px`, height: `${vh * s}px`, left: `${(pw - vw * s) / 2}px`, top: `${(ph - vh * s) / 2}px` });
+  }
+  vid.addEventListener('play', () => { if (clipThen == null) hideVideoMarks(); });
+  vid.addEventListener('seeking', () => { if (markedAt != null && Math.abs(vid.currentTime - markedAt) > 0.25) hideVideoMarks(); });
+  window.addEventListener('resize', placeVideoMarks);
 
   function decisionHtml(match) {
     const m = history.matches.find((x) => x.id === match.id) || match;
@@ -595,18 +767,39 @@
   const TAGS = { better: 'Better', same: 'Same', worse: 'Worse' };
   const tagOf = (m) => (history.habit?.matchId === m.id ? { text: 'Working on', on: true } : TAGS[m.progress] ? { text: TAGS[m.progress] } : m.status === 'rejected' ? { text: 'Not this' } : null);
 
+  // a game's name as it was learned; reviews saved before learning kept a lowercase id ("valorant")
+  const gameName = (g) => (!g ? 'Other games' : g === g.toLowerCase() ? g.replace(/\b\w/g, (c) => c.toUpperCase()) : g);
+
+  // One shelf per game, the game played most recently first, newest review first on each shelf.
   async function showReviews() {
     show('reviews');
     renderStart();
     const thumbs = await R.thumbs().catch(() => ({}));
-    $('cards').innerHTML = [...history.matches].reverse().map((m) => {
+    const shelves = new Map();
+    for (const m of [...history.matches].reverse()) {
+      const name = gameName(m.game), k = name.toLowerCase();
+      if (!shelves.has(k)) shelves.set(k, { name, list: [] });
+      shelves.get(k).list.push(m);
+    }
+    const card = (m) => {
       const tag = tagOf(m);
       return `<li><a class="card" href="#review/${esc(m.id)}">
         <span class="c-shot">${thumbs[m.id] ? `<img src="${thumbs[m.id]}" alt="" />` : '<svg aria-hidden="true"><use href="#eye" /></svg>'}${tag ? `<span class="c-tag${tag.on ? ' on' : ''}">${esc(tag.text)}</span>` : ''}</span>
         <span class="c-habit${m.found ? '' : ' none'}">${esc(m.found ? m.habit : 'No single habit')}</span>
-        <span class="c-meta">${niceDate(m.date)} · ${esc(m.game || m.name)}</span>
+        <span class="c-meta">${niceDate(m.date)}</span>
       </a></li>`;
-    }).join('') || '<li class="c-empty">No reviews yet.</li>';
+    };
+    const working = history.habit && gameName(history.habit.game).toLowerCase();
+    const list = [...shelves.values()];
+    $('shelves').innerHTML = list.length
+      ? `${list.length > 1 ? `<nav class="shelf-nav" aria-label="Games">${list.map((g, i) => `<a href="#shelf-${i}" data-shelf="${i}">${esc(g.name)}<span>${g.list.length}</span></a>`).join('')}</nav>` : ''}
+        ${list.map((g, i) => `<section class="shelf" id="shelf-${i}" aria-labelledby="shelf-${i}-name">
+          <header><h2 id="shelf-${i}-name">${esc(g.name)}</h2><span class="shelf-count">${g.list.length}</span>${working === g.name.toLowerCase() ? `<span class="shelf-working">Working on ${esc(history.habit.name)}</span>` : ''}</header>
+          <ol class="cards">${g.list.map(card).join('')}</ol>
+        </section>`).join('')}`
+      : `<div class="c-empty"><svg aria-hidden="true"><use href="#eye" /></svg><p class="c-empty-title">No reviews yet</p><p>${D ? 'Reviews from the browser version stay in the browser.' : 'Each review you run lands here.'}</p><a class="pill primary" href="#">Review a match</a></div>`;
+    // the game chips scroll to their shelf without leaving #reviews
+    $('shelves').querySelectorAll('[data-shelf]').forEach((a) => a.addEventListener('click', (e) => { e.preventDefault(); $(`shelf-${a.dataset.shelf}`).scrollIntoView({ behavior: 'smooth', block: 'start' }); }));
   }
 
   // A past review is drawn again from its saved log: the same timeline, cards, frames, and report. Reviews saved before
@@ -622,7 +815,8 @@
     vid.load();
     run = { id, replay: true, done: true, rec, file: null, handle: rec?.handle || null, video: { name: m.name, duration: rec?.video.duration || 0 }, game: rec?.game || null, workingOn: rec?.workingOn || null, abort: new AbortController(), looks: 0, turns: 0, calls: 0, beat: null, log: [] };
     $('crumbs').hidden = false;
-    $('crumbs').innerHTML = `<a class="back" href="#reviews"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3 5 8l5 5" /></svg>All reviews</a><span>${niceDate(m.date)} · ${esc(m.game || '')} · ${esc(m.name)}</span>`;
+    $('crumbs').innerHTML = `<a class="back" href="#reviews"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3 5 8l5 5" /></svg>All reviews</a><span>${niceDate(m.date)} · ${esc(m.game || '')} · ${esc(m.name)}</span>${D && rec?.path ? `<button class="quiet reveal" type="button" id="revealBtn">${/Mac/.test(navigator.userAgent) ? 'Show in Finder' : 'Show the file'}</button>` : ''}`;
+    $('revealBtn')?.addEventListener('click', () => D.reveal(rec.path));
     if (!rec) {
       $('review').classList.add('bare');
       $('stage').hidden = true;
@@ -630,16 +824,21 @@
       $('verdict').insertAdjacentHTML('beforeend', '<p class="older">Saved before reviews kept their log and frames.</p>');
       return;
     }
+    if (!m.video) {
+      history = { ...history, matches: history.matches.map((x) => (x.id === id ? { ...x, video: { size: rec.video.size, lastModified: rec.video.lastModified } } : x)) };
+      write(STORE, history);
+    }
     drawAxis();
     drawLegend(rec.game);
     for (const [kind, e] of rec.log) (kind === 'event' ? onEvent : onStep)(e);
     run.calls = rec.calls;
+    run.keys = rec.keys || (rec.thumbs || []).map((s) => ({ t: s.t, shot: s, aspect: 16 / 9 }));
     renderReport(rec.result, m);
-    paintThumbs(rec.thumbs || []);
     await attachRecording(rec);
   }
 
-  // The recording comes from this visit, from the saved file handle (the browser may ask once), or from the player.
+  // The recording comes from this visit; in the desktop app, from where it is on disk; in a browser, from the saved copy
+  // or the file handle (the browser may ask once); or else from the player.
   async function attachRecording(rec) {
     const mine = run;
     const use = (file) => {
@@ -649,6 +848,14 @@
       setVideo(file);
     };
     if (files.has(rec.id)) return use(files.get(rec.id));
+    if (D && rec.path) {
+      const r = await D.open(rec.path).catch(() => ({ missing: true }));
+      if (run !== mine) return;
+      if (r.url && r.size === rec.video.size) { setVideoUrl(r.url); run.url = r.url; return; }
+      return reattach(rec, r.url ? 'The file there is a different recording now. Find this one.' : 'It moved or was renamed. Find the file.');
+    }
+    const kept = await R.recording(rec.video);
+    if (kept) return use(kept);
     if (rec.handle) {
       try { if ((await rec.handle.queryPermission({ mode: 'read' })) === 'granted') return use(await rec.handle.getFile()); } catch {}
     }
@@ -666,6 +873,11 @@
       if (file.size !== rec.video.size) return reattach(rec, "That's a different recording.");
       files.set(rec.id, file);
       setVideo(file);
+      // the desktop app remembers the new place; a browser keeps a copy
+      (D ? D.remember(file) : Promise.resolve(null)).then((p) => {
+        if (p) { rec.path = p.path; return R.save(rec); }
+        return R.keepRecording(file).then((ok) => ok && R.keepRecordings(videosOfRecent()));
+      }).catch(() => {});
       Promise.resolve(handle).then((h) => {
         if (h?.kind !== 'file') return;
         rec.handle = run.handle = h;
@@ -687,6 +899,9 @@
   dropTarget($('reattach'), (f, h) => onReattach?.(f, h));
 
   $('stopBtn').addEventListener('click', () => run?.abort.abort());
+  $('libraryBtn').addEventListener('click', () => D?.showLibrary());
+  // a backend on a free host sleeps when idle: waking it now saves that wait at the first model call
+  if (G.backendUrl()) fetch(`${G.backendUrl()}/health`).catch(() => {});
 
   $('playerName').value = read(NAME, '');
   penStroke(document.querySelector('.start .pen'));

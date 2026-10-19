@@ -9,7 +9,7 @@
   const str = (description) => ({ type: 'string', description });
   const moments = (description) => ({ type: 'array', description, items: { type: 'object', properties: { t: str('M:SS'), what: str('what happens then') }, required: ['t', 'what'] } });
   // a moment for the player's report: what happened, and what they should have done instead
-  const lessons = (description) => ({ type: 'array', description, items: { type: 'object', properties: { t: str('M:SS'), what: str('what happens then'), better: str('what they should have done instead, in one short sentence') }, required: ['t', 'what', 'better'] } });
+  const lessons = (description) => ({ type: 'array', description, items: { type: 'object', properties: { t: str('M:SS'), what: str('what happens then'), better: str('what to do instead: one short instruction that starts with a verb, like "Pre-aim the doorway at head height"') }, required: ['t', 'what', 'better'] } });
   const EVENTS = { type: 'object', properties: {
     events: { type: 'array', items: { type: 'object', properties: { t: str('M:SS'), kind: { type: 'string', enum: C.KINDS.filter((k) => !['engagement', 'move', 'opponent_move'].includes(k)) }, text: str('a few words') }, required: ['t', 'kind', 'text'] } },
     fights: { type: 'array', items: { type: 'object', properties: { from: str('M:SS'), to: str('M:SS'), outcome: { type: 'string', enum: ['won', 'lost', 'none'] }, text: str('a few words: who, where, how it went') }, required: ['from', 'to', 'outcome', 'text'] } },

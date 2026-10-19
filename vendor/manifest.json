@@ -1,0 +1,26 @@
+{
+  "mediabunny.min.mjs": {
+    "package": "mediabunny",
+    "version": "1.61.0",
+    "license": "MPL-2.0",
+    "from": "dist/bundles/mediabunny.min.mjs",
+    "sha256": "fa696c53494b6b09a8b310ec51e3c44a59e79513234fb832255a38c686162009",
+    "use": "decodes and encodes video (video.js)"
+  },
+  "chess.js": {
+    "package": "chess.js",
+    "version": "1.4.0",
+    "license": "BSD-2-Clause",
+    "from": "dist/esm/chess.js",
+    "sha256": "76c7c34f0e2e9ab076521a5d6fe786a9cce537bb1b6f29d32a9c9970b5b232d2",
+    "use": "chess rules for reading moves (chess-reader.js)"
+  },
+  "stockfish.asm.js": {
+    "package": "stockfish",
+    "version": "10.0.2",
+    "license": "GPL",
+    "from": "src/stockfish.asm.js",
+    "sha256": "90e3c0639d41282e6f4cc99c3d3eb0afb67c27910d6d7546cd4f1803134258e4",
+    "use": "the chess engine, run in a Web Worker (chess-reader.js)"
+  }
+}

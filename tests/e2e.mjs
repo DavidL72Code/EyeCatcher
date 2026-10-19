@@ -2,27 +2,21 @@
 // are intercepted and answered with TEST FIXTURES shaped like real responses, so this checks the app's wiring, the
 // video pipeline, and the code checks, not the model's judgment. Mediabunny loads from jsDelivr, so it needs network.
 import { chromium } from 'playwright';
-import http from 'node:http';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createRequire } from 'node:module';
+import { startServer } from '../scripts/dev.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const C = createRequire(import.meta.url)('../core.js');
 const truth = JSON.parse(fs.readFileSync(path.join(root, 'tests/fixtures/truth.json'), 'utf8'));
 const fixture = path.join(root, 'tests/fixtures', truth.file);
 
-const TYPES = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.mp4': 'video/mp4', '.webm': 'video/webm' };
-const server = http.createServer((req, res) => {
-  const u = decodeURIComponent(req.url.split('?')[0]);
-  if (u === '/env.js') { res.writeHead(200, { 'Content-Type': 'text/javascript' }); return res.end('window.__ENV__ = { GEMINI_API_KEY: "TEST" };'); }
-  const p = path.join(root, u === '/' ? 'index.html' : u);
-  if (!p.startsWith(root) || !fs.existsSync(p) || fs.statSync(p).isDirectory()) { res.writeHead(404); return res.end(); }
-  res.writeHead(200, { 'Content-Type': TYPES[path.extname(p)] || 'application/octet-stream' });
-  res.end(fs.readFileSync(p));
-}).listen(0);
-const base = `http://127.0.0.1:${server.address().port}/`;
+// the app's own server, as the dev server and the desktop app run it: its security policy and headers are under test
+// too. The key is a stand-in; Gemini is answered below.
+const server = await startServer({ port: 0, reload: false, env: { GEMINI_API_KEY: 'TEST', THIRDEYE_BACKEND: '' } });
+const base = `http://127.0.0.1:${server.port}/`;
 const fail = [];
 const check = (c, m) => { if (!c) { fail.push(m); console.log('  FAIL -', m); } else console.log('  ok -', m); };
 
@@ -57,7 +51,7 @@ const coach = [
   () => call(['measure_aim', { at: '0:30.6', why: 'aim in the fight they won', notes: [{ id: 'T1', status: 'supported', evidence: [ev('0:31', 'on the head in a fight they won')] }] }]),
   () => call(['finish', { ...FINDING, progress: 'unclear', evidence: EVIDENCE, contrast: [ev('0:31', 'On the head, and the fight was won')] }]),
 ];
-const seen = { agentBodies: [], scans: 0, heads: 0, headCalls: [], feedCalls: 0, learns: 0, hudCalls: 0, uploads: 0, starts: 0, gameFiles: 0, chess: false };
+const seen = { agentBodies: [], scans: 0, heads: 0, headCalls: [], markCalls: 0, outside: [], feedCalls: 0, learns: 0, hudCalls: 0, uploads: 0, starts: 0, gameFiles: 0, chess: false };
 // the chess review: the same app on a synthetic chess recording (npm run fixture:chess), learned as chess
 const chessTruth = JSON.parse(fs.readFileSync(path.join(root, 'tests/fixtures/chess-truth.json'), 'utf8'));
 const chessFile = path.join(root, 'tests/fixtures', Object.keys(chessTruth.recordings).find((f) => /blunders/.test(f)));
@@ -104,6 +98,8 @@ function gemini(body) {
   if (!body.tools && /player clock of a/.test(prompt)) { seen.hudCalls++; return text({ readings: parts.filter((p) => p.inlineData).map((_, i) => ({ image: i + 1, value: ['0:25', '0:21', '0:58'][i] || '0:10', readable: true })) }); }
   // the synthetic kill feed's names aren't known here, so the scan falls back to the low-detail pass
   if (!body.tools && /kill feed/.test(prompt)) { seen.feedCalls++; return text({ rows: [] }); }
+  // the report's marks for moments no measurement covers
+  if (!body.tools && /telestrator/.test(prompt)) { seen.markCalls++; return text({ images: parts.filter((p) => p.inlineData).map((_, i) => ({ image: i + 1, problem_box: [420, 300, 560, 380], problem: 'Knight left hanging', fix_box: [300, 420, 380, 480], fix: 'Guard it first' })) }); }
   if (!body.tools) {
     const n = parts.filter((p) => p.inlineData).length;
     seen.headCalls.push(n);
@@ -120,8 +116,13 @@ try {
   const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
   const errors = [];
   page.on('pageerror', (e) => errors.push(e.message));
-  page.on('console', (m) => { if (m.type() === 'error') errors.push(m.text()); });
-  page.on('request', (r) => { if (/\/games\//.test(new URL(r.url()).pathname)) seen.gameFiles++; });
+  page.on('console', (m) => { if (m.type() === 'error') errors.push(`${m.text()}${m.location()?.url ? ` (${m.location().url.slice(0, 60)})` : ''}`); });
+  page.on('request', (r) => {
+    const u = new URL(r.url());
+    if (/\/games\//.test(u.pathname)) seen.gameFiles++;
+    // code from anywhere but the app itself; fonts and Gemini (answered below) are the only other hosts
+    if (!['127.0.0.1', 'fonts.googleapis.com', 'fonts.gstatic.com', 'generativelanguage.googleapis.com'].includes(u.hostname) && !/^(data|blob):/.test(r.url())) seen.outside.push(u.host);
+  });
   await page.route('https://generativelanguage.googleapis.com/**', async (route) => {
     const req = route.request(), url = req.url();
     if (req.method() === 'OPTIONS') return route.fulfill({ status: 204, headers: cors });
@@ -139,7 +140,10 @@ try {
   });
 
   console.log('start screen');
-  await page.goto(base);
+  const first = await page.goto(base);
+  check(/script-src 'self';/.test(first.headers()['content-security-policy']) && /connect-src 'self' https:\/\/generativelanguage\.googleapis\.com/.test(first.headers()['content-security-policy']), 'the page runs under a policy: only its own scripts, talking only to itself and Gemini');
+  const fromElsewhere = await (await fetch(`${base}env.js`, { headers: { 'Sec-Fetch-Site': 'cross-site', 'Sec-Fetch-Dest': 'script' } })).text();
+  check(!/GEMINI_API_KEY/.test(fromElsewhere) && /GEMINI_API_KEY/.test(await page.evaluate(async () => (await fetch('/env.js')).text())), "the key goes to Thirdeye's own page and to no other site");
   check(await page.locator('#startTitle').innerText() === "FIND THE HABIT THAT'S\nLOSING YOU GAMES.", 'headline renders');
   check(await page.locator('#keyBox').isHidden(), 'no key box when .env has a key');
   check(await page.locator('#working').isHidden(), 'no habit chip on a first visit');
@@ -192,10 +196,17 @@ try {
   check(imgsLater === 0, 'old pictures are dropped from later turns');
   check(await page.locator('.verdict h2').innerText() === 'CROSSHAIR BELOW HEAD LEVEL', 'verdict names the habit');
   check(await page.locator('.metric b').innerText() === '2.2', 'the metric is the measured median (2.2 heads)');
-  check(await page.locator('.evidence li').count() === 3 && await page.locator('.pin').count() === 3, 'three evidence moments, pinned on the timeline');
-  check(await page.locator('.verdict h3', { hasText: 'What to do instead' }).count() === 1 && /Instead Pre-aim the doorway at head height/.test(await page.locator('.evidence li:nth-child(2) .bt').innerText()), 'each moment says what to do instead');
-  await page.waitForFunction(() => [...document.querySelectorAll('.evidence .thumb')].every((t) => t.style.backgroundImage.startsWith('url')));
-  check(true, 'each evidence moment gets a frame from the recording');
+  check(await page.locator('.keys .key').count() === 3 && await page.locator('.pin').count() === 3, 'three key moments, pinned on the timeline');
+  check(await page.locator('.verdict h3', { hasText: 'What to do instead' }).count() === 1 && /^Fix Pre-aim the doorway at head height$/.test(await page.locator('.key:nth-child(2) .key-fix').innerText()), 'each moment says what to do instead');
+  await page.waitForFunction(() => document.querySelectorAll('.key-frame img').length === 3);
+  check(true, 'each key moment gets its frame from the recording');
+  check(/^Crosshair on the upper body, left of them$/.test(await page.locator('.key:nth-child(1) .chip.bad').innerText()) && await page.locator('.key:nth-child(1) .chip.good').innerText() === 'Aim here', 'a measured moment is marked from the measurement: where the crosshair was, and the head to aim at');
+  check(await page.locator('.key:nth-child(1) .marks circle.bad').count() === 1 && await page.locator('.key:nth-child(1) .marks path.good').count() === 1, 'the crosshair is ringed in red and the head circled in the pen color');
+  check(/^How it knew Measured 2\.2 heads below the head in step 0\d/.test(await page.locator('.key:nth-child(1) .key-how').innerText()), 'each moment says how it was found, with the step');
+  check(seen.markCalls === 0, 'measured moments cost no marking call');
+  await page.click('.key:nth-child(1) .step-link');
+  check(await page.locator('#logBox').evaluate((d) => d.open) && await page.locator('.log .beat.flash').count() === 1, 'the step link opens the log at that step');
+  await page.locator('#logBox summary').click();
   check(await page.locator('#status').isHidden(), 'the spinner is gone when done');
   check(/0:31\s*On the head, and the fight was won/.test(await page.locator('.contrast').innerText()), 'moments they got right show apart from the evidence');
   check(await page.locator('.log .theory.supported').count() === 1, 'the board is kept under How it got here');
@@ -203,9 +214,10 @@ try {
   check(await page.locator('#logSummary').innerText() === `How it got here: ${calls} calls, 5 looks`, `the review counts its model calls (${calls}: learning the game, 9 turns, the scan's ${1 + seen.feedCalls}, 3 aim)`);
   check(await page.locator('.log .beat').count() === 10 && await page.locator('#logBox').evaluate((d) => !d.open), 'the breakdown folds into How it got here');
   check(await page.locator('.log .beat-kind').first().evaluate((e) => e.textContent) === 'Reading the screen', 'the log reads in order, first step first');
-  await page.click('.evidence li:nth-child(2) button');
+  await page.click('.key:nth-child(2) .key-frame');
   await page.waitForFunction(() => document.querySelector('#video').currentTime > 44);
-  check(true, 'clicking evidence plays that moment');
+  await page.waitForSelector('#vmarks:not([hidden]) .chip.bad', { timeout: 10000 });
+  check(Math.abs(await page.evaluate(() => document.querySelector('#video').currentTime) - 46.8) < 0.3 && await page.locator('.pin.on').count() === 1, 'watching a moment plays up to it, then holds there with the marks over the video');
   await page.click('#acceptBtn');
   check(/next review checks this habit/.test(await page.locator('.accepted').innerText()), 'accepting saves the habit');
 
@@ -229,34 +241,41 @@ try {
   await page.click('#historyBtn');
   await page.waitForSelector('#reviews:not([hidden])');
   check(await page.locator('.cards li').count() === 2, 'past reviews list both matches');
+  check(await page.locator('.shelf').count() === 1 && await page.locator('.shelf h2').innerText() === 'SYNTHETIC TEST MATCH' && /Working on Crosshair below head level/.test(await page.locator('.shelf-working').innerText()), "they sit on their game's shelf, which says what's being worked on");
   await page.waitForFunction(() => document.querySelectorAll('.c-shot img').length === 2);
   check(/WORKING ON/i.test(await page.locator('.cards li:nth-child(2) .c-tag').innerText()), 'each review shows a frame, and the one being worked on says so');
 
   console.log('a past review');
   await page.click('.cards li:nth-child(1) .card');
   await page.waitForSelector('#verdict:not([hidden])');
-  check(await page.locator('#reattach').isHidden() && !!(await page.locator('#video').getAttribute('src')), 'a review from this visit still has its recording');
+  check(await page.locator('#reattach').isHidden() && !!(await page.locator('#video').getAttribute('src')), 'a review from this visit has its recording');
   await page.goBack();
   await page.waitForSelector('#reviews:not([hidden])');
   await page.click('.cards li:nth-child(2) .card');
   await page.waitForSelector('#verdict:not([hidden])');
-  check(await page.locator('.verdict h2').innerText() === 'CROSSHAIR BELOW HEAD LEVEL' && await page.locator('.evidence .bt').count() === 3, 'an older one opens with its report and what to do instead');
+  check(await page.locator('.verdict h2').innerText() === 'CROSSHAIR BELOW HEAD LEVEL' && await page.locator('.key-fix').count() === 3 && await page.locator('.key .chip.bad').count() === 3, 'an older one opens with its marked-up moments and what to do instead');
   check(await page.locator('.log .beat').count() === 10 && await page.locator('#logBox').evaluate((d) => d.open), 'its log is open, with every step');
   check(await page.locator('.log .beat img').count() >= 4 && await page.locator('.log .beat.measure_aim .box').count() >= 1, 'the log keeps the frames and measured boxes');
   check(await page.locator('.tick').count() === truth.duels.length && await page.locator('.pin').count() === 3, 'the timeline is drawn again');
-  check(await page.locator('#reattach').isVisible(), 'without its recording, it asks for it');
-  await page.setInputFiles('#reattachInput', chessFile);
-  check(/different recording/.test(await page.locator('#reattach .r-err').innerText()), 'the wrong recording is refused');
-  await page.setInputFiles('#reattachInput', fixture);
-  check(await page.locator('#reattach').isHidden() && !!(await page.locator('#video').getAttribute('src')), 'the right recording loads');
+  await page.waitForFunction(() => !!document.querySelector('#video').getAttribute('src'));
+  check(await page.locator('#reattach').isHidden(), "the recording plays from the saved copy, from a visit before this one");
   await page.click('.log .beat.measure_aim img');
   await page.waitForFunction(() => Math.abs(document.querySelector('#video').currentTime - 13.8) < 0.3);
   check(true, 'clicking a frame in the log shows that moment');
+  await page.evaluate(async () => (await navigator.storage.getDirectory()).removeEntry('recordings', { recursive: true }));
   const pastUrl = page.url();
   await page.goto('about:blank');
   await page.goto(pastUrl);
   await page.waitForSelector('#verdict:not([hidden])');
-  check(await page.locator('.log .beat').count() === 10 && await page.locator('.log .beat img').count() >= 4 && await page.locator('#reattach').isVisible(), 'after a reload it is drawn from what was saved');
+  check(await page.locator('.log .beat').count() === 10 && await page.locator('.key-frame img').count() === 3, 'after a reload it is drawn from what was saved');
+  await page.waitForSelector('#reattach:not([hidden])');
+  check(true, 'with no saved copy, it asks for the recording');
+  await page.setInputFiles('#reattachInput', chessFile);
+  check(/different recording/.test(await page.locator('#reattach .r-err').innerText()), 'the wrong recording is refused');
+  await page.setInputFiles('#reattachInput', fixture);
+  check(await page.locator('#reattach').isHidden() && !!(await page.locator('#video').getAttribute('src')), 'the right recording loads');
+  await page.waitForFunction(async () => { for await (const k of (await (await navigator.storage.getDirectory()).getDirectoryHandle('recordings')).keys()) return !!k; return false; });
+  check(true, 'and is kept for next time');
 
   console.log('chess review: moves read off the board and scored by Stockfish in the browser');
   seen.agentBodies.length = 0;
@@ -276,12 +295,18 @@ try {
   const chessFirst = lastResults(seen.agentBodies[4]).find((r) => r.name === 'finish')?.response.result;
   check(chessFirst?.ok === false && chessFirst.problems.some((p) => /At 0:34 the engine scores c3 as fine/.test(p)), 'a finish citing a move the engine calls fine is sent back');
   check(await page.locator('.verdict h2').innerText() === 'BLUNDERS WHEN THE CLOCK IS LOW', 'the verdict names the chess habit');
+  await page.waitForFunction(() => document.querySelectorAll('.key .chip.good').length === 3);
+  check(seen.markCalls === 1 && await page.locator('.key .chip.bad', { hasText: 'Knight left hanging' }).count() === 3, 'moments no measurement covers are marked on their frames in one call');
   check(await page.locator('.tick.death').count() >= 5 && /Your blunder/.test(await page.locator('#legend').innerText()), 'the timeline marks the blunders, and the legend says so');
+  await page.click('#historyBtn');
+  await page.waitForSelector('#reviews:not([hidden]) .shelf');
+  check(await page.locator('.shelf').count() === 2 && await page.locator('.shelf h2').first().innerText() === 'SYNTHETIC CHESS' && await page.locator('.shelf-nav a').count() === 2, 'past reviews are shelved by game, the game played last first, with a chip for each');
 
   console.log('phone width');
   await page.setViewportSize({ width: 375, height: 812 });
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
   check(overflow <= 0, `no sideways scroll at 375 px (${overflow})`);
+  check(seen.outside.length === 0, `no code loads from outside the app${seen.outside.length ? `: ${[...new Set(seen.outside)].join(', ')}` : ''}`);
   check(errors.length === 0, `no page errors${errors.length ? `: ${errors.join(' | ')}` : ''}`);
 } finally {
   await browser.close();

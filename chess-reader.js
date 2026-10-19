@@ -5,8 +5,9 @@
  * as window.ThirdeyeChess and in Node through require(). */
 (function (root) {
   const FILES = 'abcdefgh';
-  const CHESS_URL = 'https://cdn.jsdelivr.net/npm/chess.js@1.4.0/+esm';
-  const ENGINE_URL = 'https://cdn.jsdelivr.net/npm/stockfish@10.0.2/src/stockfish.asm.js'; // asm.js: no wasm to locate
+  // shipped with the app (npm run vendor): chess.js@1.4.0, and Stockfish 10.0.2's asm.js build, which has no wasm to locate
+  const CHESS_URL = './vendor/chess.js';
+  const ENGINE_URL = 'vendor/stockfish.asm.js';
   const MATE = 10000;
 
   // ---------- the board on screen ----------
@@ -209,15 +210,12 @@
     }
     return { evaluate, quit: () => send('quit') };
   }
-  /** Stockfish in the browser: the asm.js build in a Web Worker made from a blob, since a worker can't load cross-origin. */
-  function createEngine() {
-    const blob = new Blob([`importScripts(${JSON.stringify(ENGINE_URL)});`], { type: 'text/javascript' });
-    return uciEngine(new Worker(URL.createObjectURL(blob)));
-  }
+  /** Stockfish in the browser: the asm.js build, run as its own Web Worker. */
+  const createEngine = () => uciEngine(new Worker(ENGINE_URL));
   /** Stockfish in Node, from the npm package (stockfish@10.0.2), for building fixtures and tests. */
   const createNodeEngine = () => uciEngine(require('stockfish')());
 
-  /** chess.js's Chess class: the npm package in Node, the same version from jsDelivr in the browser. */
+  /** chess.js's Chess class: the npm package in Node, the same version from vendor/ in the browser. */
   async function loadChess() {
     if (typeof window === 'undefined') return require('chess.js').Chess;
     return (root.__chessLib ||= await import(CHESS_URL)).Chess;
