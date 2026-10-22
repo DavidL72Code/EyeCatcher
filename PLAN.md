@@ -50,7 +50,7 @@ Two rules keep the cost bounded:
 | Which one habit matters most, and the drill for it | Post-game only. Thirdeye never reads game memory and never runs while you're playing. |
 | How to re-check the current habit in a new match | Which habit is current, and what the baseline was (stored history) |
 
-## Game profile (`games/valorant.json`)
+## Game profile (`eval/answer-keys/valorant.json`)
 
 The profile gives HUD regions as fractions of the screen (kill feed, minimap, round timer), the FOV, and a short list of habits with a drill for each:
 - crosshair low
@@ -97,7 +97,7 @@ index.html  app.js  styles.css   UI: upload, one spinner with one status line, t
 agent.js                        system brief, tools, budget, finish checks
 video.js                        proxy, frame grabs, Files API upload (Mediabunny)
 core.js                         pure logic: aim math, finish checks, budget, history; unit tested
-games/valorant.json             game profile
+eval/answer-keys/valorant.json             game profile
 gemini.js                       copied from hackathon/shared/
 scripts/dev.mjs                 dev server
 tests/                          unit tests, browser test with Gemini mocked, live check, fixture maker

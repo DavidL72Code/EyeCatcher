@@ -8,17 +8,24 @@
   const SAMPLES = 8; // frames the learn call sees
   const LAYOUT_SAMPLES = 120; // frames the kill-feed layout is measured from: a feed is empty most of the time
   const GENRES = ['shooter', 'moba', 'chess', 'fighting', 'racing', 'sports', 'strategy', 'other'];
-  const ELEMENTS = ['kill_feed', 'minimap', 'ammo', 'health', 'scoreboard', 'damage', 'board', 'player_clock', 'opponent_clock', 'gold', 'abilities'];
+  // own_screen: the player's own screen, everything in it theirs. spectator: footage of the whole match (a broadcast,
+  // coaching film, a match filmed from the stands) where the player is one of many, so they say which one they are.
+  const VIEWS = ['own_screen', 'spectator'];
+  const ELEMENTS = ['kill_feed', 'minimap', 'ammo', 'health', 'scoreboard', 'damage', 'kill_count', 'board', 'player_clock', 'opponent_clock', 'gold', 'abilities'];
+  // what each element is, for the learn call and for checking its boxes
+  const WHAT = { kill_feed: 'the list of recent kills', minimap: 'the small map', ammo: 'the magazine count', health: "the player's own health or shield bar", scoreboard: "each side's score, or the teams or players left", damage: 'the counter of damage the player has dealt', kill_count: "the counter of the player's own kills, or of their kills, deaths, and assists", board: 'the playing board', player_clock: "the player's clock", opponent_clock: "the opponent's clock", gold: 'the gold or money count', abilities: 'ability or ultimate icons' };
   const AIM_TARGETS = ['head', 'body', 'tracking', 'none'];
-  const RESEARCH_STORE = 'thirdeye.research', RESEARCH_DAYS = 30;
+  const RESEARCH_STORE = 'thirdeye.research.v2', RESEARCH_DAYS = 7; // v2: searched by facet, with the meta, the wiki's lists, and the character's kit; a week, since the meta moves with patches
   // what code can check a habit with, and what the learn call is told about each
   const CHECKS = {
     aim: 'code measures crosshair height against enemy heads (first-person shooters)',
     shots: 'code reads the ammo counter to tell whether the player fired',
     engine: "code reads every move off the board and a chess engine scores it: each of the player's moves gets its centipawn loss (chess)",
+    abilities: 'the clip read around every fight lists each ability the player used, from their ability icons and its effect on screen',
   };
   // The center of a first-person view, where the aim is measured: geometry, the same in any such game.
   const AIM = [0.3, 0.22, 0.4, 0.56];
+  const MIN_FEED_H = 0.12; // of the screen: about five lines of a kill feed
   const MAX_ROWS_PER_MINUTE = 25; // new kill-feed rows a minute at a match's busiest: more means the layout is wrong
   const DEAD_FOR_ROUNDS = 30; // s: without a detected round start, a death in a round mode is over after this
 
@@ -30,6 +37,9 @@
       properties: {
         game: str('the game, or a short description if unknown'),
         genre: { type: 'string', enum: GENRES },
+        view: { type: 'string', enum: VIEWS, description: "own_screen: the player's own game screen, its camera following the one player they control (first or third person). spectator: a broadcast, coaching film, replay, or a match filmed from the stands, where many players are on screen and the camera follows the action" },
+        sides: { type: 'array', maxItems: 4, description: 'in spectator footage, the teams or players on each side and how to tell them apart on screen; empty otherwise', items: { type: 'object', properties: { name: str('the side as the screen names it (a team name, a score bug), or by its look'), look: str('how its players look on screen: jersey, helmet, or kit colors, markers') }, required: ['name', 'look'] } },
+        unit: str("one unit of play in the game's own word (a round, a play, a point, a rally, a possession, a hand), or empty when play is continuous"),
         first_person: { type: 'boolean' },
         crosshair_center: { type: 'boolean' },
         fov_h: { type: 'number', description: "the game's default horizontal field of view in degrees, 0 if unknown" },
@@ -42,10 +52,13 @@
         ally_rgb: { type: 'array', items: { type: 'integer' }, description: "the RGB of the kill feed's bar or text color for the player's team, 0-255" },
         enemy_rgb: { type: 'array', items: { type: 'integer' }, description: "the same for the other team" },
         own_rows: str("how the kill feed marks the player's own kills and deaths, if it does"),
+        player_name: str("the player's own name, exactly, only where the screen marks it as theirs (highlighted in a team list or scoreboard, or over the character the camera follows); empty when it doesn't, since names over other characters are other players'"),
+        player_side: str("the player's own team or side as the HUD shows it: its color (the color of their own car, name, or bar) or its name; empty in a game without sides"),
+        character: str("the character the player plays (an agent, hero, legend, champion, or fighter), by its in-game name, from the portrait or the ability icons; empty when the game has none or it doesn't show"),
         cues: { type: 'array', items: { type: 'string' } },
         key_moments: str('one sentence: the moments where the player wins or loses something'),
       },
-      required: ['game', 'genre', 'first_person', 'crosshair_center', 'team_game', 'rounds', 'elements', 'cues', 'key_moments'],
+      required: ['game', 'genre', 'view', 'first_person', 'crosshair_center', 'team_game', 'rounds', 'elements', 'cues', 'key_moments'],
     };
   }
 
@@ -79,27 +92,56 @@
 
   /**
    * The profile from the learn call's answer and the research on what matters in the game: the same shape every tool
-   * reads. Habits are the research's costly mistakes; each keeps a check only when code can really make it here (aim
-   * needs a first-person crosshair and a game where aim has a height target, shots an ammo counter, the engine a board).
+   * reads. The research is the coach's to ask for (agent.js research), so a profile learned from the recording alone has
+   * no habits yet; with research given, its habits come from habitsFor.
    */
-  function toProfile(raw, checks = Object.keys(CHECKS), research = null) {
-    const regions = mergeBoxes(raw?.elements);
-    const firstPerson = !!raw?.first_person, center = raw?.crosshair_center !== false;
-    if (firstPerson && center) regions.aim = AIM;
-    const aimTarget = AIM_TARGETS.includes(research?.aimTarget) ? research.aimTarget : 'none';
-    const habits = [];
-    for (const h of Array.isArray(research?.mistakes) ? research.mistakes : Array.isArray(raw?.habits) ? raw.habits : []) {
+  /**
+   * The coach's habits from research: the game's costly mistakes, then up to 3 of the player's character's. Each keeps a
+   * check only when code can really make it in this recording: aim needs the aim region and a game where aim has a
+   * height target, shots an ammo counter, the engine a board. profile: { regions }; research as researchGame returns it.
+   */
+  function habitsFor(research, { regions = {} } = {}, checks = Object.keys(CHECKS)) {
+    const aimTarget = AIM_TARGETS.includes(research?.aimTarget) ? research.aimTarget : 'none', habits = [];
+    const found = Array.isArray(research?.mistakes) ? [...research.mistakes, ...(research.character?.mistakes || []).slice(0, 3), ...(research.role?.mistakes || []).slice(0, 3)] : [];
+    for (const h of found) {
       const id = slug(h?.id || h?.name);
       if (!id || habits.some((x) => x.id === id) || !String(h?.name || '').trim()) continue;
       const by = checks.includes(h.checked_by) ? h.checked_by : null;
       const aimable = regions.aim && (aimTarget === 'head' || aimTarget === 'body');
-      habits.push({ id, name: String(h.name).trim().slice(0, 60), signs: String(h.signs || '').trim().slice(0, 300), drill: String(h.drill || '').trim().slice(0, 300), ...(h.cost ? { cost: String(h.cost).trim().slice(0, 200) } : {}), ...(by === 'aim' && aimable ? { measuredBy: 'aim' } : {}), ...(by === 'engine' && regions.board ? { measuredBy: 'engine' } : {}), ...(by === 'shots' && regions.ammo ? { needsShots: true } : {}) });
+      habits.push({ id, name: String(h.name).trim().slice(0, 60), signs: String(h.signs || '').trim().slice(0, 300), drill: String(h.drill || '').trim().slice(0, 300), ...(h.cost ? { cost: String(h.cost).trim().slice(0, 200) } : {}), ...(by === 'aim' && aimable ? { measuredBy: 'aim' } : {}), ...(by === 'engine' && regions.board ? { measuredBy: 'engine' } : {}), ...(by === 'shots' && regions.ammo ? { needsShots: true } : {}), ...(by === 'abilities' ? { byAbilities: true } : {}) });
     }
+    return habits;
+  }
+  /** The research as the profile keeps it: what the coach and the report read. */
+  const researchBrief = (research) => (research ? { rewards: research.rewards, systems: research.systems, priorities: research.priorities, engagements: research.engagements, meta: research.meta || null, reference: research.reference || null, sources: research.sources, facets: research.facets || null, researched: research.researched, character: research.character || null, role: research.role || null } : null);
+
+  function toProfile(raw, checks = Object.keys(CHECKS), research = null) {
+    const regions = mergeBoxes(raw?.elements);
+    // a kill feed runs from a screen edge, and a box drawn short of it cuts its names off (Marvel Rivals, Oct 22): one
+    // ending near an edge is taken to it
+    // and it holds several lines: a box drawn round the one line a frame showed (Marvel Rivals: 0.02 of the screen tall)
+    // loses lines that scroll on in a fight, so a thin one reaches toward the middle of the screen, where feeds grow
+    if (regions.killfeed) {
+      let [x, y, w, h] = regions.killfeed;
+      if (x + w > 0.85) w = 1 - x;
+      else if (x < 0.15) { w += x; x = 0; }
+      if (h < MIN_FEED_H) { if (y + h / 2 < 0.5) h = MIN_FEED_H; else { y = Math.max(0, y + h - MIN_FEED_H); h = MIN_FEED_H; } }
+      regions.killfeed = [x, y, w, Math.min(h, 1 - y)].map((v) => Math.round(v * 1000) / 1000);
+    }
+    const view = raw?.view === 'spectator' ? 'spectator' : 'own_screen';
+    // footage of the whole match has no crosshair of the player's: its center is wherever the camera points
+    const firstPerson = view === 'own_screen' && !!raw?.first_person, center = raw?.crosshair_center !== false;
+    if (firstPerson && center) regions.aim = AIM;
+    const sides = view === 'spectator' ? (Array.isArray(raw?.sides) ? raw.sides : []).filter((x) => String(x?.name || '').trim()).slice(0, 4).map((x) => ({ name: String(x.name).trim().slice(0, 40), look: String(x.look || '').trim().slice(0, 120) })) : [];
+    const aimTarget = AIM_TARGETS.includes(research?.aimTarget) ? research.aimTarget : 'none';
+    const habits = habitsFor(research, { regions }, checks);
     const respawn = +raw?.respawn_seconds;
     return {
       learned: true,
       name: String(raw?.game || 'this game').trim().slice(0, 60),
       genre: GENRES.includes(raw?.genre) ? raw.genre : 'other',
+      view,
+      ...(view === 'spectator' ? { sides, unit: String(raw?.unit || '').trim().toLowerCase().slice(0, 30) || 'play' } : {}),
       firstPerson,
       teamGame: !!raw?.team_game,
       rounds: !!raw?.rounds,
@@ -113,64 +155,237 @@
       cues: (Array.isArray(raw?.cues) ? raw.cues : []).map((c) => String(c).trim()).filter(Boolean).slice(0, 8),
       keyMoments: String(raw?.key_moments || '').trim().slice(0, 300),
       aimTarget,
-      research: research ? { rewards: research.rewards, priorities: research.priorities, engagements: research.engagements, sources: research.sources, researched: research.researched } : null,
+      character: research?.character?.name || String(raw?.character || '').trim().slice(0, 40) || null,
+      playerName: String(raw?.player_name || '').trim().slice(0, 40) || null,
+      playerSide: String(raw?.player_side || '').trim().toLowerCase().slice(0, 40) || null,
+      research: researchBrief(research),
       habits,
     };
   }
 
   // ---------- what matters in the game, from the web ----------
+  const MISTAKE = { type: 'object', properties: { name: str('a few words'), signs: str("how it shows on the player's screen"), cost: str('why it costs, one sentence'), drill: str('one specific way to practice fixing it'), checked_by: { type: 'string' } }, required: ['name', 'signs', 'cost', 'drill', 'checked_by'] };
   const RESEARCH_SCHEMA = {
     type: 'object',
     properties: {
-      rewards: str('what the game scores or rewards a player for, one sentence'),
+      rewards: str('what wins a match and earns rank in it, one sentence; never cosmetic rewards'),
+      systems: { type: 'array', items: { type: 'object', properties: { name: str("a few words, in the game's own terms"), matters: str('how good players use it to win, one or two sentences') }, required: ['name', 'matters'] } },
       priorities: { type: 'array', items: { type: 'string' } },
       engagements: str('when a fight is worth taking and what makes one good or bad, one or two sentences; empty if the game has no fights'),
       aim_target: { type: 'string', enum: AIM_TARGETS },
-      mistakes: { type: 'array', items: { type: 'object', properties: { name: str('a few words'), signs: str("how it shows on the player's screen"), cost: str('why it costs, one sentence'), drill: str('one specific way to practice fixing it'), checked_by: { type: 'string' } }, required: ['name', 'signs', 'cost', 'drill', 'checked_by'] } },
+      mistakes: { type: 'array', items: MISTAKE },
+      meta: { type: 'object', properties: {
+        patch: str('the latest patch or season the sources name, its number or date'),
+        strong: { type: 'array', items: { type: 'object', properties: { name: str('a character, weapon, or strategy'), why: str('why it is strong now, one sentence') }, required: ['name', 'why'] } },
+        changes: { type: 'array', items: { type: 'object', properties: { what: str('what changed: a rework, buff, or nerf, by name'), effect: str('what it changes in play, one sentence') }, required: ['what', 'effect'] } },
+      }, required: ['patch', 'strong', 'changes'] },
+      reference: { type: 'object', properties: {
+        characters: { type: 'array', items: { type: 'object', properties: { name: str('as the game names it'), role: str('its role or class') }, required: ['name', 'role'] } },
+        maps: { type: 'array', items: { type: 'string' } },
+        weapons: { type: 'array', items: { type: 'string' } },
+        other: { type: 'array', items: { type: 'object', properties: { kind: str('what the list is: attachments, items, runes, cards...'), names: { type: 'array', items: { type: 'string' } } }, required: ['kind', 'names'] } },
+      }, required: ['characters', 'maps', 'weapons', 'other'] },
     },
-    required: ['rewards', 'priorities', 'engagements', 'aim_target', 'mistakes'],
+    required: ['rewards', 'systems', 'priorities', 'engagements', 'aim_target', 'mistakes', 'meta', 'reference'],
+  };
+  const CHARACTER_SCHEMA = {
+    type: 'object',
+    properties: {
+      role: str("the character's role or class, a few words"),
+      abilities: { type: 'array', items: { type: 'object', properties: { name: str('its exact in-game name'), slot: str("its key or kind as the game names it: a key such as Q, E, or C, or the game's word for it (passive, tactical, ultimate, special move)"), does: str('what it does, one sentence'), use: str('how good players use it to win fights, one sentence') }, required: ['name', 'slot', 'does', 'use'] } },
+      mistakes: { type: 'array', items: MISTAKE },
+    },
+    required: ['role', 'abilities', 'mistakes'],
+  };
+  // The player's role in footage of a whole match (their position, what they play), as they said it: what wins and
+  // loses one unit of play for someone in it, as coaches judge it on film, and its costly mistakes.
+  const ROLE_SCHEMA = {
+    type: 'object',
+    properties: {
+      role: str("the role, in the game's own word for it"),
+      won_unit: str('what counts as the player winning one unit of play in this role, one or two sentences'),
+      lost_unit: str('what counts as the player losing one unit of play in this role, one or two sentences'),
+      mistakes: { type: 'array', items: MISTAKE },
+    },
+    required: ['role', 'won_unit', 'lost_unit', 'mistakes'],
+  };
+  const MIN_SOURCES = 2; // web pages a search has to cite to count as research
+  // What a habit has to be about for a code check to measure it. A habit tagged with a check that can't see it would be
+  // judged by numbers about something else: the research tagged Valorant's "dry peeking" with aim, which measures only
+  // crosshair height, and gave the chess engine to habits in shooters and fighting games.
+  const CHECKABLE = { aim: /crosshair|\baim|\bhead|height/i, shots: /fir(e|ing)|shoot|spray|reload|\bammo|magazine|burst/i, abilities: /abilit|utility|ultimate|\bults?\b|cooldown|tactical|skill/i };
+  const checkFor = (m, checks, genre) => {
+    const by = m?.checked_by;
+    if (!checks.includes(by)) return 'none';
+    if (by === 'engine') return genre === 'chess' ? 'engine' : 'none';
+    return !CHECKABLE[by] || CHECKABLE[by].test(`${m.name} ${m.signs}`) ? by : 'none';
   };
   const textList = (xs, n, len) => (Array.isArray(xs) ? xs : []).map((x) => String(x || '').trim()).filter(Boolean).slice(0, n).map((x) => x.slice(0, len));
-  /** The research answer cleaned to its shape, or null when it says nothing usable. */
-  function cleanResearch(r, checks, { sources = [], researched = false } = {}) {
+  const cleanMistakes = (list, checks, genre, n) => (Array.isArray(list) ? list : []).filter((m) => String(m?.name || '').trim()).slice(0, n)
+    .map((m) => ({ name: String(m.name).trim().slice(0, 60), signs: String(m.signs || '').trim().slice(0, 300), cost: String(m.cost || '').trim().slice(0, 200), drill: String(m.drill || '').trim().slice(0, 300), checked_by: checkFor(m, checks, genre) }));
+  const cleanSources = (sources) => (sources || []).filter((x) => x?.uri).slice(0, 16).map((x) => ({ title: String(x.title || x.uri).slice(0, 80), uri: x.uri, ...(x.facet ? { facet: x.facet } : {}) }));
+  /**
+   * The research answer cleaned to its shape, or null when it says nothing usable. Code has the last word on what can be
+   * checked: a habit keeps its check only when the check can see it (CHECKABLE; the engine only in chess), a game other
+   * than a shooter has no aim target, and an answer counts as researched only with MIN_SOURCES web pages behind it.
+   */
+  function cleanResearch(r, checks, { sources = [], researched = false, genre = 'other' } = {}) {
     if (!r || typeof r !== 'object') return null;
-    const mistakes = (Array.isArray(r.mistakes) ? r.mistakes : []).filter((m) => String(m?.name || '').trim()).slice(0, 7)
-      .map((m) => ({ name: String(m.name).trim().slice(0, 60), signs: String(m.signs || '').trim().slice(0, 300), cost: String(m.cost || '').trim().slice(0, 200), drill: String(m.drill || '').trim().slice(0, 300), checked_by: checks.includes(m.checked_by) ? m.checked_by : 'none' }));
-    if (!mistakes.length && !textList(r.priorities, 6, 80).length) return null;
+    const mistakes = cleanMistakes(r.mistakes, checks, genre, 8);
+    if (!mistakes.length && !textList(r.priorities, 8, 80).length) return null;
+    const cited = cleanSources(sources);
     return {
-      rewards: (Array.isArray(r.rewards) ? r.rewards.join('; ') : String(r.rewards || '')).trim().slice(0, 240), priorities: textList(r.priorities, 6, 80), engagements: String(r.engagements || '').trim().slice(0, 300),
-      aimTarget: AIM_TARGETS.includes(r.aim_target) ? r.aim_target : 'none', mistakes,
-      sources: (sources || []).filter((x) => x?.uri).slice(0, 8).map((x) => ({ title: String(x.title || x.uri).slice(0, 80), uri: x.uri })), researched,
+      rewards: (Array.isArray(r.rewards) ? r.rewards.join('; ') : String(r.rewards || '')).trim().slice(0, 240),
+      systems: (Array.isArray(r.systems) ? r.systems : []).filter((x) => String(x?.name || '').trim()).slice(0, 8).map((x) => ({ name: String(x.name).trim().slice(0, 60), matters: String(x.matters || '').trim().slice(0, 300) })),
+      priorities: textList(r.priorities, 8, 80), engagements: String(r.engagements || '').trim().slice(0, 300),
+      aimTarget: genre === 'shooter' && AIM_TARGETS.includes(r.aim_target) ? r.aim_target : 'none', mistakes,
+      meta: cleanMeta(r.meta), reference: cleanReference(r.reference),
+      sources: cited, researched: researched && cited.length >= MIN_SOURCES,
     };
+  }
+  const pairs = (xs, a, b, n, len) => (Array.isArray(xs) ? xs : []).filter((x) => String(x?.[a] || '').trim()).slice(0, n).map((x) => ({ [a]: String(x[a]).trim().slice(0, 60), [b]: String(x[b] || '').trim().slice(0, len) }));
+  const cleanMeta = (m) => (m && typeof m === 'object' ? { patch: String(m.patch || '').trim().slice(0, 60), strong: pairs(m.strong, 'name', 'why', 8, 200), changes: pairs(m.changes, 'what', 'effect', 8, 200) } : null);
+  const cleanReference = (r) => (r && typeof r === 'object' ? {
+    characters: pairs(r.characters, 'name', 'role', 80, 40), maps: textList(r.maps, 40, 40), weapons: textList(r.weapons, 60, 40),
+    other: (Array.isArray(r.other) ? r.other : []).filter((x) => String(x?.kind || '').trim()).slice(0, 6).map((x) => ({ kind: String(x.kind).trim().slice(0, 40), names: textList(x.names, 60, 40) })),
+  } : null);
+  /** A character's kit cleaned to its shape, or null without abilities. */
+  function cleanCharacter(r, name, checks, genre, { sources = [], researched = false } = {}) {
+    const abilities = (Array.isArray(r?.abilities) ? r.abilities : []).filter((a) => String(a?.name || '').trim()).slice(0, 8)
+      .map((a) => ({ name: String(a.name).trim().slice(0, 60), slot: String(a.slot || '').trim().slice(0, 30), does: String(a.does || '').trim().slice(0, 200), use: String(a.use || '').trim().slice(0, 200) }));
+    if (!abilities.length) return null;
+    const cited = cleanSources(sources);
+    return { name: String(name).trim().slice(0, 40), role: String(r.role || '').trim().slice(0, 60), abilities, mistakes: cleanMistakes(r.mistakes, checks, genre, 5), sources: cited, researched: researched && cited.length >= MIN_SOURCES };
+  }
+  /** A role's research cleaned to its shape, or null when it says neither what loses a unit nor any mistake. */
+  function cleanRole(r, said, checks, genre, { sources = [], researched = false } = {}) {
+    const lost = String(r?.lost_unit || '').trim().slice(0, 300), won = String(r?.won_unit || '').trim().slice(0, 300), mistakes = cleanMistakes(r?.mistakes, checks, genre, 5);
+    if (!lost && !mistakes.length) return null;
+    const cited = cleanSources(sources);
+    return { name: String(r?.role || said).trim().slice(0, 40), said: String(said).trim().slice(0, 120), won, lost, mistakes, sources: cited, researched: researched && cited.length >= MIN_SOURCES };
   }
   const gameKey = (name) => String(name || '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
   const readCache = () => { try { return JSON.parse(root.localStorage?.getItem(RESEARCH_STORE) || '{}') || {}; } catch { return {}; } };
+  const writeCache = (key, value) => { const cache = readCache(); cache[key] = { value, expires: Date.now() + RESEARCH_DAYS * 864e5 }; try { root.localStorage?.setItem(RESEARCH_STORE, JSON.stringify(cache)); } catch {} };
+  const cached = (key) => { const c = readCache()[key]; return c && c.expires > Date.now() ? c.value : null; };
+
   /**
-   * What matters in a game, found on the web: what it rewards, what top players prioritize, when fights are worth it,
-   * where good players aim, and its costly mistakes, each with what code can check it with. One Google-grounded call
-   * (Gemini's search models), kept for RESEARCH_DAYS per game, so a game costs it once. When search isn't available,
-   * the same question goes to the model without the web, and the answer says so (researched false, no sources).
+   * One web search, answered in prose: asked once more, to search first, when it cites fewer than MIN_SOURCES pages.
+   * Returns { text, sources }, or null when search isn't available. opts is shared across one research's searches.
    */
-  async function researchGame({ name, genre, checks = Object.keys(CHECKS), signal, onNotice }) {
-    const Gm = root.Gemini, key = gameKey(name), cache = readCache();
-    if (cache[key] && cache[key].expires > Date.now()) return cache[key].research;
-    const ask = `What decides how well a player does in ${name} (${genre})? Use what coaches, top players, and the community (guides, Reddit, the game's own pages) say, not general gaming advice. rewards: what wins a match or earns rank in it (rounds, placement, kills, rating...), one sentence; not cosmetics or progression unlocks. priorities: the 3 to 6 things that matter most, a few words each. engagements: when a fight is worth taking and what makes one good or bad; empty if the game has no fights. aim_target: where good players aim in fights in this game: head, body, tracking (staying on target matters more than where), or none. mistakes: 5 to 7 costly habits, each with how it shows on the player's own screen, why it costs, a drill, and checked_by, what can check it in code: ${checks.map((c) => `${c} (${CHECKS[c]})`).join('; ')}; or none.`;
-    let research = null, searchError = '';
+  async function search(ask, facet, opts) {
+    // once a search has failed (no search model, a used-up quota, each failure after a minute's waits), the rest of
+    // this research doesn't try: it would wait out the same quota again for every question
+    if (opts.down) return null;
+    let found = null;
     try {
-      const r = await Gm.grounded(`${ask}\nAnswer only with JSON with the keys rewards, priorities, engagements, aim_target, mistakes (each mistake: name, signs, cost, drill, checked_by).`, { signal, onNotice });
-      research = cleanResearch(Gm.parseJSON(r.text), checks, { sources: r.sources, researched: true });
-      if (!research) searchError = 'the search answer had nothing usable';
+      for (let k = 0; k < 2 && (!found || found.sources.length < MIN_SOURCES); k++) {
+        const r = await root.Gemini.grounded(k ? `${ask}\nSearch the web for this first, and answer from the pages you find.` : ask, { signal: opts.signal, onNotice: opts.onNotice });
+        if (r.text && (!found || r.sources.length > found.sources.length)) found = r;
+      }
     } catch (e) {
       if (e?.name === 'AbortError') throw e;
-      searchError = String(e?.message || e).slice(0, 160);
+      if (!found) opts.down = true;
     }
+    return found && { text: found.text, sources: found.sources.map((x) => ({ ...x, facet })) };
+  }
+  /**
+   * Several searches, each answered in prose, put into one schema by a call without search: asked for JSON outright, the
+   * search came back as prose for 2 of 6 games. A question whose search fails is answered from the model's own
+   * knowledge, and its facet counts 0 sources. asks: [{ facet, ask }]. Returns { answer, sources, researched, facets }.
+   */
+  async function researchAll(asks, schema, shape, opts) {
+    const Gm = root.Gemini, found = [];
+    for (let k = 0; k < asks.length; k += 2) found.push(...(await Promise.all(asks.slice(k, k + 2).map((a) => search(a.ask, a.facet, opts))))); // two at a time
+    const web = found.some(Boolean);
+    // a search that failed (no search model, a used-up quota) is answered from the model's own knowledge, and marked so
+    const prose = await Promise.all(asks.map(async (a, i) => found[i]?.text || Gm.textOf(await Gm.generate({ contents: [{ role: 'user', parts: [{ text: a.ask }] }], generationConfig: { temperature: 0.2 } }, opts))));
+    const text = asks.map((a, i) => (prose[i] ? `## ${a.facet}${found[i] ? '' : " (the model's own knowledge, not the web)"}\n${prose[i]}` : '')).filter(Boolean).join('\n\n');
+    const resp = await Gm.generate({ contents: [{ role: 'user', parts: [{ text: `${shape}\n\n${text}` }] }], generationConfig: { temperature: 0, responseMimeType: 'application/json', responseSchema: schema } }, opts);
+    // a few pages from each search before more from any one, so the meta's and the wiki's show beside the guides'
+    const seen = new Set(), sources = [];
+    for (let k = 0; found.some((f) => f?.sources[k]); k++) for (const f of found) { const x = f?.sources[k]; if (x && !seen.has(x.uri)) { seen.add(x.uri); sources.push(x); } }
+    return { answer: Gm.parseJSON(Gm.textOf(resp)), sources, researched: web, facets: Object.fromEntries(asks.map((a, i) => [a.facet, found[i]?.sources.length || 0])) };
+  }
+
+  /**
+   * What matters in a game, from the web, searched the way a player would look it up: improvement guides and coaching,
+   * what the community (Reddit, forums) calls good and bad habits, the current meta (the patch, what's strongest, recent
+   * reworks), and the game's wiki or official pages (every character, map, weapon, and other pick). Nothing in the
+   * questions is about one game. One call then puts it in shape: what wins, the systems that decide fights and matches
+   * and how good players use them, priorities, when fights are worth it, where good players aim, costly habits (each
+   * with what code can check it with), the meta, and the lists. With the character the player plays (an agent, hero,
+   * legend, champion, fighter), also its kit as of the latest patch: each ability by its in-game name, what it does, how
+   * it's used, and the mistakes players make with it. Kept for RESEARCH_DAYS, the game and each character apart: the
+   * meta moves with patches.
+   */
+  async function researchGame({ name, genre, character = '', role = '', unit = 'play', checks = Object.keys(CHECKS), signal, onNotice }) {
+    const key = gameKey(name), opts = { signal, onNotice }; // shared by every search in this research, so a failure is learned once
+    const tagging = `checked_by, for each mistake, is what can check it in code: ${checks.map((c) => `${c} (${CHECKS[c]})`).join('; ')}; or none.`;
+    let research = cached(key);
     if (!research) {
-      const resp = await Gm.generate({ contents: [{ role: 'user', parts: [{ text: ask }] }], generationConfig: { temperature: 0.2, responseMimeType: 'application/json', responseSchema: RESEARCH_SCHEMA } }, { signal, onNotice });
-      research = cleanResearch(Gm.parseJSON(Gm.textOf(resp)), checks, { researched: false });
-      if (research) research.searchError = searchError;
+      const game = `${name} (${genre})`;
+      const asks = [
+        { facet: 'guides', ask: `How do players get better at ${game}? Use improvement guides and coaching advice from top players and coaches, not general gaming advice, in the game's own terms: what wins a match and what earns rank (not cosmetic rewards); the core systems that decide fights and matches (abilities and ultimates, roles or classes, character picks and counters, economy, objectives, resources, the map or zone, whatever this game has) and how good players use each; the 5 to 8 things that matter most, most important first; when a fight is worth taking and what makes one good or bad; and where good players aim, if the game has aiming.` },
+        { facet: 'community', ask: `What do ${game} players on Reddit and the game's forums say are the good and bad habits that decide matches? Give 6 to 8 costly bad habits, each with how it shows on the player's own screen, why it costs, and one specific drill, and the good habits that beat them.` },
+        { facet: 'meta', ask: `What is the current meta in ${game}? Name the latest patch or season (its number or date), the strongest characters, weapons, or strategies right now and why, and recent changes (reworks, buffs, nerfs to abilities, weapons, or maps) and what they change in play. Use patch notes, tier lists, and meta reviews.` },
+        { facet: 'wiki', ask: `From ${name}'s wiki or official site, list every playable character by its own name, all of them even if there are over a hundred (not just the classes they fall into), each with its role or class; every map; every weapon or weapon class; and anything else a player picks before or during a match (attachments, items, runes, cards...), by the names the game uses.` },
+      ];
+      const shape = `Put this research on ${name} into the shape asked for, keeping its facts and the game's own names; add nothing it doesn't say. rewards: what wins and earns rank, never cosmetics. systems: up to 8. priorities: 3 to 8, a few words each. aim_target: head, body, tracking (staying on target matters more than where), or none when the game has no aiming. mistakes: 6 to 8, from the guides and the community. meta: as the meta research says. reference: the lists as the wiki research gives them, characters by name, never classes in their place. ${tagging}`;
+      const r = await researchAll(asks, RESEARCH_SCHEMA, shape, opts);
+      research = cleanResearch(r.answer, checks, { sources: r.sources, researched: r.researched, genre });
+      if (research) { research.facets = r.facets; writeCache(key, research); }
     }
-    if (research) { cache[key] = { research, expires: Date.now() + RESEARCH_DAYS * 864e5 }; try { root.localStorage?.setItem(RESEARCH_STORE, JSON.stringify(cache)); } catch {} }
-    return research;
+    if (research && String(role || '').trim()) research = { ...research, role: await researchRole({ name, genre, role, unit, checks, tagging, opts }) };
+    if (!research || !String(character || '').trim()) return research;
+    // the character by the game's own name for it, when the wiki's list has it
+    const listed = research.reference?.characters?.find((c) => gameKey(c.name) === gameKey(character) || gameKey(c.name).replace(/ /g, '') === gameKey(character).replace(/ /g, ''));
+    const who = listed?.name || String(character).trim(), ckey = `${key}|${gameKey(who)}`;
+    let kit = cached(ckey);
+    if (!kit) {
+      const ask = `${who} in ${name}: their kit as of the latest patch, including any recent rework, from the game's wiki or official pages, patch notes, and guides from top players. Name each ability exactly as the game does, with its key or kind as the game names it (the key it's on, or the game's word: passive, tactical, ultimate, special move...), what it does, and how good players use it to win fights. Then their role, and the 3 to 5 most costly mistakes players make with ${who}, each with how it shows on the player's own screen, why it costs, and one specific drill.`;
+      const shape = `Put this research on ${who} in ${name} into the shape asked for, keeping every ability's exact in-game name; add nothing it doesn't say. ${tagging}`;
+      const r = await researchAll([{ facet: 'character', ask }], CHARACTER_SCHEMA, shape, opts);
+      kit = cleanCharacter(r.answer, who, checks, genre, r);
+      if (kit) writeCache(ckey, kit);
+    }
+    return kit ? { ...research, character: kit } : research;
+  }
+
+  /**
+   * What wins and loses one unit of play (a play, a point, a possession) for a player in the role they said they play,
+   * and the role's costly mistakes, from coaching on the web; kept like the game's research, per role and unit. The
+   * role is the player's own words, so it goes to the model as data. Its examples are from other games, so no answer
+   * is suggested for this one.
+   */
+  async function researchRole({ name, genre, role, unit, checks, tagging, opts }) {
+    const said = String(role).trim().slice(0, 120), rkey = `${gameKey(name)}|role:${gameKey(said)}|${gameKey(unit)}`;
+    const hit = cached(rkey);
+    if (hit) return hit;
+    const as = root.Gemini.untrusted(said, 120);
+    const ask = `In ${name} (${genre}), the player says they play as ${as}. As coaches judge a player in that role on film: what counts as that player winning one ${unit}, and what counts as them losing one, in the game's own terms (in tennis, say, a point lost on their serve or an unforced error; in basketball a turnover or a missed open shot); and the 3 to 5 most costly mistakes players in that role make, each with how it shows on film, why it costs, and one specific drill. Use coaching guides and analysis from coaches and top players.`;
+    const shape = `Put this research on playing ${as} in ${name} into the shape asked for, in the game's own terms; add nothing it doesn't say. ${tagging}`;
+    const r = await researchAll([{ facet: 'role', ask }], ROLE_SCHEMA, shape, opts);
+    const out = cleanRole(r.answer, said, checks, genre, r);
+    if (out) writeCache(rkey, out);
+    return out;
+  }
+
+  /**
+   * One question of the coach's own about the game, looked up on the web (one search, asked again when it cites fewer
+   * than MIN_SOURCES pages), or answered from the model's own knowledge when search fails, and marked so. Kept for
+   * RESEARCH_DAYS per game and question. Returns { answer, sources, researched }.
+   */
+  async function researchQuestion({ name, genre, question, signal, onNotice }) {
+    const q = String(question || '').trim().slice(0, 300), key = `${gameKey(name)}?${gameKey(q)}`;
+    const hit = cached(key);
+    if (hit) return hit;
+    const ask = `${q}\nThis is about ${name} (${genre}). Answer from what coaches, top players, the community, and the game's own pages say, in the game's own terms, in a short paragraph or a few points.`;
+    const found = await search(ask, 'question', { signal, onNotice });
+    const answer = found?.text || root.Gemini.textOf(await root.Gemini.generate({ contents: [{ role: 'user', parts: [{ text: ask }] }], generationConfig: { temperature: 0.2 } }, { signal, onNotice }));
+    const out = { answer: String(answer || '').trim().slice(0, 2400), sources: cleanSources(found?.sources), researched: (found?.sources?.length || 0) >= MIN_SOURCES };
+    if (out.answer) writeCache(key, out);
+    return out;
   }
 
   // ---------- pixel layout ----------
@@ -199,49 +414,114 @@
   }
 
   /**
-   * The two team colors of a kill feed, as hue ranges { ally, enemy }, from a hue histogram summed over many frames.
-   * The learn call gives each team's color as RGB (hues) and as a word (names); each takes the clearly present 10° bin
-   * nearest it (5% of the biggest or more), within 40° of the RGB's hue or 60° of the word's, so a wall or the sky
-   * behind the feed can't stand in for a team. ±25° around each. null when either has nothing near it, or both land
-   * on one bin (the feed doesn't color teams).
+   * Each pixel's hue in degrees (-1 for gray or dark), whether it's clear color rather than a muted shade (drawn by the
+   * same lines as C.pixelTeam), and whether it's white, so team colors can be tried many ways on one frame without
+   * measuring it again.
    */
-  function teamHues(bins, names = {}, hues = {}) {
-    const top = Math.max(...bins);
-    if (!top) return null;
-    // any clearly present bin counts, not only peaks: a red beside a bigger orange sits on its shoulder
-    const present = bins.map((v, i) => ({ hue: i * 10 + 5, v })).filter((p) => p.v >= top * 0.05);
-    const near = (hue, word) => {
-      const h = hue ?? nameHue(word), within = hue != null ? 40 : 60;
-      return h == null ? null : present.filter((p) => hueGap(p.hue, h) <= within).sort((x, y) => hueGap(x.hue, h) - hueGap(y.hue, h) || y.v - x.v)[0] || null;
-    };
-    const ally = near(hues.ally, names.ally), enemy = near(hues.enemy, names.enemy);
-    if (!ally || !enemy || ally === enemy) return null;
-    const range = (h) => [(h - 25 + 360) % 360, (h + 25) % 360];
-    return { ally: range(ally.hue), enemy: range(enemy.hue) };
+  function pixelHues({ data: d, width: w, height: h }) {
+    const hue = new Int16Array(w * h).fill(-1), clear = new Uint8Array(w * h), white = new Uint8Array(w * h);
+    for (let i = 0; i < w * h; i++) {
+      const r = d[i * 4], g = d[i * 4 + 1], b = d[i * 4 + 2], mx = Math.max(r, g, b), mn = Math.min(r, g, b), sat = mx ? (mx - mn) / mx : 0;
+      if (mx > 205 && sat < 0.2) white[i] = 1;
+      if (sat < 0.12 || mx < 85) continue;
+      hue[i] = Math.round(((mx === r ? (g - b) / (mx - mn) : mx === g ? 2 + (b - r) / (mx - mn) : 4 + (r - g) / (mx - mn)) * 60 + 360) % 360);
+      clear[i] = sat >= 0.35 && mx >= 110 ? 1 : 0;
+    }
+    return { hue, clear, white, width: w, height: h };
+  }
+
+  const TEAM = [null, 'ally', 'enemy'];
+  /**
+   * The kill-feed rows in one frame under a guess at the team colors. A row puts the killer's color beside the victim's,
+   * so its lines hold both teams' clear color, where a wall or the sky holds one; across a band of such lines, a row is
+   * the rightmost run of one team's color that meets a run of the other's, with a name in white on it. Names and icons
+   * leave gaps a run reads through. px from pixelHues; colors { ally, enemy } as hue ranges. Returns
+   * [{ y0, y1, x0, x1, left, right, cols }], cols the clear team-color share of each column.
+   */
+  function twoTeamRows({ hue, clear, white, width: w, height: h }, colors) {
+    const kind = new Uint8Array(w * h); // 1 ally, 2 enemy, 3 and 4 their muted shades
+    for (let i = 0; i < w * h; i++) {
+      if (hue[i] < 0) continue;
+      const t = inRange(hue[i], colors.ally) ? 1 : inRange(hue[i], colors.enemy) ? 2 : 0;
+      kind[i] = t && !clear[i] ? t + 2 : t;
+    }
+    // a line holds a team when 3% of it is that team's color, muted shades included (a see-through bar over a wall
+    // is paler); the lines through the names can fall short, so a band reads through two of them
+    const need = Math.max(6, w * 0.03), bands = [];
+    let top = -1, last = -1;
+    for (let y = 0; y <= h; y++) {
+      let a = 0, e = 0;
+      for (let x = 0; y < h && x < w; x++) { const k = kind[y * w + x]; if (k === 1 || k === 3) a++; else if (k === 2 || k === 4) e++; }
+      if (y < h && a >= need && e >= need) { if (top < 0) top = y; last = y; continue; }
+      if (top < 0 || (y < h && y - last <= 2)) continue;
+      if (last - top >= 5) bands.push({ y0: top, y1: last });
+      top = -1;
+    }
+    return bands.map(({ y0, y1 }) => {
+      const n = y1 - y0 + 1, cols = [], runs = [];
+      for (let x = 0; x < w; x++) {
+        let a = 0, e = 0, sure = 0;
+        for (let y = y0; y <= y1; y++) { const k = kind[y * w + x]; if (k === 1 || k === 3) a++; else if (k === 2 || k === 4) e++; if (k === 1 || k === 2) sure++; }
+        cols.push(sure / n);
+        const t = a >= e && a / n >= 0.3 ? 1 : e / n >= 0.3 ? 2 : 0, last = runs.at(-1);
+        if (!t) continue;
+        if (last && last.t === t && x - last.x1 <= n * 2) last.x1 = x; else runs.push({ t, x0: x, x1: x });
+      }
+      // runs a row tall or wider, joined again across the slivers of the other color between them
+      const solid = [];
+      for (const r of runs.filter((r2) => r2.x1 - r2.x0 + 1 >= n)) {
+        const last = solid.at(-1);
+        if (last && last.t === r.t && r.x0 - last.x1 <= n * 2) last.x1 = r.x1; else solid.push({ ...r });
+      }
+      // and a name in white on one side at least (a short one can fall short), which a wall or a portrait doesn't carry
+      const named = ({ x0, x1 }) => { let n2 = 0; for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) n2 += white[y * w + x]; return n2 / ((x1 - x0 + 1) * n) >= 0.03; };
+      for (let k = solid.length - 1; k > 0; k--) {
+        const killer = solid[k - 1], victim = solid[k];
+        if (killer.t !== victim.t && victim.x0 - killer.x1 <= n) return named(killer) || named(victim) ? { y0, y1, x0: killer.x0, x1: victim.x1, left: TEAM[killer.t], right: TEAM[victim.t], cols } : null;
+      }
+      return null;
+    }).filter(Boolean);
   }
 
   /**
-   * Color bands in one crop with their horizontal extent: x0 and x1, the first and last columns 30% one team's color.
-   * Some games fade a row's color toward one edge, so a band found by clear color grows up and down, by up to its own
-   * height, while the lines within its extent stay half colored, muted shades included; half a row is no row.
+   * twoTeamRows over the layout samples, less what stays put: a kill-feed row leaves within seconds, while an overlay of
+   * two colors (a stream's graphs, a scoreboard bar) sits in one place frame after frame. A band whose place and size
+   * repeat, to 3 px, in a tenth of the samples or more isn't a row.
    */
-  function bandExtents(img, colors) {
-    const { data: d, width: w, height: h } = img;
-    const team = (x, y) => { const k = (y * w + x) * 4; return C.pixelTeam(d[k], d[k + 1], d[k + 2], colors); };
-    return C.colorBands(C.teamLines(img, colors), w).map((b) => {
-      const clearCols = [];
-      for (let x = 0; x < w; x++) { let n = 0; for (let y = b.y0; y <= b.y1; y++) { const t = team(x, y); if (t === 1 || t === 2) n++; } clearCols.push(n / (b.y1 - b.y0 + 1)); }
-      const on = clearCols.map((v, x) => (v >= 0.3 ? x : -1)).filter((x) => x >= 0);
-      if (!on.length) return null;
-      const x0 = on[0], x1 = on.at(-1), colored = (y) => { let n = 0; for (let x = x0; x <= x1; x++) if (team(x, y)) n++; return n / (x1 - x0 + 1) >= 0.5; };
-      const grow = b.y1 - b.y0 + 1;
-      let y0 = b.y0, y1 = b.y1;
-      while (y0 > 0 && b.y0 - y0 < grow && colored(y0 - 1)) y0--;
-      while (y1 < h - 1 && y1 - b.y1 < grow && colored(y1 + 1)) y1++;
-      const cols = [];
-      for (let x = 0; x < w; x++) { let n = 0; for (let y = y0; y <= y1; y++) { const t = team(x, y); if (t === 1 || t === 2) n++; } cols.push(n / (y1 - y0 + 1)); }
-      return { y0, y1, x0, x1, cols };
-    }).filter(Boolean);
+  function feedRows(px, colors) {
+    const frames = px.map((p) => twoTeamRows(p, colors)), seen = new Map();
+    const key = (b) => [b.y0, b.y1, b.x0, b.x1].map((v) => Math.round(v / 3)).join(':');
+    for (const f of frames) for (const k of new Set(f.map(key))) seen.set(k, (seen.get(k) || 0) + 1);
+    const most = Math.max(4, frames.length * 0.1);
+    return frames.map((f) => f.filter((b) => seen.get(key(b)) < most));
+  }
+
+  /**
+   * The kill feed's two team colors, measured: a model names a teal "blue", and a wall the color of one team can fill
+   * most of the feed's box. Every pair of hues clearly present in the box (10° bins holding 0.5% of its colored pixels
+   * or more: the 8 biggest, and any within 30° of a reported color) is tried as ±15° ranges, and the pair under which
+   * the most rows line up as two teams side by side (alignedRows) wins. The colors the learn call reported only say
+   * which of the two is the player's team.
+   * px: pixelHues per frame; bins: the box's hue histogram; inBox and w as alignedRows takes them; refs { ally, enemy }:
+   * the reported hues, or null. Returns { colors, found } or null.
+   */
+  function feedColors(px, bins, inBox, w, refs) {
+    const total = bins.reduce((a, v) => a + v, 0);
+    const present = bins.map((v, i) => ({ hue: i * 10 + 5, v })).filter((b) => b.v >= total * 0.005).sort((a, b) => b.v - a.v);
+    const reported = present.filter((b) => [refs.ally, refs.enemy].some((r) => r != null && hueGap(b.hue, r) <= 30));
+    const hues = [...new Set([...present.slice(0, 8), ...reported].map((b) => b.hue))];
+    let best = null;
+    for (let i = 0; i < hues.length; i++) for (let j = i + 1; j < hues.length; j++) {
+      if (hueGap(hues[i], hues[j]) < 40) continue;
+      const colors = { ally: around(hues[i], 15), enemy: around(hues[j], 15) };
+      const found = alignedRows(feedRows(px, colors), inBox, w), n = found ? found.rows.flat().length : 0;
+      if (n > (best?.n ?? 0)) best = { n, pair: [hues[i], hues[j]], colors, found };
+    }
+    // a handful of rows over a whole match is a coincidence of colors, not a feed
+    if (!best || best.n < 8) return null;
+    // which hue is the player's team: the assignment nearer the reported colors
+    const [p, q] = best.pair, off = (a, b) => (refs.ally != null ? hueGap(a, refs.ally) : 0) + (refs.enemy != null ? hueGap(b, refs.enemy) : 0);
+    return { colors: off(q, p) < off(p, q) ? { ally: best.colors.enemy, enemy: best.colors.ally } : best.colors, found: best.found };
   }
 
   /**
@@ -260,9 +540,15 @@
     const tol = Math.max(4, w * 0.015), bin = (x) => Math.round(x / tol);
     const modeOf = (xs) => { const n = new Map(); for (const x of xs) n.set(bin(x), (n.get(bin(x)) || 0) + 1); return [...n].sort((a2, b2) => b2[1] - a2[1])[0]; };
     const right = modeOf(core.map((b) => b.x1)), left = modeOf(core.map((b) => b.x0));
-    const [key, at] = right[1] >= left[1] ? ['x1', right[0] * tol] : ['x0', left[0] * tol];
-    // a band one row tall, or two touching rows, ending on the shared edge
-    const rows = frames.map((f) => f.filter((b) => Math.abs(b[key] - at) <= tol * 1.5 && b.y1 - b.y0 + 1 >= height * 0.65 && b.y1 - b.y0 + 1 <= height * 2.4));
+    const key = right[1] >= left[1] ? 'x1' : 'x0', bin0 = (key === 'x1' ? right : left)[0];
+    // Rows whose victim portrait carries neither team's color stop short of the edge by its width, so the bands end in
+    // two clusters, two and a half rows' height apart at most; the edge is the outer one.
+    const reach = Math.max(tol * 1.5, height * 2.5), mode = median(core.map((b) => b[key]).filter((x) => bin(x) === bin0));
+    const ends = core.map((b) => b[key]).filter((x) => Math.abs(x - mode) <= reach).sort((a2, b2) => a2 - b2);
+    const at = ends[Math.floor((key === 'x1' ? 0.75 : 0.25) * (ends.length - 1))];
+    // a band one row tall, or two touching rows, ending on the shared edge or a portrait short of it
+    const past = (b) => (key === 'x1' ? b.x1 - at : at - b.x0), onEdge = (b) => past(b) <= tol * 1.5 && past(b) >= -reach;
+    const rows = frames.map((f) => f.filter((b) => onEdge(b) && b.y1 - b.y0 + 1 >= height * 0.65 && b.y1 - b.y0 + 1 <= height * 2.4));
     // and about as wide as the others: a long band that happens to end on the same edge is the HUD or the scenery
     const wide = median(rows.flat().map((b) => b.x1 - b.x0));
     const fits = (b) => b.x1 - b.x0 >= wide * 0.4 && b.x1 - b.x0 <= wide * 1.8;
@@ -271,32 +557,37 @@
     const flat = rows.flat();
     if (single.flat().length < 4) return null;
     const steps = single.flatMap((f) => f.slice(1).map((b2, i) => b2.y0 - f[i].y0)).filter((x) => x >= height && x <= height * 1.6);
-    return { rows: single, height: median(single.flat().map((b2) => b2.y1 - b2.y0 + 1)), pitch: steps.length >= 2 ? median(steps) : null, top: Math.min(...flat.map((b2) => b2.y0)), bottom: Math.max(...flat.map((b2) => b2.y1)) };
+    return { rows: single, edge: { key, at }, height: median(single.flat().map((b2) => b2.y1 - b2.y0 + 1)), pitch: steps.length >= 2 ? median(steps) : null, top: Math.min(...flat.map((b2) => b2.y0)), bottom: Math.max(...flat.map((b2) => b2.y1)) };
   }
 
   /**
-   * How much of a row's right end is a portrait rather than team color, as a share of the crop width: from the row's
-   * right edge, the columns before the first run of 10 mostly team-colored columns. cols: per row, the team-color share
-   * of each column (0-1), left to right. The median over rows; 0 when rows end in color.
+   * How much of a row's right end is the victim's portrait rather than team color, as a share of the feed's width.
+   * Portraits differ row to row but sit in one place, so it's read across all the rows at once: walking in from the
+   * edge, a stretch half a row wide or more where under a quarter of them are team color, starting within a row's
+   * height of the edge (a thin strip of bar can come first).
+   * cols: per row, the clear team-color share of each column (0-1), left to right, ending at the feed's edge; height:
+   * a row's. 0 when rows end in color.
    */
-  function portraitShare(cols, width) {
-    const shares = cols.map((c) => {
-      let x1 = c.length - 1;
-      while (x1 >= 0 && c[x1] < 0.3) x1--;
-      if (x1 < 0) return null;
-      let run = 0;
-      for (let x = x1; x >= 0; x--) { run = c[x] >= 0.6 ? run + 1 : 0; if (run >= 10) return (x1 - (x + 9)) / width; }
-      return null;
-    }).filter((v) => v != null);
-    return shares.length ? Math.round(median(shares) * 1000) / 1000 : 0;
+  function portraitShare(cols, width, height) {
+    if (!cols.length) return 0;
+    const share = (d) => cols.filter((c) => (c[c.length - 1 - d] ?? 0) >= 0.4).length / cols.length;
+    let start = -1;
+    for (let d = 0; d < width * 0.4; d++) {
+      if (share(d) < 0.25) { if (start < 0) start = d; continue; }
+      if (start >= 0 && d - start >= height * 0.5) return Math.round((d / width) * 100) / 100;
+      if (d > height) return 0;
+      start = -1;
+    }
+    return 0;
   }
+
 
   /**
    * Measures the kill feed's layout in the recording: team colors, where its rows sit, their height and pitch, the
    * portrait at each row's end, and which way new rows join. The learn call's box is only a starting point; code
-   * searches around it. Returns the profile with killfeed, killfeedColors, and killfeedGrid filled in. When the rows
-   * can't be measured there's no killfeedGrid or no killfeedColors, so scans read fights from the low-detail pass;
-   * layout.killfeed says which.
+   * searches around it. Returns the profile with killfeed, killfeedColors, and killfeedGrid filled in. With no rows of
+   * two team colors there's no killfeedColors, and scans read the feed as plain text; rows that track badly leave no
+   * killfeedGrid, and scans find rows as bands of the colors. layout.killfeed says which.
    */
   async function learnLayout({ video, profile, signal }) {
     const box = profile.regions.killfeed;
@@ -312,68 +603,67 @@
     await V.each(video, times, { crop, maxDim: 2000, signal }, ({ t, canvas, w, h }) => { imgs.push({ t, img: canvas.getContext('2d', { willReadFrequently: true }).getImageData(0, 0, w, h) }); });
     if (!imgs.length) return profile;
     const { width: w, height: h } = imgs[0].img;
-    // Start from the colors the learn call gave (as RGB, else from the whole search area's hue peaks), find the rows
-    // with them, then center each color on the pixels inside those rows: the background behind the feed never votes.
-    // ±40°: a reported "green" can be the feed's teal, 30° away
-    const start = profile.colorHues?.ally != null && profile.colorHues?.enemy != null ? { ally: around(profile.colorHues.ally, 40), enemy: around(profile.colorHues.enemy, 40) } : null;
-    let colors = start;
-    if (!colors) {
-      const bins = new Array(36).fill(0);
-      for (const { img } of imgs) hueHistogram(img).forEach((v, i) => { bins[i] += v; });
-      colors = teamHues(bins, profile.colorNames, profile.colorHues);
-      if (!colors) return { ...profile, layout: { killfeed: `no team colors near "${profile.colorNames.ally}" and "${profile.colorNames.enemy}"`, hues: topHues(bins) } };
-    }
     // the learn call's box, in the search crop's pixels: the bands there show the rows' edge and height
     const bx0 = ((box[0] - search[0]) / search[2]) * w, bx1 = ((box[0] + box[2] - search[0]) / search[2]) * w;
     const by0 = ((box[1] - search[1]) / search[3]) * h, by1 = ((box[1] + box[3] - search[1]) / search[3]) * h;
     const inBox = (b2) => (b2.y0 + b2.y1) / 2 >= by0 && (b2.y0 + b2.y1) / 2 <= by1 && b2.x1 >= bx0 && b2.x0 <= bx1;
-    let found = alignedRows(imgs.map(({ img }) => bandExtents(img, colors)), inBox, w);
+    const bins = new Array(36).fill(0), cut = [Math.round(bx0), Math.round(by0), Math.max(1, Math.round(bx1 - bx0)), Math.max(1, Math.round(by1 - by0))];
+    for (const { img } of imgs) hueHistogram(cropImage(img, ...cut)).forEach((v, i) => { bins[i] += v; });
+    const px = imgs.map(({ img }) => pixelHues(img));
+    const refs = { ally: profile.colorHues?.ally ?? nameHue(profile.colorNames?.ally), enemy: profile.colorHues?.enemy ?? nameHue(profile.colorNames?.enemy) };
+    const measured = feedColors(px, bins, inBox, w, refs);
+    if (!measured) return { ...profile, layout: { killfeed: 'no rows of two team colors side by side', hues: topHues(bins) } };
+    let { colors, found } = measured;
     // center each color on the pixels inside those rows, so the background behind the feed never votes, and look again
     const mid = ([a2, b2]) => (a2 <= b2 ? (a2 + b2) / 2 : ((a2 + b2 + 360) / 2) % 360);
-    const target = { ally: profile.colorHues?.ally ?? mid(colors.ally), enemy: profile.colorHues?.enemy ?? mid(colors.enemy) };
-    const centers = found && rowHues(imgs.map((x) => x.img), found.rows, colors, target);
-    if (centers) { colors = { ally: centers.ally, enemy: centers.enemy }; found = alignedRows(imgs.map(({ img }) => bandExtents(img, colors)), inBox, w) || found; }
-    if (!found) return { ...profile, killfeedColors: colors, layout: { killfeed: 'team colors found, but no rows that line up' } };
-    const rows = found, flat = rows.rows.flat();
-    // the kill feed is where its rows were: half a row to spare above and below, and across from the 10th to the 90th
-    // percentile of their ends, with a row's height to spare
-    const y0 = clamp(rows.top - rows.height * 0.5, 0, h), y1 = clamp(rows.bottom + rows.height * 0.5, 0, h), rh = y1 - y0;
+    const centers = rowHues(imgs.map((x) => x.img), found.rows, colors, { ally: mid(colors.ally), enemy: mid(colors.enemy) });
+    if (centers) {
+      const again = alignedRows(feedRows(px, centers), inBox, w);
+      if (again && again.rows.flat().length >= found.rows.flat().length * 0.9) { colors = { ally: centers.ally, enemy: centers.enemy }; found = again; }
+    }
+    const pitch = found.pitch || found.height * 1.2, slot = (b2) => Math.round((b2.y0 - found.top) / pitch);
+    // A feed's rows stack with no empty slot between them, though the samples can miss a slot or two: out from the slot
+    // that holds the most, while one of the next three holds a row.
+    const holds = (k) => found.rows.filter((f) => f.some((b2) => slot(b2) === k)).length;
+    const most = Array.from({ length: slot({ y0: found.bottom }) + 1 }, (_, k) => k).reduce((a2, k) => (holds(k) > holds(a2) ? k : a2), 0);
+    let first = most, last = most;
+    const next = (k, dir) => [1, 2, 3].map((d) => k + d * dir).find((j) => j >= 0 && holds(j));
+    for (let j; (j = next(first, -1)) !== undefined;) first = j;
+    for (let j; (j = next(last, 1)) !== undefined;) last = j;
+    const rows = { ...found, rows: found.rows.map((f) => f.filter((b2) => slot(b2) >= first && slot(b2) <= last)) }, flat = rows.rows.flat();
+    rows.top = Math.min(...flat.map((b2) => b2.y0));
+    rows.bottom = Math.max(...flat.map((b2) => b2.y1));
+    // The kill feed is where its rows were, half a row to spare above and below, and one more slot on the side it grows
+    // toward: the busiest sample isn't the busiest the feed gets. It grows away from the side that holds a row whenever
+    // any row shows.
+    const growsDown = holds(first) >= holds(last);
+    const y0 = clamp(rows.top - rows.height * 0.5 - (growsDown ? 0 : pitch), 0, h), y1 = clamp(rows.bottom + rows.height * 0.5 + (growsDown ? pitch : 0), 0, h), rh = y1 - y0;
     const pct = (xs, q) => { const t = [...xs].sort((a2, b2) => a2 - b2); return t[Math.min(t.length - 1, Math.floor(q * t.length))]; };
-    const x0 = clamp(pct(flat.map((b2) => b2.x0), 0.1) - rows.height, 0, w), x1 = clamp(pct(flat.map((b2) => b2.x1), 0.9) + rows.height, 0, w);
+    // and on the side the rows share, no further than their edge: what shows past it is the background, which the reader
+    // would take for the victim's color
+    const { key, at } = rows.edge, slack = Math.max(2, w * 0.004);
+    const x0 = key === 'x0' ? clamp(at - slack, 0, w) : clamp(pct(flat.map((b2) => b2.x0), 0.1) - rows.height, 0, w);
+    const x1 = key === 'x1' ? clamp(at + slack, 0, w) : clamp(pct(flat.map((b2) => b2.x1), 0.9) + rows.height, 0, w);
     const killfeed = [search[0] + (x0 / w) * search[2], search[1] + (y0 / h) * search[3], ((x1 - x0) / w) * search[2], (rh / h) * search[3]].map((v) => Math.round(v * 1000) / 1000);
     const trimmed = flat.map((b2) => b2.cols.slice(Math.round(x0), Math.round(x1)));
-    const grid = { top: (rows.top - y0) / rh, pitch: (rows.pitch || rows.height * 1.2) / rh, height: rows.height / rh, portrait: portraitShare(trimmed, x1 - x0) };
+    // the victim's portrait at a row's end can carry either team's color, so the reader starts past it
+    const grid = { top: (rows.top - y0) / rh, pitch: pitch / rh, height: rows.height / rh, portrait: key === 'x1' ? portraitShare(trimmed, x1 - x0, rows.height) : 0 };
     const bands = rows.rows;
-    // Narrow the feed to the rows the kill-feed reader itself accepts (team color and white name text) across the
-    // samples: color bands alone can include a long band of scenery that ends where the rows do.
-    const fx = killfeed[0] * frame.w, fw = killfeed[2] * frame.w, rx0 = [], rx1 = [];
+    // how many rows read as two different teams, as every kill is
+    let two = 0, all = 0;
     for (const { img } of imgs) {
-      const sub = cropImage(img, Math.round(((killfeed[0] - search[0]) / search[2]) * w), Math.round(y0), Math.round((killfeed[2] / search[2]) * w), Math.round(rh));
-      for (const r of C.killfeedRows(sub, { colors, grid })) if (r.left && r.right) { rx0.push(r.x0); rx1.push(r.x1); }
+      const sub = cropImage(img, Math.round(x0), Math.round(y0), Math.max(1, Math.round(x1 - x0)), Math.max(1, Math.round(rh)));
+      for (const r of C.killfeedRows(sub, { colors, grid })) { all++; if (r.left && r.right) two++; }
     }
-    if (rx0.length >= 4) {
-      const sw = (killfeed[2] / search[2]) * w, a0 = clamp(pct(rx0, 0.1) - rows.height, 0, sw), a1 = clamp(pct(rx1, 0.9) + rows.height, 0, sw);
-      killfeed[0] = Math.round(((fx + (a0 / sw) * fw) / frame.w) * 1000) / 1000;
-      killfeed[2] = Math.round(((((a1 - a0) / sw) * fw) / frame.w) * 1000) / 1000;
-    }
-    // The portrait at a row's end can carry either team's color, so how much of the end to skip decides whether the
-    // victim's side reads right. Try widths from none to a fifth of the feed and keep the one where the most rows read
-    // as two different teams, as every kill is.
-    const subs = imgs.map(({ img }) => cropImage(img, Math.round(((killfeed[0] - search[0]) / search[2]) * w), Math.round(y0), Math.max(1, Math.round((killfeed[2] / search[2]) * w)), Math.max(1, Math.round(rh))));
-    let bestShare = -1;
-    for (let portrait = 0; portrait <= 0.2001; portrait += 0.02) {
-      let two = 0, all = 0;
-      for (const sub of subs) for (const r of C.killfeedRows(sub, { colors, grid: { ...grid, portrait } })) { all++; if (r.left && r.right) two++; }
-      const share = all ? two / all : 0;
-      if (share > bestShare + 0.01) { bestShare = share; grid.portrait = Math.round(portrait * 100) / 100; }
-    }
+    const bestShare = all ? two / all : 0;
+    if (bestShare < 0.5) return { ...profile, layout: { killfeed: `rows of two colors, but only ${Math.round(bestShare * 100)}% of them read as two teams`, hues: topHues(bins) } };
     const learned = { ...profile, regions: { ...profile.regions, killfeed }, killfeedColors: colors, killfeedGrid: grid };
     // the busiest sample is where rows move the most
     const busiest = imgs[bands.reduce((k, b, i) => (b.length > bands[k].length ? i : k), 0)].t;
     const dir = await feedDirection({ video, profile: learned, around: busiest, signal });
     // A layout that finds far more new rows than a match has kills is wrong somewhere (a row tracked as new every second
     // costs a model call per 32), so scans fall back to the low-detail pass rather than pay for it.
-    if (dir.perMinute > MAX_ROWS_PER_MINUTE) return { ...profile, killfeedColors: colors, layout: { killfeed: `measured, but it found ${Math.round(dir.perMinute)} new rows a minute at the busiest stretch, more than a match has kills`, rowHues: centers?.seen } };
+    if (dir.perMinute > MAX_ROWS_PER_MINUTE) return { ...profile, killfeedColors: colors, layout: { killfeed: `measured, but it found ${Math.round(dir.perMinute)} new rows a minute at the busiest stretch, more than a match has kills`, rowHues: centers?.seen, measured: { killfeed, grid: { ...grid, newRows: dir.newRows } } } };
     return { ...learned, killfeedGrid: { ...grid, newRows: dir.newRows }, layout: { killfeed: 'measured', perMinute: Math.round(dir.perMinute * 10) / 10, twoTeams: Math.round(bestShare * 100) / 100, rowHues: centers?.seen } };
   }
   const around = (h, d) => [(h - d + 360) % 360, (h + d) % 360];
@@ -439,30 +729,165 @@
   }
 
   /**
-   * Learns the game from the recording: the learn call on SAMPLES frames, the research on what matters in the game
-   * (researchGame, one call per new game), then the pixel layout. Returns { profile, frames, raw, research }: frames are
-   * the pictures the learn call saw, for the app to draw the learned boxes on.
+   * Checks each learned box against the screen. VERIFY_FRAMES whole frames, spread over the match, go to one call with
+   * every box drawn on them and numbered, and Gemini says what each box outlines, without being told what it should be.
+   * The whole screen is there, so the real element is there to compare: shown only a crop, it called Apex Legends'
+   * ultimate icon a health bar. A number (ammo, a counter, a clock) is also checked in code, by whether its digits read
+   * (C.ammoReading) in most frames, and either check can keep it: the model once called Apex's ammo count a scoreboard.
+   * A box goes when its frames show a different element more often than the one claimed; no box is better than a wrong
+   * one. A health box must also be long like a bar or a number (twice as long as it is thick) or have digits that read:
+   * the learn call boxed Apex's ultimate icon, a square, as health every time. Two boxes that each show the other's element
+   * swap names. Then each box that went is asked for once more, told what the first one showed, and the new box is
+   * checked the same way. The kill feed isn't judged here (see below). Returns the profile without the boxes that went,
+   * with verified: { kept, dropped: [{ name, shows, box }], moved: [{ name, shows, from, to }] }.
    */
-  async function learnGame({ video, checks = Object.keys(CHECKS), signal, onNotice }) {
+  const VERIFY_FRAMES = 3;
+  const NUMBERS = ['ammo', 'damage', 'kill_count', 'player_clock', 'opponent_clock', 'gold']; // elements that are digits
+  const BARS = ['health']; // elements that are a bar, or a number in some games
+  const VERIFY = { type: 'object', properties: { boxes: { type: 'array', items: { type: 'object', properties: { image: { type: 'integer' }, box: { type: 'integer' }, outlines: { type: 'string', enum: [...ELEMENTS, 'other', 'nothing'] } }, required: ['image', 'box', 'outlines'] } } }, required: ['boxes'] };
+  // the counters a no-kill-feed record is read off (agent.js readCounters): the player's K/D/A, each side's score, their HP
+  const RECORD = ['kill_count', 'scoreboard', 'health'];
+  const RELOCATE = { type: 'object', properties: { found: { type: 'array', items: { type: 'object', properties: { name: { type: 'string', enum: ELEMENTS }, picture: { type: 'integer' }, box: BOX }, required: ['name', 'picture', 'box'] } } }, required: ['found'] };
+  /**
+   * Whether a region [x, y, w, h] is long like a bar or a row of digits in a frame { w, h }: twice as long as it is
+   * thick, either way. An icon is about square (Apex's ultimate, 1:1); Valorant's "100" with its shield is 2.5:1.
+   */
+  const barShaped = ([, , bw, bh], frame) => { const a = bw * frame.w, b = bh * frame.h; return Math.max(a, b) >= Math.min(a, b) * 2; };
+  /**
+   * Which boxes stay, from the check call's answers (said: [{ box, outlines }], box numbered from 1 in names' order) and
+   * the frames where each one's digits read (digits: Map name to count, of pictures). Returns { kept, dropped, regions }.
+   */
+  // strict: kept only when the check call agrees it outlines that element (for boxes asked for again: digits alone kept
+  // a Marvel Rivals ability count as its kill count)
+  function judgeBoxes({ names, said, digits, pictures, regions: before, frame, strict = false }) {
+    const kept = [], dropped = [], regions = { ...before };
+    names.forEach((name, i) => {
+      const answers = said.filter((x) => x.box === i + 1).map((x) => x.outlines);
+      const own = answers.filter((a) => a === name).length, others = answers.filter((a) => a !== name && a !== 'nothing');
+      const reads = (digits.get(name) || 0) * 2 > pictures;
+      const shaped = !BARS.includes(name) || barShaped(before[name], frame) || reads;
+      if (((own >= others.length && own > 0) || (!strict && NUMBERS.includes(name) && reads)) && shaped) kept.push(name);
+      else { dropped.push({ name, shows: mostCommonOf(others) || (shaped ? 'nothing' : 'other'), box: before[name] }); delete regions[name]; }
+    });
+    // two boxes that each show the other's element were only named the wrong way round: they swap
+    for (const d of [...dropped]) {
+      const o = dropped.find((x) => x !== d && x.shows === d.name && d.shows === x.name);
+      if (!o || !dropped.includes(d)) continue;
+      regions[d.shows] = d.box; regions[o.shows] = o.box;
+      kept.push(`${d.shows} (was ${d.name})`, `${o.shows} (was ${o.name})`);
+      dropped.splice(dropped.indexOf(d), 1); dropped.splice(dropped.indexOf(o), 1);
+    }
+    return { kept, dropped, regions };
+  }
+  async function verifyRegions({ video, profile, signal, onNotice, again = true, strict = false }) {
+    // the kill feed is checked in code where it's read, by its rows or lines, and is empty in most frames: the model
+    // once called an empty Valorant feed's box the scoreboard, and the review lost its record
+    const names = Object.keys(profile.regions).filter((r) => r !== 'aim' && r !== 'killfeed');
+    if (!names.length) return profile;
+    const frame = { w: video.width, h: video.height }, times = Array.from({ length: VERIFY_FRAMES }, (_, k) => +((video.duration * (k + 0.3)) / VERIFY_FRAMES).toFixed(2));
+    const pictures = [], clean = [], digits = new Map(names.map((n) => [n, 0]));
+    await V.each(video, times, { maxDim: 1280, signal }, ({ canvas, w, h }) => {
+      const c = new OffscreenCanvas(w, h), g = c.getContext('2d'), plain = new OffscreenCanvas(w, h);
+      plain.getContext('2d').drawImage(canvas, 0, 0);
+      g.drawImage(canvas, 0, 0);
+      g.lineWidth = 3; g.font = `bold ${Math.round(h / 32)}px sans-serif`; g.textBaseline = 'top';
+      names.forEach((name, i) => {
+        const [x, y, bw, bh] = profile.regions[name];
+        g.strokeStyle = '#ffeb3b'; g.strokeRect(x * w, y * h, bw * w, bh * h);
+        const label = String(i + 1), tw = g.measureText(label).width + 8;
+        g.fillStyle = '#ffeb3b'; g.fillRect(x * w, Math.max(0, y * h - h / 30), tw, h / 30);
+        g.fillStyle = '#000'; g.fillText(label, x * w + 4, Math.max(0, y * h - h / 30) + 2);
+      });
+      pictures.push(c);
+      clean.push(plain);
+    });
+    for (const name of names.filter((n) => NUMBERS.includes(n) || BARS.includes(n))) {
+      await V.each(video, times, { crop: C.regionRect(profile, name, frame), maxDim: 400, signal }, ({ canvas, w, h }) => { if (C.ammoReading(canvas.getContext('2d', { willReadFrequently: true }).getImageData(0, 0, w, h), profile.hudText)) digits.set(name, digits.get(name) + 1); });
+    }
+    const images = await Promise.all(pictures.map((c) => V.toJpeg(c, 0.85)));
+    const parts = images.flatMap((im, i) => [{ text: `Picture ${i + 1}` }, { inlineData: { mimeType: im.mimeType, data: im.data } }]);
+    const resp = await G.generate({
+      contents: [{ role: 'user', parts: [...parts, { text: `Each picture is a ${profile.name} screen with numbered yellow boxes drawn on it; a number is the same box in every picture. For each box in each picture, say which one of these it mainly outlines: ${ELEMENTS.map((e) => `${e} (${WHAT[e]})`).join('; ')}; other for something else, nothing when it outlines only the game world. Look at the whole screen: the element a box claims may be somewhere else.` }] }],
+      generationConfig: { temperature: 0, responseMimeType: 'application/json', responseSchema: VERIFY, mediaResolution: 'MEDIA_RESOLUTION_HIGH' },
+    }, { signal, onNotice });
+    const said = (G.parseJSON(G.textOf(resp)).boxes || []).map((x) => ({ ...x, outlines: x.outlines === 'kill_feed' ? 'killfeed' : x.outlines }));
+    const { kept, dropped, regions } = judgeBoxes({ names, said, digits, pictures: times.length, regions: profile.regions, frame, strict });
+    // The counters that make the record, any the learn call didn't box, are asked for once with the boxes that went:
+    // it boxed League's K/D/A counter in one call and missed it in the next (Oct 22). One more call per recording.
+    const missing = again && profile.genre !== 'chess' ? RECORD.filter((n) => !regions[n] && !dropped.some((d) => d.name === n)) : [];
+    if (!again || (!dropped.length && !missing.length)) return { ...profile, regions, verified: { kept, dropped, moved: [] } };
+    // Each box that went is asked for once more, with what the first one showed, on the same frames without boxes, and
+    // the new boxes are checked like the first (with no third try).
+    const at = ([x, y, w, h]) => [y, x, y + h, x + w].map((v) => Math.round(v * 1000));
+    const shown = (d) => (d.shows === 'nothing' ? 'only the game world' : d.shows === 'other' ? (BARS.includes(d.name) ? "something that's neither a bar nor a number" : 'something else') : WHAT[d.shows] || d.shows);
+    const plainImages = await Promise.all(clean.map((c) => V.toJpeg(c, 0.85)));
+    const ask = await G.generate({
+      contents: [{ role: 'user', parts: [...plainImages.flatMap((im, i) => [{ text: `Picture ${i + 1}` }, { inlineData: { mimeType: im.mimeType, data: im.data } }]), { text: `Each picture is a ${profile.name} screen. ${dropped.length ? `These elements were boxed in the wrong place: ${dropped.map((d) => `${d.name} (${WHAT[d.name]}${BARS.includes(d.name) ? ', a bar or a number' : ''}): the box [ymin, xmin, ymax, xmax] = [${at(d.box).join(', ')}] in 0-1000 showed ${shown(d)}`).join('; ')}. ` : ''}${missing.length ? `These weren't boxed at all: ${missing.map((n) => `${n} (${WHAT[n]}${n === 'health' ? ', written as a number' : ''})`).join('; ')}. ` : ''}For each one the screen shows${dropped.length ? ' somewhere else' : ''}, give a tight box [ymin, xmin, ymax, xmax] scaled 0-1000 in the picture where it's clearest. Leave out one the screen doesn't show.` }] }],
+      generationConfig: { temperature: 0, responseMimeType: 'application/json', responseSchema: RELOCATE, mediaResolution: 'MEDIA_RESOLUTION_HIGH' },
+    }, { signal, onNotice });
+    const wanted = new Set([...dropped.map((d) => d.name), ...missing]);
+    const found = mergeBoxes((G.parseJSON(G.textOf(ask)).found || []).filter((f) => wanted.has(f.name)));
+    if (!Object.keys(found).length) return { ...profile, regions, verified: { kept, dropped, moved: [] } };
+    // a box for an element the learn call never drew has to be agreed on by the check call, not just hold digits
+    const second = await verifyRegions({ video, profile: { ...profile, regions: found }, signal, onNotice, again: false, strict: Object.keys(found).some((n) => missing.includes(n)) });
+    const moved = Object.keys(second.regions).filter((name) => dropped.some((d) => d.name === name)).map((name) => ({ name, shows: dropped.find((d) => d.name === name).shows, from: dropped.find((d) => d.name === name).box, to: second.regions[name] }));
+    const added = Object.keys(second.regions).filter((name) => missing.includes(name));
+    return { ...profile, regions: { ...regions, ...second.regions }, verified: { kept, dropped: dropped.filter((d) => !second.regions[d.name]), moved, added } };
+  }
+  const mostCommonOf = (xs) => { const n = new Map(); for (const x of xs) n.set(x, (n.get(x) || 0) + 1); return [...n].sort((a, b) => b[1] - a[1])[0]?.[0] || null; };
+
+  /**
+   * Which character the player plays, read on its own from three full-size frames: the HUD's portrait and ability
+   * icons, and the character the camera follows. Returns the name, or '' when it can't tell.
+   */
+  const CHARACTER_READ = { type: 'object', properties: { character: str("the character's name as the game gives it, or empty if you can't tell") }, required: ['character'] };
+  async function nameCharacter({ video, game, signal, onNotice }) {
+    const shots = await V.grab(video, [0.2, 0.5, 0.8].map((k) => +(video.duration * k).toFixed(2)), { maxDim: 1280, quality: 0.85 });
+    const resp = await G.generate({
+      contents: [{ role: 'user', parts: [...shots.flatMap((f, i) => [{ text: `Moment ${i + 1}` }, { inlineData: { mimeType: f.mimeType, data: f.data } }]), { text: `These are three moments of one ${String(game || 'game').slice(0, 60)} recording from the player's own screen. Which character (agent, hero, legend, champion, or fighter) is the player playing? Look at their own portrait and ability icons on the HUD and at the character the camera follows, and give the game's own name for it; empty if you can't tell.` }] }],
+      generationConfig: { temperature: 0, responseMimeType: 'application/json', responseSchema: CHARACTER_READ, mediaResolution: 'MEDIA_RESOLUTION_HIGH' },
+    }, { signal, onNotice });
+    return String(G.parseJSON(G.textOf(resp)).character || '').trim().slice(0, 40);
+  }
+  const sameCharacter = (a, b) => { const x = gameKey(a).replace(/ /g, ''), y = gameKey(b).replace(/ /g, ''); return !!x && !!y && (x === y || x.includes(y) || y.includes(x)); };
+
+  /**
+   * Learns the game from the recording: the learn call on SAMPLES frames, the check of its boxes, then the pixel layout.
+   * Returns { profile, frames, raw }: frames are the pictures the learn call saw, for the app to draw the learned boxes on.
+   * onPhase(what) is told as each step ends, for timing.
+   */
+  async function learnGame({ video, checks = Object.keys(CHECKS), signal, onNotice, onPhase = () => {} }) {
     const times = Array.from({ length: SAMPLES }, (_, k) => +((video.duration * (k + 0.5)) / SAMPLES).toFixed(2));
     const frames = await V.grab(video, times, { maxDim: 1024, quality: 0.8 });
+    onPhase('frames grabbed');
     const parts = frames.flatMap((f, i) => [{ text: `Frame ${i + 1}, at ${C.mmss(f.t)}` }, { inlineData: { mimeType: f.mimeType, data: f.data } }]);
-    const prompt = `These frames are spread over one recording of a game, from the player's own screen. Identify the game and describe what's on screen, so a coach can read the match from it.
-elements: every HUD or board element that shows the state of play, each with a tight box [ymin, xmin, ymax, xmax] scaled 0-1000 in the frame (frame, numbered from 1) where it's clearest. kill_feed: the list of recent kills, all its rows; ammo: the magazine count; damage: the counter of damage the player has dealt, if the game shows one, boxed on its own; board: the playing board.
+    const prompt = `These frames are spread over one recording of a game or match: usually the player's own screen, sometimes a broadcast or film of the whole match. Identify the game and describe what's on screen, so a coach can read the match from it.
+view: own_screen or spectator, as defined. In spectator footage: sides, the two sides and how to tell their players apart, and unit, the game's unit of play. On the player's own screen: player_name and player_side, so their own kills, deaths, and points can be told from the other side's.
+elements: every HUD or board element that shows the state of play, each with a tight box [ymin, xmin, ymax, xmax] scaled 0-1000 in the frame (frame, numbered from 1) where it's clearest. kill_feed: the list of recent kills, all its rows; ammo: the magazine count; health: the player's own health or shield bar, not an ability icon; damage: the counter of damage the player has dealt, if the game shows one, boxed on its own; kill_count: the counter of the player's own kills, or their kills, deaths, and assists (a K/D/A like 3/1/4), if the game shows one, boxed on its own; scoreboard: each side's score; abilities: the player's ability and ultimate icons with their charges or cooldowns, if the game has them; board: the board of a board game such as chess, never a playing field.
 fov_h: the game's default horizontal field of view if you know it, else 0.
 cues: up to 6 short facts about how key moments look on screen, such as a kill, a death, a round start, a capture.`;
     const resp = await G.generate({
       contents: [{ role: 'user', parts: [...parts, { text: prompt }] }],
-      generationConfig: { temperature: 0.1, responseMimeType: 'application/json', responseSchema: schema() },
+      generationConfig: { temperature: 0, responseMimeType: 'application/json', responseSchema: schema() },
     }, { signal, onNotice });
     const raw = G.parseJSON(G.textOf(resp));
-    // what matters in this game comes from the web, not from what code happens to be able to check
-    const research = await researchGame({ name: raw?.game, genre: raw?.genre, checks, signal, onNotice });
-    const profile = await learnLayout({ video, profile: toProfile(raw, checks, research), signal });
-    return { profile, frames, raw, research };
+    onPhase('learn call');
+    // the character, read again on its own; kept only when both reads agree, since a wrong one brings the wrong kit and
+    // its habits (League, Oct 22: Miss Fortune read as Samira, and the review coached Samira's Style ranks)
+    if (String(raw?.character || '').trim()) {
+      const again = await nameCharacter({ video, game: raw.game, signal, onNotice }).catch((e) => { if (e.name === 'AbortError') throw e; return null; });
+      if (again !== null && !sameCharacter(raw.character, again)) { raw.characterUnsure = [raw.character, again || 'unknown']; raw.character = ''; }
+    }
+    // every box is checked against the screen before anything reads from it; what matters in the game is the coach's to
+    // look up (agent.js research), when and as it chooses
+    const checked = await verifyRegions({ video, profile: toProfile(raw, checks), signal, onNotice }).catch((e) => { if (e.name === 'AbortError') throw e; return toProfile(raw, checks); });
+    onPhase('boxes checked');
+    const profile = await learnLayout({ video, profile: checked, signal });
+    onPhase('layout measured');
+    return { profile, frames, raw };
   }
 
-  const api = { learnGame, researchGame, cleanResearch, learnLayout, toProfile, mergeBoxes, hueHistogram, teamHues, nameHue, rgbHue, alignedRows, portraitShare, CHECKS, ELEMENTS, GENRES, AIM, AIM_TARGETS };
+  const api = { learnGame, researchGame, researchQuestion, habitsFor, researchBrief, cleanResearch, learnLayout, verifyRegions, toProfile, mergeBoxes, hueHistogram, pixelHues, twoTeamRows, feedRows, feedColors, judgeBoxes, barShaped, cleanCharacter, nameHue, rgbHue, alignedRows, portraitShare, CHECKS, ELEMENTS, GENRES, AIM, AIM_TARGETS };
   root.ThirdeyeLearn = api;
   if (typeof module !== 'undefined') module.exports = api;
 })(typeof window !== 'undefined' ? window : globalThis);

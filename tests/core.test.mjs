@@ -156,11 +156,31 @@ test('a look spreads at most 12 frames inside the video', () => {
   assert.deepEqual(C.framePlan({ t: 100.5, before: 0, after: 0, duration: 100 }), [99.95]);
 });
 
+test('a clip look watches the run-up, inside the video, at least a second long', () => {
+  // the coach's default: 6 s before to 1 s after at 6 frames a second (Apex at 4:30 is 4:24 to 4:31)
+  assert.deepEqual(C.clipPlan({ t: 270, duration: 400 }), { t: 270, from: 264, to: 271, fps: 6 });
+  // what the model asks for is held to the clip's limits; a missing value is the default, not 0
+  assert.deepEqual(C.clipPlan({ t: 60, before: 30, after: 9, fps: 30, duration: 400 }), { t: 60, from: 60 - C.CLIP_LOOK.maxBefore, to: 60 + C.CLIP_LOOK.maxAfter, fps: 8 });
+  assert.deepEqual(C.clipPlan({ t: 60, before: undefined, after: null, fps: 'x', duration: 400 }), { t: 60, from: 54, to: 61, fps: 6 });
+  // at the start and the end of the video
+  assert.deepEqual(C.clipPlan({ t: 2, duration: 400 }), { t: 2, from: 0, to: 3, fps: 6 });
+  assert.deepEqual(C.clipPlan({ t: 399.5, before: 0, after: 0, duration: 400 }), { t: 399.5, from: 398.95, to: 399.95, fps: 6 });
+});
+
 test('regions come from the game profile in frame pixels', () => {
   const profile = { regions: { killfeed: [0.75, 0.08, 0.24, 0.22] } };
   assert.deepEqual(C.regionRect(profile, 'killfeed', FRAME), { x: 1440, y: 86, w: 461, h: 238 });
   assert.deepEqual(C.regionRect(profile, 'full', FRAME), FULL);
   assert.throws(() => C.regionRect(profile, 'radar', FRAME), /Use full or one of: killfeed/);
+});
+
+test('a readout box thin as a bar grows about its middle to hold the number above it', () => {
+  // Marvel Rivals' health box held the bar (y 0.929-0.948), the 32/250 sat at y 0.90-0.925
+  const [x, y, w, h] = C.readoutRegion([0.375, 0.929, 0.251, 0.019]);
+  assert.deepEqual([x, w, h], [0.375, 0.251, C.READOUT_H]);
+  assert.ok(y < 0.905 && y + h > 0.948);
+  assert.deepEqual(C.readoutRegion([0.1, 0.02, 0.3, 0.09]), [0.1, 0.02, 0.3, 0.09]);
+  assert.deepEqual(C.readoutRegion([0.4, 0.99, 0.1, 0.01]), [0.4, 0.93, 0.1, 0.07]);
 });
 
 test('history keeps the accepted habit and compares the next match to its baseline', () => {
@@ -199,6 +219,24 @@ test('a head box has to sit at the top of a body box', () => {
   assert.equal(C.headOnBody([400, 480, 460, 520], undefined), false, 'no body, no head');
 });
 
+test('the aim is measured on an enemy: never a teammate under a name tag, nor a head whose tag would be out of view', () => {
+  // Apex at 5:55.5 (Oct 22), as Gemini boxed it: O5HK with no name_tag and not called a teammate, under the tag "◆ O5HK",
+  // and FYR_rLayze jumping into view, his tag above the top of the picture
+  const o5hk = { head_2d: [222, 290, 277, 331], body_2d: [223, 279, 611, 440], name_tag: '', teammate: false };
+  const fyr = { head_2d: [10, 545, 85, 615], body_2d: [0, 472, 584, 668], name_tag: '', teammate: false };
+  const tags = [{ text: '◆ O5HK', box_2d: [158, 256, 187, 340] }];
+  assert.equal(C.enemyHead([o5hk, fyr], tags), null, 'two teammates and no enemy: no head');
+  assert.deepEqual(C.enemyHead([o5hk], []), o5hk.head_2d, 'without the tag box nothing marks O5HK');
+  const enemy = { head_2d: [470, 600, 520, 640], body_2d: [460, 580, 800, 660], name_tag: '', teammate: false };
+  assert.deepEqual(C.enemyHead([o5hk, fyr, enemy], tags), enemy.head_2d, 'the enemy is measured');
+  assert.equal(C.enemyHead([{ ...enemy, name_tag: 'Teammate' }], []), null, 'a player read with a name tag is left out');
+  assert.equal(C.enemyHead([{ ...enemy, teammate: true }], []), null, 'and one called a teammate, by an outline or an icon');
+  assert.deepEqual(C.enemyHead([enemy], [{ text: '27', box_2d: [430, 600, 460, 630] }]), enemy.head_2d, 'a damage number over an enemy is no name tag');
+  assert.deepEqual(C.enemyHead([{ ...enemy, name_tag: '42' }], []), enemy.head_2d, 'not even read as their name_tag');
+  const nearer = { head_2d: [480, 490, 520, 520], body_2d: [470, 470, 800, 540], name_tag: '', teammate: false };
+  assert.deepEqual(C.enemyHead([enemy, nearer], []), nearer.head_2d, 'the enemy nearest the crosshair');
+});
+
 test('moments they got right go in contrast, never in both lists', () => {
   const ledger = C.recordLook(looked(), { from: 100, to: 101, kind: 'frames' });
   const ok = C.checkFinish({ ...good, contrast: [{ t: '1:40.5', what: 'On the head and won' }] }, { ledger, duration: 120, habits: HABITS, measures: LOW });
@@ -209,6 +247,8 @@ test('moments they got right go in contrast, never in both lists', () => {
 });
 
 // a fake kill-feed crop: rows of team-colored bars, killer side then victim side
+// the team colors a learned profile would have for the synthetic rows below: teal for the player's team, red for the other
+const TEST_COLORS = { ally: [140, 190], enemy: [340, 12] };
 function feedImage(rows, w = 360, h = 120) {
   const data = new Uint8ClampedArray(w * h * 4).fill(60);
   const paint = (x0, x1, y0, y1, [r, g, b]) => { for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) { const i = (y * w + x) * 4; data[i] = r; data[i + 1] = g; data[i + 2] = b; data[i + 3] = 255; } };
@@ -225,11 +265,12 @@ function feedImage(rows, w = 360, h = 120) {
 }
 
 test('kill-feed rows and their team colors come from pixels', () => {
-  const rows = C.killfeedRows(feedImage([{ y: 10, left: 'ally', right: 'enemy', yellow: true }, { y: 36, left: 'enemy', right: 'ally' }]));
+  const rows = C.killfeedRows(feedImage([{ y: 10, left: 'ally', right: 'enemy', yellow: true }, { y: 36, left: 'enemy', right: 'ally' }]), { colors: TEST_COLORS });
   assert.equal(rows.length, 2);
   assert.deepEqual(rows.map((r) => [r.left, r.right]), [['ally', 'enemy'], ['enemy', 'ally']]);
-  assert.deepEqual(C.killfeedRows(feedImage([])), []);
-  const touching = C.killfeedRows(feedImage([{ y: 10, left: 'ally', right: 'enemy' }, { y: 31, left: 'enemy', right: 'ally' }, { y: 60, left: 'ally', right: 'ally' }]));
+  assert.deepEqual(C.killfeedRows(feedImage([]), { colors: TEST_COLORS }), []);
+  assert.deepEqual(C.killfeedRows(feedImage([{ y: 10, left: 'ally', right: 'enemy' }])), [], 'no colors learned, no rows');
+  const touching = C.killfeedRows(feedImage([{ y: 10, left: 'ally', right: 'enemy' }, { y: 31, left: 'enemy', right: 'ally' }, { y: 60, left: 'ally', right: 'ally' }]), { colors: TEST_COLORS });
   assert.equal(touching.length, 3, 'two rows that touch are split apart');
 });
 
@@ -240,12 +281,12 @@ test("on the game's grid, a row is a slot that's mostly team color", () => {
   for (let y = 88; y <= 108; y++) for (let x = 0; x < width; x++) { const i = (y * width + x) * 4; data[i] = 80; data[i + 1] = 200; data[i + 2] = 170; } // a teal flash across slot 4
   for (const y0 of [10, 36]) for (let y = y0; y <= y0 + 20; y++) for (let x = 322; x <= 340; x++) { const i = (y * width + x) * 4; data[i] = 230; data[i + 1] = 80; data[i + 2] = 120; } // red-toned victim portraits
   const grid = { top: 10 / 120, pitch: 26 / 120, height: 21 / 120, portrait: 0.14 };
-  const rows = C.killfeedRows(img, { grid });
+  const rows = C.killfeedRows(img, { colors: TEST_COLORS, grid });
   assert.deepEqual(rows.map((r) => [r.y0, r.left, r.right]), [[10, 'ally', 'enemy'], [36, 'enemy', 'ally']], 'portraits are skipped, and a red wall and a teal flash have no names, so they are no rows');
 });
 
 test('each kill-feed row is new once, wherever it moves', () => {
-  const at = (t, rows) => C.killfeedRows(feedImage(rows)).map((r) => ({ ...r, t }));
+  const at = (t, rows) => C.killfeedRows(feedImage(rows), { colors: TEST_COLORS }).map((r) => ({ ...r, t }));
   let f = C.freshRows([], at(10, [{ y: 36, left: 'ally', right: 'enemy' }]), 10);
   assert.equal(f.fresh.length, 1);
   f = C.freshRows(f.recent, at(11, [{ y: 10, left: 'ally', right: 'enemy' }]), 11);
@@ -363,8 +404,25 @@ test('the player is the teammate with the most yellow marks and deaths at their 
   assert.equal(C.choosePlayer(events, sightings.map((x) => ({ ...x, mine: false })), [74, 278]), 'Omen', 'deaths alone can decide');
   assert.equal(C.choosePlayer(events, [mark('Killjoy', 'Febera', true), mark('Killjoy', 'Sage', true), mark('Killjoy', 'Omen', true)], []), null, 'a yellow enemy portrait never makes the player');
   assert.equal(C.choosePlayer(events, [], []), null);
+  // an Omen on each team: the player's kills of the enemy Omen don't mark the teammate Omen
+  const sided = (killer, victim) => ({ killer, victim, killerSide: 'ally', victimSide: 'enemy', mine: true });
+  assert.equal(C.choosePlayer(events, [sided('Im Muted', 'Omen'), sided('Im Muted', 'Omen'), sided('Im Muted', 'Omen'), sided('Im Muted', 'Killjoy')], []), 'Im Muted');
+  // a name the feed shows on the other team again and again is never the player, however many rows are marked for it
+  const both = [...events, ev(300, 'Im Muted', 'ally', 'Omen', 'enemy'), ev(310, 'Omen', 'enemy', 'Febera', 'ally'), ev(320, 'Omen', 'ally', 'Sage', 'enemy')];
+  assert.equal(C.choosePlayer(both, [sided('Omen', 'Sage'), sided('Omen', 'Killjoy'), sided('Omen', 'Sova'), sided('Omen', 'KAY/O')], []), null);
   const { events: built } = C.buildKillfeed([{ t: 127, killer: 'Sova', victim: 'Im Muted', killerSide: 'enemy', victimSide: 'ally', mine: false }, { t: 400, killer: 'Killjoy', victim: 'Febera', killerSide: 'enemy', victimSide: 'ally', mine: true }], { player: 'Im Muted' });
   assert.deepEqual(built.map((x) => x.kind), ['death', 'ally_death'], 'a given name beats the yellow marks');
+});
+
+test("who the player is: their name for this game when the feed has it, the feed's own pick, or else ask them", () => {
+  const ev = (t, killer, killerTeam, victim, victimTeam) => ({ t, killer, killerTeam, victim, victimTeam });
+  const events = [ev(10, 'Im Muted', 'ally', 'Omen', 'enemy'), ev(20, 'Sova', 'enemy', 'Im Muted', 'ally'), ev(30, 'Febera', 'ally', 'Sage', 'enemy'), ev(40, 'Im Muted', 'ally', 'Sage', 'enemy')];
+  const plain = events.map((e) => ({ killer: e.killer, victim: e.victim, mine: false }));
+  assert.deepEqual(C.whoIsPlayer({ known: 'im muted', events, sightings: plain }), { player: 'im muted' }, 'a name they gave, found in the feed');
+  assert.deepEqual(C.whoIsPlayer({ events, sightings: plain.map((x) => ({ ...x, mine: x.killer === 'Im Muted' || x.victim === 'Im Muted' })) }), { player: 'Im Muted' }, 'the marked rows decide when they can');
+  assert.deepEqual(C.whoIsPlayer({ events, sightings: plain }), { ask: ['Im Muted', 'Febera'] }, 'otherwise ask, with teammates seen most first and no enemies');
+  assert.deepEqual(C.whoIsPlayer({ known: 'OldAccount', events, sightings: plain }), { ask: ['Im Muted', 'Febera'] }, 'a name from before that is not in this feed is asked about again');
+  assert.deepEqual(C.whoIsPlayer({ known: 'Im Muted', events: [], sightings: [] }), { player: 'Im Muted' }, 'with no kill feed there is nothing to ask');
 });
 
 // a fake ammo crop: tall white blocks for the magazine digits, shorter ones for the reserve, on a dark ground
@@ -390,6 +448,51 @@ test('the ammo reader finds the magazine digits and tells a shot from a steady c
   const noisy = Array.from({ length: 30 }, (_, i) => ({ t: i / 30, reading: C.ammoReading(ammoImage(25, { noise: i >= 10 && i < 20 ? 20 + i * 2 : null })) }));
   assert.equal(C.shotsFired(noisy)?.fired, false, 'background flicker is not a shot');
   assert.equal(C.shotsFired(run([...Array(20).fill(null), 25, 25, 25, 25, 25, 25, 25, 25, 25, 25])), null, 'steady over too little of the stretch: unclear');
+});
+
+// a fake Apex-like ammo crop: seven-segment digits for the magazine, smaller ones for the reserve, and optionally a
+// white gun icon taller than the digits, a bright floor along the top and right edges, and a bright stripe running up
+// from the bottom edge into the first digit
+const SEGMENTS = ['abcdef', 'bc', 'abged', 'abgcd', 'fgbc', 'afgcd', 'afgedc', 'abc', 'abcdefg', 'abcdfg'];
+function hudImage(count, { w = 200, h = 50, icon = false, reserve = null, floor = false, stripe = false } = {}) {
+  const data = new Uint8ClampedArray(w * h * 4);
+  for (let i = 0; i < w * h; i++) { data[i * 4] = 40; data[i * 4 + 1] = 45; data[i * 4 + 2] = 50; data[i * 4 + 3] = 255; }
+  const paint = (x0, x1, y0, y1) => { for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) { const i = (y * w + x) * 4; data[i] = data[i + 1] = data[i + 2] = 240; } };
+  const number = (n, x, y, dh) => [...String(n)].forEach((c, k) => {
+    const dw = Math.round(dh * 0.55), s = Math.max(2, Math.round(dh / 8)), m = y + Math.floor(dh / 2), l = x + k * (dw + 3), r = l + dw - 1;
+    const seg = { a: [l, r, y, y + s - 1], b: [r - s + 1, r, y, m], c: [r - s + 1, r, m, y + dh - 1], d: [l, r, y + dh - s, y + dh - 1], e: [l, l + s - 1, m, y + dh - 1], f: [l, l + s - 1, y, m], g: [l, r, m - 1, m] };
+    for (const g of SEGMENTS[+c]) paint(...seg[g]);
+  });
+  if (icon) paint(10, 80, 12, 37);
+  if (count != null) number(count, 100, 15, 20);
+  if (reserve != null) number(reserve, 150, 25, 10);
+  if (floor) { paint(0, w - 1, 0, 6); paint(188, w - 1, 0, h - 1); }
+  if (stripe) paint(100, 102, 25, h - 1);
+  return { data, width: w, height: h };
+}
+
+test('the ammo reader reads the magazine digits, not a gun icon taller than them or a bright floor behind the HUD', () => {
+  const r = C.ammoReading(hudImage(23, { icon: true, reserve: 187, floor: true }));
+  assert.ok(r && r.x0 === 100 && r.digits.length === 2, `the two magazine digits (${r && `${r.x0}-${r.x1}, ${r.digits.length}`})`);
+  assert.equal(C.ammoReading(hudImage(23, { icon: true, stripe: true })), null, 'background running into a digit leaves the frame unread');
+  const run = (list, opts = { icon: true, reserve: 187, floor: true }) => list.map((n, i) => ({ t: i / 30, reading: C.ammoReading(hudImage(n, opts)) }));
+  assert.equal(C.shotsFired(run([...Array(15).fill(23), ...Array(15).fill(22)])).fired, true, 'one shot, 23 to 22, changes one digit');
+  assert.equal(C.shotsFired(run(Array(30).fill(23))).fired, false);
+  // Apex at 0:46 (Oct 22): 23 down to 4 in bursts, then a reload back to 23, so the first and last readings match
+  const burst = [23, 23, 23, 23, 23, 23, 19, 19, 19, 16, 16, 16, 13, 13, 13, 10, 10, 10, 6, 6, 6, 4, 4, 4, 4, 4, 23, 23, 23, 23, 23, 23];
+  const fired = C.shotsFired(run(burst));
+  assert.ok(fired.fired && fired.changes >= 6, `a magazine fired and reloaded to its count reads as fired (${JSON.stringify(fired)})`);
+  // the scan reads at 4 fps: the same burst shows each count for a frame or two, and the count held at 4 for two
+  const scan = [23, 23, 23, 23, 13, 8, 4, 4, null, 0, 23, 23, 23, 23].map((n, i) => ({ t: i / 4, reading: n == null ? null : C.ammoReading(hudImage(n, { icon: true, reserve: 187, floor: true })) }));
+  assert.deepEqual(C.fireTimes(scan), [1.5, 2.5], 'the scan marks the burst, and the reload back to 23');
+});
+
+test('a reading off the magazine line, like the reserve count while the digits are hidden, is no change', () => {
+  const list = [...Array(12).fill(23), ...Array(8).fill(null), ...Array(12).fill(23)];
+  const readings = list.map((n, i) => ({ t: i / 30, reading: C.ammoReading(hudImage(n, { reserve: 187 })) }));
+  assert.ok(readings[15].reading, 'the reserve count reads on its own');
+  assert.equal(C.shotsFired(readings).fired, false);
+  assert.deepEqual(C.fireTimes(readings), [], 'and marks no firing');
 });
 
 test('a habit about firing needs moments where the ammo counter moved', () => {
@@ -454,7 +557,8 @@ test('the profile comes from the learn call, with only the checks code can do', 
   assert.deepEqual(p.deadFor, { rounds: 30, respawn: 3 });
   assert.equal(p.fovH, 103);
   assert.deepEqual(p.colorHues, { ally: 165, enemy: 356 });
-  const chess = L.toProfile({ game: 'Chess', genre: 'chess', first_person: false, crosshair_center: false, elements: [{ name: 'board', frame: 1, box: [100, 300, 900, 700] }], habits: [{ id: 'x', name: 'Blunders', signs: 's', drill: 'd', checked_by: 'aim' }] });
+  assert.deepEqual(L.toProfile(raw).habits, [], "learned from the recording alone, a profile has no habits: they're the research's, which the coach asks for");
+  const chess = L.toProfile({ game: 'Chess', genre: 'chess', first_person: false, crosshair_center: false, elements: [{ name: 'board', frame: 1, box: [100, 300, 900, 700] }] }, undefined, { mistakes: [{ id: 'x', name: 'Blunders', signs: 's', drill: 'd', checked_by: 'aim' }] });
   assert.equal(chess.regions.aim, undefined, 'no aim area outside first person');
   assert.equal(chess.habits[0].measuredBy, undefined, "aim can't check a habit when there's no aim area");
   assert.equal(chess.fovH, null);
@@ -462,27 +566,69 @@ test('the profile comes from the learn call, with only the checks code can do', 
   assert.equal(tracking.habits[0].measuredBy, undefined, "where staying on target matters more than height, aim height can't check a habit");
 });
 
-test('research on what matters is cleaned, and says when it came without the web', () => {
-  const r = L.cleanResearch({ rewards: 'Ranked points for placement and kills', priorities: ['Positioning', 'Picking fights', '', 'Third parties'], engagements: 'Take fights you can finish before a third party arrives.', aim_target: 'body', mistakes: [{ name: 'Taking open fights', signs: 'Shooting from open ground', cost: 'Third-partied', drill: 'Fight from cover', checked_by: 'none' }, { name: 'Spraying', signs: 's', cost: 'c', drill: 'd', checked_by: 'telepathy' }] }, ['aim', 'shots'], { sources: [{ title: 'ea.com', uri: 'https://ea.com/x' }], researched: true });
+test('research on what matters is cleaned, and code decides what each habit can be checked by', () => {
+  const two = [{ title: 'ea.com', uri: 'https://ea.com/x' }, { title: 'reddit.com', uri: 'https://reddit.com/r/apexlegends' }];
+  const r = L.cleanResearch({ rewards: 'Ranked points for placement and kills', systems: [{ name: 'Legend abilities', matters: 'Tacticals open fights.' }], priorities: ['Positioning', 'Picking fights', '', 'Third parties'], engagements: 'Take fights you can finish before a third party arrives.', aim_target: 'body', mistakes: [
+    { name: 'Taking open fights', signs: 'Shooting from open ground', cost: 'Third-partied', drill: 'Fight from cover', checked_by: 'none' },
+    { name: 'Spraying', signs: 's', cost: 'c', drill: 'd', checked_by: 'telepathy' },
+    { name: 'Dry peeking', signs: 'Peeking alone with no utility', cost: 'c', drill: 'd', checked_by: 'aim' },
+    { name: 'Low crosshair', signs: 'The crosshair sits at chest height', cost: 'c', drill: 'd', checked_by: 'aim' },
+    { name: 'Running in solo', signs: 'Alone in the open', cost: 'c', drill: 'd', checked_by: 'engine' },
+  ] }, ['aim', 'shots', 'engine'], { sources: two, researched: true, genre: 'shooter' });
   assert.deepEqual(r.priorities, ['Positioning', 'Picking fights', 'Third parties']);
+  assert.deepEqual(r.systems, [{ name: 'Legend abilities', matters: 'Tacticals open fights.' }]);
   assert.equal(r.aimTarget, 'body');
-  assert.equal(r.mistakes[1].checked_by, 'none', 'an unknown check is dropped');
+  assert.deepEqual(r.mistakes.map((m) => m.checked_by), ['none', 'none', 'none', 'aim', 'none'], 'an unknown check, aim on a habit that is not about the crosshair, and the chess engine in a shooter are all dropped');
   assert.equal(r.researched, true);
+  const one = L.cleanResearch({ priorities: ['Farming'], aim_target: 'tracking', mistakes: [] }, ['aim'], { sources: two.slice(0, 1), researched: true, genre: 'moba' });
+  assert.equal(one.researched, false, 'one web page is not research');
+  assert.equal(one.aimTarget, 'none', 'no aim target in a game with no aiming');
   assert.equal(L.cleanResearch({ priorities: [], mistakes: [] }, ['aim']), null, 'nothing usable');
+  const kit = L.cleanCharacter({ role: 'Sentinel', abilities: [{ name: 'Razorvine', slot: 'C', does: 'a', use: 'b' }, { name: '', slot: 'Q' }], mistakes: [{ name: 'Wasting Steel Garden', signs: 'The ultimate goes out with no fight near', cost: 'c', drill: 'd', checked_by: 'engine' }] }, 'Vyse', ['aim', 'engine'], 'shooter', { sources: two, researched: true });
+  assert.deepEqual(kit.abilities.map((a) => a.name), ['Razorvine']);
+  assert.equal(kit.mistakes[0].checked_by, 'none');
+  assert.equal(kit.researched, true);
+  assert.equal(L.cleanCharacter({ abilities: [] }, 'Nobody', [], 'shooter'), null);
 });
 
-test('without web search, research falls back to the model and says so', async () => {
+test('research is searched first and put in shape after, and without web search it falls back to the model and says so', async () => {
+  const answer = { rewards: 'Rounds', systems: [], priorities: ['Trading'], engagements: '', aim_target: 'head', mistakes: [{ name: 'No trades', signs: 's', cost: 'c', drill: 'd', checked_by: 'none' }] };
+  const asked = [];
   globalThis.Gemini = {
     grounded: async () => { throw Object.assign(new Error('not available'), { status: 404 }); },
-    generate: async () => ({}),
-    textOf: () => JSON.stringify({ rewards: 'Rounds', priorities: ['Trading'], engagements: '', aim_target: 'head', mistakes: [{ name: 'No trades', signs: 's', cost: 'c', drill: 'd', checked_by: 'none' }] }),
+    generate: async (body) => { asked.push(body); return {}; },
+    textOf: () => JSON.stringify(answer),
     parseJSON: JSON.parse,
   };
   const r = await L.researchGame({ name: 'Test Game ' + Date.now(), genre: 'shooter' });
   assert.equal(r.researched, false);
   assert.deepEqual(r.sources, []);
   assert.equal(r.mistakes[0].name, 'No trades');
+  assert.equal(asked.length, 5, "the model's own answer to each of the 4 questions (guides, community, meta, wiki), then the shaping");
+  assert.ok(asked[4].generationConfig.responseSchema, 'the shaping call has the schema');
+  assert.match(asked[4].contents[0].parts[0].text, /## guides[\s\S]*## community[\s\S]*## meta[\s\S]*## wiki/);
+  // with search: a search citing one page is asked once more, to search first
+  let n = 0;
+  globalThis.Gemini.grounded = async (ask) => { n++; const pages = /Search the web for this first/.test(ask) ? 2 : 1; return { text: 'prose', sources: Array.from({ length: pages }, (_, i) => ({ title: `site${n}-${i}`, uri: `https://site${n}-${i}.com` })) }; };
+  const web = await L.researchGame({ name: 'Web Game ' + Date.now(), genre: 'shooter' });
+  assert.equal(n, 8, 'each of the 4 searches asked twice');
+  assert.equal(web.researched, true);
+  assert.deepEqual(web.facets, { guides: 2, community: 2, meta: 2, wiki: 2 });
+  assert.ok(web.sources.every((x) => x.facet), 'each source says which search found it');
   delete globalThis.Gemini;
+});
+
+test("each ability the player used, as a clip read saw it, becomes an event in the match's time", () => {
+  const w = { from: 100, to: 110, events: [], hits: [] };
+  const out = C.fightsFromClips([w], [{ fight: 'enemy_engaged', story: 'Revealed, then rushed', abilities: [
+    { t: '1:43', who: 'player', name: 'Arc Rose', what: 'flashed the corner' },
+    { t: '1:44', who: 'enemy', name: 'Recon Bolt', what: 'revealed them' },
+    { t: '1:43.5', who: 'player', name: 'Arc Rose', what: 'the same flash, seen twice' },
+    { t: '1:45', who: 'nobody', name: 'Wind' },
+  ] }], []);
+  assert.deepEqual(out.filter((e) => e.kind === 'ability').map((e) => [e.t, e.who, e.name, e.text]), [[103, 'player', 'Arc Rose', 'they used an ability (the clip read calls it Arc Rose: flashed the corner)']], "others' abilities stay in the story, and one use seen twice is one");
+  // timed from the clip's own start, it's shifted into the match
+  assert.deepEqual(C.fightsFromClips([w], [{ fight: 'no_fight', abilities: [{ t: '0:03', who: 'player', name: 'Shear', what: 'walled the door' }] }], []).map((e) => [e.t, e.kind]), [[103, 'ability']]);
 });
 
 test('fights come from firing and from what the low-detail pass saw, with how each ended', () => {
@@ -499,15 +645,71 @@ test('fights come from firing and from what the low-detail pass saw, with how ea
   assert.match(C.eventsBrief([fights[0]]), /^0:08\.5–0:17 engagement: won; fired in 3 bursts$/);
 });
 
-test('team colors are the hue peaks nearest the colors the learn call reported', () => {
+// A kill-feed crop drawn in code: dark scenery with a red wall on the left; per frame, a teal-on-red row and a
+// red-on-teal row ending at x 380 (names in white, shifted per frame so no row stays put), and a band of the wall
+// beside a teal sky with no names.
+function feedFrame(shift = 0) {
+  const W = 400, H = 120, d = new Uint8ClampedArray(W * H * 4);
+  const fill = (x0, y0, x1, y1, [r, g, b]) => { for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) { const i = (y * W + x) * 4; d[i] = r; d[i + 1] = g; d[i + 2] = b; d[i + 3] = 255; } };
+  fill(0, 0, W - 1, H - 1, [40, 40, 40]);
+  fill(0, 0, 120, H - 1, [210, 70, 60]); // the wall, red like a team
+  fill(150 + shift, 10, 260, 29, [80, 190, 160]); fill(261, 10, 380, 29, [220, 80, 80]); // teal killer, red victim
+  fill(200 + shift, 34, 290, 53, [220, 80, 80]); fill(291, 34, 380, 53, [80, 190, 160]); // red killer, teal victim
+  for (const [x0, y0] of [[180 + shift, 16], [290, 16], [215 + shift, 40], [310, 40]]) fill(x0, y0, x0 + 40, y0 + 7, [255, 255, 255]);
+  fill(130, 80, 250, 99, [80, 190, 160]); // the sky beside the wall: two colors, no names
+  return { data: d, width: W, height: H };
+}
+
+test('kill-feed rows hold two team colors side by side and a name in white', () => {
+  const rows = L.twoTeamRows(L.pixelHues(feedFrame()), { ally: [150, 180], enemy: [345, 15] });
+  assert.deepEqual(rows.map((r) => [r.y0, r.y1, r.x0, r.x1, r.left, r.right]), [[10, 29, 150, 380, 'ally', 'enemy'], [34, 53, 200, 380, 'enemy', 'ally']], 'not the wall beside the sky');
+  const still = L.pixelHues(feedFrame()), blank = L.pixelHues({ data: new Uint8ClampedArray(400 * 120 * 4), width: 400, height: 120 });
+  assert.deepEqual(L.feedRows([still, still, still, still, still], { ally: [150, 180], enemy: [345, 15] }).flat(), [], 'what stays put is an overlay');
+  assert.equal(L.feedRows([still, blank, blank, blank, blank], { ally: [150, 180], enemy: [345, 15] })[0].length, 2);
+});
+
+test('team colors are measured from the rows, and the reported colors only say which team is which', () => {
+  const imgs = Array.from({ length: 12 }, (_, k) => feedFrame(k * 4)), px = imgs.map(L.pixelHues);
   const bins = new Array(36).fill(0);
-  bins[1] = 300; bins[2] = 900; bins[3] = 400; // an orange wall, the biggest thing on screen
-  bins[16] = 500; bins[35] = 350; bins[0] = 300; // teal and red rows
-  assert.deepEqual(L.teamHues(bins, {}, { ally: 160, enemy: 355 }), { ally: [140, 190], enemy: [330, 20] });
-  assert.equal(L.teamHues(bins, { ally: 'purple', enemy: 'red' }), null, 'no peak near purple: the feed is not read');
+  for (const img of imgs) L.hueHistogram(img).forEach((v, i) => { bins[i] += v; });
+  // the model called the teal "blue": it's still the player's team, and the red wall, the biggest color, isn't a team
+  const m = L.feedColors(px, bins, (b) => b.y0 < 60, 400, { ally: 215, enemy: 0 });
+  const has = ([lo, hi], h) => (lo <= hi ? h >= lo && h <= hi : h >= lo || h <= hi);
+  assert.ok(has(m.colors.ally, 164) && has(m.colors.enemy, 0), JSON.stringify(m.colors));
+  assert.equal(m.found.height, 20);
+  assert.equal(m.found.pitch, 24);
+  const swapped = L.feedColors(px, bins, (b) => b.y0 < 60, 400, { ally: 0, enemy: 170 });
+  assert.ok(has(swapped.colors.ally, 0) && has(swapped.colors.enemy, 164));
   assert.equal(L.rgbHue([80, 200, 170]), 165);
   assert.equal(L.rgbHue([128, 128, 130]), null, 'gray has no hue');
   assert.equal(L.nameHue('Teal green'), 170);
+});
+
+test("a box stays when its frames show what it claims, and health must be a bar or a number", () => {
+  const frame = { w: 2170, h: 1162 }, pictures = 3, all = (box, outlines) => [1, 2, 3].map((image) => ({ image, box, outlines }));
+  const regions = { health: [0.493, 0.817, 0.081, 0.148], ammo: [0.799, 0.863, 0.2, 0.094], minimap: [0.066, 0.019, 0.161, 0.296] };
+  const none = new Map();
+  // Apex: the learn call's "health" is the ultimate icon, and the check says so
+  let r = L.judgeBoxes({ names: ['health', 'ammo', 'minimap'], said: [...all(1, 'abilities'), ...all(2, 'ammo'), ...all(3, 'minimap')], digits: none, pictures, regions, frame });
+  assert.deepEqual(r.kept, ['ammo', 'minimap']);
+  assert.deepEqual(r.dropped, [{ name: 'health', shows: 'abilities', box: regions.health }]);
+  assert.ok(!r.regions.health);
+  // the same square box goes even when the model agrees: it's neither a bar nor a number
+  r = L.judgeBoxes({ names: ['health'], said: all(1, 'health'), digits: none, pictures, regions, frame });
+  assert.deepEqual(r.dropped.map((d) => [d.name, d.shows]), [['health', 'other']]);
+  // the real bars under the player's name are a bar; Valorant's health is a number whose digits read
+  r = L.judgeBoxes({ names: ['health'], said: all(1, 'health'), digits: none, pictures, regions: { health: [0.14, 0.905, 0.13, 0.03] }, frame });
+  assert.deepEqual(r.kept, ['health']);
+  r = L.judgeBoxes({ names: ['health'], said: all(1, 'health'), digits: new Map([['health', 3]]), pictures, regions: { health: [0.19, 0.895, 0.13, 0.091] }, frame: { w: 1290, h: 726 } });
+  assert.deepEqual(r.kept, ['health']);
+  assert.equal(L.barShaped([0.293, 0.876, 0.104, 0.078], { w: 2170, h: 1162 }), true, "TenZ's \"100\" is long enough with no digits read");
+  assert.equal(L.barShaped([0.493, 0.817, 0.081, 0.148], frame), false, 'the ultimate icon is square');
+  // digits keep a number the model misnamed, and two boxes showing each other's element swap
+  r = L.judgeBoxes({ names: ['ammo'], said: all(1, 'scoreboard'), digits: new Map([['ammo', 2]]), pictures, regions, frame });
+  assert.deepEqual(r.kept, ['ammo']);
+  r = L.judgeBoxes({ names: ['damage', 'kill_count'], said: [...all(1, 'kill_count'), ...all(2, 'damage')], digits: none, pictures, regions: { damage: [0.1, 0.1, 0.05, 0.03], kill_count: [0.2, 0.1, 0.05, 0.03] }, frame });
+  assert.deepEqual(r.regions, { damage: [0.2, 0.1, 0.05, 0.03], kill_count: [0.1, 0.1, 0.05, 0.03] });
+  assert.deepEqual(r.dropped, []);
 });
 
 test('kill-feed rows are the bands that share an edge and a height', () => {
@@ -523,7 +725,9 @@ test('kill-feed rows are the bands that share an edge and a height', () => {
   assert.equal(r.rows.flat().length, 6, 'the scenery bands neither end on the shared edge nor have a row\'s height');
   assert.equal(r.top, 10);
   assert.equal(L.alignedRows([[row(10, 100, 380)]], () => true, 400), null, 'too few rows to say');
-  assert.equal(L.portraitShare([[...Array(80).fill(0.9), ...Array(20).fill(0.1)]], 100), 0, 'rows ending in color have no portrait');
+  assert.equal(L.portraitShare([Array(100).fill(0.9)], 100, 10), 0, 'rows ending in color have no portrait');
+  assert.equal(L.portraitShare([[...Array(80).fill(0.9), ...Array(20).fill(0.1)], [...Array(80).fill(0.8), ...Array(20).fill(0.2)]], 100, 10), 0.2);
+  assert.equal(L.portraitShare([[...Array(70).fill(0.9), ...Array(25).fill(0.1), ...Array(5).fill(0.9)]], 100, 10), 0.3, 'a strip of bar at the very edge');
 });
 
 test("a chess habit cites the player's own moves, each one the engine calls a mistake", () => {
@@ -554,4 +758,376 @@ test('send-back reasons group by kind, whatever moment they name', () => {
   assert.equal(C.problemKind("You haven't looked closely at 1:30. Look with frames or measure_aim, or cite a moment you did look at."), 'unseen');
   assert.equal(C.problemKind('At 0:34 the engine scores c3 as fine (it gave away 20 centipawns)'), 'engine');
   assert.equal(C.problemKind('Name the habit (habit).'), 'other');
+});
+
+// ---- the same answer every time: the losses looked at, the finding on the board ----
+const DEATHS = [14, 47, 66, 101, 134].map((t) => ({ t, kind: 'death' }));
+const lookedAt = (...ts) => { const l = C.createLedger(); for (const t of ts) C.recordLook(l, { from: t - 1, to: t }); return l; };
+
+test('before deciding either way, the review looks at the losses: all of them, or 4 when there are more', () => {
+  const few = C.checkFinish({ found: false, why: 'Each death had its own cause; none repeated.' }, { ledger: lookedAt(14, 47, 134), events: DEATHS, coverLosses: true });
+  assert.equal(few.length, 1);
+  assert.match(few[0], /fights they lost before deciding: 3 of 5 looked at, and a review needs 4\. Not looked at yet: 1:06 \(their death\), 1:41 \(their death\)/);
+  assert.equal(C.problemKind(few[0]), 'losses');
+  assert.deepEqual(C.checkFinish({ found: false, why: 'Each death had its own cause; none repeated.' }, { ledger: lookedAt(14, 47, 101, 134), events: DEATHS, coverLosses: true }), []);
+  assert.deepEqual(C.checkFinish({ found: false, why: 'Each death had its own cause; none repeated.' }, { ledger: lookedAt(14), events: DEATHS }), [], 'only when asked for');
+  // a death counts as looked at from the second before its kill-feed line, when the fight happened
+  assert.equal(C.losses([{ t: 20, kind: 'death' }], lookedAt(19))[0].seen, true);
+});
+
+test("a lost fight with no death in it is a loss of its own; one with the player's death is that death", () => {
+  const events = [{ t: 30, kind: 'death' }, { t: 26, kind: 'engagement', from: 26, to: 31, outcome: 'lost' }, { t: 80, kind: 'engagement', from: 80, to: 86, outcome: 'lost' }, { t: 120, kind: 'engagement', from: 120, to: 125, outcome: 'won' }];
+  const l = C.losses(events, lookedAt(82));
+  assert.deepEqual(l.map((x) => [x.t, x.what, x.seen]), [[30, 'their death', false], [80, 'a fight they lost', true]]);
+});
+
+test('a finding has to be a supported theory on the board, with the moments it cites', () => {
+  const ledger = looked(), board = (status, ts) => [{ id: 'T1', theory: 'Crosshair low', status, evidence: ts.map((t) => ({ t })), history: [status] }];
+  assert.deepEqual(C.checkFinish(good, { ledger, duration: 120, habits: HABITS, measures: LOW }), [], 'only when there is a board to check');
+  assert.deepEqual(C.checkFinish(good, { ledger, duration: 120, habits: HABITS, measures: LOW, board: board('supported', [10, 40.5, 71]) }), []);
+  const testing = C.checkFinish(good, { ledger, duration: 120, habits: HABITS, measures: LOW, board: board('testing', [10, 40.5, 71]) });
+  assert.equal(testing.length, 1);
+  assert.match(testing[0], /^Put the finding on the board first: .*Not on a supported theory yet: 0:10, 0:40, 1:11\. The board now: T1 testing: Crosshair low/);
+  assert.equal(C.problemKind(testing[0]), 'board');
+  const part = C.checkFinish(good, { ledger, duration: 120, habits: HABITS, measures: LOW, board: board('supported', [10]) });
+  assert.match(part[0], /Not on a supported theory yet: 0:40, 1:11\./);
+});
+
+test('with the kill feed read, the feed says how a fight ended, over the low-detail pass', () => {
+  const seenFights = [{ from: 250, to: 258, outcome: 'lost', text: 'Player gets caught and is knocked' }];
+  const events = [{ t: 257, kind: 'kill' }];
+  const [byPass] = C.mergeFights([], seenFights, events);
+  assert.equal(byPass.outcome, 'lost', 'without the feed the pass decides');
+  const [byFeed] = C.mergeFights([], seenFights, events, [], { fromFeed: true });
+  assert.equal(byFeed.outcome, 'won');
+  assert.doesNotMatch(byFeed.text, /knocked/, "and the pass's story that disagrees is left out");
+});
+
+test('in a feed with many teams, a kill between two others stays theirs, and a knock says so', () => {
+  const sightings = [
+    { t: 10, killer: 'Pathfinder5758', victim: 'Horizon2416', killerSide: 'enemy', victimSide: 'enemy' },
+    { t: 12, killer: 'Silent Gaming', victim: 'Sparrow9617', killerSide: 'ally', victimSide: 'enemy', knock: true },
+    { t: 30, killer: 'Ltr7', victim: 'Conduit5722', killerSide: null, victimSide: null },
+  ];
+  const { events } = C.buildKillfeed(sightings, { player: 'Silent Gaming', twoTeams: false });
+  assert.deepEqual(events.map((e) => [e.kind, e.killerTeam, e.victimTeam]), [['other', 'enemy', 'enemy'], ['kill', 'ally', 'enemy'], ['other', null, null]]);
+  assert.equal(events[1].text, 'you knocked down Sparrow9617 (enemy)');
+  // with two teams, a side the feed didn't show is the other team; with many, it stays unknown
+  const half = [{ t: 5, killer: 'Ltr7', victim: 'Conduit5722', killerSide: 'enemy', victimSide: null }];
+  assert.equal(C.buildKillfeed(half, { twoTeams: true }).events[0].kind, 'ally_death');
+  assert.equal(C.buildKillfeed(half, { twoTeams: false }).events[0].kind, 'other');
+});
+
+test("a plain feed's squad is the names in a color other than most names'", () => {
+  const s = (killer, killerColor, victim, victimColor) => ({ t: 1, killer, victim, killerColor, victimColor });
+  const out = C.teamsByColor([
+    s('Silent Gaming', 'orange', 'Sparrow9617', 'white'), s('Sparrow9617', 'white', 'FYR_rLayze', 'teal'), s('Pathfinder5758', 'white', 'Horizon2416', 'white'),
+    s('Silent Gaming', 'white', 'Raygebait', 'white'), // scenery behind one reading: the name keeps the color of most of its lines
+    s('Ltr7', 'white', 'Silent Gaming', 'orange'), s('Bangalore3870', 'white', 'Bazhard', 'white'), s('FYR_rLayze', 'teal', 'Conan', 'white'),
+  ]);
+  const side = (n) => out.flatMap((x) => [[x.killer, x.killerSide], [x.victim, x.victimSide]]).find(([m]) => m === n)[1];
+  assert.deepEqual(['Silent Gaming', 'FYR_rLayze', 'Sparrow9617', 'Horizon2416'].map(side), ['ally', 'ally', 'enemy', 'enemy']);
+  assert.equal(out[3].killerSide, 'ally');
+  const mixed = C.teamsByColor([s('A1234', 'blue', 'B1234', 'red'), s('C1234', 'red', 'D1234', 'blue')]);
+  assert.equal(mixed[0].killerSide ?? null, null, "without one plain color the colors don't say teams");
+});
+
+test("the game's banner names the player only when every banner agrees", () => {
+  const events = [
+    { t: 20, killer: 'FYR_rLayze', victim: 'Raygebait', killerTeam: 'ally', victimTeam: 'enemy' },
+    { t: 47, killer: 'Silent Gaming', victim: 'Ltr7', killerTeam: 'ally', victimTeam: 'enemy' },
+    { t: 257, killer: 'Silent Gaming', victim: 'Sparrow9617', killerTeam: 'ally', victimTeam: 'enemy' },
+  ];
+  const sightings = events.map((e) => ({ ...e, mine: false }));
+  assert.equal(C.choosePlayer(events, sightings, [], [{ t: 47, says: 'you_downed', name: 'LTR7' }, { t: 257, says: 'you_downed', name: 'Sparrow9617' }]), 'Silent Gaming');
+  // an assist banner, or a name borrowed from the next picture, points at someone else: then nobody is picked
+  assert.equal(C.choosePlayer(events, sightings, [], [{ t: 20, says: 'you_downed', name: 'Raygebait' }, { t: 47, says: 'you_downed', name: 'LTR7' }]), null);
+  assert.equal(C.choosePlayer(events, sightings, [], [{ t: 47, says: 'none', name: '' }]), null);
+  const mine = C.buildKillfeed(sightings, { player: 'Silent Gaming', twoTeams: false }).events;
+  C.confirmByBanners(mine, [{ t: 257.5, says: 'you_downed', name: 'SPARROW9617' }]);
+  assert.deepEqual(mine.map((e) => !!e.confirmed), [false, false, true]);
+  assert.match(mine[2].text, /banner shows it too/);
+});
+
+// a strip of fake text: bright strokes 2 px wide with dark gaps, where `color` says what color, at [x0, x1)
+function fakeText(w, h, runs) {
+  const data = new Uint8ClampedArray(w * h * 4);
+  for (let i = 0; i < w * h; i++) { data[i * 4] = 30; data[i * 4 + 1] = 30; data[i * 4 + 2] = 35; data[i * 4 + 3] = 255; }
+  for (const { y0, y1, x0, x1, rgb } of runs) for (let y = y0; y <= y1; y++) for (let x = x0; x < x1; x++) if (x % 4 < 2) data.set([...rgb, 255], (y * w + x) * 4);
+  return { data, width: w, height: h };
+}
+const WHITE = [235, 235, 235], TEAL = [70, 215, 195], GOLD = [235, 200, 90];
+
+test('plain-text kill-feed lines are bands of text on a shared edge, with each name colored from its own pixels', () => {
+  const img = fakeText(600, 120, [
+    { y0: 10, y1: 25, x0: 300, x1: 420, rgb: WHITE }, { y0: 10, y1: 25, x0: 470, x1: 572, rgb: TEAL },
+    { y0: 50, y1: 65, x0: 220, x1: 343, rgb: GOLD }, { y0: 53, y1: 62, x0: 362, x1: 402, rgb: WHITE }, { y0: 50, y1: 65, x0: 456, x1: 572, rgb: WHITE }, // killer, weapon icon, victim
+    { y0: 90, y1: 104, x0: 100, x1: 300, rgb: WHITE }, // an overlay line that doesn't end on the edge
+  ]);
+  const rows = C.textRows(img);
+  assert.equal(rows.length, 3);
+  const edge = C.textEdge([rows, rows, rows], 600);
+  assert.equal(edge.key, 'x1');
+  assert.deepEqual(rows.map((r) => C.onEdge(r, edge)), [true, true, false]);
+  const strip = (r) => ({ data: img.data.slice(r.y0 * 600 * 4, (r.y1 + 1) * 600 * 4), width: 600, height: r.y1 - r.y0 + 1 });
+  const colors = rows.slice(0, 2).map((r) => { const c = C.nameColors(strip(r), r); return [c.left, c.right]; });
+  assert.deepEqual(colors, [['white', 'teal'], ['yellow', 'white']]);
+});
+
+test('where a match was lost: deaths, lost fights, teammates down untraded, and moves the engine flags', () => {
+  const events = [
+    { t: 30, kind: 'death' },
+    { t: 50, kind: 'ally_death', victim: 'FYR_rLayze', tradedBy: 'Silent Gaming' },
+    { t: 90, kind: 'ally_death', victim: 'O5HK', near: true }, { t: 95, kind: 'ally_death', victim: 'O5HK', near: false },
+    { t: 120, kind: 'engagement', from: 120, to: 126, outcome: 'lost' },
+    { t: 150, kind: 'engagement', from: 150, to: 155, outcome: 'won' },
+    { t: 200, kind: 'move', san: 'Nce5', grade: 'blunder' }, { t: 210, kind: 'move', san: 'c3' },
+  ];
+  assert.deepEqual(C.lossMoments(events).map((l) => [l.t, l.what]), [[30, 'their death'], [90, 'O5HK down near them, not traded'], [120, 'a fight they lost'], [200, 'Nce5 (blunder)']]);
+  assert.equal(C.atLoss(events, 25), true, 'the seconds before a death show it');
+  assert.equal(C.atLoss(events, 50), false, 'a traded teammate is no loss');
+  assert.equal(C.atLoss(events, 152), false);
+});
+
+test('a finding has to cite two or more separate losses', () => {
+  const ledger = lookedAt(11, 41, 71), finding = { ...good, habit_id: 'wide_peek', evidence: [{ t: '0:10', what: 'a' }, { t: '0:40', what: 'b' }, { t: '1:10', what: 'c' }] };
+  const won = [{ t: 41, kind: 'kill' }, { t: 100, kind: 'death' }];
+  const p = C.checkFinish(finding, { ledger, duration: 120, habits: HABITS, events: won, citeLoss: true });
+  assert.equal(p.length, 1);
+  assert.match(p[0], /has to show where they lost, at 2 or more separate losses: .*You cite 0 \(in this match: 1:40 their death\)\. If they don't show it, finish with found false\./);
+  assert.equal(C.problemKind(p[0]), 'no_loss');
+  const one = C.checkFinish(finding, { ledger, duration: 120, habits: HABITS, events: [...won, { t: 72, kind: 'death' }], citeLoss: true });
+  assert.match(one[0], /You cite 1 /, 'one loss is an incident, not a habit');
+  assert.deepEqual(C.checkFinish(finding, { ledger, duration: 120, habits: HABITS, events: [...won, { t: 72, kind: 'death' }, { t: 12, kind: 'death' }], citeLoss: true }), [], 'two separate losses');
+  assert.deepEqual(C.checkFinish(finding, { ledger, duration: 120, habits: HABITS, events: won }), [], 'only when asked for');
+});
+
+test("one colored reading doesn't put a name in the squad", () => {
+  const s = (killer, killerColor, victim, victimColor) => ({ t: 1, killer, victim, killerColor, victimColor });
+  const out = C.teamsByColor([
+    s('Silent Gaming', 'orange', 'Raygebait', 'white'), s('Ltr7', 'white', 'Silent Gaming', 'orange'), s('Catalyst8175', 'white', 'Twitch.tv/InFameX327', 'purple'),
+    s('@RinxPrime', 'white', '11', 'teal'), s('11', 'teal', 'Bazhard', 'white'), s('Bangalore3870', 'white', 'Horizon2416', 'white'),
+  ]);
+  const side = (n) => out.flatMap((x) => [[x.killer, x.killerSide], [x.victim, x.victimSide]]).find(([m]) => m === n)[1];
+  assert.deepEqual(['Silent Gaming', 'Twitch.tv/InFameX327', '11', 'Raygebait'].map(side), ['ally', null, null, 'enemy']);
+});
+
+// ---- every event read as video ----
+test('a window around every kill, death, teammate down, and burst of firing, merged when they overlap', () => {
+  const events = [
+    { t: 0, kind: 'kill' }, // seen at the first sample: it happened before the recording
+    { t: 25, kind: 'ally_death', victim: 'FYR_rLayze' }, { t: 47, kind: 'kill' }, { t: 53, kind: 'kill' },
+    { t: 120, kind: 'other' }, { t: 257, kind: 'kill' }, { t: 256, kind: 'ally_death', victim: 'FYR_rLayze' },
+  ];
+  const firing = [{ from: 43.8, to: 46.8 }, { from: 277.5, to: 295 }];
+  const w = C.eventWindows(events, firing, { duration: 369 });
+  assert.deepEqual(w.map((x) => [x.from, x.to, x.events.map((e) => e.t), x.firing.length]), [
+    [18, 28, [25], 0], [40, 50, [47], 1], [46, 56, [53], 0], [249, 260, [256, 257], 0], [275.5, 285.5, [], 1],
+  ]);
+  const few = C.eventWindows(events, firing, { duration: 369, max: 2 });
+  assert.deepEqual(few.map((x) => x.from), [18, 249], 'with too many, teammates down and kills come before firing alone');
+});
+
+test('fights come from the clip reads; the kill feed says how they ended, the clip how they went', () => {
+  const events = [{ t: 25, kind: 'ally_death', killer: 'Ltr7', victim: 'FYR_rLayze', victimTeam: 'ally', killerTeam: 'enemy' }, { t: 47, kind: 'kill', victim: 'Raygebait' }];
+  const windows = [{ from: 18, to: 28, events: [events[0]], firing: [] }, { from: 40, to: 50, events: [events[1]], firing: [] }, { from: 100, to: 108, events: [], firing: [{ from: 102, to: 104 }] }];
+  const readings = [
+    { fight: 'enemy_engaged', story: 'An enemy pushed through the doorway.', downed: [{ name: 'FYR_rLayze', near: true, how_far: 'one doorway ahead' }] },
+    { fight: 'player_engaged', story: 'They shot first down the hallway.', downed: [] },
+    { fight: 'no_fight', story: 'They reloaded.', downed: [] },
+  ];
+  const fights = C.fightsFromClips(windows, readings, events);
+  assert.deepEqual(fights.map((f) => [f.from, f.outcome, f.startedBy]), [[18, 'none', 'enemy_engaged'], [40, 'won', 'player_engaged']], 'a reload with nothing in the feed is no fight');
+  assert.equal(events[0].near, true);
+  assert.match(events[0].text, /near you/);
+  assert.deepEqual(C.lossMoments(events).map((l) => l.what), ['FYR_rLayze down near them, not traded']);
+  events[0].near = false;
+  assert.deepEqual(C.lossMoments(events), [], 'a teammate down away from the player is not their loss');
+});
+
+test("a clip read's moments are put on the match's clock", () => {
+  const w = { from: 249, to: 259 };
+  assert.deepEqual(C.clipMoments([{ t: '4:16', what: 'opens fire' }, { t: '9:00', what: 'outside' }], w).map((m) => m.t), [256]);
+  assert.deepEqual(C.clipMoments([{ t: '0:07', what: 'opens fire' }, { t: '0:09', what: 'knocks him' }], w).map((m) => m.t), [256, 258], 'timed from the clip start');
+});
+
+test('in a game played in rounds, a death lasts the round even with no round start seen', () => {
+  assert.equal(C.deadForOf({ rounds: true, deadFor: { rounds: 30, respawn: 5 } }, []), 30);
+  assert.equal(C.deadForOf({ rounds: false, deadFor: { rounds: 30, respawn: 5 } }, []), 5);
+});
+
+test("a counter's rises need a later reading to confirm them, so misreads drop out", () => {
+  const r = [[0, 469], [8, 589], [10, 569], [20, 684], [30, 678], [32, 692], [44, null], [46, 759], [48, 835]].map(([t, value]) => ({ t, value }));
+  assert.deepEqual(C.counterRises(r), [{ t: 10, by: 100 }, { t: 20, by: 115 }, { t: 32, by: 8 }, { t: 46, by: 67 }, { t: 48, by: 76 }]);
+  const kills = C.hudKills([{ t: 32, by: 1 }, { t: 272, by: 1 }], [{ t: 33, kind: 'kill' }]);
+  assert.deepEqual(kills.map((k) => [k.t, k.kind, k.seenBy]), [[272, 'kill', 'hud']], 'a rise the kill feed already has is not counted twice');
+});
+
+test('fights from the damage counter are read at high detail, ranked with kills', () => {
+  const w = C.eventWindows([], [{ from: 180, to: 186 }], { duration: 369, hits: [{ from: 44, to: 55 }] });
+  assert.deepEqual(w.map((x) => [x.from, x.to, x.hits.length, x.firing.length]), [[42, 52, 1, 0], [178, 188, 0, 1]]);
+  const fights = C.fightsFromClips(w, [{ fight: 'no_fight', story: 'They looked around.' }, { fight: 'no_fight', story: 'They reloaded.' }], []);
+  assert.deepEqual(fights.map((f) => f.from), [42], 'damage dealt is a fight whatever the clip says; firing alone can be a reload');
+});
+
+test('a name read short is the full name, and a kill inside the squad is a misread line', () => {
+  const s = (t, killer, victim, kc, vc) => ({ t, killer, victim, killerColor: kc, victimColor: vc });
+  const sightings = C.teamsByColor([
+    s(10, 'FYR_rLayze', 'Raygebait', 'teal', 'white'), s(25, 'Ltr7', 'FYR_rLayze', 'white', 'teal'), s(40, 'Silent Gaming', 'Ltr7', 'orange', 'white'),
+    s(47, 'Silent Gaming', 'Raygebait', 'orange', 'white'), s(60, 'Pathfinder5758', 'Horizon2416', 'white', 'white'), s(70, 'Swxxvy', 'Conan', 'white', 'white'),
+    s(109, 'r_Layze', 'Silent Gaming', 'white', 'orange'), // "FYR_rLayze: Thanks Silent Gaming." read as a kill
+  ]);
+  assert.equal(sightings[6].killer, 'FYR_rLayze');
+  const { events } = C.buildKillfeed(sightings, { player: 'Silent Gaming', twoTeams: false, window: 20 });
+  assert.equal(events.some((e) => e.t === 109), false, 'no death of theirs at 1:49');
+  assert.equal(events.filter((e) => e.kind === 'death').length, 0);
+});
+
+test("in a feed of many teams, a teammate's death is traded only by their own team", () => {
+  const sightings = [
+    { t: 25, killer: 'Ltr7', victim: 'FYR_rLayze', killerSide: 'enemy', victimSide: 'ally' },
+    { t: 26, killer: 'LE KARNAGE', victim: 'Ltr7', killerSide: 'enemy', victimSide: 'enemy' },
+    { t: 256, killer: 'Sparrow9617', victim: 'FYR_rLayze', killerSide: 'enemy', victimSide: 'ally' },
+    { t: 257, killer: 'Silent Gaming', victim: 'Sparrow9617', killerSide: 'ally', victimSide: 'enemy' },
+  ];
+  const { events } = C.buildKillfeed(sightings, { player: 'Silent Gaming', twoTeams: false });
+  assert.deepEqual(events.filter((e) => e.kind === 'ally_death').map((e) => [e.t, e.tradedBy || null]), [[25, null], [256, 'Silent Gaming']]);
+});
+
+test('two reads of a feed line: a kill either finds stays, and a line either calls a message goes', () => {
+  const st = (id, t) => ({ id, t, after: t - 1, colors: { left: 'white', right: 'white' }, row: { fp: [1, 2] } });
+  const rows = [
+    { r: { kind: 'kill', text: 'Silent Gaming [Bleed Out] ArianaRei', killer: 'Silent Gaming', victim: 'ArianaRei' }, st: st(1, 32) },
+    { r: { kind: 'other', text: '' }, st: st(1, 32) }, // the other read missed it
+    { r: { kind: 'kill', text: 'r_Layze Silent Gaming', killer: 'r_Layze', victim: 'Silent Gaming' }, st: st(2, 109) },
+    { r: { kind: 'message', text: 'FYR_rLayze: Thanks Silent Gaming.' }, st: st(2, 109) }, // the chat line, read right once
+    { r: { kind: 'kill', text: 'r_Layze: Thanks Silent Gaming', killer: 'r_Layze: Thanks', victim: 'Silent Gaming' }, st: st(3, 140) }, // a colon: chat
+    { r: { kind: 'knock', text: 'Silent Gaming Sparrow9617', killer: 'Silent Gaming', victim: 'Sparrow9617' }, st: st(4, 257) },
+    { r: { kind: 'knock', text: 'Silent Gaming Sparrow9617', killer: 'Silent Gaming', victim: 'Sparrow9617' }, st: st(4, 257) },
+  ];
+  const out = C.textFeedReads(rows);
+  assert.deepEqual(out.map((x) => [x.t, x.killer, x.victim, !!x.knock]), [[32, 'Silent Gaming', 'ArianaRei', false], [257, 'Silent Gaming', 'Sparrow9617', true], [257, 'Silent Gaming', 'Sparrow9617', true]]);
+});
+
+test("a teammate going down while the player is dead isn't the player's loss, and gets no clip", () => {
+  const events = [{ t: 41, kind: 'death' }, { t: 48, kind: 'ally_death', victim: 'Chamber', near: true }, { t: 111, kind: 'ally_death', victim: 'Chamber', near: true }];
+  assert.deepEqual(C.lossMoments(events, { deadFor: 30 }).map((l) => l.t), [41, 111]);
+  assert.deepEqual(C.eventWindows(events, [], { duration: 388, deadFor: 30 }).map((w) => w.events.map((e) => e.t)), [[41], [111]]);
+});
+
+// ---------- footage of the whole match ----------
+test('camera cuts are single samples of big change, not fast motion', () => {
+  // a still pre-snap, a cut, a fast pan with high change throughout, then another cut
+  const m = [1, 1.2, 0.9, 1.1, 40, 1.5, 12, 14, 13, 15, 14, 36, 0.8, 1];
+  const diffs = m.map((x, i) => ({ t: i * 0.25, m: x }));
+  assert.deepEqual(C.cutTimes(diffs), [1, 2.75]);
+  assert.deepEqual(C.cutTimes([]), []);
+});
+
+test("units' edges move to the nearest cut, else are padded, and never overlap", () => {
+  const units = [{ from: 12, to: 27, text: 'a' }, { from: 26, to: 40, text: 'b' }, { from: 60, to: 61, text: 'short' }];
+  const out = C.snapUnits(units, [10.5, 28.5, 41], { tol: 4, pad: 1.5, duration: 100 });
+  assert.deepEqual(out.map((u) => [u.from, u.to, u.text]), [[10.5, 28.5, 'a'], [28.5, 41, 'b'], [58.5, 62.5, 'short']]);
+  // no cuts: padded, and two padded units that overlap meet halfway
+  assert.deepEqual(C.snapUnits([{ from: 12, to: 27 }, { from: 24, to: 40 }], [], { pad: 1.5 }).map((u) => [u.from, u.to]), [[10.5, 25.5], [25.5, 41.5]]);
+  assert.deepEqual(C.snapUnits([{ from: 1, to: 2.2 }], [], { pad: 0 }), []);
+});
+
+test('a read unit becomes a play with its outcome; an unread one waits, and blocks no ending once read', () => {
+  const windows = [{ id: 'W1', from: 0, to: 12, unit: 'play', events: [], firing: [], hits: [] }, { id: 'W2', from: 12, to: 25, unit: 'play', events: [], firing: [], hits: [] }];
+  const readings = [{ outcome: 'lost', outcome_why: 'The pass fell incomplete.', decided_by: 'player', player_seen: true, moments: [] }, null];
+  const plays = C.fightsFromClips(windows, readings, []);
+  assert.deepEqual(plays.map((e) => [e.kind, e.from, e.to, e.outcome, e.decidedBy]), [['play', 0, 12, 'lost', 'player']]);
+  assert.match(plays[0].text, /^lost; decided by the player; The pass fell incomplete\./);
+  assert.deepEqual(C.unreadUnits([{ ...windows[0], reading: readings[0] }, { ...windows[1], reading: null }]).map((u) => [u.t, u.window]), [[12, 'W2']]);
+  // a lost play is a loss the review has to look at and a finding has to show
+  assert.deepEqual(C.lossMoments(plays).map((l) => [l.t, l.what]), [[0, 'a play they lost']]);
+  assert.deepEqual(C.losses(plays, C.createLedger()).map((l) => [l.t, l.what, l.seen]), [[0, 'a play they lost', false]]);
+  // neither won nor lost: no loss
+  const even = C.fightsFromClips([windows[0]], [{ outcome: 'neutral', outcome_why: 'A short gain.', decided_by: 'unclear' }], []);
+  assert.equal(even[0].outcome, 'none');
+  assert.deepEqual(C.lossMoments(even), []);
+});
+
+// ---------- the HUD's own record ----------
+const series = (vals, step = 2) => vals.map((value, i) => ({ t: i * step, value }));
+test("the HUD's K/D/A counter says when the player died and killed; a misread blip isn't a death", () => {
+  const counts = { cells: 10, kills: series([1, 1, 1, 1, 1, 1, 1, 1, 1, 1]), deaths: series([4, 4, 4, 5, 5, 5, 4, 5, 6, 6]) };
+  const hud = C.hudRecord(counts, {});
+  assert.deepEqual(hud.deaths.map((d) => [d.t, d.kind]), [[6, 'death'], [16, 'death']]);
+  assert.deepEqual(hud.kills, []);
+  assert.deepEqual(hud.knows, { kills: true, deaths: true, health: false });
+  // the HP number at 0: one death per stretch at 0, however long the death screen lasts
+  const hp = C.hudRecord({ cells: 10, health: series([250, 120, 32, 0, 0, 250, 250, 0, 0, 0]) });
+  assert.deepEqual(hp.downs.map((d) => d.t), [6, 14]);
+  // a K/D/A read as 1/6/5 for a few moments, then 1/5/6 again: no death
+  assert.deepEqual(C.hudRecord({ cells: 12, deaths: series([5, 5, 5, 6, 6, 5, 5, 5, 5, 5, 5, 5]) }).deaths, []);
+  // one death per death: a second seen within seconds of the first is the same one
+  assert.deepEqual(C.oneDeathEach([{ t: 267, kind: 'death' }, { t: 271, kind: 'death' }, { t: 290, kind: 'death' }, { t: 270, kind: 'kill' }]).map((e) => [e.t, e.kind]), [[267, 'death'], [290, 'death'], [270, 'kill']]);
+  assert.equal(hp.knows.health, true);
+  assert.deepEqual(C.hudRecord({ cells: 10, deaths: series([1, 2]) }).knows.deaths, false);
+});
+
+test("the pass's deaths the counter doesn't show are dropped, the ones it does take the counter's time, and missed ones are added", () => {
+  const pass = [{ t: 5, kind: 'death', text: 'Player dies' }, { t: 40, kind: 'death', text: 'Player dies' }, { t: 41, kind: 'engagement', from: 36, to: 41, outcome: 'lost', text: 'lost' }];
+  const r = C.trustCounter(pass, [{ t: 6, kind: 'death', seenBy: 'hud', text: 'you died' }, { t: 90, kind: 'death', seenBy: 'hud', text: 'you died' }], 'death');
+  assert.deepEqual(r.events.filter((e) => e.kind === 'death').map((e) => [e.t, e.seenBy]), [[6, 'hud'], [90, 'hud']]);
+  assert.deepEqual(r.dropped.map((d) => d.t), [40]);
+  // the fight that "ended" in the dropped death has no death in it now
+  assert.equal(C.settleFights(r.events).find((e) => e.kind === 'engagement').outcome, 'none');
+});
+
+test("a sports scoreboard's points are the player's side's or the other's, and a goal read as a death goes", () => {
+  const counts = { cells: 8, scores: { orange: series([0, 1, 1, 2, 2, 2, 3, 3]), blue: series([0, 0, 0, 0, 1, 1, 1, 1]) } };
+  const hud = C.hudRecord(counts, { side: 'orange' });
+  assert.deepEqual(hud.points.map((p) => [p.t, p.kind]), [[2, 'point_won'], [6, 'point_won'], [8, 'point_lost'], [12, 'point_won']]);
+  assert.ok(C.sameSide('orange team', 'Orange') && !C.sameSide('orange', 'blue') && !C.sameSide('', 'blue'));
+  assert.deepEqual(C.pointsTaken([{ t: 3, kind: 'death' }, { t: 30, kind: 'death' }, { t: 9, kind: 'kill' }], hud.points).map((e) => e.t), [30]);
+  // the other side's point is a loss the review has to look at; the player's side's isn't
+  assert.deepEqual(C.lossMoments(hud.points).map((l) => [l.t, l.what]), [[8, 'a point the other side scored']]);
+  assert.deepEqual(C.hudRecord(counts, {}).points.map((p) => p.kind), ['point', 'point', 'point', 'point']);
+});
+
+test("a counter judges only the deaths it was read around; the rest are left for a second look", () => {
+  const readings = [...series([4, 4, 4, 4, 4]), ...series([5, 5, 5], 2).map((x) => ({ ...x, t: x.t + 100 }))]; // read 0-8 s and 100-104 s
+  const pass = [{ t: 4, kind: 'death', text: 'dies' }, { t: 50, kind: 'death', text: 'dies' }];
+  const r = C.trustCounter(pass, [], 'death', { readings });
+  assert.deepEqual(r.dropped.map((d) => d.t), [4]); // read on both sides, and the count didn't move: no death
+  assert.deepEqual(r.unjudged.map((d) => d.t), [50]); // nothing read near it: not the counter's to say
+});
+
+test("a kill feed's kills checked against the K/D/A keep the feed's own times", () => {
+  // League's chat read as its kill feed: a kill at 59 s the K/D/A never counted, one at 120.4 s it did
+  const feed = [{ t: 59, kind: 'kill', seenBy: 'feed', text: 'you killed A' }, { t: 120.4, kind: 'kill', seenBy: 'feed', text: 'you killed B' }];
+  const r = C.trustCounter(feed, [{ t: 122, kind: 'kill', seenBy: 'hud', text: 'you got a kill' }], 'kill', { keepTime: true });
+  assert.deepEqual(r.events.map((e) => [e.t, e.seenBy]), [[120.4, 'feed']]);
+  assert.deepEqual(r.dropped.map((d) => d.t), [59]);
+});
+
+test("with the scoreboard's points, the pass's own goal guesses go", () => {
+  const points = [{ t: 208, kind: 'point_won' }];
+  const pass = [{ t: 207, kind: 'point_lost', text: 'Thesomey scored against player' }, { t: 120, kind: 'point_won' }, { t: 90, kind: 'kill' }];
+  assert.deepEqual(C.pointsTaken(pass, points).map((e) => [e.t, e.kind]), [[90, 'kill']]);
+});
+
+test('the name the learn call read is offered first when the feed shows it', () => {
+  const sightings = [{ killer: 'Punk10', victim: 'S' }, { killer: 'Punk10', victim: 'lu' }, { killer: 'Alejos2001', victim: 'M' }];
+  const events = [{ killer: 'Punk10', killerTeam: 'enemy', victim: 'S', victimTeam: 'ally' }, { killer: 'Alejos2001', killerTeam: 'enemy', victim: 'M', victimTeam: 'ally' }, { killer: 'Punk10', killerTeam: 'enemy', victim: 'lu', victimTeam: 'ally' }];
+  assert.equal(C.whoIsPlayer({ events, sightings, hint: 'PunK10' }).ask[0], 'Punk10');
+  assert.ok(!C.whoIsPlayer({ events, sightings }).ask.includes('Punk10'));
+});
+
+test("the player's own rows fix which team color is theirs, and a feed of cut-off names is told apart", () => {
+  // the learned colors are the wrong way round: the player's kills read as the 'enemy' color
+  const sightings = [
+    { t: 10, killer: 'PunK10', victim: 'VEN', killerSide: 'enemy', victimSide: 'ally' },
+    { t: 30, killer: 'PunK10', victim: 'MR.ELK', killerSide: 'enemy', victimSide: 'ally' },
+    { t: 50, killer: 'NaturalKickZ', victim: 'StarBoii', killerSide: 'enemy', victimSide: 'ally' },
+    { t: 70, killer: 'VEN', victim: 'Alejos2001', killerSide: 'ally', victimSide: 'enemy' },
+  ];
+  const r = C.buildKillfeed(sightings, { player: 'PunK10' });
+  assert.equal(r.flipped, true);
+  assert.deepEqual(r.events.map((e) => [e.t, e.kind]), [[10, 'kill'], [30, 'kill'], [50, 'ally_kill'], [70, 'ally_death']]);
+  assert.equal(C.cutNames([{ killer: 'PunK10', victim: 'S' }, { killer: 'VEN', victim: 'lu' }, { killer: 'A', victim: 'B' }, { killer: 'Alejos2001', victim: 'MR.ELK' }]), 0.75);
+  assert.equal(C.cutNames([{ killer: 'PunK10', victim: 'VEN' }]), 0);
 });

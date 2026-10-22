@@ -1,4 +1,4 @@
-// npm run vendor: copies the three libraries the page runs into vendor/, from the exact versions in package.json, with
+// npm run vendor: copies the libraries the page runs into vendor/, from the exact versions in package.json, with
 // their licenses, and records each file's SHA-256 in vendor/manifest.json. The app loads them from here, never from a
 // CDN, so no code from outside the app runs in it.
 import fs from 'node:fs';
@@ -12,6 +12,7 @@ const out = path.join(root, 'vendor');
 const pkg = (name) => JSON.parse(fs.readFileSync(path.join(root, 'node_modules', name, 'package.json'), 'utf8'));
 const LIBS = [
   { name: 'mediabunny', file: 'dist/bundles/mediabunny.min.mjs', as: 'mediabunny.min.mjs', license: 'LICENSE', use: 'decodes and encodes video (video.js)' },
+  { name: 'motion', file: 'dist/motion.js', as: 'motion.js', license: 'LICENSE.md', use: "Home's animations (motion.dev), as window.Motion" },
   { name: 'chess.js', file: 'dist/esm/chess.js', as: 'chess.js', license: 'LICENSE', use: 'chess rules for reading moves (chess-reader.js)' },
   // Stockfish is GPL-3.0: it ships here unchanged, as its own program in a worker, with its license; its source is at
   // https://github.com/nmrugg/stockfish.js/tree/v10.0.2

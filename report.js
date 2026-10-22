@@ -1,10 +1,11 @@
-/* The report's key moments, marked up like a telestrator: a full frame at each moment, where on it the problem was, and
- * where the fix is. A moment the coach measured is marked from the measurement in code: the crosshair, the enemy head
- * it was measured against, and an arrow from one to the other. Any other moment is marked by one model call over all
- * of them, on the frames themselves. Marks are normalized to the frame: a box is [y0, x0, y1, x1] and a point [x, y],
- * each 0 to 1. */
+/* The report's key moments, marked up like a telestrator: a full frame at each moment, and on it only what code can
+ * stand behind. A moment the coach measured shows the crosshair and the enemy head it was measured against. A moment at
+ * one of the kill feed's lines shows that line, found again on that frame by its pixels. A chess move shows the move
+ * played and the engine's move, on the board's own squares. A moment with none of these shows the frame unmarked: a
+ * model drawing boxes on what it thinks it sees put loops on doors and on the player's own gun (Oct 19 audit). Marks are
+ * normalized to the frame: a box is [y0, x0, y1, x1] and a point [x, y], each 0 to 1. */
 (function (root) {
-  const G = root.Gemini, C = root.ThirdeyeCore, V = root.ThirdeyeVideo;
+  const C = root.ThirdeyeCore, V = root.ThirdeyeVideo;
   const PLACE = { above: 'above the head', head: 'on the head', chest: 'on the upper body', low: 'on the lower body' };
 
   // a measured moment: where the crosshair sat, against the head it was measured on
@@ -24,64 +25,65 @@
     };
   }
 
+  // a square's center on the board, as fractions of the frame
+  function squareAt(sq, b) {
+    const file = sq.charCodeAt(0) - 97, rank = +sq[1] - 1, col = b.flipped ? 7 - file : file, row = b.flipped ? rank : 7 - rank;
+    return [b.x + ((col + 0.5) / 8) * b.w, b.y + ((row + 0.5) / 8) * b.h];
+  }
+  // a graded chess move: the move played, in red, and the engine's, in the pen color
+  function moveMarks(e) {
+    const q = e.squares, moves = [{ tone: 'bad', from: squareAt(q.from, e.board), to: squareAt(q.to, e.board), label: `${e.san} (${e.grade})` }];
+    if (q.best) moves.push({ tone: 'good', from: squareAt(q.best[0], e.board), to: squareAt(q.best[1], e.board), label: q.bestSan ? `${q.bestSan} was best` : 'the engine\'s move' });
+    return { moves, note: `${e.san} gave away ${(e.loss / 100).toFixed(1)} pawns${q.bestSan ? `; the engine played ${q.bestSan}` : ''}` };
+  }
+
+  const LINE_WINDOW = 4; // s: a kill-feed line stays up at least this long after it shows
+  const say = (e) => (e.kind === 'kill' ? `You ${e.knock ? 'knocked' : 'took out'} ${e.victim}` : e.kind === 'death' ? `${e.killer} ${e.knock ? 'knocked you' : 'took you out'}` : e.kind === 'ally_death' ? `${e.killer} ${e.knock ? 'knocked' : 'took out'} ${e.victim}, your teammate` : `${e.killer} ▸ ${e.victim}`);
   /**
-   * A full frame at each moment, with marks from measurements where there are any. Resolves with
-   * { keys: [{ t, shot: { t, url }, aspect, measured?, problem?, fix?, note? }], shots } (shots keep the image data).
+   * Kill-feed lines found again on the key frames: for each moment, the player's kill, death, or teammate down whose line
+   * is up then (it showed from 1 s before the moment to LINE_WINDOW s before it), matched by the fingerprint its
+   * first sighting left (C.rowDistance on its right end). No match, no mark.
    */
-  async function prepare({ video, profile, moments, measures = [] }) {
+  async function feedMarks({ video, profile, moments, events }) {
+    const frame = { w: video.width, h: video.height }, plain = !(profile.killfeedColors && profile.killfeedGrid);
+    const crop = plain ? root.ThirdeyeAgent?.textFeedRect?.(profile, frame) : C.regionRect(profile, 'killfeed', frame);
+    if (!crop) return [];
+    const wanted = moments.map((m) => (events || []).filter((e) => e.fp && ['death', 'ally_death', 'kill'].includes(e.kind) && m.t >= e.t - 1 && m.t <= e.t + LINE_WINDOW).sort((a, b) => ['death', 'ally_death', 'kill'].indexOf(a.kind) - ['death', 'ally_death', 'kill'].indexOf(b.kind))[0] || null);
+    const out = moments.map(() => null), times = moments.map((m) => m.t).filter((_, i) => wanted[i]);
+    if (!times.length) return out;
+    await V.each(video, times, { crop, maxDim: 2000 }, ({ t, canvas, w, h }) => {
+      const img = canvas.getContext('2d', { willReadFrequently: true }).getImageData(0, 0, w, h);
+      const rows = plain ? C.textRows(img) : C.killfeedRows(img, { colors: profile.killfeedColors, grid: profile.killfeedGrid });
+      moments.forEach((m, i) => {
+        const e = wanted[i];
+        if (!e || Math.abs(m.t - t) > 1e-3) return;
+        const r = rows.map((x) => ({ x, d: C.rowDistance(x.fp, e.fp) })).filter((x) => x.d < C.SAME_ROW).sort((a, b) => a.d - b.d)[0]?.x;
+        if (!r) return;
+        const sx = crop.w / w, sy = crop.h / h;
+        out[i] = { fact: { box: [(crop.y + r.y0 * sy) / frame.h, (crop.x + r.x0 * sx) / frame.w, (crop.y + (r.y1 + 1) * sy) / frame.h, (crop.x + (r.x1 + 1) * sx) / frame.w], label: say(e) }, note: `The kill feed: ${say(e)}` };
+      });
+    });
+    return out;
+  }
+
+  /**
+   * A full frame at each moment, with the marks code can stand behind. Resolves with
+   * { keys: [{ t, shot: { t, url }, aspect, measured?, problem?, fix?, fact?, moves?, note? }], shots } (shots keep the
+   * image data).
+   */
+  async function prepare({ video, profile, moments, measures = [], events = [] }) {
     const frame = { w: video.width, h: video.height };
     const shots = moments.length ? await V.grab(video, moments.map((e) => e.t), { maxDim: 1280, quality: 0.82 }) : [];
-    const keys = moments.map((e) => {
+    const lines = await feedMarks({ video, profile, moments, events }).catch(() => moments.map(() => null));
+    const keys = moments.map((e, i) => {
       const s = shots.find((x) => Math.abs(x.t - e.t) < 1e-3);
       const m = profile?.regions?.aim && measures.find((x) => Math.abs(x.t - e.t) < 0.35 && Array.isArray(x.box));
-      return { t: e.t, shot: s ? { t: s.t, url: s.url } : null, aspect: frame.w / frame.h, ...(m ? aimMarks(m, profile, frame) : {}) };
+      const move = (events || []).filter((x) => x.kind === 'move' && x.squares && x.board && Math.abs(x.t - e.t) <= 2).sort((a, b) => Math.abs(a.t - e.t) - Math.abs(b.t - e.t))[0];
+      const marks = m ? aimMarks(m, profile, frame) : move ? moveMarks(move) : lines[i] || {};
+      return { t: e.t, shot: s ? { t: s.t, url: s.url } : null, aspect: frame.w / frame.h, ...marks };
     });
     return { keys, shots };
   }
 
-  const BOX = { type: 'array', items: { type: 'number' }, description: '[ymin, xmin, ymax, xmax] scaled 0-1000' };
-  const MARKS = { type: 'object', properties: { images: { type: 'array', items: { type: 'object', properties: {
-    image: { type: 'integer' },
-    problem_box: BOX, problem: { type: 'string', description: 'what is wrong right there, 2 to 6 words' },
-    fix_box: BOX, fix: { type: 'string', description: 'what to do right there, 2 to 5 words' },
-  }, required: ['image', 'problem_box', 'problem'] } } }, required: ['images'] };
-
-  // a box worth drawing: inside the frame, not empty, and not most of the screen
-  function box(b) {
-    if (!Array.isArray(b) || b.length !== 4 || !b.every((v) => Number.isFinite(+v))) return null;
-    const [y0, x0, y1, x1] = b.map((v) => Math.min(1000, Math.max(0, +v)) / 1000);
-    return y1 - y0 > 0.005 && x1 - x0 > 0.005 && (y1 - y0) * (x1 - x0) < 0.5 ? [y0, x0, y1, x1] : null;
-  }
-  const label = (s, n) => String(s || '').trim().replace(/\.$/, '').slice(0, n);
-
-  /**
-   * Marks the moments no measurement covers, in one model call over their frames. moments carry the coach's what and
-   * better for each key. Resolves with the number of model calls made (0 or 1); a failed call leaves those keys unmarked.
-   */
-  async function mark({ keys, shots, moments, profile, habit, signal, onNotice }) {
-    const todo = keys.map((k, i) => i).filter((i) => !keys[i].measured && shots.some((s) => Math.abs(s.t - keys[i].t) < 1e-3));
-    if (!todo.length) return 0;
-    const parts = todo.flatMap((i, n) => {
-      const s = shots.find((x) => Math.abs(x.t - keys[i].t) < 1e-3), e = moments[i];
-      return [{ text: `Image ${n + 1}, at ${C.mmss(e.t, true)}. The coach saw: ${e.what}${e.better ? ` Instead: ${e.better}` : ''}` }, { inlineData: { mimeType: s.mimeType, data: s.data } }];
-    });
-    try {
-      const resp = await G.generate({
-        contents: [{ role: 'user', parts: [...parts, { text: `These are frames from the player's own screen in a ${profile?.name || 'game'} match. A coach found this in them${habit ? `: ${habit}` : ''}. Mark each frame up for the player like a sports telestrator. problem_box is a tight box around the one spot in the frame that shows what the coach saw (the crosshair and what it's on, the player's position, the piece left hanging), and problem says what is wrong there in 2 to 6 plain words, like "crosshair on their arm" or "standing in the open". If the fix has a place in the frame (where the crosshair or the player should have been), fix_box boxes it and fix says what to do there in 2 to 5 words. Leave out fix_box when the fix has no place on screen. Box only what you can see.` }] }],
-        generationConfig: { temperature: 0, responseMimeType: 'application/json', responseSchema: MARKS, mediaResolution: 'MEDIA_RESOLUTION_HIGH' },
-      }, { signal, onNotice });
-      const out = G.parseJSON(G.textOf(resp)).images || [];
-      todo.forEach((i, n) => {
-        const r = out.find((x) => x.image === n + 1), p = box(r?.problem_box), f = box(r?.fix_box);
-        if (p && label(r.problem, 48)) keys[i].problem = { box: p, label: label(r.problem, 48) };
-        if (f && label(r.fix, 40)) keys[i].fix = { box: f, label: label(r.fix, 40) };
-      });
-    } catch (e) {
-      if (e.name === 'AbortError') throw e;
-      console.warn("The key moments couldn't be marked.", e);
-    }
-    return 1;
-  }
-
-  root.ThirdeyeReport = { prepare, mark, aimMarks };
+  root.ThirdeyeReport = { prepare, aimMarks, moveMarks, squareAt };
 })(window);

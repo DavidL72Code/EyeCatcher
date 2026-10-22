@@ -13,7 +13,7 @@ import { fileURLToPath } from 'node:url';
 const here = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(here, '..');
 const PORT = 5198; // the live check uses 5199
-const BUDGET = { looks: 24, turns: 12 }; // the app's, and the pipeline gets the same looks
+const BUDGET = { looks: 24, turns: 14 }; // the app's, and the pipeline gets the same looks
 const MAX_CALLS = +(process.env.EVAL_MAX_CALLS || 80);
 const SYSTEMS = ['agent', 'pipeline', 'gemini-agentic'].filter((s) => !process.env.EVAL_SYSTEMS || process.env.EVAL_SYSTEMS.split(',').includes(s));
 const NEAR_DUEL = 2; // seconds: an evidence time this close to a real duel counts as on it

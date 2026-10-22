@@ -1,0 +1,15 @@
+{
+  "clip": "rocket-league/rl-somey-gc2.match1.mp4",
+  "game": "Rocket League",
+  "player": "TheSomey", "side": "orange",
+  "how": "Read by Claude off the frames, Oct 22 2026: the scoreboard every 10 s, the goal banners at each goal, and the demolition at 2:00. The player's own car is the red one the camera follows; orange won 3-1.",
+  "points": [
+    { "t": 206.5, "side": "orange", "scorer": "TheSomey", "by_player": true, "how": "THESOMEY SCORED! banner at 3:27-3:28; score 1-0" },
+    { "t": 229.5, "side": "orange", "scorer": "TheSomey", "by_player": true, "how": "THESOMEY SCORED! banner at 3:50; score 2-0" },
+    { "t": 255.0, "side": "blue", "scorer": "Nyal", "by_player": false, "how": "NYAL SCORED banner at 4:15; score 2-1" },
+    { "t": 284.5, "side": "orange", "scorer": "Forky Jr.", "by_player": false, "how": "FORKY JR. SCORED! banner at 4:45; score 3-1" }
+  ],
+  "deaths": [],
+  "kills": [{ "t": 120.5, "what": "the player demolishes an opponent: DEMOLITION banner at 2:02, the player drives on", "kind": "demolition" }],
+  "notes": "Rocket League has no deaths; a demolition of the player would be one, and none was seen. The only loss of the player's side is the 4:15 goal."
+}

@@ -7,9 +7,11 @@
   // the desktop app (desktop/preload.cjs): it remembers where each recording is on disk, so nothing is copied
   const D = window.thirdeyeDesktop || null;
   G.preferEnv = true;
-  const STORE = 'thirdeye.v1', UPLOADS = 'thirdeye.uploads', NAME = 'thirdeye.player', LEARNED = 'thirdeye.learned';
-  const BUDGET = { looks: 24, turns: 12 };
-  const REGION_NAMES = { aim: 'aim area', killfeed: 'kill feed', minimap: 'minimap', scoreboard: 'scoreboard', health: 'health bar', ammo: 'ammo', board: 'board', player_clock: 'your clock', opponent_clock: 'their clock', gold: 'gold', abilities: 'abilities' };
+  // PLAYERS: the name the player picked as theirs, per game, so the next review of that game knows it
+  const STORE = 'thirdeye.v1', UPLOADS = 'thirdeye.uploads', PLAYERS = 'thirdeye.players', LEARNED = 'thirdeye.learned';
+  const BUDGET = { looks: 24, turns: 14 }; // two more turns since the coach chooses its research and its clip reads
+  const FACET_NAMES = { guides: 'guides', community: 'Reddit and forums', meta: 'meta', wiki: 'wiki' }; // the research's searches
+  const REGION_NAMES = { aim: 'aim area', killfeed: 'kill feed', minimap: 'minimap', scoreboard: 'scoreboard', health: 'health bar', ammo: 'ammo', damage: 'damage dealt', kill_count: 'kill count', board: 'board', player_clock: 'your clock', opponent_clock: 'their clock', gold: 'gold', abilities: 'abilities' };
   const PROGRESS = { better: 'better than before', same: 'about the same as before', worse: 'worse than before', unclear: "couldn't tell this match" };
 
   const $ = (id) => document.getElementById(id);
@@ -53,20 +55,22 @@
   function stopStatus() { clearInterval(tick); $('status').hidden = true; }
 
   // ---------- screens ----------
-  function show(id) {
-    for (const s of ['start', 'review', 'reviews']) $(s).hidden = s !== id;
-    if (id === 'reviews') $('historyBtn').setAttribute('aria-current', 'page');
-    else $('historyBtn').removeAttribute('aria-current');
+  // tab: which of Home, Coach, and Past reviews the screen belongs to (a past review is under Past reviews)
+  function show(id, tab = { home: 'home', start: 'coach', review: 'coach', reviews: 'reviews' }[id]) {
+    for (const s of ['home', 'start', 'review', 'reviews']) $(s).hidden = s !== id;
+    // the sidebar and the phone tab bar both mark where you are
+    document.querySelectorAll('[data-tab]').forEach((a) => { if (a.dataset.tab === tab) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); });
   }
 
-  // #reviews is the list, #review/<id> one past review, anything else the start screen. A live review isn't in the
-  // address until it's saved, so leaving it stops it.
+  // #coach is where a review starts, #reviews the list, #review/<id> one past review, anything else Home. A live
+  // review isn't in the address until it's saved, so leaving it stops it (the header won't, while one runs).
   async function route() {
     const h = decodeURIComponent(location.hash.slice(1));
     if (run && !run.done && !run.replay) run.abort.abort();
     if (h === 'reviews') return showReviews();
     if (h.startsWith('review/')) return openPast(h.slice(7));
-    show('start');
+    show(h === 'coach' ? 'start' : 'home');
+    window.scrollTo(0, 0);
     renderStart();
   }
   window.addEventListener('hashchange', route);
@@ -81,9 +85,11 @@
       $('working').innerHTML = `<svg aria-hidden="true"><use href="#eye" /></svg><p>Working on <b>${esc(h.name)}</b> since ${niceDate(h.since)}. Your next review checks it.</p><button class="quiet" type="button" id="dropHabit">Stop</button>`;
       $('dropHabit').onclick = () => { history = C.dropHabit(history); write(STORE, history); renderStart(); };
     }
-    $('historyBtn').hidden = !!(run && !run.done && !run.replay);
+    // while a review runs, the header can't take you away from it
+    document.body.classList.toggle('live', !!(run && !run.done && !run.replay));
     // the desktop app's Thirdeye folder, once the player chose to keep recordings there
-    D?.library().then((where) => { $('libraryBtn').hidden = !where; $('libraryBtn').textContent = 'Recordings folder'; $('libraryBtn').title = where || ''; }, () => {});
+    D?.library().then((where) => { $('libraryBtn').hidden = !where; $('libraryBtn').title = where || ''; }, () => {});
+    renderRecent();
     $('historyCount').textContent = history.matches.length || '';
   }
 
@@ -125,14 +131,14 @@
   // place: where the recording is on disk, when that's known already (a past review's recording, reviewed again)
   async function start(file, { handle = null, place = null } = {}) {
     if (!G.hasKey()) { show('start'); $('keyBox').hidden = false; $('keyInput').focus(); return; }
-    if (location.hash) window.history.pushState(null, '', location.pathname + location.search);
+    if (location.hash !== '#coach') window.history.pushState(null, '', '#coach');
     show('review');
-    const player = $('playerName').value.trim();
-    write(NAME, player);
-    run = { id: uid(), file, handle: null, game: null, goal: $('goal').value.trim(), player, workingOn: null, abort: new AbortController(), looks: 0, turns: 0, calls: 0, beat: null, log: [] };
+    run = { id: uid(), file, handle: null, game: null, player: null, workingOn: null, abort: new AbortController(), looks: 0, turns: 0, calls: 0, beat: null, log: [], t0: performance.now() };
     const mine = run;
     Promise.resolve(handle).then((h) => { if (h?.kind === 'file') mine.handle = h; }, () => {});
     mine.place = place ? Promise.resolve(place) : D ? D.remember(file).catch(() => null) : Promise.resolve(null);
+    // and, with the player's yes, a copy in the Thirdeye folder, which becomes the review's recording once it's there
+    mine.library = place || !D ? Promise.resolve(null) : mine.place.then((p) => p && D.keep(p.path)).catch(() => null);
     // a recording the desktop app can find again by its path isn't copied
     mine.kept = mine.place.then((p) => !p && R.keepRecording(file)).catch((e) => { console.warn("The recording couldn't be kept for past reviews.", e); return false; });
     resetReview();
@@ -141,17 +147,20 @@
     setStatus('Opening the recording');
     try {
       run.video = await V.open(file);
+      run.log.push(['mark', { what: 'opened', ms: Math.round(performance.now() - run.t0) }]);
       drawAxis();
       run.game = await learnGame(run.video, run.abort.signal);
       const game = run.game, seen = C.historyFor(history, game.name);
+      // in footage of the whole match the player is one of many on screen, so they say which one, before anything is read
+      run.player = game.view === 'spectator' ? await whoInFootage(game) : read(PLAYERS, {})[game.name.toLowerCase()] || null;
       run.workingOn = seen.habit;
       drawLegend(game);
-      run.scanFile = await scanCopy(run.video, run.abort.signal);
       drawMeter();
       setStatus('Deciding where to look');
       const result = await A.review({
-        video: run.video, file: run.scanFile, profile: game, history: seen, goal: run.goal, player: run.player || null, budget: C.createBudget(BUDGET),
-        ask, onEvent: emit, onStep: step, signal: run.abort.signal,
+        // the scan copy is made and sent only if a scan needs it: a game whose kill feed reads never does
+        video: run.video, file: () => (run.scanFile ||= scanCopy(run.video, run.abort.signal)), profile: game, history: seen, player: run.player || null, budget: C.createBudget(BUDGET),
+        ask, confirm: checkIn, identify, onEvent: emit, onStep: step, signal: run.abort.signal,
         onNotice: (n) => setStatus(n, '', ''),
       });
       await finishReview(result);
@@ -170,11 +179,12 @@
   const slim = (x) => JSON.parse(JSON.stringify(x, (k, v) => (k === 'canvas' || k === 'data' || k === 'mimeType' ? undefined : v)));
   const shown = (frames) => frames.filter((_, i, all) => all.length <= 4 || i % Math.ceil(all.length / 4) === 0);
   function emit(e) {
-    if (!run.replay) run.log.push(['event', slim(e.type === 'frames' ? { ...e, frames: shown(e.frames) } : e)]);
+    // each entry keeps when it happened, in ms from the recording being given, so a review's time can be told by step
+    if (!run.replay) run.log.push(['event', { ...slim(e.type === 'frames' ? { ...e, frames: shown(e.frames) } : e), ms: Math.round(performance.now() - run.t0) }]);
     onEvent(e);
   }
   function step(s) {
-    if (!run.replay && ['think', 'call', 'error'].includes(s.type)) run.log.push(['step', slim({ type: s.type, name: s.name, args: s.args, error: s.error })]);
+    if (!run.replay && ['think', 'call', 'error'].includes(s.type)) run.log.push(['step', { ...slim({ type: s.type, name: s.name, args: s.args, error: s.error }), ms: Math.round(performance.now() - run.t0) }]);
     onStep(s);
   }
 
@@ -185,14 +195,19 @@
     const cache = read(LEARNED, {});
     for (const [k, v] of Object.entries(cache)) if (!(v.expires > Date.now())) delete cache[k];
     setStatus('Reading the screen');
+    nowStep('Reading the screen', null, 'Finding the HUD: kill feed, minimap, health, ammo');
+    nowPhase('Flipping through the match');
+    const stopFlip = flip(Array.from({ length: 8 }, (_, i) => (video.duration * (i + 0.5)) / 8));
     let profile = cache[sig]?.profile, frames = null;
     if (!profile) {
-      const r = await L.learnGame({ video, signal, onNotice: (n) => setStatus(n) });
+      const mark = (what) => run.log.push(['mark', { what, ms: Math.round(performance.now() - run.t0) }]);
+      const r = await L.learnGame({ video, signal, onNotice: (n) => setStatus(n), onPhase: mark }).finally(stopFlip);
       profile = r.profile;
       frames = r.frames;
       cache[sig] = { profile, expires: Date.now() + 24 * 3600e3 };
       write(LEARNED, cache);
     }
+    stopFlip();
     const [shot] = frames ? [frames[Math.floor(frames.length / 2)]] : await V.grab(video, [video.duration / 2], { maxDim: 1024, quality: 0.8 });
     emit({ type: 'learned', profile, shot, called: !!frames });
     return profile;
@@ -203,16 +218,25 @@
     beatStart({ name: 'learn', why: `${profile.name}${profile.genre !== 'other' ? `, ${profile.genre}` : ''}` });
     const boxes = Object.entries(profile.regions).filter(([r]) => r !== 'aim').map(([r, [x, y, w, h]]) => `<span class="el" style="left:${x * 100}%;top:${y * 100}%;width:${w * 100}%;height:${h * 100}%"><span>${esc(REGION_NAMES[r] || r.replace(/_/g, ' '))}</span></span>`).join('');
     run.beat.querySelector('.beat-shots').innerHTML = `<figure class="screen-map"><img src="${shot.url}" data-ft="${shot.t}" alt="What the coach read on screen" />${boxes}</figure>`;
+    holdOn(shot.t, `<div class="screen-map over">${boxes}</div>`);
+    nowPhase(`Found ${Object.keys(profile.regions).filter((r) => r !== 'aim').length} things to read on screen`);
     const found = Object.keys(profile.regions).filter((r) => r !== 'aim').map((r) => REGION_NAMES[r] || r.replace(/_/g, ' '));
     beatOut(found.length ? `Found: ${found.join(', ')}` : 'Found no screen elements to read', 'muted');
-    if (profile.regions.killfeed) beatOut(profile.killfeedGrid && profile.killfeedColors ? 'Kill feed rows and team colors measured' : "Kill feed seen, but its rows couldn't be measured: fights come from a low-detail pass", 'muted');
-    // what matters in this game, and where that came from
-    const r = profile.research;
-    if (r) {
-      // only web links: a source address can't become a script
-      const sources = (r.sources || []).map((x) => (/^https:\/\//i.test(x.uri) ? `<a href="${esc(x.uri)}" target="_blank" rel="noopener noreferrer">${esc(x.title)}</a>` : esc(x.title))).join(', ');
-      run.beat.querySelector('.beat-outs').insertAdjacentHTML('beforeend', `<div class="matters"><p class="beat-out"><b>What matters in ${esc(profile.name)}:</b> ${r.priorities.slice(0, 4).map(esc).join(' · ')}</p><p class="beat-out muted">${r.researched ? `From ${r.sources.length} source${r.sources.length === 1 ? '' : 's'}: ${sources}` : "From the model's own knowledge: web search wasn't available"}</p></div>`);
-    }
+    const left = profile.verified?.dropped || [];
+    const said = (d) => (d.shows !== 'nothing' && d.shows !== 'other' ? ` (it showed ${(REGION_NAMES[d.shows] || d.shows).replace(/_/g, ' ')})` : '');
+    const moved = profile.verified?.moved || [];
+    if (moved.length) beatOut(`Found again, because the first box was somewhere else: ${moved.map((d) => `${REGION_NAMES[d.name] || d.name.replace(/_/g, ' ')}${said(d)}`).join(', ')}`, 'muted');
+    if (left.length) beatOut(`Left out, because the box didn't show it: ${left.map((d) => `${REGION_NAMES[d.name] || d.name.replace(/_/g, ' ')}${said(d)}`).join(', ')}`, 'muted');
+    if (profile.view === 'spectator') beatOut(`Footage of the whole match, read ${profile.unit || 'play'} by ${profile.unit || 'play'}${profile.sides?.length ? `: ${profile.sides.map((x) => `${x.name} (${x.look})`).join(' vs ')}` : ''}`, 'muted');
+    if (profile.regions.killfeed) beatOut(profile.killfeedGrid && profile.killfeedColors ? 'Kill feed rows and team colors measured' : "Kill feed seen, with no colored rows to measure: it's read as plain text, line by line", 'muted');
+    if (profile.research) drawResearch(profile.name, profile.research);
+  }
+  // only web links: a source address can't become a script
+  const sourceLinks = (sources) => (sources || []).map((x) => (/^https:\/\//i.test(x.uri) ? `<a href="${esc(x.uri)}" target="_blank" rel="noopener noreferrer">${esc(x.title)}</a>` : esc(x.title))).join(', ');
+  // what matters in the game, and where that came from, on the card of the step that looked it up
+  function drawResearch(game, r) {
+    const kit = r.character ? `<p class="beat-out"><b>Playing ${esc(r.character.name)}:</b> ${r.character.abilities.map((a) => esc(a.name)).join(' · ')}</p>` : '';
+    run.beat.querySelector('.beat-outs').insertAdjacentHTML('beforeend', `<div class="matters"><p class="beat-out"><b>What matters in ${esc(game)}:</b> ${r.priorities.slice(0, 4).map(esc).join(' · ')}</p>${kit}<p class="beat-out muted">${r.researched ? `From ${r.sources.length} source${r.sources.length === 1 ? '' : 's'}${r.facets ? ` (${Object.entries(r.facets).filter(([, n]) => n).map(([f, n]) => `${FACET_NAMES[f] || f} ${n}`).join(', ')})` : ''}: ${sourceLinks(r.sources)}` : "From the model's own knowledge: web search wasn't available"}</p></div>`);
   }
 
   // The scan copy is made and sent once per recording; Gemini keeps it for 48 hours, so a rerun within a day reuses it.
@@ -223,7 +247,9 @@
     if (cache[sig]) return cache[sig].file;
     const pct = (p) => `${Math.round(p * 100)}%`;
     setStatus('Making the scan copy', '', '0%');
-    const blob = await V.makeProxy(video, { signal, onProgress: (p) => setStatus('Making the scan copy', '', pct(p)) });
+    nowStep('Making the scan copy', null, 'A small, silent copy of the whole match for the coach to scan');
+    const blob = await V.makeProxy(video, { signal, onProgress: (p) => { setStatus('Making the scan copy', '', pct(p)); sweepTo(p * video.duration); nowPhase(`Copying ${pct(p)}`); } });
+    nowPhase('Sending it to the coach');
     setStatus('Sending the scan copy', '', '0%');
     const file = await V.upload(blob, { name: video.name.slice(0, 80), signal, onProgress: (p) => setStatus('Sending the scan copy', '', pct(p)) });
     cache[sig] = { file, expires: Date.now() + 24 * 3600e3 };
@@ -232,8 +258,8 @@
   }
 
   function resetReview() {
-    ['track', 'axis', 'beats', 'board', 'verdict', 'question', 'crumbs', 'reattach'].forEach((id) => { $(id).innerHTML = ''; });
-    ['breakdown', 'board', 'verdict', 'question', 'meter', 'log', 'crumbs', 'reattach'].forEach((id) => { $(id).hidden = true; });
+    ['track', 'axis', 'beats', 'board', 'verdict', 'question', 'checkin', 'crumbs', 'reattach'].forEach((id) => { $(id).innerHTML = ''; });
+    ['breakdown', 'board', 'verdict', 'question', 'checkin', 'meter', 'log', 'crumbs', 'reattach'].forEach((id) => { $(id).hidden = true; });
     $('finalBoard').innerHTML = '';
     $('board').after($('breakdown')); // a finished review moves it into the log
     timeline.querySelectorAll('.pin').forEach((p) => p.remove());
@@ -241,13 +267,24 @@
     $('stage').hidden = false;
     $('eyeMark').hidden = true;
     hideVideoMarks();
+    stopFast();
+    nowState = null;
+    queue = [];
+    playing = false;
+    $('now').hidden = true;
+    $('followBtn').hidden = true;
+    $('player').classList.remove('holding');
     stopStatus();
   }
 
   function setVideo(file) { setVideoUrl(URL.createObjectURL(file)); run.file = file; }
+  // The player can still be reading the old recording's address for a moment after it switches; freeing it then
+  // makes that read fail, so it's freed a second later.
+  const releaseLater = (url) => { if (url.startsWith('blob:')) setTimeout(() => URL.revokeObjectURL(url), 1000); };
   function setVideoUrl(url) {
-    if (vid.src.startsWith('blob:')) URL.revokeObjectURL(vid.src);
+    const old = vid.src;
     vid.src = url;
+    releaseLater(old);
     run.file = null;
     $('reattach').hidden = true;
   }
@@ -258,27 +295,37 @@
 
   const LINES = {
     scan: (a) => `Reading the match ${a.from}–${a.to}`,
-    frames: (a) => `Looking at ${a.at}${a.region && a.region !== 'full' ? `, ${REGION_NAMES[a.region] || a.region}` : ''}`,
+    research: (a) => (a.question ? `Looking up: ${String(a.question).slice(0, 80)}` : 'Looking up what matters in this game'),
+    read_clips: (a) => `Watching ${plural(Array.isArray(a.windows) ? a.windows.length : 1, 'clip')} as video`,
+    frames: (a) => `${a.as === 'clip' ? 'Watching the run-up to' : 'Looking at'} ${a.at}${a.region && a.region !== 'full' ? `, ${REGION_NAMES[a.region] || a.region}` : ''}`,
     measure_aim: (a) => `Measuring aim at ${a.at}${a.more?.length ? ` and ${a.more.length} more` : ''}`,
     ask_player: () => 'Waiting for you',
     finish: () => 'Checking the finding',
   };
   function onStep(s) {
-    if (s.type === 'think') { run.turns++; run.calls++; drawMeter(); setStatus(run.turns === 1 ? 'Deciding where to look' : 'Deciding what to check next'); }
-    if (s.type === 'call') setStatus(LINES[s.name]?.(s.args) || s.name, s.name === 'ask_player' ? 'waiting' : '');
+    if (s.type === 'think') { run.turns++; run.calls++; drawMeter(); setStatus(run.turns === 1 ? 'Deciding where to look' : 'Deciding what to check next'); nowPhase(run.turns === 1 ? 'Deciding where to look' : 'Thinking about what it saw'); }
+    if (s.type === 'call') { setStatus(LINES[s.name]?.(s.args) || s.name, s.name === 'ask_player' ? 'waiting' : ''); followCall(s.name, s.args || {}); }
     if (s.type === 'error') beatOut(`Didn't work: ${short(s.error)}`, 'warn');
   }
 
   function onEvent(e) {
     if (e.type === 'learned') drawLearned(e);
     if (e.type === 'scanning' && e.progress != null) setStatus(`Reading the match ${C.mmss(e.from)}–${C.mmss(e.to)}`, '', `${Math.round(e.progress * 100)}%`);
-    if (e.type === 'step') beatStart(e);
-    if (e.type === 'scan') { run.events = e.events; drawEvents(e.events); addMark('scanned', e.from, e.to); run.calls += e.calls; drawMeter(); beatOut(scanLine(e.counts)); }
-    if (e.type === 'look') { run.looks++; addMark(e.kind === 'measure' ? 'look measure' : 'look', e.from, e.to); moveEye((e.from + e.to) / 2); drawMeter(); }
+    if (e.type === 'step') { beatStart(e); if (e.why) nowWhy(e.why); }
+    if (e.type === 'scanning') { if (e.progress != null) sweepTo(e.from + e.progress * (e.to - e.from)); else fastForward(e.from, e.to); }
+    if (e.type === 'scan') { stopFast(); nowPhase(scanLine(e.counts)); run.events = e.events; drawEvents(e.events); addMark('scanned', e.from, e.to); run.calls += e.calls; drawMeter(); beatOut(scanLine(e.counts)); }
+    // a clip window is read in the scan, not a look the coach chose: it's marked, not counted
+    if (e.type === 'look' && e.kind === 'clip') addMark('look clip', e.from, e.to);
+    else if (e.type === 'look') { run.looks++; addMark(e.kind === 'measure' ? 'look measure' : 'look', e.from, e.to); moveEye((e.from + e.to) / 2); drawMeter(); }
+    if (e.type === 'clips') { if (e.events) { run.events = e.events; drawEvents(e.events); } run.calls += e.calls; drawMeter(); beatOut(`Watched ${plural(e.windows.length, 'clip')}: ${e.seconds} s at 8 frames a second, in ${plural(e.calls, 'call')}`); for (const w of e.windows) if (w.reading?.story || w.reading?.outcome_why) beatOut(`${C.mmss(w.from)}–${C.mmss(w.to)}: ${w.reading.story || `${w.reading.outcome}, ${w.reading.outcome_why}`}`, 'muted'); }
+    if (e.type === 'research') { if (e.research) drawResearch(run.game?.name || 'this game', e.research); else { beatOut(short(e.answer || 'Nothing came back')); beatOut(e.researched ? `From ${sourceLinks(e.sources) || 'the web'}` : "From the model's own knowledge: no web search worked", 'muted'); } }
     if (e.type === 'aim_call') { run.calls++; drawMeter(); }
+    if (e.type === 'frames_checked') { run.calls++; drawMeter(); beatOut(e.contradicted.length ? `Looked at again, blind: ${e.contradicted.map((x) => `${C.mmss(x.t)} doesn't fit (it shows ${x.shows})`).join('; ')}` : "Looked at again, blind: the frames fit every moment", e.contradicted.length ? 'warn' : 'muted'); }
+    if (e.type === 'claims_checked') { run.calls++; drawMeter(); beatOut(e.contradicted.length ? `Checked against the kill feed and the clips: ${e.contradicted.map((x) => `${C.mmss(x.t)} doesn't fit (${x.fact})`).join('; ')}` : 'Checked against the kill feed and the clips: every moment fits', e.contradicted.length ? 'warn' : 'muted'); }
     if (e.type === 'hud') { run.calls++; drawMeter(); beatShots(e.shots, e.values[0]?.t ?? 0); beatOut(e.values.map((v) => `${C.mmss(v.t, true)} ${v.value ?? '(unreadable)'}`).join(' · ')); }
-    if (e.type === 'frames') beatShots(shown(e.frames), e.t);
-    if (e.type === 'measure') beatShots([e.shot], e.t, e);
+    if (e.type === 'frames' && e.clip) { beatShots(shown(e.frames), e.t, null, e.clip); nowPhase(`Sending ${C.mmss(e.clip.from, true)}–${C.mmss(e.clip.to, true)} to the coach as video, ${e.clip.fps} frames a second`, shown(e.frames)); }
+    else if (e.type === 'frames') { beatShots(shown(e.frames), e.t); nowPhase(`Sending ${e.frames.length} frames around ${C.mmss(e.t, true)} to the coach`, shown(e.frames)); }
+    if (e.type === 'measure') { beatShots([e.shot], e.t, e); showMeasure(e); }
     if (e.type === 'shots') (run.shotsAt ||= []).push({ t: e.t, fired: e.fired });
     if (e.type === 'shots' && e.fired != null) beatOut(`${C.mmss(e.t, true)}: ${e.fired ? 'fired (ammo counter moved)' : 'no shots (ammo counter never moved)'}`, 'muted');
     if (e.type === 'refused') beatOut(`${C.mmss(e.t, true)} not measured: this fight was tried twice`, 'muted');
@@ -287,17 +334,123 @@
     if (e.type === 'note') { drawBoard($('board'), e.board, true); beatTake(e.theory, e.change); }
     if (e.type === 'rejected') { setStatus('Finding sent back'); beatOut(`Sent back: ${short(e.problems[0])}`, 'warn'); }
     if (e.type === 'accepted') beatOut('Passed the evidence checks', 'muted');
+    if (e.type === 'checked') beatOut(e.agreed ? 'You agreed: this is it' : `You said: ${e.said || 'not really'}. It looks again.`, e.agreed ? 'muted' : 'warn');
     if (e.type === 'decide') beatOut('Sent back twice for the same reason: it has to decide now', 'warn');
     if (e.type === 'forced') { setStatus('Ending without a habit'); beatOut(`Couldn't back ${e.habit}: no habit named`, 'warn'); }
+    if (e.type === 'few_losses') { setStatus('Ending without a habit'); beatOut(e.losses.length ? `One loss in this match (${C.mmss(e.losses[0].t)}): a habit shows up more than once, so none is named` : 'Nothing was lost in this match: no habit named', 'warn'); }
   }
+
+  // ---------- following the coach: the video shows what it's looking at, as it looks ----------
+  // While a review runs, the player goes where the coach goes. It flips through the match while the screen is read,
+  // sweeps along while the match is copied and scanned, plays the run-up to each moment the coach checks, then holds on
+  // that frame while it thinks. The caption says which step this is and what's happening. Touching the player hands it
+  // back; the chip picks the coach up again.
+  const RUN_UP = 6; // seconds of run-up played into each moment
+  const following = () => !!run && !run.replay && !run.done && !run.handsOn && hasVideo();
+  let nowState = null, queue = [], playing = false;
+  function nowStep(kind, at, why = '') { nowState = { n: (nowState?.n || 0) + 1, kind, at, why, phase: '', frames: [] }; paintNow(); }
+  function nowWhy(why) { if (nowState) { nowState.why = why; paintNow(); } }
+  function nowPhase(phase, frames) { if (!nowState) return; nowState.phase = phase; if (frames) nowState.frames = frames; paintNow(); }
+  function paintNow() {
+    const el = $('now');
+    el.hidden = !nowState || !run || run.replay || run.done;
+    if (el.hidden) return;
+    const s = nowState;
+    el.innerHTML = `<span class="now-n">${String(s.n).padStart(2, '0')}</span><div class="now-text"><p class="now-kind">${esc(s.kind)}${s.at != null ? ` <span>${C.mmss(s.at, true)}</span>` : ''}</p>${s.why ? `<p class="now-why">${esc(s.why)}</p>` : ''}${s.phase ? `<p class="now-phase"><i></i>${esc(s.phase)}</p>` : ''}</div>${s.frames.length ? `<div class="now-frames">${s.frames.slice(0, 5).map((f) => `<img src="${f.url}" alt="" />`).join('')}</div>` : ''}`;
+  }
+  // a tool call: what it looks at, played as it starts
+  function followCall(name, a) {
+    const times = [a.at, ...(Array.isArray(a.more) ? a.more : [])].map(C.parseTime).filter(Number.isFinite);
+    if (name === 'scan') nowStep('Reading the match', null);
+    else if (name === 'research') nowStep('Looking up the game', null, a.question ? String(a.question).slice(0, 120) : 'Guides, the community, the meta, and the wiki');
+    else if (name === 'read_clips') nowStep('Watching clips', null, 'About 10 s around each moment, at 8 frames a second');
+    else if (name === 'frames' || name === 'measure_aim' || name === 'read_hud') {
+      // a new step cuts straight to its moment: the video stays with what the caption says. A clip look plays exactly
+      // the stretch the coach watches (C.clipPlan, as agent.js cuts it); the rest play the RUN_UP seconds into each moment
+      const clip = name === 'frames' && a.as === 'clip';
+      nowStep(clip ? 'Watching the run-up' : KIND[name], times[0]);
+      queue = times.map((t) => (clip ? { ...C.clipPlan({ t, before: a.before, after: a.after, fps: a.fps, duration: run.video.duration }), clip } : { t, from: Math.max(0, t - RUN_UP), to: t }));
+      runUp();
+    } else if (name === 'finish') nowStep('Checking the finding', null, 'Code checks every moment it cites');
+    else if (name === 'ask_player') nowStep('A question for you', times[0] ?? null);
+  }
+  // the run-up into the next queued moment, then a hold on its frame
+  function runUp() {
+    const next = queue.shift();
+    if (next == null || !following()) { playing = false; return; }
+    const { t, from, to, clip } = next;
+    playing = true;
+    vid.muted = true; // following plays on its own, and a muted video always may
+    stopFast();
+    hideVideoMarks();
+    $('player').classList.remove('holding');
+    if (nowState) { nowState.at = t; nowPhase(clip ? `Watching ${C.mmss(from, true)}–${C.mmss(to, true)}, the stretch the coach watches` : `Watching the run-up to ${C.mmss(t, true)}`); }
+    playClip(from, to, () => {
+      vid.currentTime = t;
+      $('player').classList.add('holding');
+      if (queue.length) setTimeout(runUp, 700);
+      else playing = false;
+    });
+  }
+  // the frame a step is about, held, with something drawn over it (the learned screen, a measured aim)
+  function holdOn(t, overlay) {
+    if (!following()) return;
+    stopFast();
+    clipEnd = clipThen = null;
+    vid.pause();
+    vid.currentTime = t;
+    $('player').classList.add('holding');
+    if (overlay) { markedAt = t; const v = $('vmarks'); v.innerHTML = overlay; v.hidden = false; placeVideoMarks(); }
+  }
+  function showMeasure(e) {
+    if (!e.found || !e.measure?.box || !run.game?.regions?.aim) return nowPhase(`${C.mmss(e.t, true)}: no enemy close enough to measure`);
+    const k = { aspect: run.video.width / run.video.height, ...K.aimMarks(e.measure, run.game, { w: run.video.width, h: run.video.height }) };
+    nowPhase(`${k.note} at ${C.mmss(e.t, true)}`);
+    if (!playing) holdOn(e.t, marksHtml(k));
+  }
+  // flipping through a few frames while the screen is read
+  function flip(times) {
+    let i = 0;
+    const step = () => { if (following()) { vid.pause(); vid.currentTime = times[i++ % times.length]; } };
+    step();
+    const timer = setInterval(step, 700);
+    return () => clearInterval(timer);
+  }
+  // a sweep that follows real progress; throttled, since every seek decodes a frame
+  let lastSweep = 0;
+  function sweepTo(t) {
+    if (!following() || Date.now() - lastSweep < 350) return;
+    lastSweep = Date.now();
+    vid.pause();
+    vid.currentTime = Math.max(0, Math.min(t, run.video.duration));
+  }
+  // with no progress to follow, a fast play through the stretch, looping, until the scan answers
+  let fast = null;
+  function fastForward(from, to) {
+    if (!following() || fast) return;
+    fast = { from, to };
+    $('player').classList.remove('holding');
+    hideVideoMarks();
+    vid.muted = true;
+    vid.currentTime = from;
+    vid.playbackRate = 16;
+    vid.play().catch(() => {});
+  }
+  function stopFast() { if (!fast) return; fast = null; vid.playbackRate = 1; vid.pause(); }
+  vid.addEventListener('timeupdate', () => { if (fast && vid.currentTime >= fast.to - 0.5) vid.currentTime = fast.from; });
+  // the player takes over when they touch the video or the timeline
+  const handsOn = () => { if (!run || run.replay || run.done || run.handsOn) return; run.handsOn = true; queue = []; playing = false; stopFast(); vid.muted = false; $('player').classList.remove('holding'); $('followBtn').hidden = false; };
+  vid.addEventListener('pointerdown', handsOn);
+  timeline.addEventListener('pointerdown', handsOn);
+  $('followBtn').addEventListener('click', () => { if (!run) return; run.handsOn = false; $('followBtn').hidden = true; if (nowState?.at != null) holdOn(nowState.at); });
 
   // ---------- the breakdown: one card per step, as it happens ----------
   // A card says what the coach checks (its own words), what it saw (frames, a measured box), and what it made of it. The
   // coach writes its take on a look with its next step, so theory changes land on the card before the new one.
-  const KIND = { learn: 'Reading the screen', scan: 'The match record', frames: 'Close look', measure_aim: 'Aim check', read_hud: 'Reading the screen', ask_player: 'Question', finish: 'Finding' };
+  const KIND = { learn: 'Reading the screen', scan: 'The match record', research: 'Research', read_clips: 'Watching clips', frames: 'Close look', measure_aim: 'Aim check', read_hud: 'Reading the screen', ask_player: 'Question', finish: 'Finding' };
   const short = (text) => { const first = String(text).split(/(?<=\.)\s/)[0]; return first.length > 110 ? `${first.slice(0, 107)}…` : first; };
   const plural = (n, word) => `${n} ${word}${n === 1 ? '' : 's'}`;
-  const scanLine = (c) => (c.your_moves != null ? `${plural(c.your_moves, 'move')}: ${plural(c.your_blunders, 'blunder')}, ${plural(c.your_mistakes, 'mistake')}` : `${c.fights ? `${plural(c.fights, 'fight')} (${c.fights_won} won, ${c.fights_lost} lost, ${c.fights_no_one_fell} no one fell); ` : ''}${plural(c.your_kills, 'kill')}, ${plural(c.your_deaths, 'death')}, ${c.teammate_deaths} teammate${c.teammate_deaths === 1 ? '' : 's'} down`);
+  const scanLine = (c) => (c.units != null ? `${plural(c.units, c.unit)} listed, ${c.the_pass_thought_lost} of them maybe lost` : c.your_moves != null ? `${plural(c.your_moves, 'move')}: ${plural(c.your_blunders, 'blunder')}, ${plural(c.your_mistakes, 'mistake')}` : `${c.fights ? `${plural(c.fights, 'fight')} (${c.fights_won} won, ${c.fights_lost} lost, ${c.fights_no_one_fell} no one fell); ` : ''}${plural(c.your_kills, 'kill')}, ${plural(c.your_deaths, 'death')}, ${c.teammate_deaths} teammate${c.teammate_deaths === 1 ? '' : 's'} down`);
   function beatStart({ name, why }) {
     $('breakdown').hidden = false;
     const li = document.createElement('li');
@@ -307,13 +460,19 @@
     run.beat = li;
     li.times = [];
   }
-  function beatShots(frames, t, measure) {
+  // clip: a look the coach watched as video, shown as that very clip while it's in memory (its stills once it's gone)
+  function beatShots(frames, t, measure, clip) {
     const box = run.beat?.querySelector('.beat-shots');
     if (!box) return;
     const m = measure?.measure, b = m?.box;
     run.beat.times.push(t);
     const group = document.createElement('figure');
     group.className = measure ? 'shot-group aim' : 'shot-group';
+    if (clip?.blob instanceof Blob) {
+      group.classList.add('watched');
+      group.innerHTML = `<button class="t-btn at" type="button" data-t="${t}">${C.mmss(t, true)}</button><video src="${URL.createObjectURL(clip.blob)}" muted loop autoplay playsinline aria-label="The clip the coach watched, ${C.mmss(clip.from, true)} to ${C.mmss(clip.to, true)}"></video><figcaption>${C.mmss(clip.from, true)}–${C.mmss(clip.to, true)} as the coach saw it</figcaption>`;
+      return box.append(group);
+    }
     group.innerHTML = `<button class="t-btn at" type="button" data-t="${t}">${C.mmss(t, true)}</button><div class="shots">${frames.map((f) => `<div class="shot"><img src="${f.url}" data-ft="${f.t}" alt="Frame at ${C.mmss(f.t, true)}" />${b ? `<span class="box" style="top:${b[0] / 10}%;left:${b[1] / 10}%;height:${(b[2] - b[0]) / 10}%;width:${(b[3] - b[1]) / 10}%"></span>` : ''}</div>`).join('')}</div>${measure ? `<figcaption>${m ? `${Math.abs(m.heads).toFixed(1)} heads ${m.heads >= 0.75 ? 'low' : m.heads <= -0.75 ? 'high' : 'on the head'}` : 'no enemy in view'}</figcaption>` : ''}`;
     box.append(group);
   }
@@ -348,12 +507,12 @@
     const track = $('track');
     track.querySelectorAll('.tick, .round, .fight').forEach((n) => n.remove());
     // fights as bands along the bottom, by how they ended
-    for (const f of events.filter((x) => x.kind === 'engagement')) {
+    for (const f of events.filter((x) => x.kind === 'engagement' || x.kind === 'play')) {
       const el = document.createElement('div');
       el.className = `fight ${f.outcome}`;
       el.style.left = pct(f.from);
       el.style.width = `calc(${pct(f.to)} - ${pct(f.from)})`;
-      el.title = `${C.mmss(f.from)}–${C.mmss(f.to)} fight: ${f.text}`;
+      el.title = `${C.mmss(f.from)}–${C.mmss(f.to)} ${f.kind === 'play' ? f.unit : 'fight'}: ${f.text}`;
       track.append(el);
     }
     const starts = events.filter((e) => e.kind === 'round_start').map((e) => e.t);
@@ -464,6 +623,8 @@
       seek(t);
       return $('stage').scrollIntoView({ block: 'nearest', behavior: 'smooth' });
     }
+    const to = e.target.closest('[data-scroll]');
+    if (to) return $(to.dataset.scroll).scrollIntoView({ behavior: 'smooth', block: 'start' });
     const key = e.target.closest('[data-key]');
     if (key && run?.keys) return watchKey(+key.dataset.key);
     const stepLink = e.target.closest('[data-step]');
@@ -496,6 +657,60 @@
     });
   }
 
+  // Before a finding is final the player checks it: the habit, why, and the moments that show it, played. Yes ends the
+  // review; anything else goes back to the coach for one more look.
+  function checkIn({ habit, why, evidence }) {
+    return new Promise((resolve) => {
+      const c = $('checkin');
+      setStatus('Waiting for you', 'waiting');
+      c.hidden = false;
+      c.innerHTML = `<p class="label">Before it's final</p><h3>${esc(habit)}</h3>${why ? `<p class="ci-why">${esc(why)}</p>` : ''}
+        <div class="ci-moments">${evidence.map((e, i) => `<button class="ci-m" type="button" data-t="${e.t}"><span class="ci-shot" data-ci="${i}"></span><span class="tt">${C.mmss(e.t)}</span></button>`).join('')}</div>
+        <p class="ci-q">Is this what's costing you?</p>
+        <div class="ci-opts"><button class="pill primary" type="button" data-yes>Yes, that's it</button><button class="pill" type="button" data-no>Not really</button></div>
+        <form><input maxlength="300" placeholder="Or say what it is instead" aria-label="What it is instead" /><button class="pill" type="submit">Send</button></form>`;
+      V.grab(run.video, evidence.map((e) => e.t), { maxDim: 320, quality: 0.7 }).then((shots) => shots.forEach((s, i) => { const el = c.querySelector(`[data-ci="${i}"]`); if (el) el.style.backgroundImage = `url(${s.url})`; }), () => {});
+      if (evidence[0]) playClip(evidence[0].t - 2.5, evidence[0].t + 1);
+      const done = (agree, said) => {
+        if (c.hidden) return;
+        c.hidden = true;
+        c.innerHTML = '';
+        setStatus(agree ? 'Writing up the finding' : 'Looking again');
+        resolve({ agree, said });
+      };
+      c.querySelector('[data-yes]').onclick = () => done(true, "Yes, that's it");
+      c.querySelector('[data-no]').onclick = () => done(false, 'Not really');
+      c.querySelector('form').onsubmit = (e) => { e.preventDefault(); const v = e.target.querySelector('input').value.trim(); if (v) done(false, v); };
+      run.abort.signal.addEventListener('abort', () => done(true, ''), { once: true });
+      c.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    });
+  }
+
+  // When the kill feed can't tell which name is the player, they pick it (or type it) while the video plays a moment
+  // where it shows; the answer is kept for this game.
+  async function identify({ names, t, question = 'Which name in the kill feed is you?' }) {
+    const name = String((await ask({ question, t, options: names })) || '').trim().slice(0, 40);
+    if (name && run.game) write(PLAYERS, { ...read(PLAYERS, {}), [run.game.name.toLowerCase()]: name });
+    return name || null;
+  }
+
+  // In footage of the whole match (a broadcast, coaching film) code can't tell which player they are: they pick their
+  // side, then say which one they are in their own words. Kept per game, and offered first next time.
+  async function whoInFootage(game) {
+    const key = `${game.name.toLowerCase()}|spectator`, last = read(PLAYERS, {})[key] || null;
+    const sides = (game.sides || []).slice(0, 3).map((x) => `${x.name}${x.look ? ` (${x.look})` : ''}`.slice(0, 60));
+    const again = last ? `${last.who}, ${last.side}`.slice(0, 60) : null;
+    const t = run.video.duration / 2;
+    setStatus('Waiting for you', 'waiting');
+    const side = String((await ask({ question: 'This is footage of the whole match. Which side are you on?', t, options: again ? [again, ...sides] : sides })) || '').trim();
+    if (again && side === again) return last;
+    const who = String((await ask({ question: 'Which one is you? Say your position or role, and your number or what you wear.', t, options: [] })) || '').trim().slice(0, 120);
+    const pick = (game.sides || []).find((x) => side.startsWith(x.name));
+    const player = side || who ? { side: (pick?.name || side).slice(0, 60), look: pick?.look || '', who } : null;
+    if (player) write(PLAYERS, { ...read(PLAYERS, {}), [key]: player });
+    return player;
+  }
+
   // ---------- the verdict and the report ----------
   async function finishReview(r) {
     stopStatus();
@@ -510,31 +725,36 @@
     renderReport(r, match);
     renderStart();
 
-    // each key moment: its frame first, marked from measurements, then the rest marked in one model call
-    const mine = run, v = run.video;
-    const { keys, shots } = await K.prepare({ video: v, profile: run.game, moments, measures: r.measures }).catch(() => ({ keys: run.keys, shots: [] }));
-    if (mine !== run) return;
-    run.keys = keys;
-    keys.forEach((_, i) => paintKey(i));
-    const before = keys.map((k) => !!(k.problem || k.fix));
-    const called = await K.mark({ keys, shots, moments, profile: run.game, habit: r.found ? r.habit : '', signal: run.abort.signal }).catch(() => 0);
-    if (mine !== run) return;
-    if (called) { run.calls += called; paintLogSummary(r); }
-    keys.forEach((k, i) => { if (!before[i] && (k.problem || k.fix)) paintKey(i); });
-
+    // Saved now, and again as its frames and marks arrive, so quitting or leaving the page keeps everything done so
+    // far. Leaving only stops the redrawing.
+    const mine = run, v = run.video, here = () => mine === run;
     const learned = run.log.find(([, e]) => e.type === 'learned')?.[1];
     const record = {
-      id: run.id, date: match.date, calls: run.calls, goal: run.goal, player: run.player, workingOn: run.workingOn, game: run.game,
+      id: run.id, date: match.date, calls: run.calls, player: run.player, workingOn: run.workingOn, game: run.game,
       video: { name: v.name, size: v.size, lastModified: v.file.lastModified, duration: v.duration },
-      result: slim(r), log: run.log, keys: slim(keys), handle: run.handle, path: (await mine.place)?.path || null,
+      result: slim(r), log: run.log, keys: slim(run.keys), handle: run.handle, path: (await mine.place)?.path || null,
     };
     recent.set(run.id, record);
-    try {
-      const cover = keys.find((k) => k.shot)?.shot.url || learned?.shot.url;
-      await R.save(record, cover && (await smaller(cover)));
-      await R.keep(history.matches.map((m) => m.id));
-      if (await mine.kept) await R.keepRecordings(videosOfRecent());
-    } catch (e) { console.warn("This review's log couldn't be saved on this device.", e); }
+    let cover = null;
+    const save = async () => {
+      try {
+        const url = record.keys.find((k) => k.shot)?.shot.url || learned?.shot.url;
+        if (url && url !== cover?.from) cover = { from: url, small: await smaller(url) };
+        await R.save(record, cover?.small);
+      } catch (e) { console.warn("This review's log couldn't be saved on this device.", e); }
+    };
+    await save();
+    R.keep(history.matches.map((m) => m.id)).catch(() => {});
+
+    // each key moment: its frame, marked only with what code knows (a measurement, a kill-feed line, a chess move)
+    const { keys } = await K.prepare({ video: v, profile: mine.game, moments, measures: r.measures, events: r.events }).catch(() => ({ keys: mine.keys }));
+    mine.keys = keys;
+    record.keys = slim(keys);
+    if (here()) keys.forEach((_, i) => paintKey(i));
+    await save();
+    if (await mine.kept) R.keepRecordings(videosOfRecent()).catch(() => {});
+    const copy = await mine.library;
+    if (copy?.path) { record.path = copy.path; await save(); }
   }
 
   // the recordings of the newest reviews, newest first: those copies are kept
@@ -545,8 +765,12 @@
 
   function renderReport(r, match) {
     const past = run.replay;
+    stopFast();
+    vid.muted = false;
+    $('now').hidden = true;
+    $('player').classList.remove('holding');
     $('review').classList.add('done');
-    ['question', 'board', 'meter'].forEach((id) => { $(id).hidden = true; });
+    ['question', 'checkin', 'board', 'meter'].forEach((id) => { $(id).hidden = true; });
     $('eyeMark').hidden = true;
     const v = $('verdict');
     const working = run.workingOn && r.progress ? `<p class="progress ${r.progress}">${esc(run.workingOn.name)}: ${PROGRESS[r.progress]}${r.progressFrom === 'measured' ? ` (${Math.abs(run.workingOn.baseline.heads).toFixed(1)} to ${Math.abs(r.aim.heads).toFixed(1)} heads)` : ''}</p>` : '';
@@ -563,8 +787,9 @@
     run.moments = moments;
     const list = moments.length ? `<ol class="keys">${moments.map((_, i) => keyHtml(i)).join('')}</ol>` : '';
     const again = '<button class="pill primary" type="button" id="againBtn">Review again</button>';
+    const ci = r.checkIn, checked = !ci ? '' : `<p class="checked${ci.agreed ? ' yes' : ''}">${ci.agreed ? 'You agreed this is it.' : r.found && ci.habit === r.habit ? "You weren't sure. It looked again and kept it." : `You said “${esc(ci.said || 'not really')}”, so it looked again.`}</p>`;
     if (!r.found) {
-      v.innerHTML = `<p class="label">${r.stopped ? 'Review stopped' : 'The verdict'}</p><h2><span class="pen">${r.stopped ? 'No verdict yet' : 'No single habit stood out'}</span></h2>${working}${r.why ? `<p class="why">${esc(r.why)}</p>` : ''}
+      v.innerHTML = `<p class="label">${r.stopped ? 'Review stopped' : 'The verdict'}</p><h2><span class="pen">${r.stopped ? 'No verdict yet' : 'No single habit stood out'}</span></h2>${checked}${working}${r.why ? `<p class="why">${esc(r.why)}</p>` : ''}
         ${list ? `<h3>What to do better</h3>${list}` : ''}
         <div class="actions">${again}</div>`;
     } else {
@@ -572,7 +797,7 @@
       const metric = r.aim && (habit ? habit.measuredBy === 'aim' : /crosshair/.test(r.habitId))
         ? `<p class="metric"><b>${Math.abs(r.aim.heads).toFixed(1)}</b><span>heads ${r.aim.heads >= 0 ? 'below' : 'above'} the head when enemies appeared, median of ${r.aim.n} measured</span></p>` : '';
       const contrast = r.contrast?.length ? `<h3>Where you got it right</h3><ul class="contrast">${r.contrast.map((e) => `<li><button class="t-btn" type="button" data-t="${e.t}">${C.mmss(e.t)}</button><span>${esc(e.what)}</span></li>`).join('')}</ul>` : '';
-      v.innerHTML = `<p class="label">The habit to fix</p><h2><span class="pen">${esc(r.habit)}</span></h2>${working}${metric}
+      v.innerHTML = `<p class="label">The habit to fix</p><h2><span class="pen">${esc(r.habit)}</span></h2>${checked}${working}${metric}
         ${r.why ? `<p class="why">${esc(r.why)}</p>` : ''}
         ${list ? `<h3>${instead ? 'What to do instead' : 'Where it shows'}</h3>${list}` : ''}${contrast}
         <h3>Drill</h3><div class="drill"><p>${esc(r.drill)}</p></div>
@@ -639,6 +864,7 @@
     const aim = steps.find(({ li }) => li.classList.contains('measure_aim')), looked = steps.filter(({ li }) => !li.classList.contains('measure_aim'));
     const out = [];
     if (k.measured && k.note) out.push(`${esc(k.note)}${aim ? ` in ${link(aim)}` : ''}`);
+    else if (k.note) out.push(esc(k.note));
     if (looked.length) out.push(`${out.length ? 'seen' : 'Seen'} up close in ${looked.slice(0, 2).map(link).join(' and ')}`);
     const fired = run.shotsAt?.find((x) => Math.abs(x.t - t) < 0.05 && x.fired != null);
     if (fired) out.push(fired.fired ? 'the ammo counter shows they fired' : "the ammo counter shows they didn't fire");
@@ -656,6 +882,14 @@
     li.classList.add('flash');
   }
 
+  // a pen arrow along a curve from s through c to e, with its head at e
+  function arrow(s, c, e, cls) {
+    const n = (v) => v.toFixed(1), tl = Math.hypot(e[0] - c[0], e[1] - c[1]), tx = (e[0] - c[0]) / tl, ty = (e[1] - c[1]) / tl, L = 36, A = 0.5;
+    const head = (sgn) => [e[0] - L * (tx * Math.cos(A) - sgn * ty * Math.sin(A)), e[1] - L * (ty * Math.cos(A) + sgn * tx * Math.sin(A))];
+    // a dashed one keeps its own length, so its dashes stay the same size on any arrow
+    return `<path class="${cls} arrow"${/\bdashed\b/.test(cls) ? '' : ' pathLength="1"'} d="M${n(s[0])} ${n(s[1])}Q${n(c[0])} ${n(c[1])} ${n(e[0])} ${n(e[1])}" /><path class="${cls} tip" d="M${head(1).map(n).join(' ')}L${n(e[0])} ${n(e[1])}L${head(-1).map(n).join(' ')}" />`;
+  }
+
   // a hand-drawn loop: a little more than once around, the way a pen circles something
   function loop(cx, cy, rx, ry) {
     const pts = Array.from({ length: 41 }, (_, i) => {
@@ -667,8 +901,9 @@
   // Marks are drawn in the frame's own proportions, so loops stay round and arrows straight; labels sit on top in HTML.
   // The problem is circled in red, the fix in the pen color, with an arrow from one to the other.
   function marksHtml(k) {
-    const W = Math.round(1000 * (k.aspect || 16 / 9)), H = 1000, p = k.problem, f = k.fix;
-    if (!p && !f) return '';
+    // a fact (a kill-feed line) is drawn like a fix, in the pen color, with no arrow to it
+    const W = Math.round(1000 * (k.aspect || 16 / 9)), H = 1000, p = k.problem, f = k.fix || k.fact;
+    if (!p && !f && !k.moves?.length) return '';
     const ring = (b, pad) => ({ cx: ((b[1] + b[3]) / 2) * W, cy: ((b[0] + b[2]) / 2) * H, rx: ((b[3] - b[1]) * W * 1.25) / 2 + pad, ry: ((b[2] - b[0]) * H * 1.25) / 2 + pad });
     const n = (v) => v.toFixed(1), svg = [], chips = [];
     let from = null, to = null;
@@ -686,18 +921,30 @@
       if (len > a + b + 30) {
         const s = [from.cx + ux * a, from.cy + uy * a], e = [to.cx - ux * b, to.cy - uy * b], bend = 0.15 * (len - a - b);
         const c = [(s[0] + e[0]) / 2 - uy * bend, (s[1] + e[1]) / 2 + ux * bend];
-        const tl = Math.hypot(e[0] - c[0], e[1] - c[1]), tx = (e[0] - c[0]) / tl, ty = (e[1] - c[1]) / tl, L = 36, A = 0.5;
-        const head = (sgn) => [e[0] - L * (tx * Math.cos(A) - sgn * ty * Math.sin(A)), e[1] - L * (ty * Math.cos(A) + sgn * tx * Math.sin(A))];
-        svg.push(`<path class="good arrow" pathLength="1" d="M${n(s[0])} ${n(s[1])}Q${n(c[0])} ${n(c[1])} ${n(e[0])} ${n(e[1])}" /><path class="good tip" d="M${head(1).map(n).join(' ')}L${n(e[0])} ${n(e[1])}L${head(-1).map(n).join(' ')}" />`);
+        svg.push(arrow(s, c, e, 'good'));
       }
     }
     // Labels go on the far sides of their marks (the lower mark's below it, the higher one's above), flipped at the
     // frame's edges and kept off its sides.
     const chip = (r, cls, text, prefer) => {
       const below = prefer === 'below' ? (r.cy + r.ry) / H < 0.84 : (r.cy - r.ry) / H < 0.16;
-      const y = below ? (r.cy + r.ry) / H : (r.cy - r.ry) / H;
-      chips.push(`<span class="chip ${cls}${below ? '' : ' up'}" style="left:${Math.min(84, Math.max(16, (r.cx / W) * 100)).toFixed(1)}%;top:${(y * 100).toFixed(1)}%">${esc(text)}</span>`);
+      const y = below ? (r.cy + r.ry) / H : (r.cy - r.ry) / H, x = r.cx / W;
+      // centered on its mark, or held to the mark's outer edge near a side of the frame, so it's never cut off
+      const at = x > 0.72 ? `right:${Math.max(1, (1 - (r.cx + r.rx) / W) * 100).toFixed(1)}%` : x < 0.28 ? `left:${Math.max(1, ((r.cx - r.rx) / W) * 100).toFixed(1)}%` : `left:${(x * 100).toFixed(1)}%`;
+      chips.push(`<span class="chip ${cls}${below ? '' : ' up'}${x > 0.72 ? ' end' : x < 0.28 ? ' start' : ''}" style="${at};top:${(y * 100).toFixed(1)}%">${esc(text)}</span>`);
     };
+    // Moves, as on a board: an arrow from one square to another and a ring where it lands, drawn one after another.
+    // A label goes where the move lands, or at `say` (a spot in the frame, as a key off to the side) when it would
+    // cover pieces; it comes in as its move is drawn.
+    (k.moves || []).forEach((mv, i) => {
+      const x0 = mv.from[0] * W, y0 = mv.from[1] * H, x1 = mv.to[0] * W, y1 = mv.to[1] * H, d = 0.2 + i * 0.5;
+      const dx = x1 - x0, dy = y1 - y0, len = Math.hypot(dx, dy), ux = dx / len, uy = dy / len, stop = mv.stop ?? (mv.ring === false ? 18 : 40);
+      const s = [x0 + ux * 16, y0 + uy * 16], e = [x1 - ux * stop, y1 - uy * stop], bend = 0.1 * len * (mv.bend ?? 1);
+      const ring = mv.ring === false ? '' : `<circle class="${mv.tone}" pathLength="1" cx="${n(x1)}" cy="${n(y1)}" r="34" />`;
+      svg.push(`<g class="mv" style="--d:${d.toFixed(2)}s">${arrow(s, [(s[0] + e[0]) / 2 - uy * bend, (s[1] + e[1]) / 2 + ux * bend], e, `${mv.tone}${mv.dashed ? ' dashed' : ''}`)}${ring}</g>`);
+      if (mv.label && mv.say) chips.push(`<span class="chip ${mv.tone} at${mv.dashed ? ' dashed' : ''}" data-d="${(d + 0.3).toFixed(2)}" style="left:${(mv.say[0] * 100).toFixed(1)}%;top:${(mv.say[1] * 100).toFixed(1)}%;animation-delay:${(d + 0.3).toFixed(2)}s">${esc(mv.label)}</span>`);
+      else if (mv.label) chip({ cx: x1, cy: y1, rx: 36, ry: 36 }, mv.tone, mv.label, mv.place || 'below');
+    });
     const problemLower = !from || !to || from.cy >= to.cy;
     if (p && from) chip(from, 'bad', p.label, problemLower ? 'below' : 'above');
     if (f && to) chip(to, 'good', f.label, problemLower ? 'above' : 'below');
@@ -717,7 +964,7 @@
       markedAt = e.t;
       vid.currentTime = e.t;
       const v = $('vmarks'), k = run.keys?.[i];
-      if (!k || !(k.problem || k.fix)) return;
+      if (!k || !(k.problem || k.fix || k.fact || k.moves?.length)) return;
       v.innerHTML = marksHtml(k);
       v.hidden = false;
       placeVideoMarks();
@@ -763,7 +1010,158 @@
     return c.toDataURL('image/jpeg', 0.72);
   }
 
+  // ---------- Home: real matches, read as they play ----------
+  // Four scenarios, each a short clip of a recording on this machine (npm run scenes) with what Thirdeye read there:
+  // the HUD it learned, kill-feed rows (the reader got 35 of 36 right on the TenZ match and 41 of 41 on Vyse's, against
+  // hand labels), and Stockfish's score for a chess move. Every step and mark was checked against the clip's frames.
+  // The steps run on the clip's own clock; on the step with a hold, the clip freezes while the pen marks it up. The
+  // Valorant and Apex clips are other players' videos, for testing; the chess game is generated.
+  const SCENES = [
+    {
+      id: 'apex', title: 'A fight won', game: 'Apex Legends', aspect: 2170 / 1162, from: 40,
+      hud: [['kill feed', [0.729, 0.174, 0.234, 0.166]], ['minimap', [0.058, 0, 0.17, 0.318]], ['ammo', [0.804, 0.816, 0.195, 0.155]], ['damage', [0.866, 0.083, 0.07, 0.048]]],
+      steps: [
+        { at: 0, kind: 'Reading the screen', phase: 'Found the kill feed, the minimap, the ammo, and the damage dealt', hud: true },
+        { at: 2.4, kind: 'Finding the fights', phase: 'Looking for damage numbers, knocks, and kill-feed rows' },
+        { at: 4.4, kind: 'Close look', t: 44.4, phase: 'Watching the run-up to the fight' },
+        { at: 6.4, kind: 'A fight won', t: 46.4, phase: 'Knocked down Raygebait: 127 damage inflicted', hold: 2.8, marks: [['Hits landing', [0.39, 0.495, 0.53, 0.57]], ['Knocked down · 127 damage', [0.7, 0.425, 0.765, 0.635]]] },
+      ],
+    },
+    {
+      id: 'tenz', title: 'Three kills in 11.6 s', game: 'Valorant', aspect: 2170 / 1162, from: 219,
+      hud: [['kill feed', [0.77, 0.082, 0.225, 0.11]]],
+      steps: [
+        { at: 0, kind: 'Reading the kill feed', phase: 'Every row, both teams, from the full-quality recording', hud: true },
+        { at: 1, kind: 'Your kill', t: 220, phase: 'You ▸ Fade, enemy team' },
+        { at: 9.6, kind: 'Your kill', t: 228.6, phase: 'You ▸ ulquiorra, enemy team' },
+        { at: 12.8, kind: 'Three in 11.6 s', t: 231.6, phase: 'You ▸ Reyna: the third kill, 11.6 s after the first', hold: 2.8, marks: [['Kill 3 · You ▸ Reyna', [0.133, 0.8, 0.166, 0.99]]] },
+      ],
+    },
+    {
+      id: 'vyse', title: 'Traded after a flash', game: 'Valorant', aspect: 1290 / 726, from: 76,
+      hud: [['kill feed', [0.74, 0.08, 0.25, 0.12]]],
+      steps: [
+        { at: 0, kind: 'Reading the kill feed', phase: 'Teammates\' kills and deaths too, with each side\'s team', hud: true },
+        { at: 1.4, kind: 'Flashed', t: 77.4, phase: 'The screen whites out, kill feed and all' },
+        { at: 3.8, kind: 'Teammate down', t: 79.8, phase: 'As the flash clears: Omen ▸ ZedCapetinha, your team' },
+        { at: 5.5, kind: 'Traded', t: 81.5, phase: 'You ▸ Omen, the killer, 1.4 s after the flash cleared', hold: 2.8, marks: [['You ▸ Omen', [0.162, 0.745, 0.197, 0.987]], ['Your kill', [0.72, 0.45, 0.87, 0.55]]] },
+        { at: 8, kind: 'Your kill', t: 84, phase: 'You ▸ Killjoy, 2.8 s later' },
+      ],
+    },
+    {
+      id: 'chess', title: 'A blunder with 25 s left', game: 'Chess', note: 'a generated test game', aspect: 16 / 9, from: 68,
+      hud: [['board', [0.0625, 0.055, 0.5, 0.89]], ['your clock', [0.609, 0.778, 0.188, 0.098]]],
+      steps: [
+        { at: 0, kind: 'Reading the board', phase: 'Every move read off the board in code: no model calls', hud: true },
+        { at: 3, kind: 'Scoring every move', phase: 'Stockfish rates each of your moves' },
+        { at: 6, kind: 'Your move', t: 74, phase: '19. Nce5' },
+        // squares are the fixture's: an 80 px board at (80, 40) in 1280 x 720, White at the bottom
+        {
+          at: 6.6, kind: 'A blunder', t: 74.6, phase: '19. Nce5 loses 4.9 pawns: the f6 pawn takes the knight. Re1 was best.', hold: 4,
+          mark: {
+            aspect: 16 / 9,
+            moves: [
+              { tone: 'bad', from: [0.21875, 0.5556], to: [0.34375, 0.4444], label: '19. Nce5 · −4.9 pawns', say: [0.61, 0.3] },
+              { tone: 'bad', dashed: true, from: [0.40625, 0.3333], to: [0.34375, 0.4444], ring: false, stop: 40, label: 'then f6 takes the knight', say: [0.61, 0.38] },
+              { tone: 'good', from: [0.40625, 0.8889], to: [0.34375, 0.8889], ring: false, label: 'Re1 was best', say: [0.61, 0.46] },
+            ],
+          },
+          marks: [['0:25 on your clock', [0.778, 0.609, 0.876, 0.797]]],
+        },
+      ],
+    },
+  ];
+
+  // Motion (vendor/motion.js, motion.dev) does the animating; with reduced motion asked for, things just appear
+  const M = window.Motion, calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // what Motion will bring in starts hidden, only once Motion is here to bring it in
+  if (M && !calm) document.documentElement.classList.add('motion');
+  const move = (el, keyframes, opts) => (M && !calm && el ? M.animate(el, keyframes, opts) : null);
+
+  function homeDemo() {
+    const v = $('demoVideo'), hud = $('demoHud'), marks = $('demoMarks'), bar = $('scenes');
+    let scene = 0, shown = null, holding = false, progress = null, holdTimer = null;
+    bar.innerHTML = SCENES.map((s, i) => `<button class="scene" type="button" role="tab" data-scene="${i}" aria-selected="false"><img src="assets/scenes/${s.id}.jpg" alt="" /><span class="sc-text"><span class="sc-title">${esc(s.title)}</span><span class="sc-game">${esc(s.game)}</span></span><span class="sc-bar"><i></i></span></button>`).join('');
+    const paint = (s) => {
+      if (shown === s) return;
+      shown = s;
+      const n = SCENES[scene].steps.indexOf(s) + 1;
+      $('demoNow').innerHTML = `<span class="now-n">${String(n).padStart(2, '0')}</span><div class="now-text"><p class="now-kind">${esc(s.kind)}${s.t != null ? ` <span>${C.mmss(s.t, true)}</span>` : ''}</p><p class="now-phase"><i></i>${esc(s.phase)}</p></div>`;
+      move($('demoNow'), { opacity: [0, 1], y: [10, 0] }, { duration: 0.35, ease: [0.2, 0.7, 0.2, 1] });
+      hud.classList.toggle('on', !!s.hud);
+      marks.innerHTML = '';
+    };
+    function play(i) {
+      clearTimeout(holdTimer);
+      holding = false;
+      scene = i;
+      shown = null;
+      const s = SCENES[i];
+      s.steps.forEach((x) => { x.held = false; });
+      $('demo').style.aspectRatio = s.aspect;
+      hud.innerHTML = s.hud.map(([name, [x, y, w, h]]) => `<span class="el" style="left:${x * 100}%;top:${y * 100}%;width:${w * 100}%;height:${h * 100}%"><span>${esc(name)}</span></span>`).join('');
+      $('demoCaption').textContent = `Thirdeye reading ${s.note || `a real ${s.game} match`}`;
+      bar.querySelectorAll('.scene').forEach((b, k) => { b.setAttribute('aria-selected', String(k === i)); b.querySelector('i').style.transform = 'scaleX(0)'; });
+      move($('demo'), { opacity: [0.35, 1], scale: [0.985, 1] }, { duration: 0.5, ease: [0.2, 0.7, 0.2, 1] });
+      v.src = `assets/scenes/${s.id}.mp4`;
+      v.poster = `assets/scenes/${s.id}.jpg`;
+      v.play().catch(() => {});
+      paint(s.steps[0]);
+    }
+    // the active chip fills as its clip plays, holds included
+    function fill() {
+      const s = SCENES[scene], i = bar.querySelectorAll('.scene')[scene]?.querySelector('i');
+      if (!i || !v.duration) return;
+      const held = s.steps.filter((x) => x.held).reduce((a, x) => a + x.hold, 0), total = v.duration + s.steps.reduce((a, x) => a + (x.hold || 0), 0);
+      i.style.transform = `scaleX(${Math.min(1, (v.currentTime + held) / total)})`;
+    }
+    v.addEventListener('timeupdate', () => {
+      fill();
+      if (holding) return;
+      const steps = SCENES[scene].steps, s = [...steps].reverse().find((x) => v.currentTime >= x.at) || steps[0];
+      paint(s);
+      // the freeze-frame: the clip stops on the moment while the pen marks it up
+      if (s.hold && !s.held && v.currentTime < s.at + 0.6) {
+        s.held = holding = true;
+        v.pause();
+        v.currentTime = s.at;
+        marks.innerHTML = (s.mark ? marksHtml(s.mark) : '') + (s.marks || []).map(([label, box]) => marksHtml({ aspect: SCENES[scene].aspect, fix: { box, label } })).join('');
+        // labels pop in one after another, or each with its own move when it has one
+        const cs = marks.querySelectorAll('.chip');
+        move(cs, { scale: [0.6, 1], opacity: [0, 1] }, { type: 'spring', bounce: 0.45, duration: 0.6, delay: (i) => (cs[i].dataset.d ? +cs[i].dataset.d : 0.35 + i * 0.12) });
+        holdTimer = setTimeout(() => { holding = false; marks.innerHTML = ''; v.play().catch(() => {}); }, s.hold * 1000);
+      }
+    });
+    v.addEventListener('ended', () => play((scene + 1) % SCENES.length));
+    bar.addEventListener('click', (e) => { const b = e.target.closest('[data-scene]'); if (b) play(+b.dataset.scene); });
+    // it plays only while it's on screen
+    new IntersectionObserver(([e]) => { if (e.isIntersecting) { if (!holding) v.play().catch(() => {}); } else v.pause(); }, { threshold: 0.3 }).observe(v);
+    play(0);
+    // the walkthrough's last step: Apex's knock-down frame, marked
+    $('stepProof').insertAdjacentHTML('beforeend', marksHtml({ aspect: SCENES[0].aspect, fix: { box: [0.39, 0.495, 0.53, 0.57], label: 'Hits landing' } }));
+  }
+
+  // the opening card arrives in a short stagger, and each section rises in as it scrolls into view
+  function reveal() {
+    move(document.querySelectorAll('.hero > *'), { opacity: [0, 1], y: [16, 0] }, { duration: 0.6, delay: M?.stagger(0.07), ease: [0.2, 0.7, 0.2, 1] });
+    move($('demo'), { opacity: [0, 1], y: [24, 0], scale: [0.97, 1] }, { duration: 0.8, delay: 0.25, ease: [0.2, 0.7, 0.2, 1] });
+    if (!M || calm) return;
+    for (const group of ['.home .steps', '.home .why']) {
+      M.inView(group, (el) => { M.animate([...el.children], { opacity: [0, 1], y: [24, 0] }, { duration: 0.55, delay: M.stagger(0.08), ease: [0.2, 0.7, 0.2, 1] }); }, { amount: 0.25 });
+    }
+    M.inView('.home .cta-band', (el) => { M.animate(el, { opacity: [0, 1], scale: [0.96, 1] }, { duration: 0.6, ease: [0.2, 0.7, 0.2, 1] }); }, { amount: 0.4 });
+  }
+
   // ---------- past reviews ----------
+  // the sidebar's latest three, each a way back into its review
+  async function renderRecent() {
+    const latest = [...history.matches].reverse().slice(0, 3), box = $('sideRecent');
+    box.hidden = !latest.length;
+    if (!latest.length) return;
+    const thumbs = await R.thumbs().catch(() => ({}));
+    box.innerHTML = `<h2>Latest</h2><ol>${latest.map((m) => `<li><a href="#review/${esc(m.id)}"><span class="sr-shot">${thumbs[m.id] ? `<img src="${thumbs[m.id]}" alt="" />` : ''}</span><span class="sr-text"><span class="sr-habit">${esc(m.found ? m.habit : 'No single habit')}</span><span class="sr-meta">${esc(gameName(m.game))} · ${niceDate(m.date)}</span></span></a></li>`).join('')}</ol>`;
+  }
+
   const TAGS = { better: 'Better', same: 'Same', worse: 'Worse' };
   const tagOf = (m) => (history.habit?.matchId === m.id ? { text: 'Working on', on: true } : TAGS[m.progress] ? { text: TAGS[m.progress] } : m.status === 'rejected' ? { text: 'Not this' } : null);
 
@@ -808,11 +1206,12 @@
     const m = history.matches.find((x) => x.id === id);
     if (!m) return location.replace('#reviews');
     const rec = recent.get(id) || (await R.get(id).catch(() => null));
-    show('review');
+    show('review', 'reviews');
     resetReview();
-    if (vid.src) URL.revokeObjectURL(vid.src);
+    const old = vid.src;
     vid.removeAttribute('src');
     vid.load();
+    releaseLater(old);
     run = { id, replay: true, done: true, rec, file: null, handle: rec?.handle || null, video: { name: m.name, duration: rec?.video.duration || 0 }, game: rec?.game || null, workingOn: rec?.workingOn || null, abort: new AbortController(), looks: 0, turns: 0, calls: 0, beat: null, log: [] };
     $('crumbs').hidden = false;
     $('crumbs').innerHTML = `<a class="back" href="#reviews"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3 5 8l5 5" /></svg>All reviews</a><span>${niceDate(m.date)} · ${esc(m.game || '')} · ${esc(m.name)}</span>${D && rec?.path ? `<button class="quiet reveal" type="button" id="revealBtn">${/Mac/.test(navigator.userAgent) ? 'Show in Finder' : 'Show the file'}</button>` : ''}`;
@@ -830,7 +1229,7 @@
     }
     drawAxis();
     drawLegend(rec.game);
-    for (const [kind, e] of rec.log) (kind === 'event' ? onEvent : onStep)(e);
+    for (const [kind, e] of rec.log) if (kind !== 'mark') (kind === 'event' ? onEvent : onStep)(e);
     run.calls = rec.calls;
     run.keys = rec.keys || (rec.thumbs || []).map((s) => ({ t: s.t, shot: s, aspect: 16 / 9 }));
     renderReport(rec.result, m);
@@ -874,8 +1273,8 @@
       files.set(rec.id, file);
       setVideo(file);
       // the desktop app remembers the new place; a browser keeps a copy
-      (D ? D.remember(file) : Promise.resolve(null)).then((p) => {
-        if (p) { rec.path = p.path; return R.save(rec); }
+      (D ? D.remember(file) : Promise.resolve(null)).then(async (p) => {
+        if (p) { rec.path = p.path; await R.save(rec); const copy = await D.keep(p.path); if (copy?.path) { rec.path = copy.path; await R.save(rec); } return; }
         return R.keepRecording(file).then((ok) => ok && R.keepRecordings(videosOfRecent()));
       }).catch(() => {});
       Promise.resolve(handle).then((h) => {
@@ -903,7 +1302,8 @@
   // a backend on a free host sleeps when idle: waking it now saves that wait at the first model call
   if (G.backendUrl()) fetch(`${G.backendUrl()}/health`).catch(() => {});
 
-  $('playerName').value = read(NAME, '');
-  penStroke(document.querySelector('.start .pen'));
+  penStroke(document.querySelector('.home .pen'));
+  homeDemo();
+  reveal();
   route();
 })();

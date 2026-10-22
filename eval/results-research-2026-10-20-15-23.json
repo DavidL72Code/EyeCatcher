@@ -1,0 +1,633 @@
+[
+ {
+  "name": "Overwatch 2",
+  "seconds": 98,
+  "research": {
+   "rewards": "Winning important fights and fulfilling objectives wins a match and earns competitive rank.",
+   "systems": [
+    {
+     "name": "Game Sense and Positioning",
+     "matters": "Good players use map knowledge, sightlines, flank routes, and health pack locations to maximize their effectiveness while minimizing risk."
+    },
+    {
+     "name": "Ultimate Economy and Usage",
+     "matters": "Top players track enemy ultimates and coordinate their own team's ultimate usage to win space or secure objectives."
+    },
+    {
+     "name": "Character Picks and Counters",
+     "matters": "Players build a small hero pool of 2-3 heroes per role to synergize with their team and counter the enemy's composition."
+    },
+    {
+     "name": "Aim and Mechanical Skill",
+     "matters": "Consistent accuracy and headshots allow players to secure kills faster and win duels, especially in damage-dealing roles."
+    },
+    {
+     "name": "Teamwork and Communication",
+     "matters": "Players group up, adapt their playstyle to the team composition, and use voice chat or in-game pings to share vital information."
+    },
+    {
+     "name": "Objective Play",
+     "matters": "Players prioritize contesting the objective, pushing the payload, or capturing control points while understanding win conditions."
+    },
+    {
+     "name": "Fight Assessment",
+     "matters": "Players assess the state of the fight using the killfeed, team health bars, and ultimate charge levels before committing or disengaging."
+    }
+   ],
+   "priorities": [
+    "Game Sense and Positioning",
+    "Ultimate Economy and Usage",
+    "Character Picks and Counters",
+    "Aim and Mechanical Skill",
+    "Teamwork and Communication",
+    "Objective Play",
+    "Fight Assessment"
+   ],
+   "engagements": "Taking fights when your team has an ultimate advantage, superior positioning, or a pick leads to favorable outcomes, while engaging at a disadvantage results in a loss.",
+   "aimTarget": "head",
+   "mistakes": [
+    {
+     "name": "Poor Positioning/Overextending",
+     "signs": "You find yourself frequently isolated from your team, with no cover nearby, or in the enemy's backline without support.",
+     "cost": "This habit leads to easy picks for the enemy team, feeding ultimate charge, and creating a numbers disadvantage for your team.",
+     "drill": "Practice positioning drills where you focus on staying within a certain range of your team or a designated safe area on the map.",
+     "checked_by": "none"
+    },
+    {
+     "name": "Not Tracking Ultimates",
+     "signs": "You might notice enemies using powerful ultimates without your team being prepared, leading to devastating team wipes.",
+     "cost": "Failing to track enemy ultimates means your team can't prepare for or counter them effectively, leading to lost team fights.",
+     "drill": "During downtime in matches, try to guess the ultimate status of key enemy players and review if your guesses were correct.",
+     "checked_by": "none"
+    },
+    {
+     "name": "Ignoring the Kill Feed/Not Focusing Targets",
+     "signs": "You might see your team fighting a losing battle because multiple teammates are focused on a single, low-threat target.",
+     "cost": "This leads to inefficient use of your team's damage and resources while the enemy team picks off your players.",
+     "drill": "Practice target prioritization drills where you consciously identify the most critical enemy to eliminate in any given situation.",
+     "checked_by": "none"
+    },
+    {
+     "name": "Chasing Kills/Not Disengaging",
+     "signs": "You might see yourself pursuing a low-health enemy deep into enemy territory, leaving your team vulnerable or getting yourself killed.",
+     "cost": "This often results in your death, giving the enemy team ultimate charge and a numbers advantage.",
+     "drill": "Practice disengage drills where you set a personal rule to back off if you are below a certain health threshold.",
+     "checked_by": "none"
+    },
+    {
+     "name": "Tunnel Vision/Ignoring Surroundings",
+     "signs": "You might be so focused on your immediate target that you don't notice flankers approaching from the side or behind.",
+     "cost": "This makes you an easy target for flankers and allows the enemy team to exploit your lack of awareness.",
+     "drill": "Implement a 360-degree check habit by quickly panning your camera around every few seconds to check for threats.",
+     "checked_by": "none"
+    },
+    {
+     "name": "Blaming Teammates/Tilting",
+     "signs": "You might see yourself typing in chat to criticize teammates, or your gameplay becomes noticeably more aggressive and reckless.",
+     "cost": "This destroys team morale and coordination, leading to a downward spiral of poor play and losses.",
+     "drill": "Take a short break between games, practice mindful breathing, and focus on giving one positive comment per game.",
+     "checked_by": "none"
+    },
+    {
+     "name": "Wasting Cooldowns/Abilities",
+     "signs": "You might see yourself using critical abilities like shields, healing, or crowd control on targets that don't pose a threat.",
+     "cost": "Wasting cooldowns means you won't have them available for critical moments like defending against an ultimate.",
+     "drill": "Practice cooldown management drills by thinking about which abilities you will need before each engagement.",
+     "checked_by": "none"
+    },
+    {
+     "name": "Not Adapting to the Enemy Composition",
+     "signs": "You might see your team consistently losing to a specific enemy strategy or hero, but you continue to play the same way.",
+     "cost": "Failing to adapt means you're allowing the enemy team to exploit your weaknesses and win conditions.",
+     "drill": "Ask yourself what the enemy is doing that causes losses after each death and determine how to counter it.",
+     "checked_by": "none"
+    }
+   ],
+   "meta": {
+    "patch": "Overwatch 2",
+    "strong": [],
+    "changes": []
+   },
+   "reference": {
+    "characters": [],
+    "maps": [],
+    "weapons": [],
+    "other": []
+   },
+   "sources": [
+    {
+     "title": "amboosting.com",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHGrGHEnFP8h6hr8K2Ufb7Uu1pmP_CviqDWQSJqvFFLWpLwEMocoo3sIFFidWkUUtsuIMheRrFdlwiEabJ9vVOV0nzPNfFOkHQ51pV81o0xyyRNypcUVl3lmn7Ug_PvuDW1u0w9WcdiY1jm4gU2-gg-Z8gUuo5sgTzBLiVYaeMlKcyLrp__baui",
+     "facet": "guides"
+    },
+    {
+     "title": "ggclan.com",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGfxOR7kkkDDKiAwiUtC0S7I_0TkLrW8knZ_ACHN1HQGX-P_iWYD06AdMm_lKE40X8eIk_ooT9U9m7HvX9bunHW7lPTew9TShOsY6VeLezCBls2OmAllc_u4QXS8bPk_QJLlN4HLAjhJpkNqt2U06l56__NZR87MjdRyIKjLg==",
+     "facet": "guides"
+    },
+    {
+     "title": "jeu.video",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEhGNDnjzYPuI3JIaXoKK3u3jXKTIqpXiR40aPvuMmsnNzC4xQv_H3NVS_3woTJsNDHDwU0j9MMF5M63Ake4ZemegZGfGhBsSsdqVFTofbhpKR8ptezFA9mnsxYe4BuDlK03G28FHyvzdv-AaMaV8_UQ684",
+     "facet": "guides"
+    },
+    {
+     "title": "pages.dev",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEJkLurj5ZYmYSvQHIueSHtGxQ8PzIoGjbRkOs3xWPV42iNoP8bl0SoyQ7sB1FOR-TDj4wNr64Hh9tblZ-3ncm0LkW2pjk7HZ6xJVgB3F_wwzKQ7IpZjfQKujWbVO27_kB-OtQP1pl0",
+     "facet": "guides"
+    },
+    {
+     "title": "rockpapershotgun.com",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEMUNnRBgEYJpOVqM0y5XCgz_0T3mbAM0q_2BNa5INqG2lLwPGpCDcDjM2Np289_sPcA8wRIqo6ldcjfXNgbwNCvVaiDUMkSyAZ4JYrOCTgKdGPf-rKIUKIWqwjvBFZLZIXII6Qpsitxxc-y6vJpLo=",
+     "facet": "guides"
+    },
+    {
+     "title": "reddit.com",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEkqRkBOsZAl0eT4-Vo8znQwvznDtIrtCjmjDa76-5vP9fqSMY8tuAW6f4eoQHZys_fmx5x2UviIO6zfyK0HXDWDxdnEUF3RVnij7JiNY28UiZ96pJN6btDdGMT6cqWNcD1XrZDdzU-w0L28MMxAOm4t1PQNX6Ws9ruJt5s8a-RG9YmR8BeL0ujzRzhfR3mryVQTMyTUGZCYUgFxKh1e2SmAd1zxA06bg==",
+     "facet": "guides"
+    },
+    {
+     "title": "youtube.com",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFLlze0E-ftaV9wfi2xSdHX_tRMX1-jgT1JvYvWOfQqY01qVb6XNGyJUj4vQXENaaQpNw5R6KupvpAU8u9Api0jVng7nm3ghzCdAFp-DK9PHtLUgZX2bYxqjLqLQnXH_ysrLsNctQ==",
+     "facet": "guides"
+    },
+    {
+     "title": "youtube.com",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGoIy_zv4KncA5Kok9PVd3aX7v1GKNf0hn8WYNFbyBC01-lORK-vby4FobdDJm0zNquyQXcsmFGGOZsfOH00f6P7QpYti7kV4bUL6woFdo2mt4sWQaVQuTI_2QwK-1UFEimnTK3oQ==",
+     "facet": "guides"
+    },
+    {
+     "title": "youtube.com",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHKb94jVSCFtlhbZZqTmMESB_28EYtOuPbtoOUm7LducK6TwzedLvYJRnAsn7q6wQz--m1Xqz9CSP1j7N2n3JNvbqAatwEt3mqvxDxB7y2o8aPzK5l78JVTz_LisTWvIhGEBnZ2mg==",
+     "facet": "guides"
+    },
+    {
+     "title": "esportstower.com",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQG_mWwvIeqbOt71DoF8zd8ZJhIDmaya-qp_OaeuYjQWWRaL0vLr6OIAcWYEoT0R5XcSm3uKdYQIPiA3iYdiAIAlip4DvsqVBGQX5s01LZu0iJeNc0eOayQBueInauLD9ROb_81TEhkzPyjlGyeceOuOS5I594PxQ_T0vm0tsswbLF3wxBwClCu2SP9pcXLANpE9bCVPUzDLeWEXL4eW",
+     "facet": "guides"
+    },
+    {
+     "title": "washingtonpost.com",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQH5IlsdaFynoDi7uiLyk20ikdZSviHyzkCpeZZCbgJmOZFwv2eR6q0JmbQdYMRbz-q7WAvDV62H9thjehqHMXCwOmb_YCB2NZtG8DXGcv4yrtW5UI1JbSHpT7ah1RMFVyPwg-OSHzwgRmI5JnQbRX0ixDYU5YhpSfwNAjlbgMgX1DRW3_VlLF2ypoq5rJLh",
+     "facet": "guides"
+    }
+   ],
+   "researched": true,
+   "facets": {
+    "guides": 11,
+    "community": 0,
+    "meta": 0,
+    "wiki": 0
+   },
+   "character": {
+    "name": "Kiriko",
+    "role": "Support",
+    "abilities": [
+     {
+      "name": "Healing Ofuda",
+      "slot": "Primary Fire",
+      "does": "Kiriko channels a burst of healing talismans that seek targeted allies.",
+      "use": "Top players emphasize Kiriko's high skill ceiling, focusing on her ability to make big plays and save her team from burst damage and ultimates, and for maximum healing, it's best to wait for all five "
+     },
+     {
+      "name": "Kunai",
+      "slot": "Secondary Fire",
+      "does": "Thrown projectiles that deal increased critical damage.",
+      "use": "Some players suggest that Kiriko's strengths lie more in her damage potential and flanking capabilities rather than just pure healing output."
+     },
+     {
+      "name": "Swift Step",
+      "slot": "Ability",
+      "does": "Kiriko can teleport directly to an ally, even through walls, allowing for quick repositioning and clutch saves.",
+      "use": "They utilize her Swift Step not only for saving allies but also for rapid repositioning to avoid enemy fire."
+     },
+     {
+      "name": "Protection Suzu",
+      "slot": "Tactical Ability",
+      "does": "Kiriko throws a protective charm that makes allies briefly invulnerable and cleanses most negative effects.",
+      "use": "Top players focus on her ability to make big plays and save her team from burst damage and ultimates."
+     },
+     {
+      "name": "Kitsune Rush",
+      "slot": "Ultimate Ability",
+      "does": "Kiriko summons a fox spirit that rushes forward, accelerating the movement speed, attack speed, and cooldowns of allies in its path.",
+      "use": "Kitsune Rush ultimate is considered a powerful tool for aggressive pushes, especially when combined with fast-paced damage dealers like Genji or Tracer."
+     },
+     {
+      "name": "Wall Climb",
+      "slot": "Passive",
+      "does": "Kiriko can climb walls.",
+      "use": "Kiriko thrives when staying close to teammates in the heat of battle, but positioned safely enough to heal."
+     },
+     {
+      "name": "Ofuda",
+      "slot": "Passive",
+      "does": "Automatically heals allies over time when dealing damage to enemies.",
+      "use": "Some players suggest that Kiriko's strengths lie more in her damage potential and flanking capabilities rather than just pure healing output."
+     }
+    ],
+    "mistakes": [
+     {
+      "name": "Healbotting and Neglecting Damage",
+      "signs": "You'll see high healing numbers but very low damage and elimination counts.",
+      "cost": "Kiriko's kit offers significant damage potential with her Kunai, and neglecting this aspect means missing out on crucial eliminations and pressure.",
+      "drill": "Actively look for opportunities to weave Kunai shots between your Healing Ofuda.",
+      "checked_by": "none"
+     },
+     {
+      "name": "Poor Positioning and Over-Reliance on Swift Step",
+      "signs": "You'll frequently find yourself isolated or caught out of position after using Swift Step to save an ally, often resulting in your own death.",
+      "cost": "While Swift Step is a powerful escape tool, using it without considering your own safety or the team's positioning can lead to a support deficit.",
+      "drill": "Before using Swift Step, assess if the ally is in a recoverable position and if teleporting to them will put you in immediate danger.",
+      "checked_by": "none"
+     },
+     {
+      "name": "Jumping While Shooting",
+      "signs": "Your shots will be inaccurate, and you'll be an easy target for enemies to track.",
+      "cost": "Jumping makes your movement predictable and hinders your aim, making it difficult to land critical Kunai headshots or consistent Healing Ofuda.",
+      "drill": "Instead of jumping, practice crouch-spamming and strafing to make yourself a harder target while maintaining better aim control.",
+      "checked_by": "none"
+     },
+     {
+      "name": "Wasting Protection Suzu",
+      "signs": "You'll see the Protection Suzu icon on your HUD, but you'll have used it on an ally who didn't critically need it, leaving you without it for a crucial moment.",
+      "cost": "Protection Suzu is a powerful cooldown for negating burst damage or cleansing vital debuffs.",
+      "drill": "Prioritize using Protection Suzu to counter enemy ultimates (like Graviton Surge or Earthshatter) or to save allies from significant burst damage.",
+      "checked_by": "none"
+     },
+     {
+      "name": "Mismanaging Healing Ofuda Cooldowns",
+      "signs": "You might be spamming your Healing Ofuda rapidly, but your overall healing output is lower than it could be.",
+      "cost": "Firing them off individually without allowing them to recharge reduces the effectiveness of her healing.",
+      "drill": "Aim to fire all five talismans at once for maximum healing output when an ally is taking significant damage.",
+      "checked_by": "none"
+     }
+    ],
+    "sources": [
+     {
+      "title": "fandom.com",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGxWxkXuSOObRzEdoUNQiImcDQAvYIZRbNiNk1FMLf8EumusBVQVSadf5f1IugtSv5m4eBQ5zIeybcbj_Jb27dX5JKvTHE2MWYMRYYK7JplcLN_UdEpvEUKpicT096OJ_xWHQ==",
+      "facet": "character"
+     },
+     {
+      "title": "youtube.com",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEkZ3PLxWoZA5KZVy1yOi9eEgyopM_YQbC1z3g2UUCE5XK7mZRsZl1IwEJ0ij9csraLcRUu76lIBbMCe0yxHCQkqu0QYisaymhUjnL056mp5YplSn4pguqQ9khNNDgfu8DasWGX4g==",
+      "facet": "character"
+     },
+     {
+      "title": "ign.com",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQH0OMfpVf95TZiyHEFe5yK2UyPvzd5UBPuAhiNyfycRHCS5LSdOYQ6otrYPgvlE_hJ8Rf89St_ZxmGuhqNK8aqCqog2tPV092ku8DwNsfj3fWXf9uZE703GmayIdyKdCgvjIBommVSaNmjT5TJ1NCAeYf1UfLI=",
+      "facet": "character"
+     },
+     {
+      "title": "overit.com",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQG2roDmT3itlS9EaTbF2uV9NPhijvRjos31ovnRiXwZWEuGUCb3k1ALecZJFvGxXyXSVlfTXK-hfHOOhY0aE46MUjxp5F2i8n1It4l9dPjWLR98apg9ihNovic0HN4fZtZ_cwPXbP_bif2Mb2FGSFANCWxzgOp1WWdgr9XNg1C9",
+      "facet": "character"
+     },
+     {
+      "title": "youtube.com",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFY88B2Y1d2dNGilJD1NWg1eB_BrfBn7yu-Qqcb64NgM5hiC4_Cfw-F7ZkEuGQVehZjAXTWsZWNImSYM94W8114Zrn8P8HOaJDLbE_0uxgHcNm0YAcrb0mHgShXpp4dRY9S6WU6xg==",
+      "facet": "character"
+     },
+     {
+      "title": "neuralboost.gg",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQG-tW8ASXwTufl1vTX4m7Z8QD8YUqIHFF5MYICu5IIaGw83nN2abgdo7Z0yUOfJj11YxUKPYVunnKgqnJ_6nGez__0_kcrBpF2AyptjAWdvp1MDaHy2FP942mq4V0UqIhOiyzZk0LqSRbs9ShZ5ej6EV31iHF_YVEvwfft9f4gS1kRT70IMcaIR1buTQtf8OcuWVPJsB9G5zpFmQ7i9zaynAQ==",
+      "facet": "character"
+     },
+     {
+      "title": "youtube.com",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQH1gtKJLwJImdpoxLn-_GbtTL5hE95QIYHgdc9e6i9PxlErU_mEsD6UTDBNQSt67J0ovot7HPUsjuMfTIZrQoQkCs0WjIZQVwWQkDFrPNxZYyqeN2KDKOc6vUpAXsxPm1sEgRkwPg==",
+      "facet": "character"
+     },
+     {
+      "title": "reddit.com",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFNcbNA_oHWIPuPJwBrESz9ceS-yVRILpFpf155V6_K2ivRmamZohyKfxjyocSqSkpHSwvi8WAgpvYAAahimaRUPUIEspehLOOFLtiuMhGLKxgkGg389-Ay1BSEErAMXNlBFWRCdsx6ARtG6fCAMshgpceky0j8kMTLEJ6beQjkKNiaEf1n7m6cCSxAVl2QLITf4hruEnTRYmK1Z3hkZrOplDT2WoQGbl0EyQ==",
+      "facet": "character"
+     }
+    ],
+    "researched": true
+   }
+  }
+ },
+ {
+  "name": "League of Legends",
+  "seconds": 100,
+  "research": {
+   "rewards": "Destroying the enemy team's Nexus wins a match and earns rank through a combination of MMR and LP.",
+   "systems": [
+    {
+     "name": "Champions, Abilities, and Ultimates",
+     "matters": "Mastering your champion's unique set of abilities, understanding strengths and weaknesses, and knowing ability cooldowns are fundamental to success."
+    },
+    {
+     "name": "Roles or Classes",
+     "matters": "Specializing in one of five roles helps you understand specific responsibilities and optimal positioning in team fights."
+    },
+    {
+     "name": "Character Picks and Counters",
+     "matters": "Understanding champion matchups, team synergies, and enemy counters during champion select sets the tone for the entire game."
+    },
+    {
+     "name": "Economy",
+     "matters": "Gold earned from last-hitting minions, securing kills, and taking objectives is used to purchase items that significantly enhance champion power."
+    },
+    {
+     "name": "Objectives",
+     "matters": "Securing turrets, inhibitors, Baron Nashor, and Dragons provides lasting team-wide advantages that directly lead to taking down the Nexus."
+    },
+    {
+     "name": "Resources",
+     "matters": "Managing health and mana for abilities is vital for maintaining a sustained presence on the map before needing to visit the Fountain."
+    },
+    {
+     "name": "The Map (Summoner's Rift)",
+     "matters": "Navigating the three lanes and jungle while utilizing the Fog of War and bushes allows for surprise attacks and vision control."
+    }
+   ],
+   "priorities": [
+    "CS / Laning Fundamentals",
+    "Wave Management",
+    "Map Awareness",
+    "Trading & Fighting",
+    "Objective Control",
+    "Champion Mastery and Role Dedication",
+    "Intentional Practice",
+    "Positioning"
+   ],
+   "engagements": "A fight is worth taking when your team has a clear advantage in champion power spikes, ability cooldowns, gold and items, team composition, positioning, or objective control. A fight is bad if your team is at a disadvantage, outnumbered, lacks vision, or has key members out of position.",
+   "aimTarget": "none",
+   "mistakes": [
+    {
+     "name": "Mindless Playing",
+     "signs": "Accumulating playtime without focusing on specific skill improvement.",
+     "cost": "Fails to build the intentional practice habits required to climb the ranked ladder.",
+     "drill": "Identify one specific skill to work on over many games.",
+     "checked_by": "none"
+    },
+    {
+     "name": "Ignoring Objectives for Kills",
+     "signs": "Chasing enemy champions across the map instead of hitting turrets, Dragons, or Baron.",
+     "cost": "Misses out on permanent buffs and map control that directly contribute to destroying the enemy Nexus.",
+     "drill": "Prioritize neutral monsters and structures over player eliminations.",
+     "checked_by": "none"
+    },
+    {
+     "name": "Poor Laning and CSing",
+     "signs": "Missing last-hits on minions and falling behind in gold and experience.",
+     "cost": "Results in an item and power deficit compared to the enemy laner.",
+     "drill": "Practice efficiently last-hitting minions in custom games without items.",
+     "checked_by": "none"
+    },
+    {
+     "name": "Failing to Check Minimap",
+     "signs": "Surprise ganks from the enemy jungler catching the player completely off guard.",
+     "cost": "Leads to preventable deaths and loss of map pressure.",
+     "drill": "Force a glance at the minimap every few seconds.",
+     "checked_by": "none"
+    },
+    {
+     "name": "Fighting on Cooldown",
+     "signs": "Initiating engagements while key abilities or ultimate spells are unavailable.",
+     "cost": "Significantly lowers your combat damage and utility, leading to lost skirmishes.",
+     "drill": "Check ability icons and timers before committing to a trade or fight.",
+     "checked_by": "none"
+    },
+    {
+     "name": "Jack of All Trades",
+     "signs": "Playing a wide variety of different roles and champions in ranked matches.",
+     "cost": "Prevents deep understanding of champion intricacies, matchups, and team contribution.",
+     "drill": "Dedicate yourself to one primary role and a small pool of 2-3 champions.",
+     "checked_by": "none"
+    }
+   ],
+   "meta": {
+    "patch": "current",
+    "strong": [],
+    "changes": []
+   },
+   "reference": {
+    "characters": [
+     {
+      "name": "Top",
+      "role": "Role"
+     },
+     {
+      "name": "Jungle",
+      "role": "Role"
+     },
+     {
+      "name": "Mid",
+      "role": "Role"
+     },
+     {
+      "name": "ADC",
+      "role": "Role"
+     },
+     {
+      "name": "Support",
+      "role": "Role"
+     }
+    ],
+    "maps": [
+     "Summoner's Rift"
+    ],
+    "weapons": [],
+    "other": [
+     {
+      "kind": "Objectives",
+      "names": [
+       "Nexus",
+       "Turrets",
+       "Inhibitors",
+       "Dragons",
+       "Drakes",
+       "Baron Nashor"
+      ]
+     },
+     {
+      "kind": "Resources",
+      "names": [
+       "Gold",
+       "Health",
+       "Mana"
+      ]
+     },
+     {
+      "kind": "Map Features",
+      "names": [
+       "Lanes",
+       "Jungle",
+       "Fog of War",
+       "Bushes",
+       "Fountain"
+      ]
+     },
+     {
+      "kind": "Wave Management",
+      "names": [
+       "Freeze",
+       "Slow Push",
+       "Fast Push"
+      ]
+     }
+    ]
+   },
+   "sources": [
+    {
+     "title": "aussyelo.com",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFDd3Su7qFVgk5EOM0o6rRgmTnrB4fH_s4j0eKV51dwnMhkY5V-xecVd6XUh7Teg6LPJlzYKJu0xlsB5m6_aGlN6_w2Fl-wPaLC6lmMsndcAB3WnWTQDrGQb5tUcd29vICynv4tBRSY9syOLQCl7G6WwHJjZUuka8QvnppxV7DE",
+     "facet": "guides"
+    },
+    {
+     "title": "olympics.com",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHbqTSjs6xZ4CTvR6nqOUxUKt99ctICo6LcecxdMUnromYN0IAK982O5Y-hvMIEC4FHXQNulcQVwKf__NnoT2jFbYJhgn7yqyFtnnaKdIAsKRPqf5_SPmp9P99AEgGmAdz9AZZp_o1-0dmsf_SHAdK8gTkg4lNnMdvibPL2Zgnr4DgaEIx6CkolArd3Pw==",
+     "facet": "guides"
+    },
+    {
+     "title": "leagueoflegends.com",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQG-FRRmnugk5jKNNV9bU3AlbvELA_QYIjv6QZqXhCx5uinrezB3K-BWXdPf5Crlqd3gi0D--NFXLyZNIczvqZ2xUGpMTGv0DjGLaGCdrdlOXYS6GtZ-lKqGWBiDSNfkVAIDlzYc7AiFhYFjE5Fd",
+     "facet": "guides"
+    },
+    {
+     "title": "turbosmurfs.gg",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQG3Ez9Xf1C60UiJNxInY_4rXuip8JhfQBbCKhISvwAoLgpQtHTpLp4skbgEeY2khoQ9cvTEFpJNPZY-iy0ri682EI6Ac0MhW3UeyX1ClPBBMVkC5RdPNEVKgmmlfPcCKKur9fu_k-kbbCx0Cu6veU-Fcp1z_0as8w==",
+     "facet": "guides"
+    },
+    {
+     "title": "reddit.com",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHpCFT81ocZcJWvIMwHs1YZcN2g_T-t6FXZfwIkfANQgEqOD6VsTr8lDlNNgbeE2RSyQgeOg-eh44-QR8LoKAfeVjSbGnpJXExaLFsJKa1Tez3_I3TP-_W0mkcm32SUbAtZT9t7En6ThiA68bDYkpaD1NEvFKipLU7NrdyaW-sMODKF08YZ4n-fDo8jDECljx9ruPhAhhuquFenkT0ck5oQxmjP_Cs=",
+     "facet": "guides"
+    },
+    {
+     "title": "wikipedia.org",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEK-dxWerOWqN_6DEslgkAiYgqPzX6xwHKVsVKDwCv1f2o00HiXS76lTtZOEXIIqFVuWpmD5x4CtqLyPVT5nDvfBszv8vPmUM7_XKAIVDzf06unEn3hzX_eBBMQBqn80UI-IoaQ7hrhGG6t",
+     "facet": "guides"
+    },
+    {
+     "title": "psu.com",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEioPpWkBXVeGrDLvyy46lvkxYmY-DG9TIivmwc6qhb0WTtOzfexxa7KkHTW4P41Bwmg0beHIykNKGqlXZjlyyJL6nJvYn23QkgSOcxfU33DHBRn5GwcRAR9Nz_plhNsC2YZ5sjq2q_x5K-5fv3wWk35D3k105aOQy5aguddALrxA==",
+     "facet": "guides"
+    },
+    {
+     "title": "reddit.com",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGq1KZ5Q_bNdGR_8uYUXLgfQGlWiVe0xuP2BUZ4F-t53GZiRueTIhyGmfAJVn7QYQUlXVfDV_GoC8T6Ffaf-1tLjrILG-dVG0kMXJTii40LUruIcpUyOBF7xcFf-xfWWPgFe3-78YceTtwikkYxiNhlXU5PxlJE3bipWh7cTzE9oo_WjZ0Io4z06VbMLcbq9ePCmLEquKdbCB4QH7eHcR6LEgnQLA==",
+     "facet": "guides"
+    },
+    {
+     "title": "redbull.com",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEkllUJmxk3nWXoOf8aFljXL2Fp1BV9jfOFSyCZ83svEehyEc3hL2Vs7EiKqF4r074ndGCJvyWTbeQizKpRuJbLFY4V2-R5l9peK8SKq1wgKi231kFYKHkSCWCO1c9AU1tduYzlU0Y2gAGU38G6RMKfV5P0UnNia6M-0f7CnbRQFHus-UbB1jnt7_k=",
+     "facet": "guides"
+    },
+    {
+     "title": "tentonhammer.com",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHUGloZufYXQfCdadn4KzmiIe229vhkHXrqZEPSrUs8oRt24xeJ-UnYw91ObWnihPRV2I0ziZQzdxyWF6KyBEGhh-ANfYoj_RfC85-CWY-wxSViY3a3krHWnQ9UoRglwzG8SGCyDpCGat-zrxd_KSol99LaTLQIjbsHJUj8ZHuEfw==",
+     "facet": "guides"
+    },
+    {
+     "title": "redbull.com",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQG0y4qWyst6QWTKAet99czCefNgn_5mrUxCxpLJ_LwjQ9AMGDD3rAO2TzLXl9ejbxZynY5qAqSTOPEBuLAl-JXMwYpGPzSSOXXHR6xgBKJWVrbErElW8mphdy7DKRfluOth3scMIPftqbN8halaK9TZ4m9cFbnVKS7_004kbRQRQvV6WeI0_ugqoDm1",
+     "facet": "guides"
+    },
+    {
+     "title": "reddit.com",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEwW1aju9K3328rl9KYuB4ZQTHxkUNaMFsLsGg18sp2M4oDyqMbYDDEJZ5M21V65oryB_Z5I6KBUpaI3rhM3Cv0RAwJqdY8duyPHhkwC9BK0XQguGaaswrdlVD3hNRh7KEmupRRFKEO0fTO26-GNGPxwq7dE_9JdwiybSvpI76G9qumPTyEq6_eGg436vSIT_rg-1f0g5-169JuPiC7KA==",
+     "facet": "guides"
+    },
+    {
+     "title": "raiseyourgame.com",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEmk9nciOs-bSXoQdOJTgwyYOryWbyY2qliaPH1vR6VQ0tEjsceKVSMpvf4xUQyccMqRC2-f24avCafLSh5ThbcclfDfAEBLCback1rxWvKDE2SDMURmPS7QB22ytFGHAVyD4-TIuanGmoM1QjrbORNxnlgkGzDVN4L7kPZZoeWYTd_6ae-QirbIdT0LQR4DQINfMNO2ZsY0CRs",
+     "facet": "guides"
+    },
+    {
+     "title": "gamegrin.com",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHlP8f3JdmB6i7HMXne8x-Pr96X6ZoHHP1mzBlgX-SQ2J-0dEZVfXx-lzIHxAeGMS_2js3o8vc400N2p1cbhIyB41DCK3bbLJ4YDvoyDz7C7EyBI7dsjcSqEwDDveN99n3N8AefhyNuW4hyw5kAl6rW40AGBvVj1Con7yWskF8TCPWB47i4NRpPzeughb-axlU=",
+     "facet": "guides"
+    },
+    {
+     "title": "dignitas.gg",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQG97O-Lh4XogidAd90F4RAiss2iu3DK_QSz4pUnyP_8AHG2xB5eTX7VFD8d03L4bdGi5cJ8Ikyxls0IXSyCLWDgojz9vx_TCiTITdCxy3cEr2YytwPzpEzBb6N0O4mxF1O4XCfl7MR53-Dl_y2CjrlkieDS71fmxpt5kEuqBeuTg3ScEQl5GJSnxZxR1eUc4Cg=",
+     "facet": "guides"
+    },
+    {
+     "title": "dignitas.gg",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQE8VZMtPtLn2xYwjl4W56MrEiwFmCPFDnuIq14FJabr2w5ElDob5Hyhe2LBuG31XTPwrW5nx60BiMXEoL0faLm__O3nzDfmZfhCYAS8ocOgplKsEo2-gBfSvMGUz_VNeLhPYjKyyghvxL7uy76_8ygN4ZagHWi9MomEU1fLm2P4yXcHq6draE6lPn8MPkHe",
+     "facet": "guides"
+    }
+   ],
+   "researched": true,
+   "facets": {
+    "guides": 19,
+    "community": 0,
+    "meta": 0,
+    "wiki": 0
+   },
+   "character": {
+    "name": "Jinx",
+    "role": "Hyper-Carry Marksman (ADC)",
+    "abilities": [
+     {
+      "name": "Get Excited!",
+      "slot": "Passive",
+      "does": "Grants a massive burst of decaying Movement Speed and Attack Speed when Jinx damages an enemy that is killed or destroyed within 3 seconds.",
+      "use": "Good players treat this as a chain reaction engine, waiting for a low-health target to drop before securing the kill and repositioning or running down the enemy backline."
+     },
+     {
+      "name": "Switcheroo!",
+      "slot": "Q",
+      "does": "Jinx toggles her basic attacks between Pow-Pow the Minigun and Fishbones the Rocket Launcher.",
+      "use": "Elite players constantly swap between weapons to melt single targets at close range with Pow-Pow or safely harass and splash damage with Fishbones."
+     },
+     {
+      "name": "Zap!",
+      "slot": "W",
+      "does": "Jinx fires a shock blast in a straight line that deals physical damage, slows the first enemy hit, and reveals them.",
+      "use": "Good players use it to initiate trades in lane, check dangerous brush safely, and slow down chasing enemies."
+     },
+     {
+      "name": "Flame Chompers!",
+      "slot": "E",
+      "does": "Jinx tosses out 3 trap mines in a line that arm after 0.7 seconds and root enemies who walk over them.",
+      "use": "Top players use them reactively to drop on top of themselves against divers or predictively to cut off choke points."
+     },
+     {
+      "name": "Super Mega Death Rocket!",
+      "slot": "R",
+      "does": "Jinx fires a massive rocket across the entire map that explodes on the first enemy champion hit, dealing physical damage plus missing health scaling.",
+      "use": "Elite Jinxes use it for global map influence and close-range burst in teamfights as an instant-cast nuke."
+     }
+    ],
+    "mistakes": [
+     {
+      "name": "The Weapon Switch Lock (Staying on Fishbones Too Long)",
+      "signs": "You hit a tank at close range with the Rocket Launcher, your attack speed looks painfully slow, and your screen flashes gray.",
+      "cost": "Using Fishbones on single-target frontline tanks or diving assassins at point-blank range cuts your damage output by more than half compared to a stacked Minigun.",
+      "drill": "Go into the Practice Tool with no items and practice alternating 3 quick Minigun shots with 1 Rocket.",
+      "checked_by": "none"
+     },
+     {
+      "name": "Premature Casting of Zap! in Duels",
+      "signs": "You press W while kiting back and Jinx stops moving entirely for nearly a full second to wind up the shot.",
+      "cost": "Zap! has a fixed cast time that lowers your overall DPS per second compared to just auto-attacking.",
+      "drill": "Play 3 games of Normal Draft where you completely unbind the W key.",
+      "checked_by": "none"
+     },
+     {
+      "name": "Throwing Flame Chompers Ahead of a Running Target",
+      "signs": "You chase an enemy, throw your E directly in front of their path, and they easily walk around it before it arms.",
+      "cost": "It leaves you defenseless if a second enemy comes to flank you while your E is on cooldown.",
+      "drill": "Practice dropping the Flame Chompers directly under your own feet the exact millisecond an enemy starts their dash.",
+      "checked_by": "none"
+     },
+     {
+      "name": "Sniping Cross-Map Desperation Rockets (Ignoring Close-Range ",
+      "signs": "You pan your camera away during a close teamfight to launch a hail-mary rocket across the map and miss entirely.",
+      "cost": "Panicking and throwing it cross-map leaves you without your primary burst tool when an assassin jumps on your face.",
+      "drill": "In the Practice Tool, spawn a target dummy in your hitbox and practice instantly pressing R.",
+      "checked_by": "none"
+     }
+    ],
+    "sources": [],
+    "researched": false
+   }
+  }
+ }
+]

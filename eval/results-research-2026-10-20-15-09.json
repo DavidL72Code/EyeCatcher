@@ -1,0 +1,2732 @@
+[
+ {
+  "name": "Overwatch 2",
+  "seconds": 78,
+  "research": {
+   "rewards": "Winning matches is the sole determinant of rank progression.",
+   "systems": [
+    {
+     "name": "Abilities and Ultimates",
+     "matters": "Coordinated ultimate usage swings team fights and secures objectives while tracking cooldowns allows players to anticipate and counter plays."
+    },
+    {
+     "name": "Roles and Character Picks",
+     "matters": "Understanding your role within a team composition helps you fulfill distinct responsibilities like absorbing damage or healing."
+    },
+    {
+     "name": "Counters and Synergies",
+     "matters": "Top players constantly adapt their hero picks based on the flow of the game to counter enemy compositions."
+    },
+    {
+     "name": "Objectives and Map Control",
+     "matters": "Controlling key areas of the map and utilizing flanking routes provides sustained pressure to win engagements."
+    },
+    {
+     "name": "Resources (Ultimate Economy)",
+     "matters": "Good players track enemy ultimate usage and build their own strategically to avoid wasting charges."
+    }
+   ],
+   "priorities": [
+    "Core Game Mechanics",
+    "Strategic Decision-Making",
+    "Precise Execution",
+    "Positioning",
+    "Adaptability"
+   ],
+   "engagements": "A good fight is one where your team can secure picks, maintain ultimate advantage, and achieve an objective with minimal losses, while bad fights involve losing multiple players without securing critical eliminations.",
+   "aimTarget": "head",
+   "mistakes": [
+    {
+     "name": "Poor Positioning and Over-Aggression",
+     "signs": "You are often caught out of position, too far ahead of your team, or in the enemy's backline without support.",
+     "cost": "This leads to easy picks for the enemy team, creating a numbers disadvantage that is hard to recover from.",
+     "drill": "Deathmatch Warm-up",
+     "checked_by": "none"
+    },
+    {
+     "name": "Tunnel Vision and Ignoring the Kill Feed/Objective",
+     "signs": "You are hyper-focused on one enemy, completely oblivious to the larger battle, missing teammates dying or objectives being captured.",
+     "cost": "This leads to missed opportunities to secure crucial kills, defend objectives, or counter enemy pushes.",
+     "drill": "Objective Focus Training",
+     "checked_by": "none"
+    },
+    {
+     "name": "Wasting Cooldowns and Ultimates",
+     "signs": "You frequently use your abilities and ultimates at suboptimal times, such as using a powerful ultimate on a single low-health enemy.",
+     "cost": "This means your crucial abilities and ultimates are unavailable when they are most needed during a critical team fight.",
+     "drill": "Cooldown Management Practice",
+     "checked_by": "none"
+    },
+    {
+     "name": "Poor Aiming Mechanics",
+     "signs": "Your crosshair consistently misses targets by going past them or stopping short when tracking moving targets.",
+     "cost": "Inaccurate aim directly translates to less damage dealt, fewer eliminations, and ultimately losing duels and team fights.",
+     "drill": "Aim Trainer Workshop Codes",
+     "checked_by": "aim"
+    },
+    {
+     "name": "Blaming Teammates and Neglecting Self-Improvement",
+     "signs": "You frequently type complaints about your teammates' performance rather than analyzing your own gameplay.",
+     "cost": "This mindset prevents you from identifying and correcting your own errors which are crucial for climbing the ranks.",
+     "drill": "Replay Analysis",
+     "checked_by": "none"
+    },
+    {
+     "name": "Ignoring Enemy Team Composition and Swaps",
+     "signs": "You do not pay attention to what heroes the enemy team is playing and continue to play a hero being hard-countered.",
+     "cost": "This leads to being ineffective against the enemy team's composition, making it difficult to secure kills.",
+     "drill": "Enemy Comp Scouting",
+     "checked_by": "none"
+    },
+    {
+     "name": "Poor Ultimate Tracking",
+     "signs": "You are unaware of when key enemy ultimates are likely to be used or when allies have their ultimates ready.",
+     "cost": "This results in being caught off guard by enemy ultimates and failing to coordinate powerful ultimate combos.",
+     "drill": "Ultimate Tracking Practice",
+     "checked_by": "none"
+    },
+    {
+     "name": "Not Utilizing Cover Effectively",
+     "signs": "You spend too much time in the open exposed to enemy fire rather than using environmental objects for protection.",
+     "cost": "This makes you an easy target for enemies, leading to unnecessary damage taken and frequent deaths.",
+     "drill": "Cover-Based Movement",
+     "checked_by": "none"
+    }
+   ],
+   "meta": {
+    "patch": "Season 7",
+    "strong": [
+     {
+      "name": "Orisa",
+      "why": "Orisa remains a strong pick due to her survivability and utility."
+     },
+     {
+      "name": "D.Va",
+      "why": "D.Va remains a strong pick due to her high survivability and utility."
+     },
+     {
+      "name": "Sigma",
+      "why": "Sigma is a dominant tank, particularly in higher-level play, and works well with strong DPS heroes."
+     },
+     {
+      "name": "Bastion",
+      "why": "Bastion performs well due to his high damage output, health pools, and tankiness in turret form."
+     },
+     {
+      "name": "Ana",
+      "why": "Ana is a top-tier support because her anti-heal and Sleep Dart are game-changing."
+     }
+    ],
+    "changes": [
+     {
+      "what": "Group Respawn System",
+      "effect": "Heroes on the same team who fall within five seconds of each other will now respawn simultaneously."
+     },
+     {
+      "what": "Sombra Rework",
+      "effect": "Sombra received a significant rework to her abilities, including a new Virus ability and a nerfed EMP ultimate."
+     },
+     {
+      "what": "Brigitte Whip Shot",
+      "effect": "Brigitte has seen a recent spike in play after her Whip Shot damage was increased."
+     },
+     {
+      "what": "Illari Healing Output",
+      "effect": "Illari's healing output was slightly reduced, though she is still a strong choice for her damage."
+     }
+    ]
+   },
+   "reference": {
+    "characters": [
+     {
+      "name": "Tank",
+      "role": "Tank"
+     },
+     {
+      "name": "Damage",
+      "role": "Damage"
+     },
+     {
+      "name": "Support",
+      "role": "Support"
+     }
+    ],
+    "maps": [
+     "Circuit Royal",
+     "Dorado",
+     "Havana",
+     "Junkertown",
+     "Rialto",
+     "Route 66",
+     "Watchpoint: Gibraltar",
+     "Blizzard World",
+     "King's Row",
+     "Midtown",
+     "Numbani",
+     "Paraiso",
+     "Eichenwalde",
+     "Hollywood"
+    ],
+    "weapons": [
+     "Beam Weapons",
+     "Hitscan Weapons",
+     "Projectile Weapons",
+     "Melee Weapons"
+    ],
+    "other": [
+     {
+      "kind": "Cosmetic Customizations",
+      "names": [
+       "Skins",
+       "Highlight Intros",
+       "Victory Poses"
+      ]
+     }
+    ]
+   },
+   "sources": [
+    {
+     "title": "reddit.com",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQH5LhaRatdDudh9tKFy9XCtHHutIGfl3k_w3DopDfrgCqztQcd9ux46fggFFB587WH5QQHTw3_yAkaE-FhM3ck8fxf6NIc20i9x55306tF0nBz3yLm4_1FczhOReVM99qU07hDJg7mrOoTFmTKfuLRWEeMyoDvu6gOCXPOpfSIeEXh86VkpOLUmDPY0VRhrqppYKFylqYdwOBUKpvxQQ8Pl5OfS",
+     "facet": "guides"
+    },
+    {
+     "title": "reddit.com",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFbVZ4TTlL011xUHwtjK7hooGLfGaXadTNKiEO5QWULiE3GKVRwp_XOmcOc1oZQwtkIp6096uufRBif_0oM5hXKDeb1flZsKmAwqwR-41C6oSg6DP0vqCksJU7jvP2fWubYcfx1cEYBqirpyqid5Ad4EhbI2DFlLPF9NU87zRocxip07frbqJd9-JlQICchyfMQUNILy5o2TRgCyvZ8",
+     "facet": "guides"
+    },
+    {
+     "title": "fandom.com",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFbB-oFiTos05IVhhi8XD6m24Wc--LM1I2ZAeqSqCShVtLabRvlbn5cdLmEIdgkq9lre8DF4yV8sYzuscPmKmme65hPE5cnu11N3X0kR2gFowugzyx_qNr4dlTtlecwVTIADrLUJJqlXw==",
+     "facet": "guides"
+    },
+    {
+     "title": "blizzard.com",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQH2IwJ3-J18X922U_eub79-QD1lFeCvG1AuxjU0DSuh7LExaBXrHt0sEanCP5uLDnCBtwwHAbiT8WI8pQcf6YAg3SWqzuZWq2CUxF4vR5m5ie7dSKk7KvGHM32a6HcBQN6Vp86tOQH2s-vhztANUw==",
+     "facet": "guides"
+    },
+    {
+     "title": "youtube.com",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEINKSXcezQKdkgKmbrgALGf06tYWbKBCddAxCfYKX_E0ncKgtunqnbxySIysIRlI3L2EMykfp5NaB8ydzLlc_TwNHseFYJTY1S9Nf3Z-kT-HFXR7OPycxcd2niir8JLZKnQSpspbM=",
+     "facet": "guides"
+    },
+    {
+     "title": "youtube.com",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEil4_5D4pwfvNqL5To6sGlZA6-fyEtyESwjOPGUSl0fjz_dS-hdfnIfheAwgLve1H6Fx5E0pwJwMSdlmeBL4XTswbOTBfI5dqWWTXPuT_dmSoOwcAKJ4Iq1udtxvjClBqL3q0cFA4=",
+     "facet": "guides"
+    },
+    {
+     "title": "dotesports.com",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHfDCAEA0bnH8MKuyB8td83WQkUV3fyjyYk3WYLMKLc6aVjx4CVfqtgS8jk-b74HJFDOSisNRLfTEQdtrJ6dZO44zu5uF3JWbUSq6BtORNyvGBX2c77W9YtCAhMWwcCMJ9KMhPgKbj0tYEpQ_945gqH64maM0denqwkALYyptDXeUsNYIvexvVcHfAUGg==",
+     "facet": "guides"
+    },
+    {
+     "title": "youtube.com",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGE30mqZmlLQll37Yoi_z6hLBKw3inVYbnox2wMtla-ijv7SMlAUdqJgqLjB_23iUr2Hr-uvGNuzO7QUuqcGQsh1BaGzhcmZZ82Q2ln2Sl_p7r4oXixwngk504wi2cm4zCzfMxbaKg=",
+     "facet": "guides"
+    },
+    {
+     "title": "rockpapershotgun.com",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFdY0Gm8z3rfWXTl4vFqcNhg28uho5LM4bwnpbk_LKIfXcWsb3TyvBuvKfMaayiF64nn-oquQMjmRn6_DOyG6VTqefxN2X5uoDixgF18A3F1rNpwQC8aStx53cHMe6DiPxWGIFz-1fCbfASiShDxy8s",
+     "facet": "guides"
+    },
+    {
+     "title": "reddit.com",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQErhyooyMbveJWB0vo-fIhqXrs_7-yVtaxKqt5igzjNLzpCiC4JLYRBMBR78yiwky6kh1Tsq-Mvbv86NJkyhA8IK3COOIs4xKySAP_SKOxjN55t6YoKWylXCPqxSOWZIkRYN47Tru8V6EZwLSi-84hEU_Gc4fo7TR5f5HZSfifoGC1RnJz-TaI0x-4=",
+     "facet": "guides"
+    },
+    {
+     "title": "youtube.com",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEGXTINFqjQ3UzEXm2cQjTozuTdhmbCuB9Gz_6Gmi-EO4tOM32gTHBPMeomZMEznE2CH46wgI4Sfc7kbDozIpM0Z0GeFVAePZdEA0M-4icgT0AvX3mdsMLmxO4e79DRXYdNrUaxPyE=",
+     "facet": "guides"
+    },
+    {
+     "title": "ggclan.com",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGclGgH6CgnvJmYRn5zo9xMN6oBpqAbh5_7Z6uI_LMY9zLNIYwMi28yY9WGqitV2HAcuIMLYxfcToYd_ThMdolvDXHoF0-6Wgtw54VI0xrLbHZ5I-VJbNjU58AOhA-j2FpQC-HjSFdjVlnZZH539GHl5oz729DsdYDhLw3JPRE=",
+     "facet": "guides"
+    },
+    {
+     "title": "reddit.com",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFZmUcs2KaJUgJ6ckAyiLz-o-Mrip9e9fk9UHqVkj3vnVu2paHd9-u1jCA1ufRXRL6VLe1rxGX6io_jMgqDm7PvMfYMsGe_25KHbfwfjzhJJtR_v_QwxrUUzTef4Zf4oRYPYAx7s4J8XOsv6fk5-gTjmf3g08k5NOZZXrAwyXP8rLTYXGussWlfzZK3nj7cSy_QkAzlYZ3JoeGA2NBywMyYWJL2pCXSd2vacj3j",
+     "facet": "guides"
+    },
+    {
+     "title": "youtube.com",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFX1-DxsX4-JWppUL_BVgC4B4bW7eSU_WhL7y_PysQoiPanvPD7f8EFAxOFljDlEoe1lytTz_RdEzYP0WpZFQZNyuKMNTj7fY8gDbpq1l4QLpi7GOeb9h8AmQRc1z16JGkOC6wBOsc=",
+     "facet": "guides"
+    },
+    {
+     "title": "reddit.com",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQH42guBvgB74DpdUOs7mtfJK_inAqBs0aR-oZS4MokqI-Yor5bIrYShbVE-_q7pN_uzHlUcL2rptRZTS3uF4g54LfYIkK6zwdQgxoWz5q_6yzL6P7j0ntNGFz4zUKFLPwqRuTdxo3LAoDgEgoiOmYKrsMnPXr5RI_U4J7IP4ntXC-Ce74I6CBagvfCckog8uIVtZnRykXFYoEt8u5eaDDdLqrA=",
+     "facet": "guides"
+    },
+    {
+     "title": "youtube.com",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHzSBCCAYcyrrc2bAJ3OegbV7XMzgpCs3HH70Mg5f0hY_NbrgJI-8PUstD86YDB4XF2e2Da80EgqXcbGCbIy8imjyEOnmAgh_Q5SRDIK2E7bzn0fDows_xJXh7k6QEG1qq_-TzRnC0=",
+     "facet": "guides"
+    }
+   ],
+   "researched": true,
+   "facets": {
+    "guides": 20,
+    "community": 6,
+    "meta": 10,
+    "wiki": 14
+   },
+   "character": {
+    "name": "Kiriko",
+    "role": "Support hero",
+    "abilities": [
+     {
+      "name": "Healing Ofuda",
+      "slot": "Primary Fire/Secondary Fire",
+      "does": "Kiriko channels a burst of healing talismans that seek out targeted allies.",
+      "use": "Players prioritize healing wounded teammates in critical moments and ensure they are close enough to the fight for the talismans to reach allies quickly."
+     },
+     {
+      "name": "Kunai",
+      "slot": "Primary Fire",
+      "does": "Kiriko throws a projectile that deals increased critical damage.",
+      "use": "Skilled players weave Kunai attacks between Healing Ofuda cooldowns, challenge enemies on high ground, and pressure the enemy backline to distract them."
+     },
+     {
+      "name": "Swift Step",
+      "slot": "Tactical Ability",
+      "does": "Kiriko can teleport directly to an ally, even through walls.",
+      "use": "Players use Swift Step not only for clutch saves but also to quickly adjust their position to avoid enemy fire and maintain optimal healing range."
+     },
+     {
+      "name": "Protection Suzu",
+      "slot": "Tactical Ability",
+      "does": "Kiriko throws a protective charm that makes allies briefly invulnerable and cleanses most negative effects.",
+      "use": "Protection Suzu is used to win fights by negating critical enemy abilities or saving allies from certain death."
+     },
+     {
+      "name": "Kitsune Rush",
+      "slot": "Ultimate Ability",
+      "does": "Kiriko summons a fox spirit that rushes forward, accelerating the movement speed, attack speed, and cooldown reduction of allies who follow its path.",
+      "use": "Kitsune Rush is often combined with fast-paced damage dealers to amplify their kill potential or used to initiate devastating pushes with the tank."
+     },
+     {
+      "name": "Wall Climb",
+      "slot": "Passive Ability",
+      "does": "Kiriko can climb walls.",
+      "use": "This passive enhances her mobility and allows her to reach advantageous positions."
+     }
+    ],
+    "mistakes": [
+     {
+      "name": "Healbotting and Neglecting Damage",
+      "signs": "Players might see their healing numbers high but their damage numbers very low, with few eliminations.",
+      "cost": "Kiriko's strengths lie not just in her healing but also in her damage output and flanking potential.",
+      "drill": "Actively look for opportunities to weave Kunai shots between Healing Ofuda.",
+      "checked_by": "none"
+     },
+     {
+      "name": "Poor Positioning and Over-Reliance on Swift Step",
+      "signs": "The player might frequently see themselves isolated, taking unnecessary damage, or having to use Swift Step reactively to escape death rather than proactively to save allies.",
+      "cost": "Playing too aggressively or too passively without understanding her optimal range leads to her being vulnerable or ineffective.",
+      "drill": "Practice positioning yourself at the outer corner of the L where teams often clash.",
+      "checked_by": "none"
+     },
+     {
+      "name": "Wasting Protection Suzu",
+      "signs": "Players might see the Protection Suzu icon on their HUD, indicating it's on cooldown, when they could have used it to negate a critical enemy ability or save an ally.",
+      "cost": "Wasting it means losing the opportunity to counter enemy ultimates, cleanse vital debuffs, or save teammates from lethal damage.",
+      "drill": "Develop a strong sense of enemy cooldowns and ultimate usage.",
+      "checked_by": "none"
+     },
+     {
+      "name": "Jumping While Shooting",
+      "signs": "The player's crosshair might be erratic and difficult to control, leading to missed shots.",
+      "cost": "Jumping while shooting makes your movement predictable and significantly reduces accuracy.",
+      "drill": "Instead of jumping, practice crouch-spamming and strafing to make yourself a harder target while maintaining better aim control.",
+      "checked_by": "aim"
+     },
+     {
+      "name": "Mismanaging Ultimate Usage (Kitsune Rush)",
+      "signs": "Players might see their ultimate charge slowly or notice that Kitsune Rush was used ineffectively, not providing a significant advantage in a fight.",
+      "cost": "Using it at the wrong time, without follow-up from the team, or when the team is already losing the engagement, wastes its potential.",
+      "drill": "Communicate with your team before using Kitsune Rush to ensure they are ready to capitalize on the speed and cooldown benefits.",
+      "checked_by": "none"
+     }
+    ],
+    "sources": [
+     {
+      "title": "fandom.com",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFmaPhbEas-9BrLPF7o1_jBsg5alr33arLUYxqMsj9T54lSY7l-9ymQy-JOFQz5HH0r_v2YNtL-5njbFwaRgFGmRvS77ggRdgcVdL7qAa0zxZ3ghmSnb5yQzG-wRAlqYpU8LuI=",
+      "facet": "character"
+     },
+     {
+      "title": "youtube.com",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFsMcQpew3auoZva0IcmUerlHGgEDDfJFEdmbSzti7bTXIjJAK6eiDLB4N3vkOU4wUxkKksUyC722Qsh9b1GfJlJT6544a2I3gjZEsLWRGSylD7IliiuKSxp19q8VE7PpN476HwVJE=",
+      "facet": "character"
+     },
+     {
+      "title": "techradar.com",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGhUaWgYwryxju5GNvWmBvomHsYcqqVADTxCnFEFr6phDoBaLKhWWPi5xRDmNjM8UvCF9bxpNhKtlnIbr4kA6tQrMQFk_jBAS8ZXfOEQrtpApHAbiGMD45phiRrF65wnH-nRmAd5KXLqfvu0KKepA==",
+      "facet": "character"
+     },
+     {
+      "title": "youtube.com",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGyV3Id9i8Fha5knJ343AaAlFB5tSLP7nRgTmb9ErhsMEYrbOKXdAL9J9-Aza8S5QKhpHoUMXFKYfnRmtzrsd3ECcc7Ei10xGyTZtUJdRVqBuNLDhelOUQFh41P5hshf2kHfsc8lac=",
+      "facet": "character"
+     },
+     {
+      "title": "ign.com",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGVh_0DBEHnep8UvWqghYqzlpuNrEaBAzQGjSeVHwyEAnHu4tsWd7wlEFS4UIb5_UxepDoOfQwelPE2p7riXSsjiUTP6DqmdxkdRfy1vcSxH5WwJ3dmmyIb1L-0xgKCy3MD7EDHSIgPDD_o-ZkXp3C2L78Voocp",
+      "facet": "character"
+     },
+     {
+      "title": "overit.com",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGGkOVHAcWeqBIKBn36TGOKIwLJmmSNtp9O6ALwyOrXT906lKJ-9VmxxGZwHvfQ8aYYiWs8h6rX-rsj6dktN1jf4V5raSrGOiNffTM5AT0UalzGCUHWYukuJf4kl07UUK4m1t_wWhIi8S2P1XoDQhkF8LZ9Up8Nx4hRCTgCWIHEJQ==",
+      "facet": "character"
+     },
+     {
+      "title": "reddit.com",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHZpFIQS0S8omQrVfFbXQ1btNiBhydvlOAjfGbYya6dMo0Q4sfSmnF83GSSsDW9206f3Ez3mQNr4hqtZfSn0_Arf5ltP8m3YrJlYjnFNK5X6S8XeQrTgywcbWaCyMosf8MRPeaFNxdoCc7tC0tSZojOUl8RChD0FILOhFkKHs2R2WWCfeiaRj4gYyOCen3tOLlyQkk8x2Yi09bNCI2hqvSjELxASLDFPFSgx3Q=",
+      "facet": "character"
+     },
+     {
+      "title": "neuralboost.gg",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEaYI503IqPrzq-c_uibn7XYcBDepGpTk3sZ0b8oncHxnf2w1loEMphKx9fkj649dkAhbgZGzIfMfhR3JJkki9uCkYrnuQYjh-5UbEpKUog7PRG5_1ApV2aOBAsfHMDqU114TElN7YnlPbM0vnHueADGq_Ne7lLH2s_YjCMX5Hol-u5MLQH9aFNATOljYgg6vPywrwuBTKuhXJtsBE9vcaTu74=",
+      "facet": "character"
+     },
+     {
+      "title": "youtube.com",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHXOrCFO0W__ThDfWt7lkm7pwV-BMpmB_aAGQB08fll791V2Ux0lreYo3dHuit0QkqUwqbzSe6Dy2q5q3bqCTNJAp3nHPgTTx3AmvBnjwJsXGcVcVAUunYccg89ArDhkBi60F-f3L0=",
+      "facet": "character"
+     },
+     {
+      "title": "reddit.com",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQF7wm-U7zLUXCp_2ecXgeuq17M4scSq9vuhRjVab43xlY2WtvUk8D6_IfencaGGdlW2ckI7fPrKrTil4S4kapWZzOC55f2AHaUcXy_h_ZIx5ce8ocI1i2_tjNfK1c8IJTgfpS3xb-I56RS0F1UWVIffcZA44DDFFVoJfOOh0veeBhJE-2t8j_1d6oFGII5cmHU4C_SD4KfiCCI3EgmXPHI=",
+      "facet": "character"
+     },
+     {
+      "title": "reddit.com",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGnzuZ2sJUhaFXV7wBaRCUDgpgjj3dMUgweRLyffTZWarS135XicgumqFLvH2XFNOFZc2nselmUy4HD4zzVE2VSQHL9LJcQSPPfQuAghWRH6dqEvqqyxgpaII690ptOoYr40QvP_6LZXvbT8j6W59y7yGX91RFzcy-n6kPA9eNtyE77sYNeOnw0pl9dFKtiOVW_MErCbVZ8UqD30wipgsUYMC04k1EFJepd4vg=",
+      "facet": "character"
+     }
+    ],
+    "researched": true
+   }
+  }
+ },
+ {
+  "name": "Valorant",
+  "seconds": 103,
+  "research": {
+   "rewards": "Winning matches and achieving a decisive victory margin earns Rank Rating and increases rank.",
+   "systems": [
+    {
+     "name": "Abilities and Ultimates",
+     "matters": "Good players use abilities to gather information, clear corners, block sightlines, deny space, and create entry opportunities."
+    },
+    {
+     "name": "Roles or Classes",
+     "matters": "Agents are split into Duelists, Initiators, Controllers, and Sentinels to execute specific tactical duties like entry fragging or anchoring sites."
+    },
+    {
+     "name": "Character Picks and Counters",
+     "matters": "Players build a well-balanced team composition that considers agent synergies and counters against the enemy team."
+    },
+    {
+     "name": "Economy",
+     "matters": "Players manage credits from round wins, losses, kills, and spike plants to decide between full buys, eco rounds, or force buys."
+    },
+    {
+     "name": "Objectives",
+     "matters": "Attackers plant the Spike and defend it until detonation, while defenders prevent the plant or defuse the planted Spike."
+    },
+    {
+     "name": "Resources",
+     "matters": "Players efficiently manage credits and agent abilities to maintain consistent performance throughout rounds."
+    },
+    {
+     "name": "The Map or Zone",
+     "matters": "Players leverage deep knowledge of layouts, callouts, and vantage points to control key areas for engagements and rotations."
+    }
+   ],
+   "priorities": [
+    "Crosshair Placement",
+    "Game Sense and Decision-Making",
+    "Economy Management",
+    "Effective Ability Usage",
+    "Map Knowledge and Control",
+    "Communication",
+    "Movement and Positioning"
+   ],
+   "engagements": "A fight is worth taking when you have an information advantage, immediate cover, utility setup, numerical advantage, or anticipation.",
+   "aimTarget": "head",
+   "mistakes": [
+    {
+     "name": "Poor Crosshair Placement",
+     "signs": "Your crosshair is often aimed at the ground, walls, or unnecessarily far from common angles.",
+     "cost": "This significantly increases your reaction time and the time it takes to acquire a target.",
+     "drill": "Pre-aiming practice.",
+     "checked_by": "aim"
+    },
+    {
+     "name": "Unnecessary Wide Peeking",
+     "signs": "You swing out too far from cover when peeking corners, exposing your entire body to potential enemy fire.",
+     "cost": "This gives enemies a larger target to shoot at and makes you vulnerable to multiple angles simultaneously.",
+     "drill": "Jiggle peeking and shoulder peeking drills.",
+     "checked_by": "none"
+    },
+    {
+     "name": "Mindless Utility Usage",
+     "signs": "Abilities are thrown at the start of rounds without a clear purpose, or used reactively without strategic thought.",
+     "cost": "Wasted utility means you won't have crucial abilities when they are actually needed for executes, retakes, or defending against pushes.",
+     "drill": "Practice using utility with intent.",
+     "checked_by": "none"
+    },
+    {
+     "name": "Poor Economy Management",
+     "signs": "Consistently buying expensive weapons when your team is on an eco round, or not buying at all when you have credits for a full buy.",
+     "cost": "Inconsistent buys lead to your team being outgunned in crucial rounds.",
+     "drill": "Learn the different buy scenarios and practice coordinating buys with your team.",
+     "checked_by": "none"
+    },
+    {
+     "name": "Lack of Communication or Poor Communication",
+     "signs": "Silence in voice chat, vague callouts, or overly aggressive/negative comms.",
+     "cost": "Without clear and concise communication, your team will be playing blind, leading to missed rotations and uncoordinated pushes.",
+     "drill": "Practice making clear, concise callouts using the who, where, how much formula.",
+     "checked_by": "none"
+    },
+    {
+     "name": "Moving While Shooting",
+     "signs": "You are constantly strafing or moving while firing your weapon, resulting in inaccurate shots.",
+     "cost": "Valorant has a strict accuracy penalty when moving, which drastically reduces damage output.",
+     "drill": "Practice stop-and-shoot drills in the Range or aim trainers.",
+     "checked_by": "none"
+    },
+    {
+     "name": "Over-Reliance on Spraying",
+     "signs": "You hold down the fire button and spray wildly at enemies without controlling recoil or considering effective range.",
+     "cost": "This leads to inaccurate fire, missed shots, and wasted ammo.",
+     "drill": "Practice recoil control drills in the Range.",
+     "checked_by": "shots"
+    },
+    {
+     "name": "Not Using the Minimap Effectively",
+     "signs": "You rarely glance at the minimap, missing crucial information about enemy positions or teammate locations.",
+     "cost": "Missing this information can lead to being caught off guard, poor rotations, and missed opportunities.",
+     "drill": "Consciously make an effort to glance at the minimap every few seconds.",
+     "checked_by": "none"
+    }
+   ],
+   "meta": {
+    "patch": "Patch 13.08",
+    "strong": [
+     {
+      "name": "Omen",
+      "why": "His smokes can cheaply cover Mid and A Link on both attack and defense on Corrode."
+     },
+     {
+      "name": "Viper",
+      "why": "Her wall is capable of splitting Mid and cutting off A Link on Corrode, allowing for more focused pushes."
+     },
+     {
+      "name": "Clove",
+      "why": "They lead in win rate due to their ability to provide smokes even after being eliminated."
+     },
+     {
+      "name": "Neon",
+      "why": "Her Slide ability allows for rapid crosses through Mid and faster rotations between sites on Corrode."
+     },
+     {
+      "name": "Fade",
+      "why": "Her Haunt and Prowler abilities are effective at clearing tight links and Lower Mid before a site push."
+     },
+     {
+      "name": "Sova",
+      "why": "His Recon Bolt can reveal defenders in Lower Mid and at the back of each site."
+     },
+     {
+      "name": "Killjoy",
+      "why": "Her increased Turret fire rate, Nanoswarm duration, and Alarmbot speed make her a safer sentinel pick."
+     }
+    ],
+    "changes": [
+     {
+      "what": "Map Pool Rotation",
+      "effect": "Ascent and Split have been removed while Bind and Corrode have been reintroduced to alter the strategic landscape."
+     },
+     {
+      "what": "Corrode Rework",
+      "effect": "Structural adjustments shortened defender rotation paths and modified Mid to make fights more predictable."
+     },
+     {
+      "what": "Performance Score Updates",
+      "effect": "Updates give more weight to damage, adjusted kills, and adjusted deaths including First Bloods and First Deaths."
+     },
+     {
+      "what": "New Map Rating System",
+      "effect": "Introduces a private rating system evaluating a player's proficiency on each map with a 0-500 rating and C-S letter grade."
+     },
+     {
+      "what": "Warden Weapon Fix",
+      "effect": "A bug causing reticle misalignment during full-auto fire with the Warden rifle has been fixed."
+     }
+    ]
+   },
+   "reference": {
+    "characters": [
+     {
+      "name": "Jett",
+      "role": "Duelists"
+     },
+     {
+      "name": "Phoenix",
+      "role": "Duelists"
+     },
+     {
+      "name": "Raze",
+      "role": "Duelists"
+     },
+     {
+      "name": "Reyna",
+      "role": "Duelists"
+     },
+     {
+      "name": "Yoru",
+      "role": "Duelists"
+     },
+     {
+      "name": "Neon",
+      "role": "Duelists"
+     },
+     {
+      "name": "Iso",
+      "role": "Duelists"
+     },
+     {
+      "name": "Clove",
+      "role": "Duelists"
+     },
+     {
+      "name": "Sova",
+      "role": "Initiators"
+     },
+     {
+      "name": "Breach",
+      "role": "Initiators"
+     },
+     {
+      "name": "Skye",
+      "role": "Initiators"
+     },
+     {
+      "name": "KAY/O",
+      "role": "Initiators"
+     },
+     {
+      "name": "Fade",
+      "role": "Initiators"
+     },
+     {
+      "name": "Gekko",
+      "role": "Initiators"
+     },
+     {
+      "name": "Brimstone",
+      "role": "Controllers"
+     },
+     {
+      "name": "Viper",
+      "role": "Controllers"
+     },
+     {
+      "name": "Omen",
+      "role": "Controllers"
+     },
+     {
+      "name": "Astra",
+      "role": "Controllers"
+     },
+     {
+      "name": "Harbor",
+      "role": "Controllers"
+     },
+     {
+      "name": "Smoke Weaver",
+      "role": "Controllers"
+     },
+     {
+      "name": "Sage",
+      "role": "Sentinels"
+     },
+     {
+      "name": "Cypher",
+      "role": "Sentinels"
+     },
+     {
+      "name": "Killjoy",
+      "role": "Sentinels"
+     },
+     {
+      "name": "Chamber",
+      "role": "Sentinels"
+     },
+     {
+      "name": "Deadlock",
+      "role": "Sentinels"
+     },
+     {
+      "name": "Vyse",
+      "role": "Sentinels"
+     },
+     {
+      "name": "Veto",
+      "role": "Sentinels"
+     }
+    ],
+    "maps": [
+     "Abyss",
+     "Ascent",
+     "Bind",
+     "Breeze",
+     "Corrode",
+     "Fracture",
+     "Haven",
+     "Icebox",
+     "Lotus",
+     "Pearl",
+     "Split",
+     "Sunset",
+     "Summit"
+    ],
+    "weapons": [
+     "Classic",
+     "Shorty",
+     "Frenzy",
+     "Ghost",
+     "Sheriff",
+     "Bandit",
+     "Stinger",
+     "Spectre",
+     "Bucky",
+     "Judge",
+     "Bulldog",
+     "Guardian",
+     "Phantom",
+     "Vandal",
+     "Warden",
+     "Marshal",
+     "Operator",
+     "Outlaw",
+     "Ares",
+     "Odin",
+     "Tactical Knife"
+    ],
+    "other": [
+     {
+      "kind": "abilities",
+      "names": [
+       "Signature Ability",
+       "Purchasable Abilities",
+       "Ultimate Ability"
+      ]
+     }
+    ]
+   },
+   "sources": [
+    {
+     "title": "reddit.com",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQG0epimYKokXIaCcLs5beODTLT8HhnTMBKl3UjlL-k22Dl_Xo9zAo_O3flRQNOr1pojXPTXJllcxc6Fua9xKu2iYxf6TuCeyWFEudG93dOTyReYyyxdtf8n-rsKtQIIgyttuI35wKPItoSYpBqHSq13PDFtRwpGhqz7rMnVl7HNaLxua6B9RQoDL8UQjFLzPlumXOMPTvvLbm6I5fHhqw==",
+     "facet": "guides"
+    },
+    {
+     "title": "riotgames.com",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQH4ZQvji1HRwWo3JDBIo3bycBCfxOMu2Eg2yBmxEaGOtVNvKlOcWrF0H_9m1tT-tiAl26qJ4-TxEgDBOEvUUu71-TsypUK2grcZA7e2feoSvTabCWdnfSzimYryr6as5nMtL9FA9f7wXiskhwvK17OAMIMiu4fcZ_O0E4ButuikP_9z9AIes2XNcljbzAXj3El1",
+     "facet": "guides"
+    },
+    {
+     "title": "playvalorant.com",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEcu2HEAqrrnKPdPZtwOjPivT6lhgxmsAn85CXuUfQxYtjwMVbnyvZw6lLOBBsSZGEGIgiulKLUMdOcM-SwjrsScf7zhOFUr7R0WtG5zfxCOjnTDATDIJkosDAqFScQr7QQWEBVSzwVnJqVtoN0481CXf1GQkzo0ydTHB_g66Jo77_qA5kFYcZUXOleRyY6",
+     "facet": "guides"
+    },
+    {
+     "title": "xreart.com",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEksbQD4M5aXafjOWfiryzh5cK__bRjsPdcXqy-BKuLu9bjVPSqsWEqresYK-PAEDQdumHy7BeeVXSKGZ1lI8Qprkl7SJKsbfIvSb8ULBD-yHrtHlOpLQvoVGSTO2RLQ-4AhCqYkv0wG6nIUoKR6UhyQ436EBvWx_0zp5APgdfQBDRkh2XB0dTznpxDP8NTrZheVus=",
+     "facet": "guides"
+    },
+    {
+     "title": "redbull.com",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQF7gzR1zh2MN7KPUdGEx6vn1AnOzHQrhsCDkgTkEgwkOFTUhh5fF0L1UrioIiMy4DXIzJWUOE_ibIZxaAYrGessKgcXT75I5bf_cgoKynP8hD2rzUErdUVpvm6q4WG-w7WFhrL9sSX3YMIO6QoRdJWQuyw0SXLiAacUu1r_Dw80uoOwjBWQNBzCOcMR",
+     "facet": "guides"
+    },
+    {
+     "title": "dignitas.gg",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQES2b4-Xl-LqTha8-I9-FugRqT97R5vfsJDaa-HjHl-_Vt0U0zqeiaD0poLE2yWd3SDk905x7urbk6m5wRLwo9oZ6goHEEOyMeGH-x5BnF4Us51jicyCMCUu8J_JWMJdy4Z0gDxhOMM2zaZhactwQyttKUWj2dp6eDN4TlDmETlE9vMWnDoDZ8-cid4MknCKyXjfVtG0RlTvAdJgRpV7Q==",
+     "facet": "guides"
+    },
+    {
+     "title": "redbull.com",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEVLAHE5OhT6IeBP669q5eMATLw5TYFCadLc0xXq0LhF3TQUtV1TvC8B0nTWXiW49LIrCdXWQ-mlxO1N0LAW0mX3lGsLdkcMpOc9BRfzas2Bjj4TN6tCxqnnAgk0JVErOygoBvSVqXYsVV2bfqKDJE8A-3xwTeqzq8SwiHHTQlQdAEKc7k=",
+     "facet": "guides"
+    },
+    {
+     "title": "accountshark.net",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFlGgD2UfpDvHp6FudDdfQmOq_IWIyBPrEFxjBN4JsKemZjBonYZ2VymgWJQyCCrzp4w_j79xGJzz7oSmYkQU0wxaNEiBiWR7sspfH6OqqglSgHz-nqbVBVYgAzJYQOU7gaznC52JXTUWGnDVHYx-lOhHsxH03izQ==",
+     "facet": "guides"
+    },
+    {
+     "title": "proguides.com",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQE4Lgo_1j1uwyD127FHL37NKohPoiStyUilS-JhNhaUCb8lZWjSS0xxJaCnWCvYRQfUIlIzGPa95dlH5PRD6x0X72F9Sx7seYUoizsvmT64cEn3nBKR17Bsst9zdQY7aC7wRnDQkTxHs8j8G8211kcTOEFD8u1VvcovYb0O8G77UTwFdh3qTTVNUaGO-uilIdfI4KTLCP3C2ozy_TjE8T-yjedO6A0iaw==",
+     "facet": "guides"
+    },
+    {
+     "title": "ign.com",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGyE0TL3iWJ-jphu5h9oWVaB14a6UCUW0mzabwye5CE4nXxcLdbha0v0YqW7XQCZctldYjJ-nLNtKqngaFIuB2k-AmEJDJRmo0_upN0V6-yrZgZJ0lhD4V_VHrHkrON0RCD8mu9z-slULxu07G7kbzl6BPWH0FPZsbQ",
+     "facet": "guides"
+    },
+    {
+     "title": "strafe.com",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHNmjtSiWBz_My3VqUbn5v_mN_ZyiMf3ZcVxL0bktbpJkhsYqEARpnjS8C8gLTkTv8gg_hscTUNpFP2O0F6kItCsBVON8k1gKNFj23UsH18zJIIw5QOBI34o7a53jdUvJ8Yx2zCx0lWbzSKwStmzs3Ug1rxw7q6YjILDDE=",
+     "facet": "guides"
+    },
+    {
+     "title": "scribd.com",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHs7rzBdY9zqQ6QbqMRnQC50ge1fVhkXysxFuTi6e0RoibggfXLKwy4qJvaPQqntIUzXohH5Ua9YX1weSuH8S-hbJ1NRvD-8t4-v-YyxksCjeKVqwfMmWHFlYTqKYmZ3sThH0bK3hwL7I6UAWIqU01SylKqAP6rYQGzqP9PD6XZ",
+     "facet": "guides"
+    },
+    {
+     "title": "boostroyal.com",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHaGF2bGWKKDw9ZJ63f_SjgGzVkQTigK-2e0Uy_muOPw1PP2N-2eRE4b5-t9DNvlJW5dn8wnpyznk5nIGjKUXhUw6yvfkdLg5D1FDQu8xH8BzSbkrZHgZU9k55OjQKOdCSMsE12JrkEREoE3VJ8W4LtqymyhYbe4rYWbrguN3k=",
+     "facet": "guides"
+    },
+    {
+     "title": "redbull.com",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFMD7ewytxTM-ixWfkcPIb-N5BqY2d7gQ3FuU_ssO7g1gcNnecSF5hdWSGq1WVws420yRdfx6FOiTO4_RoZxaUVWlJJjqJIowrPYqh5AZsY7eRRJFNyFH9ukp00aRGFXrhibuvX7GXGP0yORGBUPgpibl8y",
+     "facet": "guides"
+    },
+    {
+     "title": "reddit.com",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQE3kc_uKoYZI554PQAWruYk_n994ybAagb5YZ5dSp1qgiwIFKMY3tT_D6lUr01EJLzH6DSfMLh80-AYmv5GZjDJoWY03jxMQQuyl72CuTI9Xv62MJnBa7lUBlizk6tPQVIuNbsing_ryCxKsgTfCh9mBqJeGDwJvB4pkgm8qMhVuAJsH9mZ_cawbojHbGi0cJzGcS7bsoW3",
+     "facet": "guides"
+    },
+    {
+     "title": "youtube.com",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFGUD9TSZpf4gBqvib3llz3dSFvwBmNsEtPWYCCfKbS0Gb0P3hQflPgdmVFOBU45YJX5uKwJ3Gi4u4ayU0F0Fnll-YyJmRCe0Bzd8oEgtXDBk-5jsWUBzDQTR3Usg_RAJTqJ9XyyZs=",
+     "facet": "guides"
+    }
+   ],
+   "researched": true,
+   "facets": {
+    "guides": 33,
+    "community": 32,
+    "meta": 8,
+    "wiki": 12
+   },
+   "character": {
+    "name": "Vyse",
+    "role": "Sentinel",
+    "abilities": [
+     {
+      "name": "Arc Rose",
+      "slot": "E",
+      "does": "Equips an Arc Rose and can fire to place a stealthed Arc Rose on a surface, or Alt-Fire to place it through a surface, which can then be reused to blind all players looking at it.",
+      "use": "Top players utilize Arc Rose for both offensive and defensive plays, protecting chokepoints and taking advantage of being able to keep her weapon out while activating it to peek as the flash pops."
+     },
+     {
+      "name": "Shear",
+      "slot": "Q",
+      "does": "Equips filaments of liquid metal and fires to place a hidden wall trap that triggers when an enemy crosses the invisible line, causing an indestructible wall to burst from the ground behind them.",
+      "use": "Shear is a powerful tool for flank watch, isolating individual enemies, and splitting sites to create an easy pick for Vyse or her team."
+     },
+     {
+      "name": "Razorvine",
+      "slot": "C",
+      "does": "Equips a nest of liquid metal and fires to launch it, which becomes invisible upon landing and sprawls out into a large razorvine nest that slows and damages all players moving through it while provid",
+      "use": "Razorvine is used for area denial and information gathering, deterring pushes or slowing down defuses and alerting the team when an enemy is entangled."
+     },
+     {
+      "name": "Steel Garden",
+      "slot": "X",
+      "does": "Equips a bramble of liquid metal and fires to send the metal erupting from her in a torrent of thorns that jams enemy primary weapons in a wide area after a brief windup.",
+      "use": "Steel Garden is a game-changing ultimate for retakes and post-plant situations, forcing opponents into pistol duels and heavily favoring Vyse's team."
+     }
+    ],
+    "mistakes": [
+     {
+      "name": "Misplacing or Activating Shear Prematurely",
+      "signs": "The Shear wall pops up, but no enemy is trapped, or an enemy is trapped but can easily be traded by teammates, or the wall blocks your own team's line of sight.",
+      "cost": "Shear is a powerful isolation tool, but its effectiveness is lost if it doesn't trap an enemy effectively or if it hinders your own team.",
+      "drill": "In a custom game, practice placing Shear in various common entry points and chokepoints, having a friend walk through them at different speeds and angles to understand the trigger radius.",
+      "checked_by": "none"
+     },
+     {
+      "name": "Wasting Arc Rose Flashes",
+      "signs": "You activate Arc Rose, but no enemies are looking at it, or you flash yourself or teammates, or the flash is easily dodged by enemies.",
+      "cost": "Wasting Arc Rose means losing valuable entry or defensive utility, giving away your position, or blinding your own team and leading to lost duels.",
+      "drill": "Practice pop flashing with Arc Rose in a custom game by going to common peeking spots and placing it in positions where it will pop and blind enemies as you peek without blinding yourself.",
+      "checked_by": "none"
+     },
+     {
+      "name": "Ignoring Razorvine's Information Potential",
+      "signs": "You place Razorvine, but you don't react to the audio cue when an enemy triggers it, or you place it in an area where its activation provides no actionable information.",
+      "cost": "If you don't listen for or react to the audio cue, you're missing out on vital information about enemy pushes or rotations, effectively wasting a part of the ability's utility.",
+      "drill": "In a custom game, place Razorvine in various flank routes or common push areas, practice holding angles where you can hear the activation sound clearly, and have a friend trigger it.",
+      "checked_by": "none"
+     },
+     {
+      "name": "Holding Steel Garden for Too Long or Using it at the Wrong T",
+      "signs": "You have your ultimate available for multiple rounds but never use it, or you use it when the round is already lost, or when enemies are too far away to be affected.",
+      "cost": "Holding onto Steel Garden for too long means missing opportunities to secure crucial rounds, and using it when it has no impact wastes an ultimate that takes a long time to charge.",
+      "drill": "Review VODs of your gameplay or pro Vyse players, identify situations where Steel Garden was used effectively, and practice activating it in various scenarios in custom games.",
+      "checked_by": "none"
+     }
+    ],
+    "sources": [
+     {
+      "title": "fandom.com",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQE7fcd7WH6kcllWY9zp7f37jZ41NRu24ke43hz7TgJmsZQsKslObiisnXK68s4KTERAi6opYOxxY6DnQ7vOPdhdldlCL-z5zEdiVvr5cB0tLx9jOmv3dujX-CUIbFv5ww==",
+      "facet": "character"
+     },
+     {
+      "title": "redbull.com",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQG35lWoIm7A1cxYGb2WptPyTfx0eKxP-EaFU254YjnoaoQ09iLNODwRFYlI-sxXow_KPMbkb9NXayHk1Kr7Qja9LTeV4X-5GYzFT_G398d91ASw-aOqY5QzAI_zjlAo7yBQbWwD7N-9P90VUg43ydQqSA==",
+      "facet": "character"
+     },
+     {
+      "title": "sportskeeda.com",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEgroFblrF9YdC2CvlmuoFjHGWKd7q9G3hedr0q6fOkEDMWEPf1lwBBmkAE4GdS-81eS_kYwFTbXWSRbS1AEV0xaTaukqfJNKDQzkquoBOO66Wco27crwHSj5gMhk61o3Xg2aKWsmQj0WIWjtFc6W_vTQm7VyNA9xPVp2n7geNyFwzwKYNVirSHvZA=",
+      "facet": "character"
+     },
+     {
+      "title": "playvalorant.com",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGa8eGuOK7vz1FPhOy2_Y2vyoOP1SQVp5-0k1KFzSQuyOl8gty_idutKagBZND8XIOSA2XwWEBJLzQsMuzj9JAa18ANAZZ0K6PUoNMi8rMt2NmaQexRCL3KqXLgRLfqmBqhRBlgQA==",
+      "facet": "character"
+     },
+     {
+      "title": "metabot.gg",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFpi0DhieYNrw6DRNQ7Ff7Tjs12W-SAL_fSjyl3bivSOcxANJBtmAuaPhU6-uaCGLjFbX3skqYqzTeoTOpG2-BuCLfBQBF-6s6ynLo_9UzN61iBHEdcHKVdfQPVLjEDyYgCQi9tIYLelKNp1ts=",
+      "facet": "character"
+     },
+     {
+      "title": "youtube.com",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEBebCGjsgvrZEXANBwF_g8mjRVNfLUMRTVH-TbPrME9lH_mJOWGtGH7lf2pF-r5GdAYvTBFD7ynCsMDB6NVh_JRDIGrLAy-YiMubRGvqfueTKtnrUL4omnNdtWB3f92g2n1rDaew==",
+      "facet": "character"
+     },
+     {
+      "title": "boosting-ground.com",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFDKLVPGVF88E1j5Q07dgwofihawue1HR5vPhghxs7VAmSdwzuNBzrUTJ8tBgc3b_omJV-cjPKYE31UKP79f-Ruz3zi0tkU47JaRM4FqM_RBW5rvkBKPPl-RS-RW1M12l8f-tcSVKFF7fmQ9V-iv55m8WEE09q4d9eHecoPlA==",
+      "facet": "character"
+     },
+     {
+      "title": "reddit.com",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHs9IRCH95-havYgpWuRbRDS5o-Nqdf_l1wwjHiReM23OKx6Ngdy_uyBxG3RZbhxuckoCnf959Ror9gZXNyqmqbPHx9oT23cg1uvYQ7kG7qoOuYjxch4L-YedppdFbwCgoTvRqCP3oOFBATlGgVCdrS37hoFLBTlDwvoq8xmzA8edX5yoUNX5DNxwuJnG8rdK21AMtwKL4udAaSdw==",
+      "facet": "character"
+     }
+    ],
+    "researched": true
+   }
+  }
+ },
+ {
+  "name": "Apex Legends",
+  "seconds": 134,
+  "research": {
+   "rewards": "Winning a match awards Ranked Points and high placement amplifies the points earned from kills and assists to progress in rank.",
+   "systems": [
+    {
+     "name": "Abilities and Ultimates",
+     "matters": "Good players master passives, tacticals, and ultimates, stacking them with teammates instead of using them separately for maximum impact."
+    },
+    {
+     "name": "Roles or Classes",
+     "matters": "Good players build balanced team compositions covering essential roles like rotation, resets, and information or space control."
+    },
+    {
+     "name": "Character Picks and Counters",
+     "matters": "Good players match their Legend choice to squad needs by identifying missing roles such as initiation, information, movement, or sustain."
+    },
+    {
+     "name": "Loot and Resources",
+     "matters": "Good players efficiently loot shields, healing items, and ammunition while using poke damage to make enemies waste resources."
+    },
+    {
+     "name": "Objectives",
+     "matters": "Good players control high-tier loot zones, supply ships, and hot zones to secure a significant advantage."
+    },
+    {
+     "name": "The Map or Zone",
+     "matters": "Good players plan macro rotations from landing spots or execute edge fights to secure resources before rotating along cover lanes into the ring."
+    }
+   ],
+   "priorities": [
+    "Game Sense and Decision-Making",
+    "Positioning and Advantage",
+    "Teamwork and Communication",
+    "Aim and Mechanics",
+    "Map Knowledge and Rotations",
+    "Resource Management",
+    "Adaptability"
+   ],
+   "engagements": "A fight is worth taking when your team has a clear high ground or cover advantage, an enemy is knocked or low on health, and third-party risk is low. Avoid open areas, uncoordinated pushes, or prolonged poke shots without a knock.",
+   "aimTarget": "tracking",
+   "mistakes": [
+    {
+     "name": "Over-Looting",
+     "signs": "You spend excessive time opening supply bins and death boxes meticulously sorting through items even after having a decent loadout.",
+     "cost": "Prolonged looting leaves your team vulnerable to third parties, delays rotations, and causes you to miss advantageous ring positions.",
+     "drill": "In the Firing Range practice quickly identifying essential loot and time yourself to minimize the looting phase to no more than 30 to 45 seconds.",
+     "checked_by": "none"
+    },
+    {
+     "name": "Poor Positioning / Not Using Cover",
+     "signs": "You find yourself in open areas exposed to multiple angles of attack or peeking corners too long without retreating.",
+     "cost": "Being out of cover makes you an easy target and allows enemies to deal significant damage quickly leading to elimination.",
+     "drill": "Practice strafing and shooting in the Firing Range while constantly moving between different pieces of cover to minimize exposure.",
+     "checked_by": "none"
+    },
+    {
+     "name": "Lack of Situational Awareness",
+     "signs": "You are often surprised by enemy pushes unaware of nearby fights or get flanked easily without hearing audio cues.",
+     "cost": "Poor awareness leads to being caught off guard, making bad rotations, and getting third-partied.",
+     "drill": "Regularly check your minimap, listen for footsteps, and practice the eighty twenty rule focusing mostly on combat while maintaining awareness.",
+     "checked_by": "none"
+    },
+    {
+     "name": "Reckless Pushing / Overextending",
+     "signs": "You push an enemy alone far ahead of teammates or chase a low-health enemy into a dangerous position.",
+     "cost": "Solo pushing isolates you from your team making you an easy target for coordinated enemy fire.",
+     "drill": "Practice peeking and retreating quickly after taking a few shots rather than committing to a full engagement.",
+     "checked_by": "none"
+    },
+    {
+     "name": "Poor Communication",
+     "signs": "You or your teammates are not pinging enemy locations, damage dealt, or intentions leading to uncoordinated plays.",
+     "cost": "Lack of clear communication leads to uncoordinated pushes, missed opportunities, and teammates being out of sync.",
+     "drill": "Practice using the ping system extensively for everything and use concise callouts.",
+     "checked_by": "none"
+    },
+    {
+     "name": "Healing in the Open",
+     "signs": "You start a shield battery or medkit in an exposed location immediately after taking damage.",
+     "cost": "Healing takes time and doing so without cover makes you a stationary vulnerable target wasting valuable healing resources.",
+     "drill": "Practice taking damage and immediately retreating to the nearest cover before initiating a heal.",
+     "checked_by": "none"
+    },
+    {
+     "name": "Standing Still While Shooting",
+     "signs": "Your character model remains stationary or moves minimally when engaging an enemy making you an easy target.",
+     "cost": "Standing still makes you predictable and easy to hit even if your aim is good.",
+     "drill": "Practice shooting bots while constantly strafing, crouching, and incorporating small jumps or slides.",
+     "checked_by": "none"
+    }
+   ],
+   "meta": {
+    "patch": "Season 30: Marked",
+    "strong": [
+     {
+      "name": "Axle",
+      "why": "Maintains a high pick rate among top-ranked players despite recent nerfs, indicating continued competitive strength."
+     },
+     {
+      "name": "Seer",
+      "why": "Remains a strong pick due to his information-gathering abilities."
+     },
+     {
+      "name": "Pathfinder",
+      "why": "His mobility and ability to quickly reposition teams keep him in high regard."
+     },
+     {
+      "name": "Alter",
+      "why": "Her ability to create new pathways through walls remains a powerful tool for flanking and rotations."
+     },
+     {
+      "name": "Octane",
+      "why": "His aggressive pushing and rapid repositioning capabilities are highly valued."
+     },
+     {
+      "name": "Lifeline",
+      "why": "Her combat medic abilities make her a valuable asset with increased looting difficulty."
+     },
+     {
+      "name": "Catalyst",
+      "why": "Received significant mid-season buffs to her cooldown, spikes, and Veil making her a much stronger controller."
+     }
+    ],
+    "changes": [
+     {
+      "what": "Bloodhound Rework",
+      "effect": "Transforms Bloodhound into a more versatile legend capable of initiating cloaked pushes or providing tactical escapes."
+     },
+     {
+      "what": "Loba Buffs",
+      "effect": "Enhances tactical mobility and reduces ultimate cooldown while spawning EVO caches to aid the new loot economy."
+     },
+     {
+      "what": "Rampart Buffs",
+      "effect": "Makes defenses more robust and quicker to deploy for stronger hold positions and dynamic pressure."
+     },
+     {
+      "what": "Valkyrie Nerfs",
+      "effect": "Reduces aggressive repositioning potential and makes her ultimate a riskier engagement tool."
+     },
+     {
+      "what": "Axle Nerfs",
+      "effect": "Reduces slide boost time and makes her ultimate a double-edged sword requiring precise use."
+     },
+     {
+      "what": "Seer Nerfs",
+      "effect": "Reduces his information gathering and enemy disruption capabilities."
+     },
+     {
+      "what": "Energy Weapon Overhaul",
+      "effect": "Eliminates ground ammo and adds internal regenerating batteries freeing up inventory space."
+     }
+    ]
+   },
+   "reference": {
+    "characters": [
+     {
+      "name": "Bangalore",
+      "role": "Assault"
+     },
+     {
+      "name": "Fuse",
+      "role": "Assault"
+     },
+     {
+      "name": "Wattson",
+      "role": "Controller"
+     },
+     {
+      "name": "Catalyst",
+      "role": "Controller"
+     },
+     {
+      "name": "Wraith",
+      "role": "Skirmisher"
+     },
+     {
+      "name": "Octane",
+      "role": "Skirmisher"
+     },
+     {
+      "name": "Crypto",
+      "role": "Recon"
+     }
+    ],
+    "maps": [
+     "Kings Canyon",
+     "World's Edge",
+     "Olympus",
+     "Storm Point",
+     "Broken Moon",
+     "E-District"
+    ],
+    "weapons": [
+     "HAVOC Rifle",
+     "L-STAR EMG",
+     "R-301 Carbine",
+     "Prowler Burst PDW",
+     "Alternator SMG",
+     "RE-45 Auto",
+     "G7 Scout",
+     "EVA-8 Auto",
+     "Hemlok Burst AR",
+     "Rampage LMG",
+     "P2020",
+     "Nemesis Burst AR",
+     "Mozambique Shotgun",
+     "Mastiff Shotgun",
+     "30-30 Repeater",
+     "Triple Take",
+     "Devotion LMG",
+     "Bocek Compound Bow",
+     "Peacekeeper"
+    ],
+    "other": [
+     {
+      "kind": "Attachments",
+      "names": [
+       "1x HCOG 'CLASSIC'",
+       "2x HCOG 'BRUISER'",
+       "3x HCOG 'RANGER'",
+       "1x Digital Threat",
+       "1x-2x Variable Holo",
+       "2x-4x Variable AOG",
+       "Standard Stocks",
+       "Sniper Stocks",
+       "Barrel Stabilizers",
+       "Extended Magazines",
+       "Laser Sights",
+       "Shotgun Bolts",
+       "Anvil Receiver",
+       "Boosted Loader",
+       "Deadeye's Tempo",
+       "Disruptor Rounds",
+       "Double Tap Trigger",
+       "Dual Shell",
+       "Gun Shield Generator",
+       "Hammerpoint Rounds",
+       "Kinetic Feeder",
+       "Precision Choke",
+       "Selectfire Receiver",
+       "Shatter Caps",
+       "Skullpiercer Rifling",
+       "Turbocharger"
+      ]
+     },
+     {
+      "kind": "Consumables",
+      "names": [
+       "Syringe",
+       "Med Kit",
+       "Shield Cell",
+       "Shield Battery",
+       "Phoenix Kit",
+       "Ultimate Accelerant",
+       "Arc Star",
+       "Frag Grenade",
+       "Thermite Grenade"
+      ]
+     },
+     {
+      "kind": "Gear",
+      "names": [
+       "Shield Core",
+       "Helmet",
+       "Knockdown Shield",
+       "Backpack",
+       "Survival Item"
+      ]
+     }
+    ]
+   },
+   "sources": [
+    {
+     "title": "corrosionhour.com",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGcX-pb8zf2msZzEpv9v8L7aFhDWupSMtwJ7qRYqBVHRN74E2_YHLO8TjDy-pP2hVpudvaEJRN1WVb4nvurNz8lzWMeSQljjFB4FU45m24wJ_h5cjAt4tw7auzxqLjK-Kyz4fx2cMBRb9GlcUaiTSS3Z3J-bmXLoqPhQ1kQ4UAmsv5c40E=",
+     "facet": "guides"
+    },
+    {
+     "title": "exitlag.com",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHdsbcTRb72plh_pAOkjg50ACsikEqoj_lBOy2bTDOAaWbm9LDRtObchZVbON0igI_YdEGmh8x_xI6s85RIW01vblQE8JvjbrBqM3UI79pOZidXpVb578sDXiIHe4lTDY3RcplgxczAzYqYknk=",
+     "facet": "guides"
+    },
+    {
+     "title": "greenmangaming.com",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQH08TpGwXah9vOuRvg3603e6i8oGRv6MzNfLVeNWweE5BodfSoBz4E7ZOQ0SioUqkATWjcffnwpewBtCAzQGMc6U8q7Dr0xWOJUmRoTbahy84kbm5PSA-bz1RblzqQ5_kejac5l4xR1OQQ1mjgXbjAwLfY=",
+     "facet": "guides"
+    },
+    {
+     "title": "ea.com",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFgBqLgPfGiQLRl3T6_DjBr5J3fDoDThMT8Z9qMAgIKEhfqxU5vSqNeyGlO05XSOrw6WFUJMRVGlKZwSi_Maa_APvVVZQ9mGqHUtlxJr7yo3ZTzXT4O9zcTbnmleB5wWlL8OGIGmphtexAJF1MmN3IczVI=",
+     "facet": "guides"
+    },
+    {
+     "title": "youtube.com",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGhOwsVzpFO1htJER40ORIg6MYqgER_l3KHPqKk2mtwryVuqM3fynwZFjI_7U1r7f_IUm6xZB_27VQAzerOLsl57d-xVolstpJQSxNK4_nqwzLOe93fGcZnVu_oYo0fVe6uGtKQsQw=",
+     "facet": "guides"
+    },
+    {
+     "title": "shacknews.com",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHSJA4i_H8-E9bXYdihLLIaFZ0hntB2rd6VIkQMLwCZKjwqp6XLkfyUa44IGR6IISD1QK9TyRrZfAAR42BxkhzF1PSObpqkgwx4nOkLQlG_J6KBSPmFuc6SSTbk9Ci5vShBa4gAlpJgqHl658I9C-9_OBYWieCazs0LnDaaEwYetTM1nGp0CMesKR0o4tLjKcvd8nDX3XlplcIa1w==",
+     "facet": "guides"
+    },
+    {
+     "title": "boostroom.com",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFp0W4pdpwZ9gixVcUY_OwTW8XwyDbg1UZmbrsx4jgO_itPnWT2wvzfG6oQArAC3Nh-rUYJot0coYuGOEwXCWJgsCuLtWXGBw2ntUR6HxRdUXk7wWPAPonsmoYefYnNbJ0muwKOlSHLnWhxUXdlltO0oScJM-nOybzng1d72JRS7UsDIGMB3RAT00iwUeeN7iw=",
+     "facet": "guides"
+    },
+    {
+     "title": "ggclan.com",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEWL3f2c7gqOnHtLofJualdWFuazeLQsm00sgrcfEaN0py7zMH9vw0QKMqsWkahXEzX0zTZvPPmXlhkDysHw-wHHQPxHzSV-kIbOoZtk3L3sOE657YLcZ94Bcnlny6avQ==",
+     "facet": "guides"
+    },
+    {
+     "title": "bettergamer.com",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFfmGKiFjhjKeAkzl9Iksp22IhEdGvtWpicJOpzwGZ0r3K3BraW60FphT9UygtL7QRgTVlysk66usvhQhUeYF7i8dtvtNMstFQ9Ev881P1lDQ8kvhXa5vlCxTycfUcZxPbxVoJiFXAk8A==",
+     "facet": "guides"
+    },
+    {
+     "title": "reddit.com",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFTkAv7KnEija8m3G4FdzoOL0-TJ7d36rTVriNnnNHa-xIOBpe0FX--SC13D64EiN2XfRYa28eWa7VRdKH8YWwsEuWN7RfF3KAq0EHt0i0cIMHoa09np_f17EhMaJFmjfBA-fn8bdOcndn_BdDYAHnh9oy8vvDMyqeBqwZScj_cVQIsQAP2oveImuuiaQNTI8wjvWcTg8_fdMB_",
+     "facet": "guides"
+    },
+    {
+     "title": "culturedvultures.com",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFER6CeI86innZANCA3Aw3EtX63M3HOO5ibMUfqT4YpnGwoD_-TIn8iuVtLpKa2H4G0QCkVLOAiOLMYtoTZYAwlEHSyHQI018ya6ciG7EkJzxXtuhJetFs6UG_-N6pc_zijxFHgAx38wMaCcn6irNbjs1wBv2i9AFMTYHfl6wNJClM=",
+     "facet": "guides"
+    },
+    {
+     "title": "reddit.com",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGqVMJtmh56QdljuqUgC1_pBQbpA17ehdshnYnXpNAocaqj8P6QJlOk_nyFWngb2ojJ0sktidsQkRPdTovW1aZnCYjE3sOlYgYDclDLLy2GPchUzjZ867jOFviRnErrQh7w1KLSYELAH80Txx8Lrwk2tbqWl_tUFS8tztLYrihz4uFdqYEAongW1uMdG0bsmLQ6_Vh3IkjCeZpZLQvpRew=",
+     "facet": "guides"
+    },
+    {
+     "title": "reddit.com",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGuV0Cve6PgFyvTxHHgB1-1UncDmLVm6OBMiPkQk0dP7GChXkNBl-f4zZgRaaW-u1OOmo1IO8qt1izDlBa7TWFNu3-KKK7NzABRkMznVg1yYW-dmSm9qFh95hJCacaZeVE9yRwHtYXl58V3u8OyNRwKY6nRnpsVHaMbZB74crJEPrR09Qw_uNAZ1otwu6R9Q4ZqyjPjHg7KptWM2_c=",
+     "facet": "guides"
+    },
+    {
+     "title": "fpslounge.com",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEG7wfFSdig-z9D2FxC2qOd1TswHyIsXUm3wvrgumALuiGWNlVrJMgU_9Lx3zioqJ1deGaOOBh_GyOXQHttV-D_QfmUBbUfTNANn7DucWQDtOokB6imm7wSVjs4Bw==",
+     "facet": "guides"
+    },
+    {
+     "title": "boostroom.com",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFfPBunmcxQ4pmVs7P5_HD8nxDY3skYs82eOFTeYnMYkhNPoOSymlqP-t3v81G73j7fLERgprbJHkUa9rSVs6cDxXDFlnkyBIavDKlMjJuaZIGMWIHjtbQvoLGABObYDNLxJzmW1iz2TBhPkSZDqqGmptmhigYifdmlsB2ivYDdCzaBn8ZrG3p70I9FOJfQ8Q==",
+     "facet": "guides"
+    },
+    {
+     "title": "youtube.com",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEwHrpFfYnciZPeZNxL0hhgJ00U4vuHtjuRp-IMJSZjKvnU4R1K1ZuwcnrpZD3IL0K0yQi8E7UbdX7ntCPQ_d0_fsCA6aYQF3paSyn__XLzqPun2bwQr5mI2FN4OKcy4lgK9utVgyM=",
+     "facet": "guides"
+    }
+   ],
+   "researched": true,
+   "facets": {
+    "guides": 24,
+    "community": 22,
+    "meta": 38,
+    "wiki": 31
+   },
+   "character": {
+    "name": "Bangalore",
+    "role": "Assault Legend",
+    "abilities": [
+     {
+      "name": "Double Time",
+      "slot": "passive",
+      "does": "Taking fire while sprinting makes Bangalore move faster for a brief time.",
+      "use": "Top players utilize Double Time for rapid repositioning, whether to quickly escape dangerous situations, flank enemies, or push aggressively to overwhelm opponents."
+     },
+     {
+      "name": "Smoke Launcher",
+      "slot": "tactical",
+      "does": "Bangalore fires a high-velocity smoke canister that explodes into a smoke wall on impact.",
+      "use": "Good players use smoke to block enemy line of sight, allowing their team to push across open ground or close the gap on entrenched enemies."
+     },
+     {
+      "name": "Rolling Thunder",
+      "slot": "ultimate",
+      "does": "Bangalore calls in an artillery strike that slowly creeps across the landscape.",
+      "use": "It's used to force enemies out of cover, prevent pushes, or create space for your team to advance."
+     }
+    ],
+    "mistakes": [
+     {
+      "name": "Smoking Yourself or Teammates Indiscriminately",
+      "signs": "Your screen goes completely white/grey, and you can't see anything beyond a few feet.",
+      "cost": "While smoke provides cover, smoking yourself or your immediate vicinity without a clear plan can blind your own team more than the enemy.",
+      "drill": "In the Firing Range, practice shooting smoke canisters at various distances and angles away from your position.",
+      "checked_by": "none"
+     },
+     {
+      "name": "Using Rolling Thunder for Damage Instead of Zoning",
+      "signs": "You throw your ultimate, see the red markers, but get very few, if any, damage numbers.",
+      "cost": "Relying on it for kills is inefficient and wastes a long cooldown.",
+      "drill": "In the Firing Range or a custom match, practice throwing Rolling Thunder to cut off escape routes, block doorways, or zone enemies off high ground.",
+      "checked_by": "none"
+     },
+     {
+      "name": "Not Activating Double Time Effectively",
+      "signs": "You get shot, but you continue moving in a straight line or don't react quickly, taking more damage than necessary.",
+      "cost": "Failing to immediately capitalize on this speed by sliding, strafing, or changing direction makes you an easy target.",
+      "drill": "In the Firing Range, set up dummies to shoot at you.",
+      "checked_by": "none"
+     },
+     {
+      "name": "Holding Smoke Charges for Too Long",
+      "signs": "You die or your teammates get knocked in an open area, and you still have two smoke charges available.",
+      "cost": "Hesitating to use smoke when needed can lead to unnecessary damage or squad wipes.",
+      "drill": "During live matches, make a conscious effort to use at least one smoke charge in every significant engagement or rotation.",
+      "checked_by": "none"
+     },
+     {
+      "name": "Ignoring Team Composition and Synergy with Smoke",
+      "signs": "You smoke an area, and your Bloodhound or Seer teammate complains they can't scan.",
+      "cost": "Its effectiveness can be amplified or negated by team composition and enemy optics.",
+      "drill": "When playing with a pre-made squad, communicate your smoke intentions.",
+      "checked_by": "none"
+     }
+    ],
+    "sources": [
+     {
+      "title": "boosting-ground.com",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGy1xS1yzAbb3QU6NtCh8YFb1uhjFE1LztnynXZkkOmS5hLH8OC2eKaQS9xYeDatOifG75ltoaB1joqT5RYZhn22o4-09sKFOyQwJZt51OJ8YWuNdlmtGTM1D5YCqVk0E4QxDbDETLdnNNDnH4sq5SEv6KRx_gLdUHoM74_EElTMCelRXC9ZKI77_udGM8RWvpb9l7o-A==",
+      "facet": "character"
+     },
+     {
+      "title": "youtube.com",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQE0mhB1-dBwp_N2GpBQnYxlyb7t9YZpWZosEj03-Yh8V0Qkda7T2YKGVIswpx-lmPpnKH-NPF71pCX_MFNSwU2BAHtlpUGMJarVrKT9m8DIFr21FrG9icTNkjeZV7CazWyV4yWPnqM=",
+      "facet": "character"
+     },
+     {
+      "title": "games.gg",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFtnK_EWM_5xJJEoTTWDxe85_yqbqZS2TrHXuqksv8S1IhCuApyCiszsuEIEQ0FGM3AGaZ0w85fu3UzCnRtf1NUCBjZ-YTO1NABGqy01BJzhjTQNpt9FrYw3BOGAJCjMlSb6URcI1LW3BBWE5raVPrT-Muh9udD9LMIp6L2cw==",
+      "facet": "character"
+     },
+     {
+      "title": "ea.com",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEpjQ4BACKwH088mXQGwd-XbX-X5tf9PCRaf2NndGdQeQP2v3cLikYaYpm15G6GokSDPbY9l8zXJ5Q2gXwJTBSl7onQY3j1vPMczf9j_lu-bOKaoMkq2SYiVbMw9dtCvtGb8gr4UDEOuzh4XnLdnCKIZlD1Dd-nyWPknyqsX4D2U_Q1BFGuBfcK4RmU9A9HEjKqyOFlpOBnkg==",
+      "facet": "character"
+     },
+     {
+      "title": "apexdb.gg",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEuNYZfEtSO54oqp0tbiVFFm_EF4Ji23iyo__bu052rNfcmhK3RrraPZ1cHhhQrJMMqkenK-utuIYQ4zUui2FIs7uh1-0jJ4W0Mwq3AcRNKa8D5DYWAuHFcvrT5jwOh",
+      "facet": "character"
+     },
+     {
+      "title": "immortalboost.com",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEW5PTHjCyEksHlF4jqaPldCgMf0rzq6-Z7OhptkqWuRMFQOIQ4DbEw-N0rUallPHSZcPPB3ZOZZS4bs5Ax4O3wProQZOP8i7poDRPaCe9S1PgpARITerYkYA2W1AKXLIAOP5K_UCEhB8KQe864y8M0kxuB6eKPYw==",
+      "facet": "character"
+     },
+     {
+      "title": "shacknews.com",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQF-lVPfP-U8DkPlGv2M-o_O_fTAwphf8gaLpIjmBSwkDTL_-RvS0gmFIv5lrNLzu53ST9TM9oiOY27kGFUMUOXH3EVdgO-wmzKHe20BKKv9nSOE7dvJxAVyIuvi7AMADWkHUV284UKLrC12QnuQj8zED5chMttZdxPjwrKjCndMW0k45p8FQw5k8HY=",
+      "facet": "character"
+     },
+     {
+      "title": "gamespot.com",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGfUNJvQWsNuXZ6Nrxarg3nnoUnCig4Gm4xDBiNbGsgG-lhsLRvMA8BMDss4v3LeMxBWej7hheOw5kGt-YhTdK34rK9KPWAiYpMkdsL270pwb786D-UDiL_r8hgt8Sm6sD57L8Ui9IFP09cR0fJ20NEVOxN9tHkvnzafGdVF-Z0gjY0eze0sR4=",
+      "facet": "character"
+     },
+     {
+      "title": "reddit.com",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGvbFWgMS1KlinsVvN0tqyIF0HavNqau3CgN10zdU2wbsK7Bdjj0d5lU1zztP-AQXQU5WL4Xbcq4nL6LGC_qsGxZRMUmqUBYzwuHQI75aDJG3Gt5EGlUbeYlp6ZeCBUN0dBb2twXTyTwuPAyK4sB2uDKedTNhMz6TpXOu4b3NCC1grMVDoim7vcVyOOrviYOk-VxWhKT1ry8uGkk3WCxw==",
+      "facet": "character"
+     },
+     {
+      "title": "boostingfactory.com",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEP1PYxQOHJqLKyPAS4_Fv3qpMxp_v6kFdfiKEpWGr1kqKnlDWarZe-rrzpN_FMFT-1rE9LmMZ2pgwR0FhJ2aT1ON9HECeN5eiscv4ybBuxvOx3DNMuCyNZIXpolZgYng1k97_6Y-TAOvm9D8_8cLsqawxVBdOml23tuFrnkz-woduHTEK77ZvoMKK2IY66",
+      "facet": "character"
+     },
+     {
+      "title": "pley.gg",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFPwnCHvj3V71BjPp_FaEd-rqcFNckG3Gof3Y1tQv6Jy8e-au5MUOm9fnLLfHZOfz6ZyazB-hZ2iZv9C1mGudQvWi4R5I45BEfhtDIFiZsUoKufylNdbaNugf6ketdi5c1f5w==",
+      "facet": "character"
+     },
+     {
+      "title": "reddit.com",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEhUo6mpEeimEXtkRZwEIe9Ulsh8VViC58gfDv2aDx9tfklzeMw4fhrl8yRQuDRBRzyjf0Bi6W0aJTtArf4tQr66ErA984sH823tsUNHupNsZBJ9PNp0-GX1wuDUr5PpTrHB-QrUTIuxm-RhNeu7kwPHZImF4vWrIGICWdcJEw17yeFyrMYD364O59wL-afkkyS7w==",
+      "facet": "character"
+     },
+     {
+      "title": "reddit.com",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHe73Ir0OXBdrm0wYIYuYIEGbLPtq4QTsa8Olgh0G-kJAn2A-NYy5mrf5Tz_SqmZP2rehtbN_IfwvMowELJsEPiu_PpEaJ_3jY2_WZ4fNS70hTRqSksKVOo8s5_Z2-H_1HAosJgdh0iAnh225ONyyf6Ki93_3YGD-3mfGlG5dvoYvwOL4-p06xZuJCzSImhXLw9R0yq4bk4yoCQk8Ub8lwm",
+      "facet": "character"
+     },
+     {
+      "title": "reddit.com",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQF7fS5ixIN8gz9n0oMAl-6GV1RA5lCztItGmqwbtJ9CHBI-s3Oec7whw_OenapYxR1ndw_Umqvv_nXk7Mxp4fGgdXIwSI7rGshmdKNgm41CnLquGfjMzdBvu2A1DEeP-Nj9colEM8kLEs6mHkkD5D9OX1dTXyD_FqXJh0ul-T-v-bCdiA==",
+      "facet": "character"
+     },
+     {
+      "title": "rockpapershotgun.com",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGfPKMG1QW00kZ5_47v29ZTTbV1w8vgyr9w7FlZ-kUk-LGacM5x40jsL0S4mnLwiMVvKYReeRDjPugQWrQi3FgHsYSQcWhQTYPwR2FLujRAVHuQCZXeQUrzieXlzOMX0sF9Ly1TCCpjOjqj2oWzZPqjBlSWBBbskZ_1PQ4qI2s2W6ys9vGOFyj0jzqDow9_",
+      "facet": "character"
+     },
+     {
+      "title": "facebook.com",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGAM3BAI0_8N84JnyKq626Ce1serLw4W0O75y3TWLm_7oZLpJYpvAvYTj68aU7kFO7D6ufEvRjsJGB99P1zGDnYvW09asYRFOFMF4qP7AzaljgRzJg8937pzNjNY3sQofvqyhdsP_yoeV8yaD2_HI56NswR6-vaHDTPbq4=",
+      "facet": "character"
+     }
+    ],
+    "researched": true
+   }
+  }
+ },
+ {
+  "name": "League of Legends",
+  "seconds": 98,
+  "research": {
+   "rewards": "Winning a match in League of Legends ultimately comes down to destroying the enemy Nexus, which earns League Points (LP) to climb the ranked ladder.",
+   "systems": [
+    {
+     "name": "Abilities and Ultimates",
+     "matters": "Good players track enemy cooldowns to identify windows of opportunity for aggression or to avoid unfavorable trades."
+    },
+    {
+     "name": "Roles or Classes",
+     "matters": "Top players dedicate themselves to one or two roles to develop a deep understanding of their intricacies, champion matchups, and how to best contribute to the team."
+    },
+    {
+     "name": "Character Picks and Counters",
+     "matters": "Good players not only pick champions they are comfortable with but also consider the enemy team composition to make informed counter-picks or synergize with their own team."
+    },
+    {
+     "name": "Economy",
+     "matters": "Good players prioritize efficient farming and understand item power spikes to maximize their impact."
+    },
+    {
+     "name": "Objectives",
+     "matters": "Top players constantly assess objective timers and prioritize them based on their team's strengths and the current game state."
+    },
+    {
+     "name": "Resources",
+     "matters": "Good players track enemy summoner spell cooldowns to exploit their absence."
+    },
+    {
+     "name": "The Map or Zone",
+     "matters": "Good players consistently place and clear wards to gain a vision advantage."
+    }
+   ],
+   "priorities": [
+    "Map Awareness",
+    "Laning Fundamentals",
+    "Champion Mastery",
+    "Objective Control",
+    "Decision Making",
+    "Vision Control",
+    "Teamfighting and Positioning",
+    "Cooldown Tracking"
+   ],
+   "engagements": "A fight is worth taking when the math says yes before the fight starts, factoring in numbers, cooldowns, items, objectives, vision, and positioning advantages.",
+   "aimTarget": "none",
+   "mistakes": [
+    {
+     "name": "Lack of Map Awareness",
+     "signs": "You are often surprised by enemy ganks, rotations, or objective contests and your minimap looks static.",
+     "cost": "This habit leads to preventable deaths, missed opportunities for ganks, and failing to track enemy junglers.",
+     "drill": "The Minimap Glance Timer drill using a recurring timer every 5 to 7 seconds.",
+     "checked_by": "none"
+    },
+    {
+     "name": "Greedy and Unsafe Engages and Chasing",
+     "signs": "You commit to chasing low-health enemies deep into enemy territory or under towers.",
+     "cost": "This often results in trading one kill for your own death, losing tempo, and allowing the enemy to take objectives.",
+     "drill": "Practice engaging on a dummy near a tower in the practice tool and immediately retreating.",
+     "checked_by": "none"
+    },
+    {
+     "name": "Autopiloting",
+     "signs": "You perform actions without conscious thought, following a routine regardless of the game state.",
+     "cost": "Autopiloting prevents you from adapting to dynamic game situations, leading to inefficient farming and missed objective timings.",
+     "drill": "The Point and Call method by verbally or mentally stating your intentions and observations.",
+     "checked_by": "none"
+    },
+    {
+     "name": "Poor Wave Management",
+     "signs": "Minion waves crash into your tower and die without you being there to collect gold and experience.",
+     "cost": "Losing minion waves to your tower is a significant loss of gold and experience, putting you behind your opponent.",
+     "drill": "Lock your level in the practice tool and practice freezing, slow pushing, and fast pushing.",
+     "checked_by": "none"
+    },
+    {
+     "name": "Ignoring Team Composition and Win Conditions",
+     "signs": "You focus solely on your own champion's strengths regardless of what your team needs.",
+     "cost": "This leads to disjointed team play, poor objective prioritization, and an inability to leverage team strengths.",
+     "drill": "Identify your team's win condition in champion select and periodically evaluate your actions against it.",
+     "checked_by": "none"
+    },
+    {
+     "name": "Tilting",
+     "signs": "You feel intense frustration, anger, or despair after a bad play or teammate mistake.",
+     "cost": "Tilting clouds judgment, reduces focus, and can spiral into a losing streak.",
+     "drill": "The Five-Second Rule to pause, take a deep breath, and evaluate your play.",
+     "checked_by": "none"
+    },
+    {
+     "name": "Neglecting Mechanical Practice",
+     "signs": "You consistently miss last hits, fail to execute champion combos smoothly, or struggle with kiting.",
+     "cost": "Poor mechanics directly translate to less gold, less damage, and less survivability.",
+     "drill": "Dedicate 10 to 15 minutes before your first game to the practice tool for CSing or combo practice.",
+     "checked_by": "none"
+    }
+   ],
+   "meta": {
+    "patch": "Patch 26.20",
+    "strong": [
+     {
+      "name": "Champions with Strong Inherent Scaling",
+      "why": "Champions whose kits provide significant power independently of items continue to be valuable despite previous nerfs."
+     },
+     {
+      "name": "Ashe",
+      "why": "She remains one of the premier marksmen in pro play due to her high utility."
+     }
+    ],
+    "changes": [
+     {
+      "what": "Ambessa",
+      "effect": "Her passive damage was reduced to lower her overall damage output in trades and prolonged engagements."
+     },
+     {
+      "what": "Ashe",
+      "effect": "Her attack damage per level growth was decreased to address her high raw damage output."
+     },
+     {
+      "what": "Cassiopeia",
+      "effect": "Her base health and mana were lowered to make her less dominant in the early laning phase."
+     },
+     {
+      "what": "Diana",
+      "effect": "Her W shield bonus health ratio was increased to enhance her survivability in bruiser builds."
+     },
+     {
+      "what": "Kennen",
+      "effect": "His E bonus attack speed was increased to improve his combat effectiveness."
+     },
+     {
+      "what": "Kindred",
+      "effect": "Her W monster modifier and E slow duration were increased to strengthen her jungle presence."
+     }
+    ]
+   },
+   "reference": {
+    "characters": [
+     {
+      "name": "Fighters",
+      "role": "Fighters"
+     },
+     {
+      "name": "Mages",
+      "role": "Mages"
+     },
+     {
+      "name": "Tanks",
+      "role": "Tanks"
+     },
+     {
+      "name": "Marksmen",
+      "role": "Marksmen"
+     },
+     {
+      "name": "Supports",
+      "role": "Supports"
+     },
+     {
+      "name": "Assassins",
+      "role": "Assassins"
+     },
+     {
+      "name": "Bruisers",
+      "role": "Bruisers"
+     }
+    ],
+    "maps": [
+     "Summoner's Rift",
+     "Howling Abyss",
+     "Arena: Rings of Wrath"
+    ],
+    "weapons": [],
+    "other": [
+     {
+      "kind": "Items",
+      "names": [
+       "Doran's Blade",
+       "Doran's Ring",
+       "Doran's Shield",
+       "World Atlas",
+       "Flameclaw Cub",
+       "Amplifying Tome",
+       "Long Sword",
+       "Health Potions",
+       "Control Wards",
+       "Elixirs",
+       "Boots of Speed",
+       "Berserker's Greaves",
+       "Warding Totem",
+       "Oracle Lens",
+       "Farsight Alteration"
+      ]
+     },
+     {
+      "kind": "Runes",
+      "names": [
+       "Precision",
+       "Domination",
+       "Sorcery",
+       "Resolve",
+       "Inspiration"
+      ]
+     },
+     {
+      "kind": "Summoner Spells",
+      "names": [
+       "Flash",
+       "Ignite",
+       "Heal",
+       "Smite",
+       "Teleport",
+       "Exhaust",
+       "Ghost",
+       "Barrier",
+       "Cleanse",
+       "Mark/Dash"
+      ]
+     }
+    ]
+   },
+   "sources": [
+    {
+     "title": "aussyelo.com",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFTU1wVvi0mQMmFcFJU4mmarcMsVRFCnv9cjzGgKov6Qcn9YMFN9W_Dxv2ntGF8FATgLOufkwFagblJaI9mEFpRe0RaVbPhq2g0ynYNwOgXcHXBw82_EGejEd52znTc4H8d05ig4NJnwWbsCTNOM3LIKxb97kaRHXiTK6A9hzP3",
+     "facet": "guides"
+    },
+    {
+     "title": "atozbio.co.in",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGwK7UfbqsYbI96t5rl5c4qgv21tSqe7bPB7l4An_j4ANL04nTi7iMt2VCr7x54QQoCeJE0I6hSLTQR7raLQfUQmDGakZ5hMVz6cEBwjswORfk-DF342mee1fE6Hy227wF-QDJG0geSF8Yn4Q==",
+     "facet": "guides"
+    },
+    {
+     "title": "fandom.com",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHAdekXof37DrI1yJvPgLIInyD73sobuD7y-0F5E4lr4L-rvLkYRbm6tgLenxqHY02rY_xV1LlR2jEtfA9HuOrTfEnkB6Pv-trWkbxcbDoPOKVbdv2zqOvyCr3ha2Dy7gEt13GaQYCEcVl3bW82i4f1rKGQo5dIrS7xRAE=",
+     "facet": "guides"
+    },
+    {
+     "title": "thunderpick.io",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEBuQ0Cp2FgEpVevVVqfwHoMSY64krSf81UKgyPyVn5fVNycssQFXK6JDfoGReuzr6r84Md2Bh-IaJld_vd8h8Hcny6BufEFk5ldvrQJEQnMP88-7mxYEm5sMcTIvl16_b3EPAFPMfgsOmdC9hJAMcX8q61DG9cFvSSYQkhZdYPwJ8=",
+     "facet": "guides"
+    },
+    {
+     "title": "tapin.gg",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEysuNfTS-VgQhRexMV6mj1G4BnfJFHtf8sdXTMTHr9K0OK54Gk5QJVGKGtFnhCYazqx3TKPo8sy7HNd75gF-Nku1A03Pgt0Q3IfSBb0l7gl04PlLSdUA1Grz2nvRoULw6UXrFhdGFX_1XpF8wXvHNMlkjDX13wd3KUGtKa5zaiAZt8yldOlx8Q-7YKVYUaXFlmNbS4hzoT",
+     "facet": "guides"
+    },
+    {
+     "title": "riotgames.com",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFubbhVU9_xl-j6ivcYrwLOSujLVeIs3nIWG5UYyQ2ld8f0xfS_vpvs1sYU3WD6kzICJj4B6sLQPRD7cIBrkgV519Fj6TPOz2sgy4TDH4wXshsL4l3uFLG4v2cl4a8JiWfF55tD8IkuvV5wD67JuVcQ6dctNHt1XeEJ0SmcD2ERvXNYSPgC9qFAHA==",
+     "facet": "guides"
+    },
+    {
+     "title": "psu.com",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGwFOsXtc69bz66WRkWVYyr-r0BEolBC1lAe-ngnFxYlD9-Co2_7nzYG78lEufgeanwdjxsZr-KR-LAxyifHangnUjy2bjMLWb-X1vPrWnjAWkdgTTP1JpezD6C-4zMMp4pMLMVcpez38qVCQwJavLVPwLNA0zX9RZJrnQIZnRtiQ==",
+     "facet": "guides"
+    },
+    {
+     "title": "reddit.com",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGRDHpfZ0DqFi4RgXjtTeco3jOB3sb8aS8EoJC6NfuJ7IXGKbOarVEyQj72KzGjsvHSRVDQkw9lIzzgtKidl7gZB6IoCmG2yMzBREcnRDq7M0WKJVA0TFKtK0Eh9fvYHft4r48vAvSHbf-gMaK-JNUSzLcUknec0FLfJeghsNGrt_lnfp_cs-NGAFRdAwepahVjOLmzytZFLMwQx8Y4l6ypXoa1GA==",
+     "facet": "guides"
+    },
+    {
+     "title": "redbull.com",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHdrG9cLy7ZaVWn1tO87nPTXFlEjCKWi6N3lCO0j9Z68Z-TMYFZNd4QkeiVQTfxn6n2stdecbo3sie9s0khCcuRSWPoGrsRbTUQsyQc-iVdAGy9CWS4KOLVzt2zuoo_eV6cqgpAJYu4mOe34eqyahhJN20cJWeRtuIH9MTBKk3Cej4tSnKxHhojXRk=",
+     "facet": "guides"
+    },
+    {
+     "title": "mobalytics.gg",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGvIqISz6xl2kiwB-sCTb4VQo38BKXM-Wx_I0IWfzv37u3a264gQI-jXNiGpiKXfLjy-cFaSvWOscobjML_oZlRazAOw23bnjB85YOrIXaf4ogoXZGEQ9jiQ19PzVF0zaDr3xSqnVLlwjpk0Ft87e2jd_58EfvH4TzMe5dsuBi-wFU=",
+     "facet": "guides"
+    },
+    {
+     "title": "leagueofstore.com",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGsja5pgaNifLh4dVgyI-Y6lFw-88MQPieM4GsNaQa7pPp8JUI0hZ8ikKdrih74nCIbOPj8gbbHDTbsdvLi0KmB_QgsMNFOQpSLytgmqnBSZf_Kxvu7QrIFtDunFNjxfcrScn0pB0b1QOANo8YTBnF-DvhE79U1yFIXVH_27mJEOhL2Svir",
+     "facet": "guides"
+    },
+    {
+     "title": "youtube.com",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHyemf3uUdavVsDJvgGmzYZj23V-nQ2zqnV2-GSfxcHjv5fT-EvvqoRnJg7jOzbv5XAfbo0RM8pbR-7v0cXqB-ed5Z_EWZ7DXXy3ggfUMy7l1X3ZpUqfZhCBse9zG1GlthvM9pDuig=",
+     "facet": "guides"
+    },
+    {
+     "title": "reddit.com",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQF_PjsmU3dACi_L6SQTs0nf6-8Qy6-rv417UQPWyYDM3p5pGUJQ3RV9CYw0mh4WJH-H-TxZ9DpUL6a5pWSg3XKeVuHd4Ltlh_-hTO6fbOoXT4Zd9mM92bCny-EggAMYUd0hrnE-tEIvxtXpkulJEK9JQhh4QcomVeGu157qgGa6TiJQzziMBiSEr7K7dAR5dol_QGKwnSEHc9Ms0Nd3e0n6OLDOqCI2DkqM-fU=",
+     "facet": "guides"
+    },
+    {
+     "title": "disciplinedjungler.com",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGFar20geWtlNnVXpBmwucWSk-YHC1k-P9h0LAo5JPnMpsVwJ--HABQGewUJaakEfsJxmw8-P4YMQjI6_VppK387LEob2UcgYuhKnddJpb8ezmqsrsUbew362tSmScpXfhmeZC4W83uG3ViTulKVHbdySlypM0neq1ZxmEr4w==",
+     "facet": "guides"
+    },
+    {
+     "title": "stackexchange.com",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQH8uUQkzvdGBkc-1ClCY9-igXHc9sC_REcHZfVcPS_wAHGxNvmIVGbgk_KCXly3YxK_5H61giy4Ofw5jZlxl9iKkFSM7qOyU6gwtV5tk_KVjT9vyfZL0_OiNK3Ehl_0Zvl33D8ZxTj1_R7f6anFKANUKw6itn-DCXPi0tyjOEQMpMP_X06BPw==",
+     "facet": "guides"
+    },
+    {
+     "title": "reddit.com",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQF9EfteVuIzh-uEHLVAOb5-NpTaGs_QuuJK3xGa5KUPClVoEM60amo9oqrd8fDH6XD9NXGotKCpxJODVivx6jdzs_ACDrsP39l_JH9wG-SyVGff_TDAoXYMUvs7hr4ewMO5hqQSRPaX5frorWCNTJDQ0TPY6TGG-Rz7O-3qxhPZRD1iKXEcgucjxhGxW2-ezHx2dU3EJtmxRRefvaCkfQbkkQtkk-c=",
+     "facet": "guides"
+    }
+   ],
+   "researched": true,
+   "facets": {
+    "guides": 22,
+    "community": 16,
+    "meta": 8,
+    "wiki": 16
+   },
+   "character": {
+    "name": "Jinx",
+    "role": "AD Carry",
+    "abilities": [
+     {
+      "name": "Get Excited!",
+      "slot": "passive",
+      "does": "Whenever Jinx helps take down an enemy champion, epic monster, turret, or inhibitor within three seconds of damaging them, she gains a massive burst of movement speed and attack speed.",
+      "use": "Good players use Get Excited! to reposition, chase down fleeing enemies, or kite back effectively after securing a kill."
+     },
+     {
+      "name": "Switcheroo!",
+      "slot": "tactical",
+      "does": "Jinx modifies her basic attacks by swapping between two weapons: Pow-Pow, her minigun, and Fishbones, her rocket launcher.",
+      "use": "Top players constantly toggle between these forms to optimize damage, manage mana, and maintain safe positioning."
+     },
+     {
+      "name": "Zap!",
+      "slot": "tactical",
+      "does": "Jinx fires a long-range shock blast that damages the first enemy hit, slowing them significantly and revealing their location.",
+      "use": "Good players use it to follow up on allied crowd control, set up kills, or slow down fleeing targets."
+     },
+     {
+      "name": "Flame Chompers!",
+      "slot": "tactical",
+      "does": "Jinx throws out a line of snare grenades that arm after a short delay and explode after 5 seconds if not triggered, rooting enemy champions and interrupting dashes.",
+      "use": "Top players use them to deter enemy dives, zone opponents in narrow spaces, secure objectives, or set traps for enemies attempting to escape."
+     },
+     {
+      "name": "Super Mega Death Rocket!",
+      "slot": "ultimate",
+      "does": "Jinx fires a massive rocket across the map that gains damage as it travels, dealing physical damage to the first enemy champion hit and AoE damage to nearby targets.",
+      "use": "Skilled players use it to snipe kills, apply pressure across the map, or deal massive damage to grouped enemies in a team fight, especially when they are low on health."
+     }
+    ],
+    "mistakes": [
+     {
+      "name": "Poor Positioning and Over-Aggression in the Early Game",
+      "signs": "You frequently find yourself caught out alone, often far forward in the lane or deep in enemy territory without vision, and see the You have been slain message.",
+      "cost": "Over-aggression or poor positioning makes her an easy target for ganks and all-ins, leading to early deaths, falling behind in farm and experience, and delaying her crucial item power spikes.",
+      "drill": "In custom games or practice tool, practice last-hitting minions while staying behind your minion wave and within range of your support.",
+      "checked_by": "none"
+     },
+     {
+      "name": "Mismanaging Switcheroo! (Q) and Mana",
+      "signs": "You constantly run out of mana, especially when trying to farm or poke with Fishbones.",
+      "cost": "Running out of mana severely limits her ability to farm from range, poke, or contribute effectively in fights, essentially turning her into a less effective champion.",
+      "drill": "Go into the practice tool, set your mana to normal regeneration, and practice farming 100 minions using both Pow-Pow and Fishbones.",
+      "checked_by": "none"
+     },
+     {
+      "name": "Wasting Flame Chompers! (E) or Holding Them Too Long",
+      "signs": "Your Flame Chompers are either on cooldown from a previous, non-critical use, or you panic and place them poorly, missing the enemy entirely.",
+      "cost": "Misusing them leaves her vulnerable to enemy engages, especially from champions with high burst or gap-closers.",
+      "drill": "In a custom game with a friend playing an engage champion, practice reacting to their engage with Flame Chompers.",
+      "checked_by": "none"
+     },
+     {
+      "name": "Not Activating Get Excited! (Passive) Effectively",
+      "signs": "After securing a kill or assisting in one, you might continue attacking the same target or stand still, missing the opportunity to reposition or chase.",
+      "cost": "Failing to utilize this buff by not repositioning, chasing, or kiting effectively means you're not maximizing Jinx's potential to carry team fights.",
+      "drill": "In ARAM or team fight heavy game modes, consciously focus on your passive every time you get a takedown.",
+      "checked_by": "none"
+     },
+     {
+      "name": "Ignoring Vision and Map Awareness",
+      "signs": "You are farming in a side lane, and suddenly multiple enemy champions appear from an unwarded bush, leading to an instant death.",
+      "cost": "A lack of vision and poor map awareness means you won't see enemies coming, making it impossible to react with Flame Chompers or simply retreat to safety.",
+      "drill": "In every game, make it a habit to check your minimap every 5-10 seconds and practice placing control wards in key locations.",
+      "checked_by": "none"
+     }
+    ],
+    "sources": [
+     {
+      "title": "driffle.com",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEY_IFh-Viwy3WU5w3PjUUi-q109zAPSJFL2kb2BrqLOZwFmdPVoDq_5x6QvgxMHW6b_8IXNySPh782o3N--OunSNX-lnIWJlVGJyToj_lXc1JLDaA60rT-CaB54y7XeTbyC73vMs-ZSmdsRPrvYAErcg==",
+      "facet": "character"
+     },
+     {
+      "title": "dotesports.com",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGTfATDVjRBElcs_BAPz-eghSGFel_EeXCSpTJPPTlWSQcgkJQ8Er7f2hLpWUDXcyNOeCXXqXNirEKtxYVhHIdSdSoTlRzTkityehziABPqZKp3XYR6yV2v3yjjDshxZRWcd87rC0Di3sY9bFFs41EK7aWOvUicvMuc3HAEk5zQ-J7YALnt1bMy01jv8I28djAM42TEUw==",
+      "facet": "character"
+     },
+     {
+      "title": "riftpatchnotes.com",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHwI4XwmTUmGWGwBKb1P0qx4ouMq_pe020WxfRX0HlRZl8RkRTwtpJ0O47LB-hjsyps4qcEO50c5adwM-Y233Na090nNF94yCvM-m5JIst5iOWyN_W6EkUjAOvZ-dVo0TKtSTklYPcxolaFbA==",
+      "facet": "character"
+     },
+     {
+      "title": "thespike.gg",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGl67sF-giJv8YNHYzV2lI8-Q_Mx6f0SyJSBeByQCgvnyToCueX4NEkLFQl4RoeyWFFXNHnllU80RuNlBG30kFANWLnVM6b77p7BEd7_U4MuF6pMcWSybKstQv8TduVrjEuSPR_mSMcWdvRUzwdarD7t9Fz",
+      "facet": "character"
+     },
+     {
+      "title": "geekvibesnation.com",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQE9Er-4Z3evEnnSGbVopNrDh-w4soAu9NWlXBX2wJV6ZrNMIaT4dvSVnd-s5i1qeO1f9T6ijX3-sRCepVoa2_YcmsFn5FBhxiqGx3M9E26nbbt3czW8kb8X6ELncjbUgw7mHDxJZtkCQkCLIULqvT_dZuYV7-hXHLIy82n5hOLbvQQmpCeYj57lk2o8UQ==",
+      "facet": "character"
+     },
+     {
+      "title": "leagueofgraphs.com",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFABxMiCtfKQqmnOC1OBHL7FHs9H-gkZPY5Iw7fY42PQikmn8tmDbLmuXKAF0hXE9N0YHYw96LPOQXeC7lPsYT_4oFJNkWb-YJ1sO0HXxfwlLDSjplTyY-EF1qSLsmwT_QLohBc7AFl_IQKdKheRsh1AS2x2lyx",
+      "facet": "character"
+     },
+     {
+      "title": "leagueoflegends.com",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHsiS2-WFoP6qbf6YUsyBziPbYszul6HQWp1F8jLVCKdRa3kLoqnBSnM4MhctgkwbHZL9pyZ0g8cUgL60FMQiZygQ-6Gb6l1btFAuXyUUFVxzaTKeMmyymlvpPxNKtSt_2-nmW8kDuNU3CXa4j4PrTa",
+      "facet": "character"
+     },
+     {
+      "title": "metabot.gg",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQE1od7t7yat2ZKkhxbrxOcXO1841Tgsjl9jluRQi7VYWwKZN9IV90Kt_7gfi0oQqRSAXF8i8pAQ-CRx79ka4qxlOM-c_NAHvmth1T7cwFW1pz82AcgKdOspUfvHO5LwkkTkH0Eg-WbYYXi6vAh6MDo=",
+      "facet": "character"
+     },
+     {
+      "title": "youtube.com",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQF9766IEuZFygVe0PV9EWDw_cpq9D72OPHcq8j_AFgRR_najDqRHB_X_5Ox59oFwYWTK02N0VCXOpTtVgAD2Uds-UeKT8mXhddIB69Ptt8XzclHuahYGXP1A_r4kuAdE0rUGeb80IE=",
+      "facet": "character"
+     },
+     {
+      "title": "leagueoflegends.com",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEcdmMVf0rsxZSHAtUFmePTjPpi8IeS7RkqOMfoBIloCLMWRJHPcbT3Xq9o2X2EV-8346fytgna0HdB2IAfhKgD4lLDV75jybSCBgZDc7izr6fjsHrB_DT6ce_dEFf6gcRGr9PiIySVEpx1fE4M6WiTckL1WU4=",
+      "facet": "character"
+     },
+     {
+      "title": "mobafire.com",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFAxt8aaJz_JZdDzSs5oYBG-vdUPAupJOhVrHHq5CUFwXTVp-LOzMvVOlHZVZuE5RtjUYAXJp_5hyf2MgW2rxHu73u5GxaE07teqsBVqNUoO59sGQk07ZCijlbZMUmxf2nf1J43fhT6N0jGb2SBc7LHTnAAAcwJz65VRm5oRMYch-vlneLQ5vZHmVjsko1Wu3rV4g==",
+      "facet": "character"
+     },
+     {
+      "title": "fandom.com",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQF8nZkctk4gydgsIUOW-5_VYyB_9CSrFzEasyP75zLBEb9bFBBDmKdKIWyfD_tLbzguoDvX9xj0aOprq9WQMOtiDOma4ZV1BNBMiN2wbHQEaGg-sfsJmdy52EYPa441f6ABATvA4tatYkUr1g==",
+      "facet": "character"
+     },
+     {
+      "title": "mobalytics.gg",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQF5e6lrs1MhSlUcq6sUIKCDbBDP2m3Zzht4vq8uGZnTtHAY_7VS2gG3aG9qDpqNClxyD9Hmaue6XQqN7kedUQNwFd5fTDvJrsDSKp9yA2y92Gm4mFvE619yE6rxwDqKrAXThbWu2flYsl9wq45o",
+      "facet": "character"
+     },
+     {
+      "title": "op.gg",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHGqooZj4RPDE3fnFZR2ur9KW7-wxblo4EqONa5qjkFqIsvY0tmCf6hvxMGiH_Va8AQEVEhxg07j8ab2l0DJaSvZxcRlFHcwAlPgclFvfjrPjjpYzqaMn2QW7uNw_hDsq_X",
+      "facet": "character"
+     },
+     {
+      "title": "reddit.com",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFoKKqTCSWjPZdHDckj7fCS-MsFtrH8eWSHYm45p3rOzM2vpNJVSpCuiCHuvpmsDIMqvrXq6ws0k-hpEFNN34ZyN1rp2oduCemo6kke64jjO5QVGUVrqDiI6qiJDH5upadwiJRn8EBDZbv4udZgDD7lMchSUZ3ywiSAOdQcPbeJvPtRQSpB29jhXDQCGDNmvCsvJN1bilQ=",
+      "facet": "character"
+     },
+     {
+      "title": "reddit.com",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQH0ZkNsg1GfvEOOqc8A01KLRV4gPUNeTJdnEUJL3-8SxqdANNSd0ouXAQvOqVLDaQWlBA3shWS9En_CNY0NsbilysPoPJj5eRAg8lqUXLtbFIhIXH0t7ylAoofsvCbzjECZ53eg_2jgRX1ufVs3U6OXi7kkdXCRVA_hYe5IBT27132DcxwTU9Uq4V-r1F27FXzAgJBDE2t-BigmRR--0m-I3K61",
+      "facet": "character"
+     }
+    ],
+    "researched": true
+   }
+  }
+ },
+ {
+  "name": "Rocket League",
+  "seconds": 72,
+  "research": {
+   "rewards": "Winning competitive matches increases your MMR and earns competitive rank in the playlist.",
+   "systems": [
+    {
+     "name": "Boost Management",
+     "matters": "Efficiently collecting small pads and strategically using boost for challenges, recoveries, and aerials allows for faster, cleaner, and more consistent play."
+    },
+    {
+     "name": "Rotations and Positioning",
+     "matters": "Understanding where to be on the field relative to the ball and teammates ensures defensive coverage and offensive pressure, minimizing open opportunities for opponents."
+    },
+    {
+     "name": "Aerials and Car Control",
+     "matters": "The ability to consistently hit the ball in the air with power and accuracy is a game-changer for clears, shots, and saves."
+    },
+    {
+     "name": "Ground Control",
+     "matters": "Maintaining possession, creating offensive threats, and winning ground challenges are fundamental for controlled gameplay and preventing opponents from gaining momentum."
+    },
+    {
+     "name": "Challenging and Decision-Making",
+     "matters": "Knowing when to commit to a challenge, when to shadow defend, and when to rotate out is crucial for not overcommitting and maintaining team integrity."
+    },
+    {
+     "name": "Aiming and Shooting",
+     "matters": "Being able to place shots accurately and powerfully, rather than just hitting the ball, directly translates to scoring goals and winning matches."
+    }
+   ],
+   "priorities": [
+    "Rotations and Positioning",
+    "Boost Management",
+    "Aerial Car Control",
+    "Ground Control",
+    "Challenging and Decision-Making",
+    "Shooting and Aiming Consistency",
+    "Recovery Mechanics"
+   ],
+   "engagements": "A good challenge aims to win possession for your team, force an opponent into a bad position, or create space for a teammate when you have an advantage. A bad challenge leads to overcommitment, leaves your goal exposed, or gives possession directly to the opponent.",
+   "aimTarget": "none",
+   "mistakes": [
+    {
+     "name": "Overcommitting / Ball Chasing",
+     "signs": "You are constantly boosting towards the ball from awkward angles even when a teammate is better positioned, with your camera almost always fixed on the ball.",
+     "cost": "This leaves your net wide open, creates double commits, and grants opponents uncontested possession and easy scoring opportunities.",
+     "drill": "Watch your own replays focusing on your car's position relative to your teammates, and ask if your challenge left the net vulnerable.",
+     "checked_by": "none"
+    },
+    {
+     "name": "Poor Boost Management / Boost Starvation",
+     "signs": "Your boost meter is frequently empty, and you make long detours to grab full boost pads or react slowly due to lack of boost.",
+     "cost": "An empty boost meter severely limits your ability to challenge opponents, make saves, or generate powerful offensive plays.",
+     "drill": "Go into Freeplay with unlimited boost turned off and practice driving around the field collecting only small boost pads while maintaining momentum.",
+     "checked_by": "none"
+    },
+    {
+     "name": "Bad Rotations / Not Rotating Back Effectively",
+     "signs": "After an offensive play or challenge, you linger too far upfield or drive directly back to your goal in a straight line ignoring optimal defensive positions.",
+     "cost": "This leaves your teammates exposed in disadvantageous situations making it easy for opponents to score.",
+     "drill": "Practice rotating to the back post in Freeplay imagining an opponent attacking your goal.",
+     "checked_by": "none"
+    },
+    {
+     "name": "Not Utilizing Power Shots / Weak Touches",
+     "signs": "Your shots on goal are slow and easily saved, and your clears from defense lack power, leaving the ball in dangerous areas.",
+     "cost": "Weak touches fail to create pressure, allow opponents to easily regain possession, and make it difficult to score or clear the ball to safety.",
+     "drill": "Use custom training packs designed for power shots focusing on hitting the ball with the nose of your car after a bounce.",
+     "checked_by": "none"
+    },
+    {
+     "name": "Poor Recoveries",
+     "signs": "After a challenge, whiff, or save, your car is upside down, facing the wrong direction, or takes a long time to get back into the play.",
+     "cost": "Slow recoveries create temporary numerical disadvantages for your team allowing opponents to maintain pressure or score.",
+     "drill": "Practice half-flips, wavedashes, and air rolling to land on your wheels after aerials or awkward touches.",
+     "checked_by": "none"
+    },
+    {
+     "name": "Rushing / Lack of Patience",
+     "signs": "You challenge the ball too early, make quick and uncontrolled touches, or hit the ball without a clear plan.",
+     "cost": "Rushing leads to giving away possession, making poor touches, and preventing you from setting up more advantageous plays.",
+     "drill": "Practice dribbling the ball on top of your car and performing controlled flicks or passes in Freeplay.",
+     "checked_by": "none"
+    },
+    {
+     "name": "Poor Backboard Defense",
+     "signs": "You struggle to read the ball as it comes off your backboard, missing clears or making weak touches that stay in front of your net.",
+     "cost": "Ineffective backboard defense directly leads to easy rebound goals for opponents.",
+     "drill": "Utilize custom training packs specifically designed for backboard defense to read the ball trajectory and execute powerful clears.",
+     "checked_by": "none"
+    },
+    {
+     "name": "Positioning Directly Next to Teammates",
+     "signs": "You find yourself driving directly behind or alongside a teammate who is already engaging with the ball.",
+     "cost": "This leaves large portions of the field completely undefended if the initial challenge is lost.",
+     "drill": "Practice spacing and awareness in Freeplay with bots to maintain supportive positioning without being on top of teammates.",
+     "checked_by": "none"
+    }
+   ],
+   "meta": {
+    "patch": "Patch v2.77",
+    "strong": [
+     {
+      "name": "Fennec",
+      "why": "It shares the top-tier Octane hitbox and is preferred for its visual alignment with its hitbox."
+     },
+     {
+      "name": "Octane",
+      "why": "Its hitbox is highly versatile, excelling in dribbling, aerials, and 50/50 challenges while being a free all-around choice."
+     },
+     {
+      "name": "Dominus",
+      "why": "Its longer and flatter profile makes it ideal for powerful flicks and ground play."
+     }
+    ],
+    "changes": [
+     {
+      "what": "Honor Duels",
+      "effect": "Match length was reduced from 5 minutes to 3 minutes, and players can now forfeit after 60 seconds."
+     },
+     {
+      "what": "Visible Matchmaking Rating (MMR)",
+      "effect": "Players can now choose to see their MMR to track progress and understand rank fluctuations."
+     },
+     {
+      "what": "New Flip Reset Cues",
+      "effect": "An unobtrusive flash under the vehicle now indicates when a flip reset is available making the mechanic easier to time."
+     }
+    ]
+   },
+   "reference": {
+    "characters": [
+     {
+      "name": "Octane",
+      "role": "Octane"
+     },
+     {
+      "name": "Dominus",
+      "role": "Dominus"
+     },
+     {
+      "name": "Breakout",
+      "role": "Breakout"
+     },
+     {
+      "name": "Fennec",
+      "role": "Octane"
+     }
+    ],
+    "maps": [
+     "DFH Stadium",
+     "Urban Central",
+     "Beckwith Park",
+     "Utopia Coliseum",
+     "Mannfield",
+     "Wasteland",
+     "AquaDome",
+     "Neo Tokyo",
+     "Champions Field",
+     "Farmstead",
+     "Salty Shores",
+     "Forbidden Temple",
+     "Neon Fields",
+     "Deadeye Canyon",
+     "Sovereign Heights",
+     "Estadio Vida",
+     "Starbase ARC",
+     "The Block",
+     "Throwback Stadium",
+     "Utopia Retro",
+     "Sunset Dunes"
+    ],
+    "weapons": [],
+    "other": [
+     {
+      "kind": "Customization Items",
+      "names": [
+       "Decals",
+       "Wheels",
+       "Boost Trails",
+       "Toppers",
+       "Antennas",
+       "Goal Explosions",
+       "Engine Audio",
+       "Trails",
+       "Player Banners",
+       "Avatar Borders"
+      ]
+     },
+     {
+      "kind": "Rumble Power-ups",
+      "names": [
+       "The Boot",
+       "Disruptor",
+       "Freezer",
+       "Grappling Hook",
+       "Haymaker",
+       "Magnetizer",
+       "Power Hitter",
+       "Spikes",
+       "Swapper",
+       "Tornado",
+       "Unfair Advantage"
+      ]
+     }
+    ]
+   },
+   "sources": [
+    {
+     "title": "epicgames.com",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQF1-pVVqxMtrCz1yrJCa24NNn4If4VTb6h_YXhI-mHRqj7vue3aj-dmeNGDEYoh4iefwabkDt4N0w9JQrc4VopLtZLQWd5n46QM4exj-eDZ_m_HVTPBZXSM1vYga977jv309YmLRfhG2rACPX7469Whdn4vIP6AgyycUUG1uFFqhIZF5JIXYok_MYYteGMa4tQQ0WCWGNQ1450cwuazIMxwv_91VaFeJG4JQM6Xsvh6uKCJ5sKN3WaS",
+     "facet": "guides"
+    },
+    {
+     "title": "greenmangaming.com",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGjVBhHBerx_mC_S2HKXJzQCe9GtcIO_pYLRnlI8ZmR3MTh87mklWDA2IhtpZ1Lw_R0RSZNZgWqAasIzuU_dJAnV6qXYLczsy2bEckJs5ef9YQFXtsd8GnK5kC3cFlHxBMCWlRFsAI-ms7mZI_UMhSuW8gohbZmABV5EoDoV-c6O3Rp8cwO-A==",
+     "facet": "guides"
+    },
+    {
+     "title": "egamersworld.com",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEhOJIc8vTGBvgSPesLNySBPuU6RMrkbstyvQhCnHJt1uxDTY-2Bk5-12BJ5VHcDNuO02_OIEncukut08kF11BIT9-nRR7Kj6YtNHEPf4T6e5kv2spNn4BwUhQ48_7M7CUPvdIyDwY3YVLMwosR6Gl2RONfigZUKuWq04_iOFg_xGAKg1j229lUfcX_poEZ7Q==",
+     "facet": "guides"
+    },
+    {
+     "title": "buyboosting.com",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEcXtcDn7sOu0XLQ6yBQeOwtVrFP1GXGrLVTRMyettqilc-TnYLiU1EMEGaNaSMSjbUJNdJ9_FK8T2mKoRKK1xlmPic0vASTgG2D6w-8f1S_D3x_ONaTaTI7TLM6Kfph7NPK2KGRw==",
+     "facet": "guides"
+    },
+    {
+     "title": "dignitas.gg",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEpXtL1aZvNSNGk0PwyM-jlAJzeHrUol5mvfVPiGQ5zPResLGW-EnbzQEVrY4m8SeJ2kvfj6LblRFLCdD0hztr4d1gsOxyfdxKyEaURvs9KE6vfpwsbTDIuLSYV4HZ1TedM_moQ_YUL8rrXvJU5OgxLjff_NvUBEKN_",
+     "facet": "guides"
+    },
+    {
+     "title": "steamcommunity.com",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEu4CxARRZsOqM43ErFHtKdI4Thff43Ga2xEMmD67yg7PE4RQism41PE29TsaR6sRQSND5Gd93ocdTIA0egAzd0dKzkWBh3oDqrR83Incp-_slzKnsLtuXnzyJqkx82ppkmssL7HCOk9D4b8oPHMh2lachGMlRHNwBemBbjV0UuE3-8xQ==",
+     "facet": "guides"
+    },
+    {
+     "title": "gamersrdy.com",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGKPO9gYOypEhHc3VjMCRCwDN9bKmfsEyj90KPo3UKWoTahbJzj4bgGR8tCTX3ZdyRYwP2gzR26pkIUOr3IzbwKO83saUFYUrUSHG-VbDUjvyJuvmyp2DydCGe_Z1AIeIKO8y31T80XmH47T8KMhLDaDqTfprbvdauBxcL4GF3LJDaCtV_mzw==",
+     "facet": "guides"
+    },
+    {
+     "title": "boosteria.org",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHRO9dyuEz-lc8v61aD_OuTRvG_B2k93dAR1ajJzpsNGXbI-_Y6wMY7ERReao2Tb92oBpYcapkAugu3NuW3jct5VdqoqROc-dzJpN8c59YtFfQqMESairGtj_lk1pYefYwg45SfRjepZ29Fhg4cAC64m9bm6QXpHjTBMZ2xziVMMDlzz6PL62n4Nig=",
+     "facet": "guides"
+    },
+    {
+     "title": "rocketleague-help.com",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGwDI1hsVwbwZyxy3YmKsWfQ0dqXxtvfPec-Wzd3foOtfpIkjlFS_cQarhpKDWGpejMu1US9Oke2VzYJo_5PkVqNFsbSjpDVdh7vefN76twLquushT0gyuPge2cwN8ep4JNjzQIn-HydkWcis2S",
+     "facet": "guides"
+    },
+    {
+     "title": "facebook.com",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEA8CuHbRyJZDLrOwSAK0NGMMLbALskm8d5e2FrGedUCiQj3S7fNbtinUGscDiFDD8xXezSWyBpPvlRFx2AXlswDonHZrOwguLJhUkkx_E5DznXlT7mxK5sHL94G32xwuVlu60-215Bbr7BZ_5peVpNm5P6zs8dkdhvHKxB",
+     "facet": "guides"
+    },
+    {
+     "title": "jeu.video",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFu4JsgbYimY3gC7fufcShO5mQvo4X5NxjRltxiPCa84BVblrN3EspW0XwR90dVocloUh04LP5D62cMs_yRcSU-HkcwfujtB_kcYXAsi9W8DU_ZSWJ2f_q8d94-Xps8RuSIN88uc36gC7G2vlFfR3mAo1s=",
+     "facet": "guides"
+    },
+    {
+     "title": "gamerpad.com",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHGz1lCZlvegFqIg8ccY6imXbJGweiX2uYVY6HoN1EGUqa2RJC-eFTfAGrKk7ftY7_F0SvtscdJ_XR4TSrc2AGjbEymekronkNj31qq21QPbh7_lDDBCjFrLkJxh0XMEtqMrlce5xUNKRpjWxnjs0Vl4lEUDjk8wWcrMfV2nLIx3sltm0ZOMfMwzIQxQDy6lmVLwloFo_CMgsvNGTUh-wd7dyhnwpVWvKyuSeABnucI",
+     "facet": "guides"
+    },
+    {
+     "title": "youtube.com",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHp54SRKBqrf_Hh5M-QXgax1sjULN3Cn8BrV0GmoeyBFX1NTNDFHKrMuM5WyygvlHuoTOevLot2EdzhVJqvpflKSaiG3HvTRl8XaIbx2h-A4UU1A8UUti7yhgglmaABFD55QoGRMpQ=",
+     "facet": "guides"
+    },
+    {
+     "title": "nerdstreet.com",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFwV5Yyd33ZHJl8kQDAPRvBt0dcFwYaQ86p5CpKeDxerbEtuWIPTELf8QaOqpGxTstPWSU7Nr--Nizr49HKB-cDgkvFGcif7iQ1fjcskK2ZiOT01xCRj6YuPr6e4nJ7DGtPDmVdZBx9U5pxZa10vfYii6SYlsHRDcNuh9A=",
+     "facet": "guides"
+    },
+    {
+     "title": "boosteria.org",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFQTp1-QVh49Cq9ajmLQEUWOCzx-pqyfSWvfdlCNv4CcGV4AIU2BT6veZhb4iPOctkTssq0Eoc0_VIUu89i2IftanKbyzidomalAcBJgQyBJmcPkJ_0BgYs66qxrL3IYg9yjogujCIY_eRvbjsil6fSav6UGoGG",
+     "facet": "guides"
+    },
+    {
+     "title": "dignitas.gg",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGeKFvP0BT_xZ_zWG6iHNu1KeQTpsRpDGI1gyFDq8oD5NjA8ibLg1HQ852GUGkAUw-iP7bGc8CUWLE_rceIfh0-vPkHHIjDrZZk1iwE65WUw8AjmzVqGB1jsl6MtqXEvJBqMGUh29ECpPPD1rfrshLeE5WaiBAbWeCkncFwX1EUM58iDsgK",
+     "facet": "guides"
+    }
+   ],
+   "researched": true,
+   "facets": {
+    "guides": 37,
+    "community": 23,
+    "meta": 15,
+    "wiki": 16
+   }
+  }
+ },
+ {
+  "name": "Street Fighter 6",
+  "seconds": 129,
+  "research": {
+   "rewards": "Winning matches earns League Points (LP) to climb the ranks.",
+   "systems": [
+    {
+     "name": "Drive System",
+     "matters": "Good players manage this resource carefully to fuel offensive and defensive options while avoiding a vulnerable Burnout state."
+    },
+    {
+     "name": "Super Arts",
+     "matters": "Good players use Super Arts strategically for high-damage combo finishers, invincible reversals, or comebacks."
+    },
+    {
+     "name": "Neutral Game and Footsies",
+     "matters": "Good players control stage control and spacing by walking forward, baiting whiffed attacks, and whiff punishing."
+    },
+    {
+     "name": "Anti-Airs",
+     "matters": "Good players consistently punish opponents who jump towards them to lead to significant damage or reset the neutral game."
+    },
+    {
+     "name": "Offensive Pressure and Corner Control",
+     "matters": "Good players trap opponents in the corner to limit their movement and use mix-ups and throws to open up blocking opponents."
+    },
+    {
+     "name": "Defense and Escaping Pressure",
+     "matters": "Good players know when to block, parry, or use an invincible reversal to find gaps in an opponent's offense and take their turn back."
+    }
+   ],
+   "priorities": [
+    "Drive System Management",
+    "Anti-Airs",
+    "Neutral Game / Footsies",
+    "Offensive Pressure & Mix-ups",
+    "Defense & Escaping Pressure",
+    "Basic Combos & Damage Conversion",
+    "Super Art Usage"
+   ],
+   "engagements": "A fight is worth taking when you have an advantageous position, optimal range, a read on your opponent, or a resource advantage; a fight is bad when you are out of position, in Burnout, guessing incorrectly on mix-ups, or trapped in the corner.",
+   "aimTarget": "none",
+   "mistakes": [
+    {
+     "name": "Mashing Buttons on Wake-up or When it's Not Your Turn",
+     "signs": "You're pressing attack buttons immediately after getting knocked down or during pressure, resulting in your character getting hit out of startup frames.",
+     "cost": "Mashing leads to getting counter-hit, taking full damage, and losing your turn or the round.",
+     "drill": "Practice blocking meaty attacks and frame traps in Training Mode to identify when it is truly your turn.",
+     "checked_by": "none"
+    },
+    {
+     "name": "Jumping Too Much or From Unsafe Distances",
+     "signs": "Your character is frequently airborne in neutral, on wake-up, or attempting jump-ins from far away, getting hit by anti-air attacks.",
+     "cost": "A predictable or poorly spaced jump leaves you extremely vulnerable to anti-air attacks and significant damage.",
+     "drill": "Practice consistently anti-airing a dummy jumping forward with heavy attacks from varying timings and distances.",
+     "checked_by": "none"
+    },
+    {
+     "name": "Over-reliance on Drive Impact",
+     "signs": "You frequently use Drive Impact in neutral or during pressure, seeing your character flash yellow only to be hit by a counter-DI or super art.",
+     "cost": "If anticipated, opponents can counter-Drive Impact you for a guaranteed crumple state and full combo.",
+     "drill": "Practice reacting to a dummy's random Drive Impact during blockstrings with your own Drive Impact.",
+     "checked_by": "none"
+    },
+    {
+     "name": "Not Teching Throws Consistently",
+     "signs": "After being knocked down, your character is repeatedly thrown without the Throw Escape message appearing.",
+     "cost": "Throws bypass blocks and lead to throw loops that drain your health quickly.",
+     "drill": "Practice delay teching by blocking briefly after recovery and inputting the throw tech command.",
+     "checked_by": "none"
+    },
+    {
+     "name": "Burning Out Your Drive Gauge Recklessly",
+     "signs": "Your Drive Gauge is frequently empty and indicated by a gray bar, leaving you unable to use Drive or OD moves.",
+     "cost": "Burning out severely limits your options and makes you vulnerable to chip damage and stun.",
+     "drill": "Play matches with a conscious effort to monitor your Drive Gauge and use mechanics strategically.",
+     "checked_by": "none"
+    },
+    {
+     "name": "Not Utilizing Drive Rush for Offense and Pressure",
+     "signs": "Your character rarely performs the green dash animation of Drive Rush or only uses it after specific normals.",
+     "cost": "Not using Drive Rush means missing out on significant damage opportunities and making your offense easier to defend against.",
+     "drill": "Practice raw Drive Rush, canceling normals into Drive Rush, and incorporating it into short blockstrings.",
+     "checked_by": "none"
+    },
+    {
+     "name": "Predictable or Non-existent Neutral Game",
+     "signs": "You find yourself at mid-range unsure of what to do, leading to random button presses or walking into attacks.",
+     "cost": "A weak neutral game allows your opponent to dictate the pace, land free damage, and get into their preferred range.",
+     "drill": "Practice mirroring a dummy's movement, using best pokes, and whiff punishing in Training Mode.",
+     "checked_by": "none"
+    }
+   ],
+   "meta": {
+    "patch": "10.13.2026 update",
+    "strong": [
+     {
+      "name": "Ryu",
+      "why": "His ability to control the ground with Hadoken and standing medium kick, combined with a reliable Shoryuken and recent offensive buffs, makes him dangerous."
+     },
+     {
+      "name": "JP",
+      "why": "He excels at ranged pressure and setting up traps with Departure to control space and force reactions."
+     },
+     {
+      "name": "Mai",
+      "why": "Her ability to create oppressive situations through Kachousen-based pressure and corner control makes her a formidable opponent."
+     },
+     {
+      "name": "Sagat",
+      "why": "Buffs to his low attacks, increased knockback on standing light kick, and improved Overdrive Tiger Nexus follow-ups enhance his neutral game."
+     },
+     {
+      "name": "M. Bison",
+      "why": "Buffs to his Psycho Mine-planting Backfist Combo and faster startup on his Level 2 Super Art make him effective at maintaining pressure."
+     },
+     {
+      "name": "Luke",
+      "why": "Compounding buffs to his fireball game, meterless combos, corner combos, and block pressure have driven a significant resurgence in his play."
+     },
+     {
+      "name": "Akuma",
+      "why": "He brings classic tools like air fireballs, Raging Demon, and insane combo routes."
+     },
+     {
+      "name": "Cammy",
+      "why": "Her speed, aggressive playstyle, and Overdrive Quick Spin Knuckle make her a strong tool for surprise attacks and closing gaps."
+     }
+    ],
+    "changes": [
+     {
+      "what": "10.13.2026 update",
+      "effect": "Added the Year 4 character Arjun and included various bug fixes and minor battle adjustments."
+     },
+     {
+      "what": "August 3, 2026 balance patch",
+      "effect": "Brought impactful changes including buffs to Luke, Jamie, Dee Jay, Cammy, and Alex, alongside nerfs to Mai, Sagat, JP, and Blanka."
+     },
+     {
+      "what": "March 17, 2026 patch",
+      "effect": "Made overheads universally -3 on block and added the ability to hold jump during screen freeze for an opponent's Drive Rush."
+     }
+    ]
+   },
+   "reference": {
+    "characters": [
+     {
+      "name": "Ryu",
+      "role": "Shoto, Standard"
+     },
+     {
+      "name": "Luke",
+      "role": "Standard"
+     },
+     {
+      "name": "Chun-Li",
+      "role": ""
+     },
+     {
+      "name": "Jamie",
+      "role": "Drunken Boxer"
+     },
+     {
+      "name": "Kimberly",
+      "role": "Bushin-ryuu student"
+     },
+     {
+      "name": "Manon",
+      "role": "Judoka"
+     },
+     {
+      "name": "Marisa",
+      "role": "Pankratiast, Power"
+     },
+     {
+      "name": "Lily",
+      "role": "Thunderfoot tribe"
+     },
+     {
+      "name": "JP",
+      "role": "Psycho Power-wielding"
+     },
+     {
+      "name": "Juri",
+      "role": ""
+     },
+     {
+      "name": "Dee Jay",
+      "role": ""
+     },
+     {
+      "name": "Cammy",
+      "role": ""
+     },
+     {
+      "name": "E. Honda",
+      "role": "Power"
+     },
+     {
+      "name": "Blanka",
+      "role": ""
+     },
+     {
+      "name": "Guile",
+      "role": ""
+     },
+     {
+      "name": "Ken",
+      "role": "Power"
+     },
+     {
+      "name": "Zangief",
+      "role": "Grappler, Power"
+     },
+     {
+      "name": "Dhalsim",
+      "role": "Zoner"
+     },
+     {
+      "name": "Rashid",
+      "role": ""
+     },
+     {
+      "name": "A.K.I.",
+      "role": ""
+     },
+     {
+      "name": "Ed",
+      "role": ""
+     },
+     {
+      "name": "Akuma",
+      "role": ""
+     },
+     {
+      "name": "M. Bison",
+      "role": ""
+     },
+     {
+      "name": "Terry",
+      "role": ""
+     },
+     {
+      "name": "Mai",
+      "role": ""
+     },
+     {
+      "name": "Elena",
+      "role": ""
+     },
+     {
+      "name": "Sagat",
+      "role": "Zoner, powerhouse"
+     },
+     {
+      "name": "C. Viper",
+      "role": ""
+     },
+     {
+      "name": "Alex",
+      "role": ""
+     },
+     {
+      "name": "Ingrid",
+      "role": ""
+     },
+     {
+      "name": "Yasmine",
+      "role": "Rushdown"
+     },
+     {
+      "name": "Arjun",
+      "role": ""
+     },
+     {
+      "name": "Tifa",
+      "role": ""
+     },
+     {
+      "name": "Bosch",
+      "role": ""
+     }
+    ],
+    "maps": [
+     "Pao Pao Cafe",
+     "Proud Spire",
+     "Dhalsimer Temple",
+     "King Street",
+     "Old Town Market",
+     "Colosseo",
+     "Metro City",
+     "Nayshall",
+     "Barmaley Steelworks (Russia)"
+    ],
+    "weapons": [],
+    "other": [
+     {
+      "kind": "Gear/Apparel",
+      "names": [
+       "Full Face Helmet",
+       "Officer's Watch",
+       "Fighter's Sweatpants (Bottom)",
+       "Fighter's Hoody (Top)",
+       "Basketball Shoes",
+       "Blanka-chan Costume",
+       "Thigh High Socks - Bordered",
+       "Apocalypse Mask"
+      ]
+     }
+    ]
+   },
+   "sources": [
+    {
+     "title": "reddit.com",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHD8o6FRfBsx7m1qkzitYfAx8T-nqr44SQ1-ohtN9PULGG79JHaUN0FGq_l4PVh8VYbmSgJxxeedPzLs34-L6yCBjHjj4Eg9Mv6VLI6IXcmaOQz3lw0rV52ybMHt_WOR97Vq-jMU98PNsNAxX0Gu1pDH5Tg90InAFljjDuCWd881n9c5VgzdcBd6xhawbERQmUy189jrb-KNbWhBRA54urffA==",
+     "facet": "guides"
+    },
+    {
+     "title": "dashfight.com",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFCG4Jm_yxQ18labCWObvOs018NnL88oSGjf8lp4u1VE_MiY5ezPb8X7a64l1437O7Tp6x5jorxeDs2ov6Yonw31oiHID3qaVCQsGfnZE3D4THRWInENydzWBLVgaSE1sgWvVhdYFU0zYzWRnlxOWOeOFOKXxhlkg==",
+     "facet": "guides"
+    },
+    {
+     "title": "infil.net",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEGBuBzSrTOfhRvO15vLbq9i4Js-aX-EH2c5xAmrcQH6Mse0kHYAHchn0DYXNjWznx8k5S4Bn6vZDt2Tl3ORlXBriNeqOlj5xbD8pz_uDHrCXiJisDY2xw2FkELvnvvpogGWAdQXtU=",
+     "facet": "guides"
+    },
+    {
+     "title": "steamcommunity.com",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFcrv7LXGi3kiq_-3juR493V_oh07WRSBlaZZIwTcT3Z0F6GqwEcuXaBleXPRuVgBnN-3oAdAmYUl7ZpRc2fq87894GQTIo4-4ChQZMd4DDgLZX7Sd0HNsoc0izIdxZLxT45HyTvUiO-n962Z74xP57ZtezUZ6XU_PT5-g=",
+     "facet": "guides"
+    },
+    {
+     "title": "redbull.com",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFagW1hrecgNrWVUeJrTzlch6JqiTtpHj6XoVnPCmVXZJ_3n5Uq0ZnmNrnBRPudRukrT9UMYvfm5mMm7tRLAclWZ2UbTJbnAlY_SazGZuUjWBaVfkuZJjF6JBx-QvFG5W4rtkU56wakH4lqFLXYGRm0sht-ZF4=",
+     "facet": "guides"
+    },
+    {
+     "title": "gamingbolt.com",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGncxENVLTziK32NtTZqQ0epf_oEcz1u4S-DmZJRwxqKyDK1-eTdqmDjFD35_YDb80o1a1SNdyYud-QF5Bi9SUK9yZUmCRRthIhcFfmyozKy0haT4Ri8cZpj6dvp-0i5ATvj6QxNGHp1VMTS0X01KVRvfNIDwsK7iIgr2SFVBQIu2Xw-Wk-eiGLadlERu1U6Az7mubH0ouehESMyGFy5MNIwhpfZ15x",
+     "facet": "guides"
+    },
+    {
+     "title": "dashfight.com",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHeehHr_AryOyN6v7lEyHedOHIEzyOnxERMuFgu9hWTtg6Qydy5529GUQNVj8fcVcHsgV4NjLtvCSJRlvyyoUT-3Rqw6IA_sbX1DrdWEnxQE87zXPhVxGJHEtq4n2TBFJq3STEe1LzUOGpionNq3QubryavMbRX0PvUUGcr9plOfnY=",
+     "facet": "guides"
+    },
+    {
+     "title": "reddit.com",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEEAofRvAzgtVPJZKfjlx56sgDTZtDs9mWn73if0gQSnRXaO1SbMbBOr9k0Cxixytmk-6RYNBCuFtFo6FMCvKKkJ9PX2VdUwapAIBOpYkDlpUOgc1_QTs5TpBVbc1AHw2fizw6IyUXBxJqmnuVNFaOjqzE8YvT7xSM5f8w3M4J4OO7Ku8quKjDU-jdChwsCdSTzX2phm0G_yliJIKj-n2o2Xw==",
+     "facet": "guides"
+    },
+    {
+     "title": "youtube.com",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEQ0E8zbrhdnH-78cVKoG78C5JD0ndHq4l_Y4JIUXIHcVUlPJXaCHJ1VT3Fvvo12Z8Ju2wxeKXmm3Uk8rCSjzh0H0HWnJG83AUWMiJY6E4IxX8ZPAkCB-LAVrsxMGqbj0_z0rVPvg==",
+     "facet": "guides"
+    },
+    {
+     "title": "reddit.com",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFpF-noel-EnV-tkb-IextjVfTJE2oJEmKF2QNFnornRrYt-YtuUKHhFECCmxkgakU3Kge52wFA7J_mwxraAVnXNDJMxh2xDDQaNlohdXMX6GS4MUTyp-3pvvveobp7QPJ2miEGOqMykZMHzWrbJqPEmj5jQwmwVHUgB5moFH6iTVAu2paLsiyr3xbWx9qisEyRgmG09aJdQ8mJ0fsSew==",
+     "facet": "guides"
+    },
+    {
+     "title": "fandom.com",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHsFEnaLVk_tFpYk6iJ6BDZb6r7GxtgNlK1trUIRoMF0mPlNu9t01XDnN5xqhcDSRm7FTdIYUxnMrdBN0mjZ5JiUjwYSZPrUbJlRqmQQ3iTXKcVhVPt9GuubLjWuMdQUalV74pbiU3Csvxq",
+     "facet": "guides"
+    },
+    {
+     "title": "youtube.com",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEF8stnac23BYQGF5hTwsTAZ71dI1GcHJaXY0SKlmwNyhFK7KB2uZAkNhCueFv0dyEHeUxuYEaGV6022qG49QRcbpGD_lgDvxEaK5FnIj85Wl_t4yu2s2RSIo61qW4vJU5WxRT90A==",
+     "facet": "guides"
+    },
+    {
+     "title": "infil.net",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFrf7VGZxSdPS9XA3nfe7JXAO8lz1oCTjYW0c912voFp7dvUpHUIk2ARNk9yilq19CbhPekbKs6saPJUtOzkcRTLf583lkqsj9ski3ARM9FW5JW0Vagh_-DHM-VrNJGTWm8tFp4",
+     "facet": "guides"
+    },
+    {
+     "title": "youtube.com",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHNAYbeDaCNHJeg7InfdTkTLsHUPuP8-nlnF2iZV0cnyM0Pg3OZR2Ttvt8KUxNUQenU-G6rXKMx-aaDJ7YCOJXNeDK7_bFBanjoed0YHcIonCUSciQMMuj8vBduvhWYCGpJhyT2RA==",
+     "facet": "guides"
+    },
+    {
+     "title": "supercombo.gg",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHYe48uFAm2egkgfJXKrr-ZVW26sLRcsyA2Hb6g8P2dqWWyCZuOygKq1VRAjirV7e_JULf9wveMTLoj5mKwHxcAsFpMGal0xykBtPC4wt32w8umWKEB0RygHF3m5htP2q21R9i3m_Crop-vlfl8ZhA=",
+     "facet": "guides"
+    },
+    {
+     "title": "esports.gg",
+     "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHf5ue4rMbi8AA7DyN3ME7DrInz5YnWbsOB3yQax5swEx_JnPKPRz80VJjQIHVfY7H3nmsDPL8quleYY2PNVfRJ9Y0M9Mh-QQjntNK2B7OT41FHaP9WKQfYdqIGN1G1NLfL5R-Rbt_h7vjcU0Aar2dPDm_XhzOp9E9F98RbTDBpChT4Fp1aIIRRZ7XdzWedDCPzcKJusLhjcIK5ha2GGg==",
+     "facet": "guides"
+    }
+   ],
+   "researched": true,
+   "facets": {
+    "guides": 38,
+    "community": 29,
+    "meta": 36,
+    "wiki": 25
+   },
+   "character": {
+    "name": "Ryu",
+    "role": "fundamental, balanced, and defensive anchor",
+    "abilities": [
+     {
+      "name": "Hadoken",
+      "slot": "special move",
+      "does": "Ryu launches a projectile fireball across the screen.",
+      "use": "Used for zoning, controlling space, and forcing opponents to approach."
+     },
+     {
+      "name": "Shoryuken",
+      "slot": "special move",
+      "does": "Ryu performs a rising uppercut.",
+      "use": "Primarily as an anti-air to punish jumping opponents and as a Dragon Punch reversal to escape pressure on wake-up."
+     },
+     {
+      "name": "Tatsumaki Senpu-kyaku",
+      "slot": "special move",
+      "does": "Ryu performs a spinning kick that travels forward.",
+      "use": "Used for corner carry in combos, closing distance, and sometimes as a tricky mix-up tool."
+     },
+     {
+      "name": "Hashogeki",
+      "slot": "special move",
+      "does": "Ryu performs a short-range, multi-hitting palm strike.",
+      "use": "Essential for extending combos and creating pressure."
+     },
+     {
+      "name": "Denjin Charge",
+      "slot": "tactical",
+      "does": "Ryu charges a single stock of Denjin which can be spent to empower his Hadoken, Hashogeki, and certain Super Arts.",
+      "use": "This is a crucial resource management tool."
+     },
+     {
+      "name": "Collarbone Breaker",
+      "slot": "special move",
+      "does": "An overhead attack that hits twice.",
+      "use": "Used as a mix-up tool to hit crouching opponents, especially after a blockstring, to open them up for further pressure or damage."
+     },
+     {
+      "name": "Solar Plexus Strike",
+      "slot": "special move",
+      "does": "A forward-advancing punch.",
+      "use": "A strong poke and pressure tool due to its forward movement."
+     },
+     {
+      "name": "Axe Kick",
+      "slot": "special move",
+      "does": "A high-hitting kick.",
+      "use": "Can be used as a poke or to extend combos in specific situations."
+     }
+    ],
+    "mistakes": [
+     {
+      "name": "Over-reliance on Hadoken without proper spacing or follow-up",
+      "signs": "Ryu throws a Hadoken, and the opponent either jumps over it for a full combo punish, Drive Impacts through it, or simply walks forward and blocks, gaining ground.",
+      "cost": "Throwing Hadokens predictably or from unsafe distances leaves Ryu vulnerable to easy punishes, especially against characters with strong jump-ins, Drive Impact, or projectile-invincible moves.",
+      "drill": "In Training Mode, set the dummy to Jump After Block or Drive Impact After Block for a Hadoken.",
+      "checked_by": "none"
+     },
+     {
+      "name": "Whiffing Shoryuken on wake-up or as an anti-air",
+      "signs": "Ryu performs a Shoryuken, but it misses the opponent.",
+      "cost": "A whiffed Shoryuken has significant recovery, leaving Ryu open to the opponent's most damaging combos.",
+      "drill": "Set the training dummy to perform various wake-up options.",
+      "checked_by": "none"
+     },
+     {
+      "name": "Failing to utilize Denjin Charge effectively or safely",
+      "signs": "Ryu has a full Denjin stock but either doesn't use it, or attempts to charge it at an unsafe moment.",
+      "cost": "Not using it means Ryu is playing at a reduced potential.",
+      "drill": "Practice Denjin Charging after every knockdown.",
+      "checked_by": "none"
+     }
+    ],
+    "sources": [
+     {
+      "title": "streetfighter.com",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEqk8vkr_D6ecBzrbI687_iJlRpt3-wtn3Uzmx8eVcz98Gv_Ry2Q2HkvBNkZNPzBQVuSeRJK4v83aQJ2lqPs9p6vror8tuuf9Fh9LC9ffEp8vOiDwrePIBDJ2zSi8wrRNAaAyi7P79c5nQmVRXpo3MoTVrFVUZEoD9TZIbPsPKzgQ==",
+      "facet": "character"
+     },
+     {
+      "title": "streetfighter.com",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHrj-Ek-IksXFs6CdWlhsRCuYxnBgyD65PgVQdrMqvHA0xdTOJ6z_ASd5Hvx_ce29nldr7SVR22OxTDaBIYB4qb_s8AItWIkVXVPGW838jghKJuHhlD2cGl6RGbTxlugFUGKm1ARq1llRQlrXX6xnMTfQd92bDqczLGSkCjMik9hw==",
+      "facet": "character"
+     },
+     {
+      "title": "steamdb.info",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEU-s7YXq3DBmeUS0b9pkbj4pCF0yDaf_Jzuuy7h7LjhjEHokxveAIpPhRQk01R6hBKYmrIlWbKwNd7mAZB7skyjAfHS9SJc90ChM-umpeGgPQVT8snuL7PacGdJawE5BcASB-y",
+      "facet": "character"
+     },
+     {
+      "title": "streetfighter.com",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFOxcBy07snMEFrjhUYqryY7rW_yxD4xHsWPtIUYq6fpj9Gt5XmNJJWVJm_ur_GcJ7vQd233FodZtWbE97xFytCKnA_Bm3cR7l7kTNyUbZvA-GNkGG-8gwYsb0Xd3KD2SUYuF4aCezplhQmwQ1iH5cJ2UTMJNvcYWEow3uoxYfuyDI1_lI=",
+      "facet": "character"
+     },
+     {
+      "title": "culturedvultures.com",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQF0HdRCYj_jvBta2-sPRJWkE-bbqWlM7zwL8Ne7Fa4uvmp9gpmOMBQ51LT7z8SigTFj4oQOofI_mwuqGk3dzMMdUc3O29LkLmZWY3Q1L7HzyVeoVad_ks74606zdyR7kU4gO-w4Yr4zfVccswSaeeGHAhHFpMwixJlV9r9f",
+      "facet": "character"
+     },
+     {
+      "title": "supercombo.gg",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFtpeUw-lw2_uBoeqdMLY6effZ9pWWQ1XyD-jZxPDdRjKMawKZ87iTulKFEBsi28lvXF91tGd-WI9yXdZMZTzKScxiSjLRfHfH84hmpIJadi0QjHZEhHcZavTNMqwxMqmth5ZB9OZX3XMT_0Nk=",
+      "facet": "character"
+     },
+     {
+      "title": "streetfighter.com",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHR2ehGZA1GopR_T3jRWYpe3WYSUC3YSa2Gq7z1cDyb1ySFZs3l75_dHucrgeFabZgEJrz-H9xK5tW2VSR1vHVQqBoppi9okZFrTZNxK5pgv_h71_-bc3kNDc9YhiI6MgDAp84sJYbYz-PrYH2qsGZNpD1wE-oarQ==",
+      "facet": "character"
+     },
+     {
+      "title": "streetfighter.com",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFrTWhfG79bBU1vmRJI4u-hdWsWU78lem9YcU6G2G59qEPcKfHDTnLVCJHJzCa1HCssaImrmZwBzJS-A9pr1diouPoAyo-3wkuQqXQNHz8mbjyB2X89OGXVv3bmasrMlMmdRUlo0ceFtEoUY93Tul9IbRJbfuKPzlj9zMYjHLY=",
+      "facet": "character"
+     },
+     {
+      "title": "fandom.com",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEENVWjy5lDX7-i9tKKFtGLlvyrSzlZgxxZ0w3NQyCs3f82QfmLBFx14uC8-q3MSAw-NS7L09vFLX4kIVmU0wmZ63LPZP1kh4YtJvXxERY-dPSt1HzTKNilTmiRtw0JYlCC4mmy",
+      "facet": "character"
+     }
+    ],
+    "researched": true
+   }
+  }
+ }
+]

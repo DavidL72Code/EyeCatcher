@@ -1,0 +1,16 @@
+{
+  "about": "The coach on the three continuous clips in eval/recordings/clips.json, Oct 22 2026, every claim checked by Claude against the frames. Truth from the screen: League's K/D/A counter read every 5 s; Rocket League's scoreboard and goal banners; Rivals' respawns and multi-kill badges. Rocket League and Rivals ran twice (the second with the first run's research), League once.",
+  "games": [
+    { "clip": "rocket-league/rl-somey-gc2.match1.mp4", "truth": "the player is TheSomey on orange; orange won 3-1: TheSomey scored at 3:26, orange again at 3:47, blue at 4:15 (the only goal conceded), teammate Forky Jr. at 4:44; the player demolished an opponent at 2:00",
+      "runs": [
+        { "habit": "Over-Committing on Challenges", "evidence": ["2:01", "3:27", "4:15"], "wrong": ["2:01 is the player's own demolition of an opponent, recorded as the player demolished", "3:27 is the player's own goal, recorded as conceded", "3:50 recorded as conceded: orange scored", "4:45 credited to the player: the teammate scored"], "right": ["4:15 conceded", "kickoffs"] },
+        { "habit": "none (forced: over-committing, then ball cam, sent back twice by the claims check)", "wrong": ["the scan read the THESOMEY SCORED banner as Thesomey scoring against the player: it never learned the player's name", "3:27 and 3:50 recorded as conceded again"], "right": ["2:00 demolition by the player", "4:45 credited to the teammate", "4:15 conceded"] } ] },
+    { "clip": "marvel-rivals/mr-punk-magik.attack.mp4", "truth": "no death found at the moments claimed (1:17 is low health and a heal, 4:28 an ultimate used), no respawn seen in a frame every 5 s; quad and penta kill badges at 2:22 and 2:27",
+      "runs": [
+        { "habit": "none (2 losses)", "wrong": ["deaths at 1:17 and 4:28 that didn't happen: the red low-health tint read as death"], "right": ["the quad and penta kill at 2:22-2:27"] },
+        { "habit": "none (nothing lost)", "wrong": [], "right": ["no deaths", "12 kills, multi-kill included"] } ] },
+    { "clip": "league-of-legends/lol-hacklet-mf.14-24.mp4", "truth": "K/D/A 1/4/3 to 1/6/7: deaths at about 1:46 and 8:47-8:50, no kills, 4 assists",
+      "runs": [
+        { "habit": "Overextending Without Vision", "evidence": ["1:46", "5:49", "7:54", "8:55"], "wrong": ["5:49 isn't a death: the low-health tint, and the K/D/A doesn't change", "7:54 isn't a death", "8:55 says without teammates: an allied Blitzcrank is beside her", "the record's 8 kills and 5 deaths: the truth is 0 and 2"], "right": ["the deaths at 1:46 and 8:55"], "unverified": ["1:46 pushed too far without vision: the frames show a mid-lane skirmish by the minion waves"] } ] }
+  ]
+}

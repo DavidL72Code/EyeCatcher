@@ -28,7 +28,7 @@ try {
   await page.setInputFiles('#f', path.join(here, 'recordings', realFile));
   const out = await page.evaluate(async ({ synthetic, real, BATCH }) => {
     const C = window.ThirdeyeCore, V = window.ThirdeyeVideo, A = window.ThirdeyeAgent;
-    const profile = await (await fetch('games/valorant.json')).json();
+    const profile = await (await fetch('eval/answer-keys/valorant.json')).json();
     // both ways on the same crops: one call per image, then BATCH images to a call
     async function both(video, times) {
       const frame = { w: video.width, h: video.height }, crop = C.regionRect(profile, 'aim', frame);

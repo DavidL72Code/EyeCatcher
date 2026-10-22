@@ -1,6 +1,6 @@
 // The answer key for learning a game: learns each real recording from scratch (ThirdeyeLearn.learnGame, one model call
 // each), saves the profile next to the recording as <name>.learned.json, and compares it with the hand-made
-// games/valorant.json, which the app never loads. Then run the probes on what was learned:
+// eval/answer-keys/valorant.json, which the app never loads. Then run the probes on what was learned:
 //   node eval/learncheck.mjs && PROFILE=learned node eval/feedprobe.mjs && PROFILE=learned node eval/shotprobe.mjs
 import { chromium } from 'playwright';
 import { spawn } from 'node:child_process';
@@ -10,7 +10,7 @@ import { fileURLToPath } from 'node:url';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(here, '..');
-const hand = JSON.parse(fs.readFileSync(path.join(root, 'games/valorant.json'), 'utf8'));
+const hand = JSON.parse(fs.readFileSync(path.join(root, 'eval/answer-keys/valorant.json'), 'utf8'));
 const files = fs.readdirSync(path.join(here, 'recordings')).filter((f) => f === 'yt-vyse-ascent.mov' || /^Screen Recording 2026-10-17.*\.mov$/.test(f));
 const only = process.argv.slice(2);
 

@@ -1,0 +1,1267 @@
+{
+ "about": "J.T. O'Sullivan's (The QB School, YouTube) per-snap claims for five 2026 single-QB game breakdowns, paraphrased by Claude from the videos' original English auto-captions (en-orig) on Oct 20 2026, before any coach run. Third-party footage, for private testing only. from/to: the snap's clean first play-through in the downloaded breakdown video (seconds), cut by frame signals and checked by eye at every boundary: no studio, no pen ink, no rewind. Overlays that remain: noted per snap. jt_at: where in the breakdown he introduces the snap. verdict: good, bad, mixed (good play with a fault he names), or not_on_qb (he says the quarterback had no real chance). faults: the quarterback faults he names on that snap, as tags from fault_tags. outcome_sure false (added Oct 20 after the first coach run, from frames, before scoring the second): JT doesn't say the result and the film doesn't settle it, so record accuracy leaves that snap out.",
+ "fault_tags": {
+  "late": "hesitates, holds the ball, double clutches, throws late",
+  "inaccurate": "the throw misses: high, low (sinker), behind, sailed, or a missed open receiver",
+  "footwork": "base or drop: feet narrow or together, hitching backward, shuffle drop, coming out flat",
+  "movement": "leaves a clean pocket or moves off-platform when he didn't need to",
+  "read": "a misread: the wrong side first, a conflict defender, a backside read he didn't get to",
+  "risk": "a low-percentage choice over a safer answer",
+  "ball_security": "loses or exposes the ball"
+ },
+ "scoring": {
+  "habit": "match: the coach's habit names a fault tag that JT names on 2 or more snaps of that video (its themes). partial: same family (a miss in general for a footwork theme). miss: a fault JT names on no snap, or on one snap only. contradicted: blames the quarterback for snaps JT calls not_on_qb, or names a fault JT calls a strength. For Purdy JT names no habit: the right answer is no single habit (found false), and any habit is a false positive.",
+  "evidence": "each moment the coach cites, mapped to a snap by reel time: supported when JT's verdict for that snap is bad or mixed with a fault in the coach's habit; contradicted when JT calls the snap good or not_on_qb; unrelated otherwise.",
+  "record": "per snap, the coach's events in it: right when the outcome it records matches JT's (completion, incompletion, interception, sack, fumble, run, touchdown); counted only where the coach recorded something.",
+  "false_claims": "statements in the coach's verdict or cited moments that the frames or JT's account contradict, each listed."
+ },
+ "videos": [
+  {
+   "id": "qb-penix-gb",
+   "title": "Michael Penix Jr. vs the Packers Week 3, 2026 Analysis",
+   "url": "https://www.youtube.com/watch?v=YXsScFv5TgE",
+   "player": "Michael Penix Jr., Falcons quarterback, #9 (left-handed); the Falcons are in white at Lambeau Field",
+   "me": "Penix|Falcons|#?9\\b|white",
+   "summary": "A rough first quarter (an interception off hesitation, a tough conflict-defender read, a blitz with no hot answer, a missed deep curl), then decisive and accurate: back foot hits, ball out, on the body.",
+   "themes": [
+    "late",
+    "inaccurate"
+   ],
+   "snaps": [
+    {
+     "n": 1,
+     "from": 42.4,
+     "to": 57.6,
+     "jt_at": "0:42",
+     "situation": "",
+     "outcome": "interception",
+     "verdict": "bad",
+     "faults": [
+      "late",
+      "read"
+     ],
+     "claims": [
+      "backside in-route into a quarters safety (#29) nothing holds",
+      "front-side spacing looks congested",
+      "a little indecision: he could throw it off #44's ear into the first hole, hesitates, and the safety gets there"
+     ],
+     "reel_from": 0.0,
+     "reel_to": 15.21
+    },
+    {
+     "n": 2,
+     "from": 206.0,
+     "to": 220.3,
+     "situation": "",
+     "jt_at": "3:28",
+     "outcome": "run stopped (power shovel tackled)",
+     "verdict": "mixed",
+     "faults": [
+      "read"
+     ],
+     "claims": [
+      "power shovel / power read: #57 squeezes both and makes a nice play",
+      "a tough read on the conflict defender; later listed among the rough start's misreads",
+      "most of the clip is about broadcasters not recognizing the play"
+     ],
+     "reel_from": 15.21,
+     "reel_to": 29.54
+    },
+    {
+     "n": 3,
+     "from": 374.8,
+     "to": 386.0,
+     "situation": "3rd and long",
+     "jt_at": "6:07",
+     "outcome": "incomplete (half throwaway)",
+     "verdict": "not_on_qb",
+     "faults": [],
+     "claims": [
+      "weak safety and will blitz, a free runner from depth",
+      "no hot or side-adjust answer in the call: impossible to play quarterback like this",
+      "Penix moves away from it and semi-protects the ball with a half throwaway"
+     ],
+     "reel_from": 29.54,
+     "reel_to": 40.75
+    },
+    {
+     "n": 4,
+     "from": 518.3,
+     "to": 533.5,
+     "situation": "3rd and long",
+     "jt_at": "8:38",
+     "outcome": "incomplete",
+     "verdict": "bad",
+     "faults": [
+      "inaccurate"
+     ],
+     "claims": [
+      "deep curl to London: the throw isn't where he wants it",
+      "a stunt leaks and someone is in his lap",
+      "still: back foot, on time, he expects a catchable ball; or come down to the shallow if the curl defender is in the lane"
+     ],
+     "reel_from": 40.75,
+     "reel_to": 55.96
+    },
+    {
+     "n": 5,
+     "from": 629.5,
+     "to": 644.9,
+     "situation": "",
+     "jt_at": "10:30",
+     "outcome": "completion, big gain",
+     "verdict": "good",
+     "faults": [],
+     "claims": [
+      "quick play action, drift / quick post to London",
+      "safety sucks up on the fake; on time, back foot hits and the ball is out",
+      "a handoff of a throw, on the body on the break"
+     ],
+     "reel_from": 55.96,
+     "reel_to": 71.38
+    },
+    {
+     "n": 6,
+     "from": 744.0,
+     "to": 754.9,
+     "situation": "",
+     "jt_at": "12:19",
+     "outcome": "completion, big gain",
+     "verdict": "good",
+     "faults": [],
+     "claims": [
+      "deep out to London behind nine-man protection",
+      "tight hitch, no wasted movement, outside the numbers on his face"
+     ],
+     "reel_from": 71.38,
+     "reel_to": 82.29
+    },
+    {
+     "n": 7,
+     "from": 797.1,
+     "to": 809.0,
+     "situation": "",
+     "jt_at": "13:12",
+     "outcome": "touchdown",
+     "verdict": "good",
+     "faults": [],
+     "claims": [
+      "quick out / stick to #2 for a touchdown",
+      "the Packers can't communicate after a timeout and blow it",
+      "accurate, on the body"
+     ],
+     "reel_from": 82.29,
+     "reel_to": 94.21
+    },
+    {
+     "n": 8,
+     "from": 953.1,
+     "to": 971.1,
+     "situation": "3rd down",
+     "jt_at": "15:42",
+     "outcome": "completion, first down",
+     "verdict": "good",
+     "faults": [],
+     "claims": [
+      "slant to London with no middle hook defender",
+      "on time, back foot in the ground"
+     ],
+     "reel_from": 94.21,
+     "reel_to": 112.21
+    },
+    {
+     "n": 9,
+     "from": 1044.0,
+     "to": 1064.0,
+     "situation": "",
+     "jt_at": "17:21",
+     "outcome": "completion, big gain",
+     "verdict": "good",
+     "faults": [],
+     "claims": [
+      "the corner up top blows the deep third",
+      "Penix sees it and hooks it up; everything but the last gear to score"
+     ],
+     "reel_from": 112.21,
+     "reel_to": 132.21
+    },
+    {
+     "n": 10,
+     "from": 1170.9,
+     "to": 1185.5,
+     "situation": "3rd and long",
+     "jt_at": "19:23",
+     "outcome": "completion short of the sticks (field goal)",
+     "verdict": "good",
+     "faults": [],
+     "claims": [
+      "slant after ghost motion",
+      "decisive: back foot hits, the ball comes out"
+     ],
+     "reel_from": 132.21,
+     "reel_to": 146.83
+    },
+    {
+     "n": 11,
+     "from": 1228.1,
+     "to": 1248.5,
+     "situation": "",
+     "jt_at": "20:26",
+     "outcome": "completion, big gain",
+     "verdict": "good",
+     "faults": [],
+     "claims": [
+      "back-shoulder, half jump ball to London one-on-one",
+      "aggressive and accurate; no double clutch like the interception"
+     ],
+     "reel_from": 146.83,
+     "reel_to": 167.25
+    },
+    {
+     "n": 12,
+     "from": 1329.8,
+     "to": 1343.1,
+     "situation": "two-point try",
+     "jt_at": "21:45",
+     "outcome": "completion, two points",
+     "verdict": "good",
+     "faults": [],
+     "claims": [
+      "play fake, wide open to the left",
+      "a lack of discipline on the back end"
+     ],
+     "reel_from": 167.25,
+     "reel_to": 180.58
+    }
+   ],
+   "reel": "eval/recordings/qbschool/qb-penix-gb/qb-penix-gb.reel.mp4",
+   "reel_seconds": 180.58,
+   "side_re": "Falcons|Atlanta|\\(white",
+   "says": "#9, the quarterback"
+  },
+  {
+   "id": "qb-lawrence-cle",
+   "title": "Trevor Lawrence vs the Browns Week 1, 2026 Analysis",
+   "url": "https://www.youtube.com/watch?v=soh1ClmQDfU",
+   "player": "Trevor Lawrence, Jaguars quarterback, #16",
+   "me": "Lawrence|Jaguars|Jags|#?16\\b|teal",
+   "summary": "On time, in rhythm, with a tight hitch and base he's spectacular; when his feet get narrow or he hitches backward, the miss radius widens and the ball sinks or ends up behind.",
+   "themes": [
+    "footwork",
+    "inaccurate"
+   ],
+   "snaps": [
+    {
+     "n": 1,
+     "from": 48.0,
+     "to": 59.3,
+     "situation": "",
+     "jt_at": "0:54",
+     "outcome": "completion, mini explosive",
+     "verdict": "good",
+     "faults": [],
+     "claims": [
+      "play action drift to Washington; the fake pulls up the second level",
+      "beautiful timing off the back foot"
+     ],
+     "reel_from": 0.0,
+     "reel_to": 11.33
+    },
+    {
+     "n": 2,
+     "from": 128.9,
+     "to": 143.3,
+     "situation": "3rd and medium to long",
+     "jt_at": "2:11",
+     "outcome": "touchdown",
+     "verdict": "good",
+     "faults": [],
+     "claims": [
+      "a corner from the slot versus lurk; impressive he even sees it",
+      "deals with pocket movement issues, climbs and throws without finishing the motion",
+      "a great catch"
+     ],
+     "overlay": "a small thumbs-up icon for a few seconds",
+     "reel_from": 11.33,
+     "reel_to": 25.75
+    },
+    {
+     "n": 3,
+     "from": 270.6,
+     "to": 282.4,
+     "situation": "2nd and long",
+     "jt_at": "4:14",
+     "outcome": "completion, first down",
+     "verdict": "good",
+     "faults": [],
+     "claims": [
+      "speed out, three steps no hitch, ball out with anticipation",
+      "not the cleanest ball, but trusts the technique"
+     ],
+     "note": "end-zone view: the sideline view runs only 3.5 s before he pauses",
+     "reel_from": 25.75,
+     "reel_to": 37.58
+    },
+    {
+     "n": 4,
+     "from": 332.5,
+     "to": 348.3,
+     "situation": "",
+     "jt_at": "5:32",
+     "outcome": "completion, mini explosive",
+     "verdict": "good",
+     "faults": [],
+     "claims": [
+      "play action five-step to a deep curl for Brian Thomas Jr.",
+      "a perfect tight hitch at the top of the drop",
+      "doesn't love the ball security at the end (unclear whose)"
+     ],
+     "reel_from": 37.58,
+     "reel_to": 53.42
+    },
+    {
+     "n": 5,
+     "from": 433.1,
+     "to": 450.1,
+     "situation": "2nd and long",
+     "jt_at": "7:05",
+     "outcome": "completion, first down",
+     "verdict": "mixed",
+     "faults": [
+      "footwork",
+      "inaccurate"
+     ],
+     "claims": [
+      "deep cross to Washington, wide open",
+      "brings his feet together and gets narrow at the top of the drop",
+      "the ball is a sinker; a better throw makes it a bigger play"
+     ],
+     "reel_from": 53.42,
+     "reel_to": 70.42
+    },
+    {
+     "n": 6,
+     "from": 568.5,
+     "to": 585.3,
+     "situation": "",
+     "jt_at": "9:21",
+     "outcome": "completion, big gain",
+     "verdict": "mixed",
+     "faults": [
+      "inaccurate",
+      "footwork"
+     ],
+     "claims": [
+      "a great read and communication versus a post-safety look",
+      "a better catch than throw: slightly behind on the back shoulder",
+      "better footwork and base would help"
+     ],
+     "reel_from": 70.42,
+     "reel_to": 87.25
+    },
+    {
+     "n": 7,
+     "from": 734.3,
+     "to": 745.4,
+     "situation": "red zone",
+     "jt_at": "12:03",
+     "outcome": "touchdown",
+     "verdict": "good",
+     "faults": [],
+     "claims": [
+      "a ridiculous throw between four defenders",
+      "back foot in the ground, no hitch, great anticipation"
+     ],
+     "overlay": "a YouTube subscribe notification over the pre-snap",
+     "reel_from": 87.25,
+     "reel_to": 98.38
+    },
+    {
+     "n": 8,
+     "from": 860.3,
+     "to": 875.3,
+     "situation": "",
+     "jt_at": "14:12",
+     "outcome": "incomplete",
+     "verdict": "bad",
+     "faults": [
+      "footwork",
+      "inaccurate"
+     ],
+     "claims": [
+      "in-breaker to the slot in a tight window; the ball is slightly behind",
+      "shuffle drop, then hitches backward instead of up",
+      "the route was probably wrong too"
+     ],
+     "reel_from": 98.38,
+     "reel_to": 113.38,
+     "outcome_sure": false,
+     "outcome_note": "JT never says the result (\"could it be caught? absolutely\" / \"a better ball probably walks in\"), and the frames don't show the catch"
+    },
+    {
+     "n": 9,
+     "from": 1021.8,
+     "to": 1032.3,
+     "situation": "",
+     "jt_at": "17:06",
+     "outcome": "completion, first down",
+     "verdict": "mixed",
+     "faults": [
+      "footwork"
+     ],
+     "claims": [
+      "quads formation, deep comeback as the second read, a strike",
+      "playing backwards: hitching back, then over",
+      "gets away with it on arm strength and great protection"
+     ],
+     "reel_from": 113.38,
+     "reel_to": 123.88
+    },
+    {
+     "n": 10,
+     "from": 1136.0,
+     "to": 1147.0,
+     "situation": "red zone",
+     "jt_at": "18:59",
+     "outcome": "touchdown",
+     "verdict": "good",
+     "faults": [],
+     "claims": [
+      "cover-two beater to #2 (85, who dropped one earlier)",
+      "a beautiful pump; kicking back but strong enough to drive it"
+     ],
+     "reel_from": 123.88,
+     "reel_to": 134.88
+    },
+    {
+     "n": 11,
+     "from": 1252.3,
+     "to": 1263.8,
+     "situation": "3rd and short",
+     "jt_at": "20:43",
+     "outcome": "sack",
+     "verdict": "not_on_qb",
+     "faults": [],
+     "claims": [
+      "the only sack: play action, and the line gets overwhelmed (the right guard thrown into the center)",
+      "no chance to play quarterback; at most, get outside and throw it away"
+     ],
+     "reel_from": 134.88,
+     "reel_to": 146.38
+    },
+    {
+     "n": 12,
+     "from": 1319.8,
+     "to": 1340.1,
+     "situation": "2nd and forever",
+     "jt_at": "21:57",
+     "outcome": "touchdown",
+     "verdict": "good",
+     "faults": [],
+     "claims": [
+      "extends and creates with his eyes downfield against combo coverage",
+      "poise; the dagger and the mailbox are open"
+     ],
+     "reel_from": 146.38,
+     "reel_to": 166.71
+    },
+    {
+     "n": 13,
+     "from": 1477.0,
+     "to": 1489.6,
+     "situation": "",
+     "jt_at": "24:38",
+     "outcome": "completion",
+     "verdict": "good",
+     "faults": [],
+     "claims": [
+      "play action, works inside-out to the comeback",
+      "on time, in rhythm, a progression outside the numbers"
+     ],
+     "reel_from": 166.71,
+     "reel_to": 179.33
+    }
+   ],
+   "reel": "eval/recordings/qbschool/qb-lawrence-cle/qb-lawrence-cle.reel.mp4",
+   "reel_seconds": 179.33,
+   "side_re": "Jaguars|Jacksonville|\\(teal",
+   "says": "#16, the quarterback"
+  },
+  {
+   "id": "qb-young-atl",
+   "title": "Bryce Young vs the Falcons Week 2, 2026 Analysis",
+   "url": "https://www.youtube.com/watch?v=hIRbTfP81WM",
+   "player": "Bryce Young, Panthers quarterback, #9",
+   "me": "Young|Panthers|#?9\\b|white",
+   "summary": "Anticipation, accuracy, rhythm, distributing like a point guard. Early misses: a high throw with the back beaten in protection, a missed open crosser off a seven-step drop; a heat-check go he'd rather see go to the safe hot throw; a fourth down that doesn't work.",
+   "themes": [
+    "inaccurate"
+   ],
+   "snaps": [
+    {
+     "n": 1,
+     "from": 47.3,
+     "to": 65.1,
+     "situation": "2nd and forever",
+     "jt_at": "0:48",
+     "outcome": "completion, big gain",
+     "verdict": "good",
+     "faults": [],
+     "claims": [
+      "boot away and throw the corner back across to McMillan",
+      "moving the launch point, finding the lane"
+     ],
+     "reel_from": 0.0,
+     "reel_to": 17.83
+    },
+    {
+     "n": 2,
+     "from": 148.5,
+     "to": 158.8,
+     "situation": "4th down",
+     "jt_at": "2:21",
+     "outcome": "touchdown",
+     "verdict": "good",
+     "faults": [],
+     "claims": [
+      "a wide-open flat off tempo; the defense can't get set"
+     ],
+     "reel_from": 17.83,
+     "reel_to": 28.17
+    },
+    {
+     "n": 3,
+     "from": 212.9,
+     "to": 229.0,
+     "situation": "",
+     "jt_at": "3:33",
+     "outcome": "incomplete",
+     "verdict": "mixed",
+     "faults": [
+      "inaccurate"
+     ],
+     "claims": [
+      "a great route by the slot",
+      "the back gets bullied in protection, so he throws off-platform",
+      "even so he wants a better throw: a little high"
+     ],
+     "reel_from": 28.17,
+     "reel_to": 44.29
+    },
+    {
+     "n": 4,
+     "from": 325.5,
+     "to": 340.4,
+     "situation": "",
+     "jt_at": "5:19",
+     "outcome": "incomplete",
+     "verdict": "bad",
+     "faults": [
+      "inaccurate"
+     ],
+     "claims": [
+      "double crosser versus man; there is separation",
+      "a seven-step drop makes it harder than it needs to be",
+      "it's open and they have to hit it: a missed opportunity"
+     ],
+     "reel_from": 44.29,
+     "reel_to": 59.21
+    },
+    {
+     "n": 5,
+     "from": 436.0,
+     "to": 453.0,
+     "situation": "3rd and medium",
+     "jt_at": "7:06",
+     "outcome": "completion, first down",
+     "verdict": "good",
+     "faults": [],
+     "claims": [
+      "speed out to McMillan off motion, past the sticks",
+      "unbelievable anticipation; feel footwork, not textbook timing"
+     ],
+     "overlay": "a YouTube subscribe notification for a few seconds",
+     "reel_from": 59.21,
+     "reel_to": 76.21
+    },
+    {
+     "n": 6,
+     "from": 609.4,
+     "to": 622.8,
+     "situation": "",
+     "jt_at": "10:06",
+     "outcome": "completion, big gain",
+     "verdict": "good",
+     "faults": [],
+     "claims": [
+      "a little shoulder nod at the top moves the corner",
+      "he's in rhythm and protected"
+     ],
+     "reel_from": 76.21,
+     "reel_to": 89.62
+    },
+    {
+     "n": 7,
+     "from": 708.3,
+     "to": 720.1,
+     "situation": "",
+     "jt_at": "11:49",
+     "outcome": "completion",
+     "verdict": "good",
+     "faults": [],
+     "claims": [
+      "switch flood with funky spacing",
+      "a strike; a hell of a catch by 18"
+     ],
+     "reel_from": 89.62,
+     "reel_to": 101.46
+    },
+    {
+     "n": 8,
+     "from": 822.2,
+     "to": 837.4,
+     "situation": "",
+     "jt_at": "13:40",
+     "outcome": "completion, big gain",
+     "verdict": "good",
+     "faults": [],
+     "claims": [
+      "big post to Leggett (17) versus quarters",
+      "arm strength, keeps it off the hash"
+     ],
+     "reel_from": 101.46,
+     "reel_to": 116.67
+    },
+    {
+     "n": 9,
+     "from": 988.0,
+     "to": 999.1,
+     "situation": "3rd and goal",
+     "jt_at": "16:27",
+     "outcome": "touchdown",
+     "verdict": "good",
+     "faults": [],
+     "claims": [
+      "a perfect throw to the front pylon against good coverage",
+      "anticipation in a collapsing pocket"
+     ],
+     "overlay": "a YouTube like animation (thumbs-up icon, cursor)",
+     "reel_from": 116.67,
+     "reel_to": 127.79
+    },
+    {
+     "n": 10,
+     "from": 1058.6,
+     "to": 1069.1,
+     "situation": "3rd and forever",
+     "jt_at": "17:29",
+     "outcome": "completion, first down (generous spot)",
+     "verdict": "good",
+     "faults": [],
+     "claims": [
+      "sticks route versus closed man",
+      "timing, anticipation, accuracy"
+     ],
+     "reel_from": 127.79,
+     "reel_to": 138.29
+    },
+    {
+     "n": 11,
+     "from": 1156.0,
+     "to": 1168.3,
+     "situation": "",
+     "jt_at": "19:11",
+     "outcome": "completion, big gain",
+     "verdict": "mixed",
+     "faults": [
+      "risk"
+     ],
+     "claims": [
+      "a heat-check hot go to McMillan versus zero",
+      "a world-class throw into tiny space",
+      "the safer hot throw was the slot out; low probability to do it consistently"
+     ],
+     "reel_from": 138.29,
+     "reel_to": 150.62
+    },
+    {
+     "n": 12,
+     "from": 1262.6,
+     "to": 1276.4,
+     "situation": "red zone",
+     "jt_at": "21:06",
+     "outcome": "touchdown",
+     "verdict": "good",
+     "faults": [],
+     "claims": [
+      "scissors concept; the defense is disjointed",
+      "right at the receiver, a back-shoulder look"
+     ],
+     "reel_from": 150.62,
+     "reel_to": 164.46
+    },
+    {
+     "n": 13,
+     "from": 1394.5,
+     "to": 1405.5,
+     "situation": "3rd down, red zone",
+     "jt_at": "23:10",
+     "outcome": "completion, first down",
+     "verdict": "good",
+     "faults": [],
+     "claims": [
+      "quick out versus inside leverage: a gift, raise up and throw"
+     ],
+     "reel_from": 164.46,
+     "reel_to": 175.46
+    },
+    {
+     "n": 14,
+     "from": 1494.4,
+     "to": 1508.1,
+     "situation": "4th down, red zone",
+     "jt_at": "24:52",
+     "outcome": "incomplete (turnover on downs)",
+     "verdict": "mixed",
+     "faults": [
+      "read"
+     ],
+     "claims": [
+      "the left tackle gets bulled into his lap",
+      "maybe McMillan with a clean pocket; the backside outlet was there but hard to see",
+      "gets outside and gives someone a chance; doesn't work"
+     ],
+     "reel_from": 175.46,
+     "reel_to": 189.17
+    }
+   ],
+   "reel": "eval/recordings/qbschool/qb-young-atl/qb-young-atl.reel.mp4",
+   "reel_seconds": 189.17,
+   "side_re": "Panthers|Carolina|\\(white",
+   "says": "#9, the quarterback"
+  },
+  {
+   "id": "qb-jackson-ind",
+   "title": "Lamar Jackson vs the Colts Week 1, 2026 Analysis",
+   "url": "https://www.youtube.com/watch?v=KEFHJB82u9I",
+   "player": "Lamar Jackson, Ravens quarterback, #8; the Ravens are in white at Indianapolis",
+   "me": "Jackson|Lamar|Ravens|#?8\\b|white",
+   "summary": "Same Lamar in a new system: quick release, second windows, answers to zero, the run game. The two misses he shows were both on crossers, one with unnecessary movement off-platform; protection lets him down on the sack and the fourth down.",
+   "themes": [
+    "inaccurate",
+    "movement"
+   ],
+   "snaps": [
+    {
+     "n": 1,
+     "from": 46.4,
+     "to": 61.4,
+     "situation": "1st and 10",
+     "jt_at": "0:42",
+     "outcome": "completion, huge gain",
+     "verdict": "good",
+     "faults": [],
+     "claims": [
+      "naked keeper rolling left, rips the corner to Flowers",
+      "makes a hard throw look easy"
+     ],
+     "reel_from": 0.0,
+     "reel_to": 15.0
+    },
+    {
+     "n": 2,
+     "from": 143.1,
+     "to": 154.9,
+     "situation": "goal line",
+     "jt_at": "2:26",
+     "outcome": "run, touchdown",
+     "verdict": "good",
+     "faults": [],
+     "claims": [
+      "zone read with an escort and an unbalanced line",
+      "the right read: the end goes under, so he keeps it"
+     ],
+     "reel_from": 15.0,
+     "reel_to": 26.83
+    },
+    {
+     "n": 3,
+     "from": 237.1,
+     "to": 252.4,
+     "situation": "3rd and forever",
+     "jt_at": "3:57",
+     "outcome": "run, first down",
+     "verdict": "good",
+     "faults": [],
+     "claims": [
+      "the center gets swum, a rusher unblocked in his lap",
+      "escapes and scrambles for the first down"
+     ],
+     "reel_from": 26.83,
+     "reel_to": 42.17
+    },
+    {
+     "n": 4,
+     "from": 328.5,
+     "to": 345.8,
+     "situation": "",
+     "jt_at": "5:30",
+     "outcome": "completion, big gain",
+     "verdict": "good",
+     "faults": [],
+     "claims": [
+      "patience: says no to the first window, rips the second one over the middle"
+     ],
+     "reel_from": 42.17,
+     "reel_to": 59.5
+    },
+    {
+     "n": 5,
+     "from": 447.8,
+     "to": 461.3,
+     "situation": "",
+     "jt_at": "7:30",
+     "outcome": "incomplete",
+     "verdict": "bad",
+     "faults": [
+      "inaccurate",
+      "footwork"
+     ],
+     "claims": [
+      "a muddy play: the crosser just gets away from him",
+      "not comfortable going backwards with his feet; seeing color with the right guard falling"
+     ],
+     "reel_from": 59.5,
+     "reel_to": 73.0
+    },
+    {
+     "n": 6,
+     "from": 562.5,
+     "to": 572.3,
+     "situation": "3rd and long",
+     "jt_at": "9:21",
+     "outcome": "completion, first down",
+     "verdict": "good",
+     "faults": [],
+     "claims": [
+      "zero with a coverage error",
+      "back foot, quick, accurate"
+     ],
+     "note": "starts on the last second of a pre-snap freeze-frame",
+     "reel_from": 73.0,
+     "reel_to": 82.83
+    },
+    {
+     "n": 7,
+     "from": 670.9,
+     "to": 685.8,
+     "situation": "4th and goal",
+     "jt_at": "11:05",
+     "outcome": "incomplete",
+     "verdict": "not_on_qb",
+     "faults": [],
+     "claims": [
+      "the left guard is probably wrong; a free runner through the A gap",
+      "Lamar bails and makes a hero throw, a little high: almost impossible"
+     ],
+     "reel_from": 82.83,
+     "reel_to": 97.75
+    },
+    {
+     "n": 8,
+     "from": 823.8,
+     "to": 835.8,
+     "situation": "",
+     "jt_at": "13:38",
+     "outcome": "completion, first down",
+     "verdict": "good",
+     "faults": [],
+     "claims": [
+      "play action versus zone, deep hooks, everybody open",
+      "the right first read, on time, through a hit"
+     ],
+     "reel_from": 97.75,
+     "reel_to": 109.75
+    },
+    {
+     "n": 9,
+     "from": 895.5,
+     "to": 909.5,
+     "situation": "red zone",
+     "jt_at": "14:58",
+     "outcome": "touchdown",
+     "verdict": "good",
+     "faults": [],
+     "claims": [
+      "hot throw to Flowers out of the backfield against a free runner",
+      "stands in and flicks it"
+     ],
+     "reel_from": 109.75,
+     "reel_to": 123.75
+    },
+    {
+     "n": 10,
+     "from": 1028.1,
+     "to": 1043.4,
+     "situation": "",
+     "jt_at": "17:12",
+     "outcome": "sack, fumble",
+     "verdict": "mixed",
+     "faults": [
+      "late",
+      "ball_security",
+      "footwork"
+     ],
+     "claims": [
+      "strip sack, the only big negative play",
+      "pass protection lets him down: the left tackle and the sniffer's path",
+      "he held the ball, and could come out of the fake more vertical"
+     ],
+     "reel_from": 123.75,
+     "reel_to": 139.08
+    },
+    {
+     "n": 11,
+     "from": 1170.3,
+     "to": 1183.8,
+     "situation": "3rd and medium",
+     "jt_at": "19:25",
+     "outcome": "completion, nullified by penalty",
+     "verdict": "good",
+     "faults": [],
+     "claims": [
+      "violent pocket movement, resets his feet, rips the crosser"
+     ],
+     "reel_from": 139.08,
+     "reel_to": 152.58
+    },
+    {
+     "n": 12,
+     "from": 1222.9,
+     "to": 1231.4,
+     "situation": "2nd and long",
+     "jt_at": "20:15",
+     "outcome": "incomplete",
+     "verdict": "bad",
+     "faults": [
+      "movement",
+      "inaccurate"
+     ],
+     "claims": [
+      "play action shot to a crosser that's open",
+      "moves when he didn't need to and throws off-platform; lets it sail",
+      "he could hit his back foot and rip it"
+     ],
+     "reel_from": 152.58,
+     "reel_to": 161.08
+    },
+    {
+     "n": 13,
+     "from": 1313.6,
+     "to": 1324.6,
+     "situation": "3rd and forever",
+     "jt_at": "21:46",
+     "outcome": "completion, short (check-down)",
+     "verdict": "good",
+     "faults": [],
+     "claims": [
+      "finds the check-down against closed zone; punting after it is okay"
+     ],
+     "reel_from": 161.08,
+     "reel_to": 172.08
+    },
+    {
+     "n": 14,
+     "from": 1440.6,
+     "to": 1452.9,
+     "situation": "",
+     "jt_at": "24:03",
+     "outcome": "incomplete",
+     "verdict": "mixed",
+     "faults": [
+      "inaccurate"
+     ],
+     "claims": [
+      "decisive answer to zero",
+      "the ball comes out a little flat; more air would help",
+      "the back's protection isn't good"
+     ],
+     "reel_from": 172.08,
+     "reel_to": 184.42
+    },
+    {
+     "n": 15,
+     "from": 1502.8,
+     "to": 1518.8,
+     "situation": "3rd and medium",
+     "jt_at": "25:04",
+     "outcome": "completion, big gain",
+     "verdict": "good",
+     "faults": [],
+     "claims": [
+      "an outstanding corner throw against outside leverage"
+     ],
+     "overlay": "a YouTube subscribe notification for a few seconds",
+     "reel_from": 184.42,
+     "reel_to": 200.42
+    },
+    {
+     "n": 16,
+     "from": 1648.3,
+     "to": 1658.5,
+     "situation": "",
+     "jt_at": "27:30",
+     "outcome": "completion",
+     "verdict": "good",
+     "faults": [],
+     "claims": [
+      "13 personnel play action, bleeds out right, to Andrews"
+     ],
+     "reel_from": 200.42,
+     "reel_to": 210.62
+    }
+   ],
+   "reel": "eval/recordings/qbschool/qb-jackson-ind/qb-jackson-ind.reel.mp4",
+   "reel_seconds": 210.62,
+   "side_re": "Ravens|Baltimore|\\(white",
+   "says": "#8, the quarterback"
+  },
+  {
+   "id": "qb-purdy-mia",
+   "title": "Brock Purdy vs the Dolphins Week 2, 2026 Analysis",
+   "url": "https://www.youtube.com/watch?v=66oJa9hfXnQ",
+   "player": "Brock Purdy, 49ers quarterback, #13; the 49ers are in red at home",
+   "me": "Purdy|49ers|Niners|#?13\\b|red",
+   "summary": "A damn near perfect day: extends and creates, on time and on schedule, answers against pressure. The only thing he'd change: a better ball on the open crosser walks in.",
+   "themes": [],
+   "snaps": [
+    {
+     "n": 1,
+     "from": 44.1,
+     "to": 63.5,
+     "situation": "",
+     "jt_at": "0:41",
+     "outcome": "completion (scramble drill)",
+     "verdict": "good",
+     "faults": [],
+     "claims": [
+      "zero blitz with no real hot answer",
+      "flips out of it, scramble drill to Evans on the sideline"
+     ],
+     "reel_from": 0.0,
+     "reel_to": 19.42
+    },
+    {
+     "n": 2,
+     "from": 198.8,
+     "to": 212.8,
+     "situation": "",
+     "jt_at": "3:14",
+     "outcome": "run",
+     "verdict": "good",
+     "faults": [],
+     "claims": [
+      "play action, deep curls probably open",
+      "feels the pocket go and takes off: not a bad decision"
+     ],
+     "reel_from": 19.42,
+     "reel_to": 33.42
+    },
+    {
+     "n": 3,
+     "from": 307.3,
+     "to": 323.9,
+     "situation": "",
+     "jt_at": "5:11",
+     "outcome": "run, big gain",
+     "verdict": "good",
+     "faults": [],
+     "claims": [
+      "naked keeper with no flat route and the crosser held",
+      "uses his legs for a big chunk"
+     ],
+     "reel_from": 33.42,
+     "reel_to": 50.04
+    },
+    {
+     "n": 4,
+     "from": 409.8,
+     "to": 422.9,
+     "situation": "2nd and medium",
+     "jt_at": "6:57",
+     "outcome": "completion",
+     "verdict": "mixed",
+     "faults": [
+      "inaccurate"
+     ],
+     "claims": [
+      "combo coverage leaves the crosser wide open",
+      "climbs the pocket and throws while getting hit",
+      "a better ball probably walks in for a touchdown"
+     ],
+     "reel_from": 50.04,
+     "reel_to": 63.17,
+     "outcome_sure": false,
+     "outcome_note": "JT never says the result (\"could it be caught? absolutely\" / \"a better ball probably walks in\"), and the frames don't show the catch"
+    },
+    {
+     "n": 5,
+     "from": 509.6,
+     "to": 521.9,
+     "situation": "red zone",
+     "jt_at": "8:26",
+     "outcome": "run, touchdown",
+     "verdict": "good",
+     "faults": [],
+     "claims": [
+      "a beautiful ball fake, empty hand and head turn"
+     ],
+     "reel_from": 63.17,
+     "reel_to": 75.5
+    },
+    {
+     "n": 6,
+     "from": 582.6,
+     "to": 596.3,
+     "situation": "",
+     "jt_at": "9:45",
+     "outcome": "completion, huge gain",
+     "verdict": "good",
+     "faults": [],
+     "claims": [
+      "fake toss, pop pass to Kittle against a corner blitz",
+      "the design lives on the edge, but it works"
+     ],
+     "reel_from": 75.5,
+     "reel_to": 89.21
+    },
+    {
+     "n": 7,
+     "from": 793.6,
+     "to": 802.6,
+     "situation": "",
+     "jt_at": "13:13",
+     "outcome": "completion, big gain",
+     "verdict": "good",
+     "faults": [],
+     "claims": [
+      "under center seven-step drop, looks around, finds the wide-open man"
+     ],
+     "reel_from": 89.21,
+     "reel_to": 98.21
+    },
+    {
+     "n": 8,
+     "from": 902.0,
+     "to": 915.9,
+     "situation": "",
+     "jt_at": "14:54",
+     "outcome": "completion, big gain",
+     "verdict": "good",
+     "faults": [],
+     "claims": [
+      "non-traditional Tampa dagger, a huge void in the middle",
+      "hitch, hitch, beautiful in-breaker"
+     ],
+     "reel_from": 98.21,
+     "reel_to": 112.12
+    },
+    {
+     "n": 9,
+     "from": 1005.3,
+     "to": 1018.4,
+     "situation": "",
+     "jt_at": "16:42",
+     "outcome": "completion",
+     "verdict": "good",
+     "faults": [],
+     "claims": [
+      "a free runner through the A gap; he has an answer: chuck and duck to Evans"
+     ],
+     "reel_from": 112.12,
+     "reel_to": 125.25
+    },
+    {
+     "n": 10,
+     "from": 1102.9,
+     "to": 1119.6,
+     "situation": "1st and 10",
+     "jt_at": "18:29",
+     "outcome": "completion, big gain",
+     "verdict": "good",
+     "faults": [],
+     "claims": [
+      "flood concept, the sail to the fullback off a seven-step drop"
+     ],
+     "reel_from": 125.25,
+     "reel_to": 141.96
+    },
+    {
+     "n": 11,
+     "from": 1201.1,
+     "to": 1212.9,
+     "situation": "red zone",
+     "jt_at": "20:01",
+     "outcome": "touchdown",
+     "verdict": "good",
+     "faults": [],
+     "claims": [
+      "quarter motion confuses the defense; the fullback races to the pylon"
+     ],
+     "reel_from": 141.96,
+     "reel_to": 153.79
+    },
+    {
+     "n": 12,
+     "from": 1315.0,
+     "to": 1329.5,
+     "situation": "",
+     "jt_at": "21:52",
+     "outcome": "completion, big gain",
+     "verdict": "good",
+     "faults": [],
+     "claims": [
+      "naked off the fake toss, a pump fake to no one, then an over route to Evans",
+      "an absolute seed outside the pocket"
+     ],
+     "reel_from": 153.79,
+     "reel_to": 168.29
+    },
+    {
+     "n": 13,
+     "from": 1436.8,
+     "to": 1451.6,
+     "situation": "",
+     "jt_at": "23:59",
+     "outcome": "completion, huge gain",
+     "verdict": "good",
+     "faults": [],
+     "claims": [
+      "adjusted leak to Kittle; he and Purdy play off what they see"
+     ],
+     "reel_from": 168.29,
+     "reel_to": 183.12
+    },
+    {
+     "n": 14,
+     "from": 1593.6,
+     "to": 1611.8,
+     "situation": "2nd and forever",
+     "jt_at": "26:30",
+     "outcome": "completion",
+     "verdict": "good",
+     "faults": [],
+     "claims": [
+      "a 20-yard spray comeback with anticipation, outside the numbers"
+     ],
+     "reel_from": 183.12,
+     "reel_to": 201.33
+    }
+   ],
+   "reel": "eval/recordings/qbschool/qb-purdy-mia/qb-purdy-mia.reel.mp4",
+   "reel_seconds": 201.33,
+   "side_re": "49ers|Niners|San Francisco|\\(red",
+   "says": "#13, the quarterback"
+  }
+ ]
+}

@@ -34,7 +34,7 @@ try {
     if (process.env.PROFILE === 'learned') await page.evaluate((p) => { window.__profile = p; }, JSON.parse(fs.readFileSync(learnedPath(rec.video), 'utf8')));
     const r = await page.evaluate(async ({ to }) => {
       const V = window.ThirdeyeVideo, A = window.ThirdeyeAgent;
-      const profile = window.__profile || (await (await fetch('games/valorant.json')).json());
+      const profile = window.__profile || (await (await fetch('eval/answer-keys/valorant.json')).json());
       const video = await V.open(document.getElementById('f').files[0]);
       const end = Math.min(to, video.duration);
       const { strips, grid } = await A.feedStrips({ video, profile, from: 0, to: end });

@@ -1,0 +1,108 @@
+{
+ "about": "Coach runs on the QB School reels (Oct 20 2026, one run each, RELEARN, questions answered only when an option names the QB), graded by hand against eval/answer-keys/qbschool.json by its rubric. record: per snap the coach recorded a specific outcome for, whether it matches JT; vague lines (play ends with a tackle) are not counted.",
+ "runs": [
+  {
+   "id": "qb-penix-gb",
+   "minutes": 2.9,
+   "calls": 13,
+   "looks": 0,
+   "found": false,
+   "habit": "miss (code ended it: nothing lost)",
+   "why": "Code found nothing lost in this match: no death, no lost fight, no teammate down near you without a trade, and no move the engine calls a mistake. So nothing in it can be losing you games, and no single habit is named.",
+   "asked": [],
+   "tools": [
+    "research",
+    "scan",
+    "finish"
+   ],
+   "learned_regions": [
+    "board"
+   ],
+   "record": "3 of 12 right by outcome (2, 7, 10), and every snap credited to the Packers offense: the Falcons had the ball on all 12; the interception (1) and incompletions (3, 4) missed; the two-point pass (12) called a Packers field goal",
+   "team": "wrong (Packers)"
+  },
+  {
+   "id": "qb-lawrence-cle",
+   "minutes": 5.2,
+   "calls": 31,
+   "looks": 6,
+   "found": false,
+   "habit": "miss (found false; tried \"predictable and forced play-calling\", sent back twice)",
+   "why": "While the player often runs into well-covered defenses, they also successfully execute plays in other situations. No single habit stands out as the primary cause of their losses, as their performance is inconsistent rather than consistently flawed in one specific area. A wrong diagnosis is worse than none.",
+   "asked": [],
+   "tools": [
+    "research",
+    "scan",
+    "read_clips",
+    "scan",
+    "read_clips",
+    "scan",
+    "frames",
+    "finish",
+    "frames",
+    "finish",
+    "frames",
+    "finish"
+   ],
+   "learned_regions": [],
+   "record": "5 of 9 right: TDs on 2, 7, 10, 12 and the sack on 11; wrong: 1 (called a Jaguars defensive stop), 4 and 5 (completions recorded as losses, the catcher tackled), 8 (incompletion recorded as a tackle)",
+   "team": "Jaguars (right team; no question asked)"
+  },
+  {
+   "id": "qb-young-atl",
+   "minutes": 4.5,
+   "calls": 17,
+   "looks": 0,
+   "found": false,
+   "habit": "miss (code ended it: nothing lost)",
+   "why": "Code found nothing lost in this match: no death, no lost fight, no teammate down near you without a trade, and no move the engine calls a mistake. So nothing in it can be losing you games, and no single habit is named.",
+   "asked": [],
+   "tools": [
+    "scan",
+    "research",
+    "finish"
+   ],
+   "learned_regions": [
+    "board"
+   ],
+   "record": "0: play starts and ends only, for 13 of 14 snaps; no touchdown, completion, or incompletion recorded",
+   "team": "none named"
+  },
+  {
+   "id": "qb-jackson-ind",
+   "minutes": 4.8,
+   "calls": 11,
+   "looks": 0,
+   "found": false,
+   "habit": "miss (code ended it: nothing lost)",
+   "why": "Code found nothing lost in this match: no death, no lost fight, no teammate down near you without a trade, and no move the engine calls a mistake. So nothing in it can be losing you games, and no single habit is named.",
+   "asked": [],
+   "tools": [
+    "research",
+    "scan",
+    "finish"
+   ],
+   "learned_regions": [],
+   "record": "5 of 14 right (1, 7, 9, 13, 16, loosely); wrong: the TD run (2) as stopped, three plays (3, 11, 15) as kickoff returns, a completion (4) and a first down (8) as stuffed runs, the incompletion (5) as completed, the strip-sack fumble (10) as an extra point, the incompletion (14) as reaching the end zone",
+   "team": "none named"
+  },
+  {
+   "id": "qb-purdy-mia",
+   "minutes": 3.7,
+   "calls": 18,
+   "looks": 0,
+   "found": false,
+   "habit": "right answer (no habit), but only because code found nothing lost; the coach looked at nothing",
+   "why": "Code found nothing lost in this match: no death, no lost fight, no teammate down near you without a trade, and no move the engine calls a mistake. So nothing in it can be losing you games, and no single habit is named.",
+   "asked": [],
+   "tools": [
+    "research",
+    "scan",
+    "finish"
+   ],
+   "learned_regions": [],
+   "record": "4 of 6 specific outcomes right (1, 2, 6, 11); the naked keeper run (3) called a long pass, the TD run (5) not a TD; the other 8 snaps only \"play ends with a tackle\"",
+   "team": "none named"
+  }
+ ]
+}

@@ -1,0 +1,1352 @@
+{
+ "about": "Overnight development loops, Oct 22 2026: the coach on three continuous game clips (eval/recordings/clips.json), each run scored by eval/recordcheck.mjs against ground truth read off the frames (eval/answer-keys/games). One run per clip per loop, learned afresh each time, research cached. What changed in each loop is in README.md (The record, when there is no kill feed to read) and the code comments.",
+ "games": {
+  "rl-somey-gc2.match1": [
+   {
+    "run": "before (Oct 22, first run)",
+    "habit": "Over-Committing on Challenges",
+    "deaths": {
+     "real": 0,
+     "found": 0,
+     "invented": [
+      "2:01.0"
+     ]
+    },
+    "kills": {
+     "real": 1,
+     "found": 0,
+     "invented": []
+    },
+    "points": {
+     "real": 4,
+     "sideRight": 2,
+     "scorerRight": 2
+    },
+    "losses": {
+     "recorded": 8,
+     "real": 2,
+     "invented": [
+      "1:54.0 engagement",
+      "2:01.0 death",
+      "3:18.0 engagement",
+      "3:27.0 death",
+      "3:44.0 engagement",
+      "3:50.0 death"
+     ]
+    },
+    "evidence": {
+     "cited": 3,
+     "atRealLoss": 1,
+     "away": [
+      "2:01.0",
+      "3:27.0"
+     ]
+    },
+    "minutes": 3.3,
+    "calls": 21
+   },
+   {
+    "run": "before (second run)",
+    "habit": "none",
+    "deaths": {
+     "real": 0,
+     "found": 0,
+     "invented": []
+    },
+    "kills": {
+     "real": 1,
+     "found": 0,
+     "invented": []
+    },
+    "points": {
+     "real": 4,
+     "sideRight": 2,
+     "scorerRight": 2
+    },
+    "losses": {
+     "recorded": 5,
+     "real": 1,
+     "invented": [
+      "3:23.0 engagement",
+      "3:27.0 death",
+      "3:46.0 engagement",
+      "3:50.0 death"
+     ]
+    },
+    "evidence": {
+     "cited": 0,
+     "atRealLoss": 0,
+     "away": []
+    },
+    "minutes": 3.6,
+    "calls": 28
+   },
+   {
+    "run": "loop 1",
+    "habit": "Over-committing and poor positioning in challenges",
+    "deaths": {
+     "real": 0,
+     "found": 0,
+     "invented": []
+    },
+    "kills": {
+     "real": 1,
+     "found": 1,
+     "invented": []
+    },
+    "points": {
+     "real": 4,
+     "sideRight": 2,
+     "scorerRight": 2
+    },
+    "losses": {
+     "recorded": 5,
+     "real": 2,
+     "invented": [
+      "3:27.0 point_lost",
+      "3:44.0 engagement",
+      "3:50.0 point_lost"
+     ]
+    },
+    "evidence": {
+     "cited": 3,
+     "atRealLoss": 1,
+     "away": [
+      "3:25.0",
+      "3:45.0"
+     ]
+    },
+    "minutes": 1.8,
+    "calls": 22
+   },
+   {
+    "run": "loop 2",
+    "habit": "none",
+    "deaths": {
+     "real": 0,
+     "found": 0,
+     "invented": []
+    },
+    "kills": {
+     "real": 1,
+     "found": 0,
+     "invented": []
+    },
+    "points": {
+     "real": 4,
+     "sideRight": 4,
+     "scorerRight": 1
+    },
+    "losses": {
+     "recorded": 1,
+     "real": 1,
+     "invented": []
+    },
+    "evidence": {
+     "cited": 0,
+     "atRealLoss": 0,
+     "away": []
+    },
+    "minutes": 2.6,
+    "calls": 14
+   },
+   {
+    "run": "loop 3",
+    "habit": "Over-committing and poor positioning",
+    "deaths": {
+     "real": 0,
+     "found": 0,
+     "invented": []
+    },
+    "kills": {
+     "real": 1,
+     "found": 0,
+     "invented": []
+    },
+    "points": {
+     "real": 4,
+     "sideRight": 2,
+     "scorerRight": 2
+    },
+    "losses": {
+     "recorded": 3,
+     "real": 1,
+     "invented": [
+      "3:27.0 point_lost",
+      "3:50.0 point_lost"
+     ]
+    },
+    "evidence": {
+     "cited": 3,
+     "atRealLoss": 1,
+     "away": [
+      "3:27.0",
+      "3:50.0"
+     ]
+    },
+    "minutes": 1.4,
+    "calls": 23
+   },
+   {
+    "run": "loop 4",
+    "habit": "Over-Committing and Poor Positioning",
+    "deaths": {
+     "real": 0,
+     "found": 0,
+     "invented": []
+    },
+    "kills": {
+     "real": 1,
+     "found": 0,
+     "invented": []
+    },
+    "points": {
+     "real": 4,
+     "sideRight": 4,
+     "scorerRight": 4
+    },
+    "losses": {
+     "recorded": 3,
+     "real": 2,
+     "invented": [
+      "3:40.0 engagement"
+     ]
+    },
+    "evidence": {
+     "cited": 3,
+     "atRealLoss": 2,
+     "away": [
+      "3:45.0"
+     ]
+    },
+    "minutes": 2.3,
+    "calls": 22
+   },
+   {
+    "run": "loop 5",
+    "habit": "none",
+    "deaths": {
+     "real": 0,
+     "found": 0,
+     "invented": []
+    },
+    "kills": {
+     "real": 1,
+     "found": 0,
+     "invented": []
+    },
+    "points": {
+     "real": 4,
+     "sideRight": 4,
+     "scorerRight": 4
+    },
+    "losses": {
+     "recorded": 1,
+     "real": 1,
+     "invented": []
+    },
+    "evidence": {
+     "cited": 0,
+     "atRealLoss": 0,
+     "away": []
+    },
+    "minutes": 4.4,
+    "calls": 20
+   },
+   {
+    "run": "loop 6",
+    "habit": "none",
+    "deaths": {
+     "real": 0,
+     "found": 0,
+     "invented": []
+    },
+    "kills": {
+     "real": 1,
+     "found": 1,
+     "invented": []
+    },
+    "points": {
+     "real": 4,
+     "sideRight": 4,
+     "scorerRight": 4
+    },
+    "losses": {
+     "recorded": 1,
+     "real": 1,
+     "invented": []
+    },
+    "evidence": {
+     "cited": 0,
+     "atRealLoss": 0,
+     "away": []
+    },
+    "minutes": 1.8,
+    "calls": 16
+   },
+   {
+    "run": "loop 7",
+    "habit": "none",
+    "deaths": {
+     "real": 0,
+     "found": 0,
+     "invented": []
+    },
+    "kills": {
+     "real": 1,
+     "found": 0,
+     "invented": []
+    },
+    "points": {
+     "real": 4,
+     "sideRight": 4,
+     "scorerRight": 4
+    },
+    "losses": {
+     "recorded": 1,
+     "real": 1,
+     "invented": []
+    },
+    "evidence": {
+     "cited": 0,
+     "atRealLoss": 0,
+     "away": []
+    },
+    "minutes": 1.1,
+    "calls": 14
+   },
+   {
+    "run": "loop 8",
+    "habit": "none",
+    "deaths": {
+     "real": 0,
+     "found": 0,
+     "invented": []
+    },
+    "kills": {
+     "real": 1,
+     "found": 0,
+     "invented": []
+    },
+    "points": {
+     "real": 4,
+     "sideRight": 4,
+     "scorerRight": 4
+    },
+    "losses": {
+     "recorded": 1,
+     "real": 1,
+     "invented": []
+    },
+    "evidence": {
+     "cited": 0,
+     "atRealLoss": 0,
+     "away": []
+    },
+    "minutes": 2.9,
+    "calls": 17
+   },
+   {
+    "run": "loop 9",
+    "habit": "none",
+    "deaths": {
+     "real": 0,
+     "found": 0,
+     "invented": []
+    },
+    "kills": {
+     "real": 1,
+     "found": 0,
+     "invented": []
+    },
+    "points": {
+     "real": 4,
+     "sideRight": 4,
+     "scorerRight": 4
+    },
+    "losses": {
+     "recorded": 1,
+     "real": 1,
+     "invented": []
+    },
+    "evidence": {
+     "cited": 0,
+     "atRealLoss": 0,
+     "away": []
+    },
+    "minutes": 1.4,
+    "calls": 14
+   },
+   {
+    "run": "loop 10",
+    "changed": "none (a repeat of loop 9 for consistency)",
+    "habit": "none",
+    "deaths": {
+     "real": 0,
+     "found": 0,
+     "invented": []
+    },
+    "kills": {
+     "real": 1,
+     "found": 0,
+     "invented": []
+    },
+    "points": {
+     "real": 4,
+     "sideRight": 4,
+     "scorerRight": 4
+    },
+    "losses": {
+     "recorded": 1,
+     "real": 1,
+     "invented": []
+    },
+    "evidence": {
+     "cited": 0,
+     "atRealLoss": 0,
+     "away": []
+    },
+    "minutes": 0.9,
+    "calls": 14
+   },
+   {
+    "run": "loop 11",
+    "changed": "HP and score readouts grown to 7% of the screen tall before reading (Rivals and RL; League ran on the next change too)",
+    "habit": "none",
+    "deaths": {
+     "real": 0,
+     "found": 0,
+     "invented": []
+    },
+    "kills": {
+     "real": 1,
+     "found": 0,
+     "invented": []
+    },
+    "points": {
+     "real": 4,
+     "sideRight": 4,
+     "scorerRight": 4
+    },
+    "losses": {
+     "recorded": 1,
+     "real": 1,
+     "invented": []
+    },
+    "evidence": {
+     "cited": 0,
+     "atRealLoss": 0,
+     "away": []
+    },
+    "minutes": 1.9,
+    "calls": 24
+   },
+   {
+    "run": "loop 12",
+    "changed": "plus: a kill feed checked against the K/D/A; a death the K/D/A does not show gets a second look; \"nothing lost\" said only as far as deaths were checked. Run on gemini-3.1-flash-lite, the app fallback: 3.5 Flash-Lite hit its 500-a-day free limit at 05:10",
+    "habit": "none",
+    "deaths": {
+     "real": 0,
+     "found": 0,
+     "invented": []
+    },
+    "kills": {
+     "real": 1,
+     "found": 0,
+     "invented": []
+    },
+    "points": {
+     "real": 4,
+     "sideRight": 4,
+     "scorerRight": 4
+    },
+    "losses": {
+     "recorded": 1,
+     "real": 1,
+     "invented": []
+    },
+    "evidence": {
+     "cited": 0,
+     "atRealLoss": 0,
+     "away": []
+    },
+    "minutes": 5.3,
+    "calls": 36
+   }
+  ],
+  "mr-punk-magik.attack": [
+   {
+    "run": "before (Oct 22, first run)",
+    "habit": "none",
+    "deaths": {
+     "real": 1,
+     "found": 1,
+     "invented": [
+      "1:17.0"
+     ]
+    },
+    "kills": {
+     "real": 14,
+     "found": 13,
+     "invented": [
+      "6:04.0"
+     ]
+    },
+    "losses": {
+     "recorded": 4,
+     "real": 2,
+     "invented": [
+      "1:04.0 engagement",
+      "1:17.0 death"
+     ]
+    },
+    "evidence": {
+     "cited": 0,
+     "atRealLoss": 0,
+     "away": []
+    },
+    "minutes": 3.7,
+    "calls": 25
+   },
+   {
+    "run": "before (second run)",
+    "habit": "none",
+    "deaths": {
+     "real": 1,
+     "found": 0,
+     "invented": []
+    },
+    "kills": {
+     "real": 14,
+     "found": 13,
+     "invented": []
+    },
+    "losses": {
+     "recorded": 0,
+     "real": 0,
+     "invented": []
+    },
+    "evidence": {
+     "cited": 0,
+     "atRealLoss": 0,
+     "away": []
+    },
+    "minutes": 3.7,
+    "calls": 20
+   },
+   {
+    "run": "loop 1",
+    "habit": "none",
+    "deaths": {
+     "real": 1,
+     "found": 1,
+     "invented": [
+      "6:19.0"
+     ]
+    },
+    "kills": {
+     "real": 14,
+     "found": 13,
+     "invented": [
+      "7:59.0"
+     ]
+    },
+    "losses": {
+     "recorded": 3,
+     "real": 2,
+     "invented": [
+      "6:19.0 death"
+     ]
+    },
+    "evidence": {
+     "cited": 0,
+     "atRealLoss": 0,
+     "away": []
+    },
+    "minutes": 4.8,
+    "calls": 26
+   },
+   {
+    "run": "loop 2",
+    "habit": "The Suicide Dive: Diving deep into enemy lines without keeping Stepping Discs or escape cooldowns available.",
+    "deaths": {
+     "real": 1,
+     "found": 1,
+     "invented": [
+      "1:18.0"
+     ]
+    },
+    "kills": {
+     "real": 14,
+     "found": 12,
+     "invented": [
+      "6:03.0"
+     ]
+    },
+    "losses": {
+     "recorded": 3,
+     "real": 2,
+     "invented": [
+      "1:18.0 death"
+     ]
+    },
+    "evidence": {
+     "cited": 3,
+     "atRealLoss": 1,
+     "away": [
+      "1:18.0",
+      "4:12.0"
+     ]
+    },
+    "minutes": 8.2,
+    "calls": 35
+   },
+   {
+    "run": "loop 3",
+    "habit": "Trickling",
+    "deaths": {
+     "real": 1,
+     "found": 0,
+     "invented": []
+    },
+    "kills": {
+     "real": 14,
+     "found": 0,
+     "invented": []
+    },
+    "losses": {
+     "recorded": 0,
+     "real": 0,
+     "invented": []
+    },
+    "evidence": {
+     "cited": 3,
+     "atRealLoss": 0,
+     "away": [
+      "2:08.0",
+      "3:08.0",
+      "3:30.0"
+     ]
+    },
+    "minutes": 6.9,
+    "calls": 37
+   },
+   {
+    "run": "loop 4",
+    "habit": "none",
+    "deaths": {
+     "real": 1,
+     "found": 1,
+     "invented": [
+      "4:31.0"
+     ]
+    },
+    "kills": {
+     "real": 14,
+     "found": 11,
+     "invented": [
+      "6:21.0",
+      "8:06.0"
+     ]
+    },
+    "losses": {
+     "recorded": 3,
+     "real": 3,
+     "invented": []
+    },
+    "evidence": {
+     "cited": 0,
+     "atRealLoss": 0,
+     "away": []
+    },
+    "minutes": 5.6,
+    "calls": 37
+   },
+   {
+    "run": "loop 5",
+    "habit": "none",
+    "deaths": {
+     "real": 1,
+     "found": 0,
+     "invented": [
+      "4:31.0"
+     ]
+    },
+    "kills": {
+     "real": 14,
+     "found": 4,
+     "invented": [
+      "5:58.0"
+     ]
+    },
+    "losses": {
+     "recorded": 2,
+     "real": 2,
+     "invented": []
+    },
+    "evidence": {
+     "cited": 0,
+     "atRealLoss": 0,
+     "away": []
+    },
+    "minutes": 5.3,
+    "calls": 33
+   },
+   {
+    "run": "loop 6",
+    "habit": "The Suicide Dive: Engaging without an escape route",
+    "deaths": {
+     "real": 1,
+     "found": 0,
+     "invented": []
+    },
+    "kills": {
+     "real": 14,
+     "found": 3,
+     "invented": [
+      "5:57.3"
+     ]
+    },
+    "losses": {
+     "recorded": 0,
+     "real": 0,
+     "invented": []
+    },
+    "evidence": {
+     "cited": 3,
+     "atRealLoss": 0,
+     "away": [
+      "3:30.0",
+      "6:12.0",
+      "6:38.0"
+     ]
+    },
+    "minutes": 5.4,
+    "calls": 38
+   },
+   {
+    "run": "loop 7",
+    "habit": "none",
+    "deaths": {
+     "real": 1,
+     "found": 0,
+     "invented": [
+      "1:02.0",
+      "6:32.0",
+      "6:40.0"
+     ]
+    },
+    "kills": {
+     "real": 14,
+     "found": 5,
+     "invented": [
+      "0:52.0",
+      "4:44.0",
+      "4:46.0",
+      "4:48.0",
+      "4:50.0",
+      "4:52.0",
+      "4:56.0",
+      "4:58.0",
+      "5:00.0"
+     ]
+    },
+    "losses": {
+     "recorded": 3,
+     "real": 0,
+     "invented": [
+      "1:02.0 death",
+      "6:32.0 death",
+      "6:40.0 death"
+     ]
+    },
+    "evidence": {
+     "cited": 0,
+     "atRealLoss": 0,
+     "away": []
+    },
+    "minutes": 4.1,
+    "calls": 38
+   },
+   {
+    "run": "loop 8",
+    "habit": "The Suicide Dive: Engaging in fights without tracking team positioning or escape routes as Magik.",
+    "deaths": {
+     "real": 1,
+     "found": 1,
+     "invented": [
+      "0:40.0",
+      "1:10.0",
+      "2:22.0",
+      "4:38.0",
+      "4:46.0",
+      "4:54.0"
+     ]
+    },
+    "kills": {
+     "real": 14,
+     "found": 0,
+     "invented": [
+      "1:46.0",
+      "2:02.0",
+      "3:32.0",
+      "8:06.0"
+     ]
+    },
+    "losses": {
+     "recorded": 9,
+     "real": 1,
+     "invented": [
+      "0:36.0 engagement",
+      "0:40.0 death",
+      "1:10.0 death",
+      "2:22.0 death",
+      "4:34.0 engagement",
+      "4:38.0 death",
+      "4:46.0 death",
+      "4:54.0 death"
+     ]
+    },
+    "evidence": {
+     "cited": 3,
+     "atRealLoss": 0,
+     "away": [
+      "0:36.0",
+      "1:10.0",
+      "4:30.0"
+     ]
+    },
+    "minutes": 5.5,
+    "calls": 35
+   },
+   {
+    "run": "loop 9",
+    "habit": "none",
+    "deaths": {
+     "real": 1,
+     "found": 1,
+     "invented": []
+    },
+    "kills": {
+     "real": 14,
+     "found": 7,
+     "invented": []
+    },
+    "losses": {
+     "recorded": 2,
+     "real": 2,
+     "invented": []
+    },
+    "evidence": {
+     "cited": 0,
+     "atRealLoss": 0,
+     "away": []
+    },
+    "minutes": 5.6,
+    "calls": 42
+   },
+   {
+    "run": "loop 10",
+    "changed": "none (a repeat of loop 9 for consistency)",
+    "habit": "none",
+    "deaths": {
+     "real": 1,
+     "found": 0,
+     "invented": []
+    },
+    "kills": {
+     "real": 14,
+     "found": 11,
+     "invented": []
+    },
+    "losses": {
+     "recorded": 0,
+     "real": 0,
+     "invented": []
+    },
+    "evidence": {
+     "cited": 0,
+     "atRealLoss": 0,
+     "away": []
+    },
+    "minutes": 1.9,
+    "calls": 20
+   },
+   {
+    "run": "loop 11",
+    "changed": "HP and score readouts grown to 7% of the screen tall before reading (Rivals and RL; League ran on the next change too)",
+    "habit": "none",
+    "deaths": {
+     "real": 1,
+     "found": 1,
+     "invented": []
+    },
+    "kills": {
+     "real": 14,
+     "found": 12,
+     "invented": []
+    },
+    "losses": {
+     "recorded": 2,
+     "real": 2,
+     "invented": []
+    },
+    "evidence": {
+     "cited": 0,
+     "atRealLoss": 0,
+     "away": []
+    },
+    "minutes": 2.2,
+    "calls": 28
+   },
+   {
+    "run": "loop 12",
+    "changed": "plus: a kill feed checked against the K/D/A; a death the K/D/A does not show gets a second look; \"nothing lost\" said only as far as deaths were checked. Run on gemini-3.1-flash-lite, the app fallback: 3.5 Flash-Lite hit its 500-a-day free limit at 05:10",
+    "habit": "none",
+    "deaths": {
+     "real": 1,
+     "found": 1,
+     "invented": []
+    },
+    "kills": {
+     "real": 14,
+     "found": 13,
+     "invented": []
+    },
+    "losses": {
+     "recorded": 1,
+     "real": 1,
+     "invented": []
+    },
+    "evidence": {
+     "cited": 0,
+     "atRealLoss": 0,
+     "away": []
+    },
+    "minutes": 21.3,
+    "calls": 60
+   }
+  ],
+  "lol-hacklet-mf.14-24": [
+   {
+    "run": "before (second run)",
+    "habit": "Overextending Without Vision",
+    "deaths": {
+     "real": 2,
+     "found": 2,
+     "invented": [
+      "5:49.0",
+      "7:54.0",
+      "8:09.0"
+     ]
+    },
+    "kills": {
+     "real": 0,
+     "found": 0,
+     "invented": [
+      "0:07.0",
+      "0:56.0",
+      "1:19.0",
+      "4:26.0",
+      "4:34.0",
+      "4:55.0",
+      "8:48.0",
+      "9:05.0"
+     ]
+    },
+    "losses": {
+     "recorded": 10,
+     "real": 4,
+     "invented": [
+      "5:45.0 engagement",
+      "5:49.0 death",
+      "7:50.0 engagement",
+      "7:54.0 death",
+      "8:05.0 engagement",
+      "8:09.0 death"
+     ]
+    },
+    "evidence": {
+     "cited": 4,
+     "atRealLoss": 2,
+     "away": [
+      "5:49.0",
+      "7:54.0"
+     ]
+    },
+    "minutes": 4.4,
+    "calls": 29
+   },
+   {
+    "run": "loop 1",
+    "habit": "none",
+    "deaths": {
+     "real": 2,
+     "found": 2,
+     "invented": [
+      "2:04.0",
+      "8:32.0",
+      "9:25.0",
+      "9:32.0"
+     ]
+    },
+    "kills": {
+     "real": 0,
+     "found": 0,
+     "invented": [
+      "1:00.0",
+      "3:23.0",
+      "5:28.0",
+      "5:49.0"
+     ]
+    },
+    "losses": {
+     "recorded": 11,
+     "real": 4,
+     "invented": [
+      "1:58.0 engagement",
+      "2:04.0 death",
+      "8:28.0 engagement",
+      "8:32.0 death",
+      "9:25.0 death",
+      "9:28.0 engagement",
+      "9:32.0 death"
+     ]
+    },
+    "evidence": {
+     "cited": 0,
+     "atRealLoss": 0,
+     "away": []
+    },
+    "minutes": 2.1,
+    "calls": 23
+   },
+   {
+    "run": "loop 2",
+    "habit": "Auto-piloting into unfavorable fights without numerical advantage",
+    "deaths": {
+     "real": 2,
+     "found": 2,
+     "invented": []
+    },
+    "kills": {
+     "real": 0,
+     "found": 0,
+     "invented": []
+    },
+    "losses": {
+     "recorded": 4,
+     "real": 4,
+     "invented": []
+    },
+    "evidence": {
+     "cited": 3,
+     "atRealLoss": 2,
+     "away": [
+      "1:37.0"
+     ]
+    },
+    "minutes": 3.5,
+    "calls": 35
+   },
+   {
+    "run": "loop 3",
+    "habit": "Overextending Without Vision",
+    "deaths": {
+     "real": 2,
+     "found": 2,
+     "invented": [
+      "5:51.0"
+     ]
+    },
+    "kills": {
+     "real": 0,
+     "found": 0,
+     "invented": []
+    },
+    "losses": {
+     "recorded": 6,
+     "real": 4,
+     "invented": [
+      "5:40.0 engagement",
+      "5:51.0 death"
+     ]
+    },
+    "evidence": {
+     "cited": 3,
+     "atRealLoss": 2,
+     "away": [
+      "5:51.0"
+     ]
+    },
+    "minutes": 5.6,
+    "calls": 32
+   },
+   {
+    "run": "loop 4",
+    "habit": "Initiating Without Sufficient Style Rank",
+    "deaths": {
+     "real": 2,
+     "found": 2,
+     "invented": [
+      "4:48.0"
+     ]
+    },
+    "kills": {
+     "real": 0,
+     "found": 0,
+     "invented": []
+    },
+    "losses": {
+     "recorded": 5,
+     "real": 3,
+     "invented": [
+      "4:44.0 engagement",
+      "4:48.0 death"
+     ]
+    },
+    "evidence": {
+     "cited": 3,
+     "atRealLoss": 2,
+     "away": [
+      "4:48.0"
+     ]
+    },
+    "minutes": 2.7,
+    "calls": 32
+   },
+   {
+    "run": "loop 5",
+    "habit": "none",
+    "deaths": {
+     "real": 2,
+     "found": 2,
+     "invented": [
+      "5:51.0"
+     ]
+    },
+    "kills": {
+     "real": 0,
+     "found": 0,
+     "invented": []
+    },
+    "losses": {
+     "recorded": 6,
+     "real": 4,
+     "invented": [
+      "5:40.0 engagement",
+      "5:51.0 death"
+     ]
+    },
+    "evidence": {
+     "cited": 0,
+     "atRealLoss": 0,
+     "away": []
+    },
+    "minutes": 3.9,
+    "calls": 35
+   },
+   {
+    "run": "loop 6",
+    "habit": "Just One More Wave Mentality: Pushing lanes or overextending without vision, leading to unnecessary deaths.",
+    "deaths": {
+     "real": 2,
+     "found": 2,
+     "invented": []
+    },
+    "kills": {
+     "real": 0,
+     "found": 0,
+     "invented": []
+    },
+    "losses": {
+     "recorded": 4,
+     "real": 4,
+     "invented": []
+    },
+    "evidence": {
+     "cited": 3,
+     "atRealLoss": 2,
+     "away": [
+      "7:30.0"
+     ]
+    },
+    "minutes": 2.9,
+    "calls": 27
+   },
+   {
+    "run": "loop 7",
+    "habit": "Taking unfavorable trades and fighting outnumbered",
+    "deaths": {
+     "real": 2,
+     "found": 1,
+     "invented": [
+      "1:24.0"
+     ]
+    },
+    "kills": {
+     "real": 0,
+     "found": 0,
+     "invented": []
+    },
+    "losses": {
+     "recorded": 3,
+     "real": 2,
+     "invented": [
+      "1:24.0 death"
+     ]
+    },
+    "evidence": {
+     "cited": 3,
+     "atRealLoss": 2,
+     "away": [
+      "1:24.0"
+     ]
+    },
+    "minutes": 3.9,
+    "calls": 34
+   },
+   {
+    "run": "loop 8",
+    "habit": "Just One More Wave Mentality / Overextending Without Vision",
+    "deaths": {
+     "real": 2,
+     "found": 2,
+     "invented": []
+    },
+    "kills": {
+     "real": 0,
+     "found": 0,
+     "invented": []
+    },
+    "losses": {
+     "recorded": 4,
+     "real": 4,
+     "invented": []
+    },
+    "evidence": {
+     "cited": 3,
+     "atRealLoss": 3,
+     "away": []
+    },
+    "minutes": 2.3,
+    "calls": 25
+   },
+   {
+    "run": "loop 9",
+    "habit": "none",
+    "deaths": {
+     "real": 2,
+     "found": 2,
+     "invented": []
+    },
+    "kills": {
+     "real": 0,
+     "found": 0,
+     "invented": []
+    },
+    "losses": {
+     "recorded": 4,
+     "real": 4,
+     "invented": []
+    },
+    "evidence": {
+     "cited": 0,
+     "atRealLoss": 0,
+     "away": []
+    },
+    "minutes": 4.1,
+    "calls": 27
+   },
+   {
+    "run": "loop 10",
+    "changed": "none (a repeat of loop 9 for consistency)",
+    "habit": "Overextending and poor positioning in late-game skirmishes without tracking enemy threats.",
+    "deaths": {
+     "real": 2,
+     "found": 1,
+     "invented": [
+      "9:32.0"
+     ]
+    },
+    "kills": {
+     "real": 0,
+     "found": 0,
+     "invented": [
+      "0:59.0",
+      "3:04.0",
+      "9:05.0",
+      "9:17.0"
+     ]
+    },
+    "losses": {
+     "recorded": 4,
+     "real": 2,
+     "invented": [
+      "9:28.0 engagement",
+      "9:32.0 death"
+     ]
+    },
+    "evidence": {
+     "cited": 3,
+     "atRealLoss": 1,
+     "away": [
+      "8:43.0",
+      "9:32.0"
+     ]
+    },
+    "minutes": 5.2,
+    "calls": 35
+   },
+   {
+    "run": "loop 11",
+    "void": "no review: the API refused most calls (429/503), with probes running beside it"
+   },
+   {
+    "run": "loop 12",
+    "changed": "plus: a kill feed checked against the K/D/A; a death the K/D/A does not show gets a second look; \"nothing lost\" said only as far as deaths were checked. Run on gemini-3.1-flash-lite, the app fallback: 3.5 Flash-Lite hit its 500-a-day free limit at 05:10",
+    "habit": "none",
+    "deaths": {
+     "real": 2,
+     "found": 2,
+     "invented": []
+    },
+    "kills": {
+     "real": 0,
+     "found": 0,
+     "invented": []
+    },
+    "losses": {
+     "recorded": 4,
+     "real": 4,
+     "invented": []
+    },
+    "evidence": {
+     "cited": 0,
+     "atRealLoss": 0,
+     "away": []
+    },
+    "minutes": 10.6,
+    "calls": 49
+   }
+  ]
+ },
+ "regressions": {
+  "about": "Valorant recordings with a readable kill feed, scored against yt-vyse-ascent.truth.json and tenz-stream.truth.json, to check the changes broke nothing there.",
+  "vyse, after loop 9": [
+   "run-1.json: no single habit | evidence []",
+   "kills 9/9 (missed [], extra []); deaths 6/6 (missed [], extra []); teammate deaths 27; fights 16, lost at [119.8,318.5,393.8,471.3,593.3,660.8]",
+   "calls 38, 291k in / 20k out, $0.136, 4.4 min; by job read_hud/other 4, box check 2, coach 10, research 7, kill feed 9, clips 3, claim check 3"
+  ],
+  "vyse, after loop 12 (3.1 Flash-Lite)": [
+   "run-1.json: \"Holding static angles and peeking without utility or proper movement.\" | evidence [318.5,393.8,660.8]",
+   "kills 9/9 (missed [], extra []); deaths 6/6 (missed [], extra []); teammate deaths 27; fights 16, lost at [119.8,318.5,393.8,471.3,593.3,660.8]",
+   "calls 30, 261k in / 10k out, $0.104, 6.8 min; by job learn 1, read_hud/other 4, box check 2, coach 8, kill feed 6, clips 3, claim check 6"
+  ],
+  "tenz, after loop 12 (3.1 Flash-Lite)": [
+   "run-1.json: no single habit | evidence []",
+   "kills 5/5 (missed [], extra []); deaths 5/5 (missed [], extra []); teammate deaths 14; fights 16, lost at [33.5,130.8,247.3,289.3,368.3]",
+   "calls 48, 338k in / 15k out, $0.140, 15.3 min; by job learn 1, box check 1, coach 18, kill feed 3, HUD counters 10, read_hud/other 4, clips 8, claim check 3"
+  ]
+ }
+}

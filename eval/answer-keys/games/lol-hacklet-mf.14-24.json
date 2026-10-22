@@ -1,0 +1,13 @@
+{
+  "clip": "league-of-legends/lol-hacklet-mf.14-24.mp4",
+  "game": "League of Legends",
+  "player": "xHACKLETx", "character": "Miss Fortune",
+  "how": "Read by Claude off the frames, Oct 22 2026: the player's own K/D/A counter (top right) every 5 s over the clip, and every 0.5 s around each change. K/D/A 1/4/3 at 0:00, 1/6/7 at 10:00.",
+  "deaths": [
+    { "t": 106.5, "how": "K/D/A 1/4/5 to 1/5/5 at 1:46.5; gray death screen from 1:45", "context": "a mid-lane skirmish by the minion waves, allies alive" },
+    { "t": 535.0, "how": "K/D/A 1/5/6 to 1/6/6 at 8:55.0; dark death screen", "context": "a river fight with an allied Blitzcrank beside her" }
+  ],
+  "kills": [],
+  "assists": [{ "t": 57.5 }, { "t": 87.5 }, { "t": 267.5 }, { "t": 537.5 }],
+  "not_deaths": [{ "t": 349, "what": "low-health red tint; K/D/A unchanged" }, { "t": 474, "what": "nothing; K/D/A unchanged" }]
+}

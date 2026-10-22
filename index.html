@@ -54,6 +54,10 @@ Millennium eye in raised gold. Big Shoulders Display for the verdict and big num
         <path d="M26.5 35.6V42.4C26.5 45.9 24.6 47.9 21.2 47.9" /><path d="M33 36.2V46.6" />
         <path d="M39.5 35.6V40.6C39.5 45.6 42.6 48.6 46.6 48.6C50.1 48.6 52.6 46.1 52.6 43C52.6 40.2 50.5 38.4 48.1 38.4C45.8 38.4 44.3 40.1 44.3 42C44.3 43.6 45.5 44.7 46.9 44.6" />
       </g>
+      <symbol id="i-home" viewBox="0 0 24 24"><path d="M4 10.5 12 4l8 6.5V20a1 1 0 0 1-1 1h-4.5v-6h-5v6H5a1 1 0 0 1-1-1z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" /></symbol>
+      <symbol id="i-coach" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="7.5" /><path d="M12 2.5v4M12 17.5v4M2.5 12h4M17.5 12h4" /></g></symbol>
+      <symbol id="i-folder" viewBox="0 0 24 24"><path d="M3.5 7a1.5 1.5 0 0 1 1.5-1.5h4.4l2 2.2H19A1.5 1.5 0 0 1 20.5 9.2V17A1.5 1.5 0 0 1 19 18.5H5A1.5 1.5 0 0 1 3.5 17z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" /></symbol>
+      <symbol id="film" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2.5" /><path d="M7 4v16M17 4v16M3 9h4M3 15h4M17 9h4M17 15h4" /></g></symbol>
       <symbol id="eye" viewBox="3 12 58 40"><use href="#eye-lines" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" /><circle cx="32" cy="26.2" r="6.4" fill="currentColor" mask="url(#pupil)" /></symbol>
       <symbol id="eye-gold" viewBox="3 12 58 40" overflow="visible"><g filter="url(#emboss)">
         <path d="M13.5 26.25C19 17.4 45 17.4 50.5 26.25C45 35.1 19 35.1 13.5 26.25Z" fill="#140e03" />
@@ -64,15 +68,87 @@ Millennium eye in raised gold. Big Shoulders Display for the verdict and big num
   </svg>
 
   <a class="skip" href="#main">Skip to content</a>
-  <header class="top">
-    <a class="mark" href="./" aria-label="Thirdeye, start over"><svg aria-hidden="true"><use href="#eye-gold" /></svg>thirdeye</a>
-    <a class="quiet" id="historyBtn" href="#reviews" hidden>Past reviews <span id="historyCount"></span></a>
-  </header>
+  <div class="app">
+  <!-- the app's frame: a sidebar with the three places and the latest reviews; a tab bar instead on phones -->
+  <aside class="side" aria-label="Thirdeye">
+    <a class="mark" href="#" aria-label="Thirdeye home"><svg aria-hidden="true"><use href="#eye-gold" /></svg><span>thirdeye</span></a>
+    <nav class="side-nav" id="tabs" aria-label="Places">
+      <a href="#" data-tab="home"><svg aria-hidden="true"><use href="#i-home" /></svg><span>Home</span></a>
+      <a href="#coach" data-tab="coach"><svg aria-hidden="true"><use href="#i-coach" /></svg><span>Coach</span></a>
+      <a href="#reviews" data-tab="reviews" id="historyBtn"><svg aria-hidden="true"><use href="#film" /></svg><span>Past reviews</span><span class="count" id="historyCount"></span></a>
+    </nav>
+    <section class="side-recent" id="sideRecent" aria-label="Latest reviews" hidden></section>
+    <div class="side-foot"><button class="side-link" id="libraryBtn" type="button" hidden><svg aria-hidden="true"><use href="#i-folder" /></svg><span>Recordings folder</span></button></div>
+  </aside>
+  <nav class="tabbar" aria-label="Places">
+    <a href="#" data-tab="home"><svg aria-hidden="true"><use href="#i-home" /></svg>Home</a>
+    <a href="#coach" data-tab="coach"><svg aria-hidden="true"><use href="#i-coach" /></svg>Coach</a>
+    <a href="#reviews" data-tab="reviews"><svg aria-hidden="true"><use href="#film" /></svg>Reviews</a>
+  </nav>
 
   <main id="main" tabindex="-1">
-    <section class="start" id="start" aria-labelledby="startTitle">
-      <h1 id="startTitle">Find the habit that's<br /><span class="pen">losing you games.</span></h1>
-      <p class="lede">Drop in a match from any game. It watches, then shows you why.</p>
+    <section class="home" id="home" aria-labelledby="homeTitle" hidden>
+      <div class="home-hero">
+      <div class="hero">
+        <button class="announce" type="button" data-scroll="how"><svg aria-hidden="true"><use href="#eye" /></svg>A post-game coach for any game<span>How it works</span></button>
+        <h1 id="homeTitle">Find the habit that's<br /><span class="pen">losing you games.</span></h1>
+        <p class="hero-sub">Drop in a match. Thirdeye watches it like a coach, finds the one habit that costs you, and shows you the moments.</p>
+        <div class="hero-cta"><a class="pill primary" href="#coach">Review a match</a><button class="pill" type="button" data-scroll="how">See how it works</button></div>
+      </div>
+
+      <!-- real matches: what Thirdeye read in each, played over the footage it was read from (SCENES in app.js) -->
+      <figure class="hero-shot">
+        <div class="hs-frame demo" id="demo">
+          <video id="demoVideo" muted playsinline preload="auto"></video>
+          <div class="demo-hud" id="demoHud" aria-hidden="true"></div>
+          <div class="demo-marks" id="demoMarks" aria-hidden="true"></div>
+        </div>
+        <div class="now demo-now" id="demoNow" aria-live="off"></div>
+        <div class="scenes" id="scenes" role="tablist" aria-label="Scenarios"></div>
+        <figcaption id="demoCaption"></figcaption>
+      </figure>
+      </div>
+
+      <section class="how" id="how" aria-labelledby="howTitle">
+        <h2 id="howTitle">How it works</h2>
+        <ol class="steps">
+          <li class="step">
+            <div class="step-art art-drop"><span class="corners" aria-hidden="true"></span><svg class="reticle" aria-hidden="true" viewBox="0 0 40 40"><path d="M20 6v9M20 25v9M6 20h9M25 20h9" /></svg><span>match.mov</span></div>
+            <p class="step-n">01</p><h3>Drop a match</h3><p>Any game, any length. Nothing to set up.</p>
+          </li>
+          <li class="step">
+            <div class="step-art art-watch"><span class="aw-card"><b>The match record</b> 0:48 damage dealt</span><span class="aw-card"><b>Close look</b> 0:45.6 <i></i><i></i><i></i></span></div>
+            <p class="step-n">02</p><h3>It watches like a coach</h3><p>It reads the kill feed, looks up close, and measures aim in code.</p>
+          </li>
+          <li class="step">
+            <div class="step-art art-check"><span>Is this what's costing you?</span><i class="yes">Yes, that's it</i><i>Not really</i></div>
+            <p class="step-n">03</p><h3>It checks with you</h3><p>Nothing's final until you say it's right.</p>
+          </li>
+          <li class="step">
+            <div class="step-art art-proof" id="stepProof"><img src="assets/scenes/apex.jpg" alt="" /></div>
+            <p class="step-n">04</p><h3>Proof, then a drill</h3><p>Every claim is a moment you can watch, marked up.</p>
+          </li>
+        </ol>
+      </section>
+
+      <section class="why-sec" aria-labelledby="whyTitle">
+      <h2 id="whyTitle">Why it's different</h2>
+      <div class="why">
+        <div class="why-card"><h3>Learns any game</h3><p>It reads the HUD from your recording. No profiles, no setup.</p></div>
+        <div class="why-card"><h3>Proof, not vibes</h3><p>Code checks the evidence before you see it. A wrong call is worse than none.</p></div>
+        <div class="why-card"><h3>Tracks the fix</h3><p>Your next match re-checks the habit: better, same, or worse.</p></div>
+      </div>
+      </section>
+
+      <section class="cta-band">
+        <h2>Your next match is your first review.</h2>
+        <a class="pill primary" href="#coach">Review a match</a>
+      </section>
+    </section>
+
+    <section class="start" id="start" aria-labelledby="startTitle" hidden>
+      <h1 id="startTitle">Review a match</h1>
+      <p class="lede">It watches the whole match, then shows you why.</p>
 
       <label class="drop" id="drop">
         <input id="fileInput" type="file" accept="video/*,.mkv" />
@@ -82,14 +158,6 @@ Millennium eye in raised gold. Big Shoulders Display for the verdict and big num
         <span class="drop-sub">MP4, MKV, or WebM. Up to 2 hours.</span>
       </label>
 
-      <div class="setup">
-        <label class="field name"><span>Your in-game name</span>
-          <input id="playerName" type="text" maxlength="40" autocomplete="off" placeholder="Optional" />
-        </label>
-        <label class="field goal"><span>Anything to look at?</span>
-          <input id="goal" type="text" maxlength="200" placeholder="I keep losing duels on B site" />
-        </label>
-      </div>
 
       <div class="working" id="working" hidden></div>
 
@@ -100,16 +168,18 @@ Millennium eye in raised gold. Big Shoulders Display for the verdict and big num
 
       <div class="foot">
         <p>Post-game only. The sound, with any voice chat, never leaves this device.</p>
-        <span class="foot-actions"><button class="quiet" id="libraryBtn" type="button" hidden></button><button class="quiet" id="sampleBtn" type="button" hidden>Use the synthetic test match</button></span>
+        <button class="quiet" id="sampleBtn" type="button" hidden>Use the synthetic test match</button>
       </div>
     </section>
 
     <section class="review" id="review" aria-label="Match review" hidden>
       <nav class="crumbs" id="crumbs" aria-label="Past review" hidden></nav>
       <div class="stage" id="stage">
-        <div class="player">
+        <div class="player" id="player">
           <video id="video" playsinline controls preload="metadata"></video>
           <div class="vmarks" id="vmarks" hidden></div>
+          <div class="now" id="now" aria-live="polite" hidden></div>
+          <button class="follow" id="followBtn" type="button" hidden>Follow the coach</button>
           <div class="reattach" id="reattach" hidden></div>
         </div>
         <div class="timeline" id="timeline" role="slider" tabindex="0" aria-label="Match timeline" aria-valuemin="0" aria-valuemax="0" aria-valuenow="0">
@@ -130,6 +200,7 @@ Millennium eye in raised gold. Big Shoulders Display for the verdict and big num
         </div>
         <div class="meter" id="meter" hidden><div class="ticks" id="meterTicks"></div><span id="meterText"></span></div>
         <div class="question" id="question" hidden></div>
+        <section class="checkin" id="checkin" aria-label="Check the finding" hidden></section>
         <article class="verdict" id="verdict" hidden></article>
         <div class="board" id="board" hidden></div>
         <section class="breakdown" id="breakdown" aria-label="What the coach did, step by step" hidden><h3>The breakdown</h3><ol class="beats" id="beats" aria-live="polite"></ol></section>
@@ -146,6 +217,7 @@ Millennium eye in raised gold. Big Shoulders Display for the verdict and big num
 
     <dialog class="lightbox" id="lightbox" aria-label="Frame"><img id="lightboxImg" alt="" /><p id="lightboxCap"></p></dialog>
   </main>
+  </div>
 
   <script src="env.js"></script>
   <script src="gemini.js"></script>
@@ -156,6 +228,7 @@ Millennium eye in raised gold. Big Shoulders Display for the verdict and big num
   <script src="agent.js"></script>
   <script src="reviews.js"></script>
   <script src="report.js"></script>
+  <script src="vendor/motion.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

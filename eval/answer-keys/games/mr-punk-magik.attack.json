@@ -1,0 +1,47 @@
+{
+  "clip": "marvel-rivals/mr-punk-magik.attack.mp4",
+  "player": "PunK10 (Magik)",
+  "how": "Read three HUD regions (fractions of the 1920x1080 frame) every 1 s from 0:00 to 8:19, then at 0.25 s around each new kill-feed line and at 0.1 s around the death. (1) Kill feed, top right under the enemy portraits, x 0.72-1.0, y 0.20-0.38: one line per event, killer on the left and victim on the right, ally names blue, enemy names orange. New lines go in at the top, fade in over about 0.25 s and stay about 4.5 s. A teammate's line that ends on an ally with a round beacon icon is a Rocket revive, not a kill (for example MR.ELK -> VEN, or Alejos2001 -> PunK10). (2) Her KO / DOUBLE / TRIPLE / QUAD / PENTA banner at right middle, x 0.78-1.0, y 0.40-0.57. (3) Her HP readout at bottom center, x 0.43-0.57, y 0.89-0.94. All 14 kill-feed lines with PunK10 as killer line up one-for-one with 14 banners, and no banner appears without a line. Kill times are the first frame where the line shows (the kill happened 0-0.25 s earlier). For deaths: in the 1 s HP scan the only 0/250 readings are 4:28-4:30. The only kill-feed line with PunK10 as victim is VEN -> PunK10 at 4:27.4. Every other 1 s sample shows a live HP number, and the 2 s overview shows Magik on screen in every frame up to the round-end splash at 8:11.",
+  "deaths": [
+    {
+      "t": "4:27.3",
+      "how": "HP 32/250 at 4:27.2, then 0/250 at 4:27.3 and she drops to the floor. Kill-feed line 'VEN -> PunK10' from 4:27.4. Her portrait's health bar is empty. There was no respawn timer or killcam: the camera cut to teammate Alejos2001's (Rocket) beacon, with a 'Reviving' banner from about 4:29.0 to 4:30.7. HP stayed 0/250 until 4:30.7, the kill feed showed 'Alejos2001 -> PunK10' (a revive) at 4:30.8, and she was 'Revived' at 250/250 at 4:30.8-4:31.0, standing at the beacon. She was down 3.5 s, which is why 5 s sampling missed it.",
+      "sure": "high"
+    }
+  ],
+  "kills": [
+    { "t": "1:09.7", "victim": "VEN", "how": "kill-feed 'PunK10 -> VEN' (not shown at 1:09.5, faint at 1:09.75); KO banner 1:10-1:12. VEN was revived by MR.ELK's beacon at 1:13.2.", "sure": "high" },
+    { "t": "2:07.5", "victim": "lukes292", "how": "kill-feed 'PunK10 -> lukes292' (not shown at 2:07.25); KO banner 2:08-2:10.", "sure": "high" },
+    { "t": "2:12.5", "victim": "VEN", "how": "kill-feed 'PunK10 -> VEN' (not shown at 2:12.25); DOUBLE banner 2:13-2:14.", "sure": "high" },
+    { "t": "2:14.7", "victim": "GameGuyBenn", "how": "kill-feed 'PunK10 -> GameGuyBenn' goes in above the VEN line (not shown at 2:14.5); TRIPLE banner 2:15-2:17.", "sure": "high" },
+    { "t": "2:21.2", "victim": "MR.ELK", "how": "kill-feed 'PunK10 -> MR.ELK' (not shown at 2:21.0); QUAD banner 2:21.75-2:24.", "sure": "high" },
+    { "t": "2:26.7", "victim": "Sir Lewis", "how": "kill-feed 'PunK10 -> Sir Lewis' (not shown at 2:26.5); PENTA banner 2:27.25-2:29.", "sure": "high" },
+    { "t": "3:28.2", "victim": "VEN", "how": "kill-feed 'PunK10 -> VEN' (not shown at 3:28.0); KO banner 3:28.75-3:31.", "sure": "high" },
+    { "t": "3:39.0", "victim": "MR.ELK", "how": "kill-feed 'PunK10 -> MR.ELK' fading in at 3:39.0 (not shown at 3:38.75); KO banner 3:39.5-3:41.", "sure": "high" },
+    { "t": "3:42.5", "victim": "StarBoii", "how": "kill-feed 'PunK10 -> StarBoii' (not shown at 3:42.25); DOUBLE banner 3:43-3:45.", "sure": "high" },
+    { "t": "5:25.5", "victim": "GameGuyBenn", "how": "kill-feed 'PunK10 -> GameGuyBenn' (not shown at 5:25.25); KO banner 5:26-5:28.", "sure": "high" },
+    { "t": "5:53.5", "victim": "MR.ELK", "how": "kill-feed 'PunK10 -> MR.ELK' (not shown at 5:53.25); KO banner 5:54-5:56.", "sure": "high" },
+    { "t": "6:17.5", "victim": "lukes292", "how": "kill-feed 'PunK10 -> lukes292' (not shown at 6:17.25); KO banner 6:18-6:20. lukes292 was revived by MR.ELK's beacon at 6:20.9.", "sure": "high" },
+    { "t": "7:05.5", "victim": "VEN", "how": "kill-feed 'PunK10 -> VEN' (not shown at 7:05.25); KO banner 7:06-7:08.", "sure": "high" },
+    { "t": "8:02.5", "victim": "Sir Lewis", "how": "kill-feed 'PunK10 -> Sir Lewis' (not shown at 8:02.25); KO banner 8:03-8:05. Last kill before the round-end splash at 8:11.", "sure": "high" }
+  ],
+  "other": [
+    { "t": "2:07.5-2:26.7", "what": "fight won: a PENTA streak, 5 kills in 19 s (lukes292, VEN, GameGuyBenn, MR.ELK, Sir Lewis). NaturalKickZ's StarBoii kill shows in the feed from 2:34 (1 s scan), so all six enemies went down between 2:07 and 2:34.", "sure": "high" },
+    { "t": "1:13.2", "what": "her 1:09.7 kill was undone: kill-feed 'MR.ELK -> VEN' with the orange beacon icon (an enemy Rocket revive) 3.5 s after the kill.", "sure": "high" },
+    { "t": "6:20.9", "what": "her 6:17.5 kill was undone: kill-feed 'MR.ELK -> lukes292' beacon revive 3.4 s after the kill.", "sure": "high" },
+    { "t": "4:13.5-4:25", "what": "ultimate: the ult meter is full at 4:12 and reads 0 from 4:14. Pink and purple Darkchild effects show from 4:15 to 4:19, and her max HP is raised until about 4:24. The ult got no kill-feed kills, and she died at 4:27.3, just after it ended.", "sure": "medium" },
+    { "t": "1:30.9", "what": "teammate death in the kill feed, 'MR.ELK -> NaturalKickZ'. It isn't clearly next to her on screen.", "sure": "low" },
+    { "t": "1:41.9", "what": "teammate death in the kill feed, 'Sir Lewis -> Alejos2001'. It isn't clearly next to her on screen.", "sure": "low" },
+    { "t": "1:43.7", "what": "teammate death in the kill feed, 'StarBoii -> RomeoMalibu'. It isn't clearly next to her on screen.", "sure": "low" },
+    { "t": "5:14.7", "what": "teammate death in the kill feed, 'Sir Lewis -> Alejos2001'. It isn't clearly next to her on screen.", "sure": "low" },
+    { "t": "5:57.5", "what": "teammate death in the kill feed, 'VEN -> NaturalKickZ'. It isn't clearly next to her on screen.", "sure": "low" },
+    { "t": "7:45.5", "what": "teammate death in the kill feed, 'StarBoii -> RomeoMalibu', with an Alejos2001 beacon revive at 7:49.0. It isn't clearly next to her on screen.", "sure": "low" }
+  ],
+  "not_deaths": [
+    { "t": "1:17", "what": "low health with red screen edges: HP 80/250 at 1:17-1:18, 50 at 1:19 and 82 at 1:20, healed to 139 at 1:21 and 250 by 1:30. No kill-feed line has her as the victim." },
+    { "t": "3:14", "what": "low health, HP 97/250, back to 130+ by 3:15." },
+    { "t": "4:14-4:25", "what": "her ultimate (Darkchild effects, raised max HP, dipping to 64/250 at 4:18). This is not a death. CORRECTION to the brief: the 4:27-4:31 moment is a real death, revived by a teammate (see deaths)." },
+    { "t": "5:07-5:10", "what": "low health with red and orange edges: HP 72/250, then 40/257 and 30/250 at 5:09-5:10, healed to 185 at 5:11 and 278 at 5:12." },
+    { "t": "7:35-7:37", "what": "low health: HP 70/250 at 7:35 and 42/250 at 7:37, healed to 218 at 7:38." }
+  ]
+}

@@ -1,0 +1,449 @@
+{
+  "about": "What decides each game, written down before scoring the research step (Claude, from knowledge of the games, Oct 20 2026). An item counts as covered when one of its patterns (case-insensitive regular expressions) appears anywhere in the research answer. A character's abilities count when each name appears. listed: names the wiki research should list (characters, maps, weapons, cars, stages), long-standing ones only. The meta counts when it names a patch or season, 3 or more strong picks, and a recent change; whether those are current isn't checked here.",
+  "games": {
+    "Overwatch 2": {
+      "genre": "shooter",
+      "items": {
+        "ultimate economy": [
+          "ultimate",
+          "\\bults?\\b"
+        ],
+        "ability cooldowns": [
+          "cooldown",
+          "abilit"
+        ],
+        "roles: tank, damage, support": [
+          "\\btank",
+          "support",
+          "\\brole"
+        ],
+        "hero swaps and counters": [
+          "counter",
+          "swap",
+          "switch(ing)? hero",
+          "hero pool"
+        ],
+        "positioning, cover, high ground": [
+          "position",
+          "high ground",
+          "cover",
+          "off-angle"
+        ],
+        "staggering and grouping": [
+          "stagger",
+          "group",
+          "together"
+        ],
+        "focus fire and target priority": [
+          "focus",
+          "target priorit",
+          "priorit(y|ize) target"
+        ],
+        "dying first, overextending": [
+          "overextend",
+          "over-extend",
+          "dying first",
+          "first (death|to die)",
+          "feed"
+        ],
+        "the objective: point, payload, time": [
+          "objective",
+          "payload",
+          "\\bpoint\\b",
+          "contest"
+        ]
+      },
+      "character": {
+        "name": "Kiriko",
+        "abilities": [
+          "Healing Ofuda",
+          "Swift Step",
+          "Protection Suzu",
+          "Kitsune Rush"
+        ]
+      },
+      "listed": [
+        "Reinhardt",
+        "Mercy",
+        "Tracer",
+        "Ana",
+        "Genji",
+        "Kiriko",
+        "King's Row",
+        "Ilios",
+        "Dorado"
+      ]
+    },
+    "Valorant": {
+      "genre": "shooter",
+      "items": {
+        "crosshair placement": [
+          "crosshair"
+        ],
+        "utility use": [
+          "utility",
+          "abilit",
+          "\\bflash",
+          "smoke"
+        ],
+        "economy": [
+          "econom",
+          "\\beco\\b",
+          "\\bbuy",
+          "credits"
+        ],
+        "trading": [
+          "\\btrad(e|ing)",
+          "refrag"
+        ],
+        "peeking with information": [
+          "\\bpeek",
+          "\\binfo(rmation)?\\b"
+        ],
+        "stopping to shoot (counter-strafing)": [
+          "counter-?strafe",
+          "strafe",
+          "standing still",
+          "stop moving",
+          "movement (error|accuracy)",
+          "moving while shooting",
+          "running (and|while) (gunning|shooting)"
+        ],
+        "spike plays: plant, defuse, retake, post-plant": [
+          "spike",
+          "\\bplant",
+          "defus",
+          "retake",
+          "post-?plant"
+        ],
+        "positioning and angles": [
+          "position",
+          "\\bangle",
+          "crossfire"
+        ],
+        "agent roles and composition": [
+          "\\bagent",
+          "duelist",
+          "controller",
+          "initiator",
+          "sentinel"
+        ]
+      },
+      "character": {
+        "name": "Vyse",
+        "abilities": [
+          "Razorvine",
+          "Shear",
+          "Arc Rose",
+          "Steel Garden"
+        ]
+      },
+      "listed": [
+        "Jett",
+        "Sage",
+        "Sova",
+        "Omen",
+        "Vyse",
+        "Ascent",
+        "Bind",
+        "Haven",
+        "Split",
+        "Vandal",
+        "Phantom",
+        "Operator",
+        "Sheriff"
+      ]
+    },
+    "Apex Legends": {
+      "genre": "shooter",
+      "items": {
+        "positioning, high ground, cover": [
+          "position",
+          "high ground",
+          "cover"
+        ],
+        "rotations and the ring": [
+          "rotat",
+          "\\bring\\b",
+          "\\bzone"
+        ],
+        "third parties": [
+          "third[- ]part"
+        ],
+        "squad cohesion": [
+          "together",
+          "squad",
+          "team ?(play|mate|work)",
+          "stick"
+        ],
+        "legend abilities and ultimates": [
+          "abilit",
+          "ultimate",
+          "tactical",
+          "\\blegend"
+        ],
+        "shields, heals, armor swaps": [
+          "shield",
+          "\\bheal",
+          "\\bcells?\\b",
+          "batter",
+          "armor",
+          "\\bevo\\b",
+          "swap"
+        ],
+        "knocks, finishing, revives": [
+          "\\bknock",
+          "finish",
+          "thirst",
+          "reviv",
+          "\\brez"
+        ],
+        "movement": [
+          "movement",
+          "\\bslide",
+          "strafe"
+        ],
+        "looting and resources": [
+          "\\bloot",
+          "\\bammo\\b",
+          "resource"
+        ],
+        "fight selection and disengaging": [
+          "disengag",
+          "\\breset",
+          "(choose|pick|select)(ing)? (your )?fights",
+          "fight selection",
+          "when to (fight|engage)"
+        ]
+      },
+      "character": {
+        "name": "Bangalore",
+        "abilities": [
+          "Smoke Launcher",
+          "Double Time",
+          "Rolling Thunder"
+        ]
+      },
+      "listed": [
+        "Wraith",
+        "Bangalore",
+        "Pathfinder",
+        "Lifeline",
+        "Bloodhound",
+        "World's Edge",
+        "Olympus",
+        "Storm Point",
+        "R-301",
+        "Wingman",
+        "Peacekeeper",
+        "Flatline"
+      ]
+    },
+    "League of Legends": {
+      "genre": "moba",
+      "items": {
+        "farming (CS, last hits)": [
+          "\\bcs\\b",
+          "creep score",
+          "\\bfarm",
+          "last[- ]hit",
+          "minion"
+        ],
+        "wave management": [
+          "\\bwaves?\\b",
+          "freez",
+          "slow push",
+          "crash"
+        ],
+        "vision and wards": [
+          "vision",
+          "\\bward"
+        ],
+        "objectives: dragon, baron, towers": [
+          "dragon",
+          "baron",
+          "herald",
+          "tower",
+          "turret",
+          "objective"
+        ],
+        "map awareness and jungle tracking": [
+          "map awareness",
+          "minimap",
+          "jungle",
+          "\\bgank"
+        ],
+        "recall timing": [
+          "recall",
+          "back timing",
+          "\\bbase\\b"
+        ],
+        "trading in lane and matchups": [
+          "\\btrad(e|ing)",
+          "matchup",
+          "\\blane"
+        ],
+        "items and builds": [
+          "\\bitem",
+          "\\bbuild"
+        ],
+        "teamfights and positioning": [
+          "teamfight",
+          "team fight",
+          "position",
+          "\\bpeel"
+        ],
+        "summoner spells and cooldowns": [
+          "summoner",
+          "\\bflash\\b",
+          "cooldown"
+        ]
+      },
+      "character": {
+        "name": "Jinx",
+        "abilities": [
+          "Get Excited",
+          "Switcheroo",
+          "Zap",
+          "Flame Chompers",
+          "Super Mega Death Rocket"
+        ]
+      },
+      "listed": [
+        "Ahri",
+        "Jinx",
+        "Lee Sin",
+        "Thresh",
+        "Garen",
+        "Summoner's Rift",
+        "Howling Abyss"
+      ]
+    },
+    "Rocket League": {
+      "genre": "sports",
+      "items": {
+        "rotations": [
+          "rotat",
+          "back post",
+          "\\bcycle"
+        ],
+        "boost management": [
+          "\\bboost"
+        ],
+        "challenges and 50/50s": [
+          "challeng",
+          "50/50",
+          "50-50",
+          "fifty"
+        ],
+        "double commits": [
+          "double[- ]commit"
+        ],
+        "kickoffs": [
+          "kick-?off"
+        ],
+        "first touch and ball control": [
+          "first touch",
+          "ball control",
+          "dribbl",
+          "touch"
+        ],
+        "defense: shadowing, saves": [
+          "shadow",
+          "defen",
+          "\\bsave"
+        ],
+        "aerials and mechanics": [
+          "aerial",
+          "mechanic"
+        ],
+        "positioning and spacing": [
+          "position",
+          "spacing"
+        ]
+      },
+      "character": null,
+      "listed": [
+        "Octane",
+        "Fennec",
+        "Dominus",
+        "DFH Stadium",
+        "Mannfield"
+      ]
+    },
+    "Street Fighter 6": {
+      "genre": "fighting",
+      "items": {
+        "anti-airs": [
+          "anti-?air"
+        ],
+        "Drive Gauge and burnout": [
+          "drive gauge",
+          "burnout"
+        ],
+        "spacing, footsies, neutral": [
+          "spacing",
+          "footsies",
+          "neutral"
+        ],
+        "whiff punishes and Punish Counters": [
+          "whiff",
+          "punish"
+        ],
+        "hit confirms and combos": [
+          "confirm",
+          "combo"
+        ],
+        "defense: blocking, wake-up, okizeme": [
+          "\\bblock",
+          "wake-?up",
+          "okizeme",
+          "\\boki\\b",
+          "defen"
+        ],
+        "throws and throw techs": [
+          "\\bthrow",
+          "\\btech"
+        ],
+        "Drive Rush, Parry, Impact": [
+          "drive rush",
+          "parry",
+          "drive impact"
+        ],
+        "frame advantage": [
+          "\\bframe"
+        ],
+        "adapting to the opponent": [
+          "adapt",
+          "condition",
+          "habit",
+          "read(ing)? (the|your) opponent"
+        ]
+      },
+      "character": {
+        "name": "Ryu",
+        "abilities": [
+          "Hadoken",
+          "Shoryuken",
+          "Tatsumaki",
+          "Denjin"
+        ]
+      },
+      "listed": [
+        "Ryu",
+        "Ken",
+        "Chun-Li",
+        "Luke",
+        "Juri"
+      ]
+    }
+  },
+  "errors": {
+    "a habit checked by the chess engine outside chess": "checked_by is engine and the genre isn't chess",
+    "a habit checked by aim that isn't about where the crosshair sits": "checked_by is aim and its name and signs never mention crosshair, aim, head, or height",
+    "a habit checked by shots that isn't about firing": "checked_by is shots and its name and signs never mention firing, shooting, spraying, reloading, or ammo",
+    "an aim target in a game with no aiming": "aim_target isn't none and the genre isn't shooter",
+    "cosmetics given as what wins": "rewards mentions skins, cosmetics, decals, banners, titles, toppers, wheels, or chromas",
+    "researched with fewer than 2 web sources": "researched is true with fewer than 2 sources"
+  }
+}

@@ -24,7 +24,7 @@ The second form runs only the recordings whose file name contains `dm-crosshair`
 
 1. Play a deathmatch or a custom game with one habit on purpose: aim at the floor (`crosshair_low`), always swing wide (`wide_peek`), fire while moving (`moving_shots`), spray at long range (`long_spray`), or re-peek the same angle (`repeek`). Play some games normally too, as clean controls.
 2. Record the whole game at the default HUD with the crosshair centered (OBS or the NVIDIA overlay is fine). Put the file in `eval/recordings/`. Git ignores that folder, so the video stays on your machine.
-3. Add an entry to `recordings.json`. Paths are relative to this folder. `plantedHabit` is a `habit_id` from `games/valorant.json`, or `null` for a clean control.
+3. Add an entry to `recordings.json`. Paths are relative to this folder. `plantedHabit` is a `habit_id` from `eval/answer-keys/valorant.json`, or `null` for a clean control.
 
 ```json
 { "file": "recordings/dm-crosshair-low-1.mp4", "plantedHabit": "crosshair_low", "note": "Ascent DM, aimed at the floor all game" }
@@ -46,7 +46,7 @@ To check the kill-feed reader on the labeled recordings without spending any Gem
 node eval/feedprobe.mjs
 ```
 
-`learncheck.mjs` learns each real recording from scratch (one model call each), saves `<name>.learned.json` next to it, and compares it with the hand-made `games/valorant.json`; `REUSE=1` reruns the pixel side on the saved answer with no calls, and `PROFILE=learned` makes `feedprobe.mjs` and `shotprobe.mjs` use the learned profiles. On Oct 18: TenZ's learned kill feed read 35/36 lines with teams 35/35 in 2 calls (hand-made: 35/36, 34/35, 2), Vyse's 38–40/41 with teams 35–37 in 6 calls (hand-made: 41/41, 41/41, 3), and the shot check on the learned ammo box 7/8 with none wrongly "no shots" (the same as hand-made). The pixel side was tuned on these two recordings, so a new recording is the real test.
+`learncheck.mjs` learns each real recording from scratch (one model call each), saves `<name>.learned.json` next to it, and compares it with the hand-made `eval/answer-keys/valorant.json`; `REUSE=1` reruns the pixel side on the saved answer with no calls, and `PROFILE=learned` makes `feedprobe.mjs` and `shotprobe.mjs` use the learned profiles. On Oct 18: TenZ's learned kill feed read 35/36 lines with teams 35/35 in 2 calls (hand-made: 35/36, 34/35, 2), Vyse's 38–40/41 with teams 35–37 in 6 calls (hand-made: 41/41, 41/41, 3), and the shot check on the learned ammo box 7/8 with none wrongly "no shots" (the same as hand-made). The pixel side was tuned on these two recordings, so a new recording is the real test.
 
 `run.mjs` learns and researches each recording fresh and saves `<name>.learned.json`, `<name>.learn-raw.json`, and `<name>.research.json` next to it. The log says whether the research came from a web search (with its source count) or fell back to the model's own knowledge, and why the search failed. `EVAL_LEARNED=cached` reuses the saved profile, research included, instead of spending those calls.
 

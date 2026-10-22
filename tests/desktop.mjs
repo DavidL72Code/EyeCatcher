@@ -99,14 +99,17 @@ try {
   ({ app, page } = await launch({ THIRDEYE_LIBRARY: '' }));
   // the native question, answered yes the way a player would
   await app.evaluate(({ dialog }) => { dialog.showMessageBox = async () => ({ response: 0, checkboxChecked: false }); });
-  const kept = await remember('c', fixture);
+  const given = await remember('c', fixture);
+  const kept = await page.evaluate((p) => window.thirdeyeDesktop.keep(p), given.path);
   check(kept?.path === path.join(library, 'match.mp4') && fs.existsSync(fixture), `with a yes, the recording is saved in the Thirdeye folder, and the original stays (${kept?.path})`);
   check(fs.statSync(kept.path).size === fs.statSync(fixture).size && Math.floor(fs.statSync(kept.path).mtimeMs) === Math.floor(fs.statSync(fixture).mtimeMs), 'the copy has the same size and date, so it is known as the same recording');
   check(JSON.parse(fs.readFileSync(path.join(env.THIRDEYE_USER_DATA, 'settings.json'), 'utf8')).library === 'on', 'the answer is remembered');
-  check((await remember('d', fixture))?.path === kept.path && fs.readdirSync(library).length === 1, 'adding it again makes no second copy');
+  check((await page.evaluate((p) => window.thirdeyeDesktop.keep(p), (await remember('d', fixture)).path))?.path === kept.path && fs.readdirSync(library).length === 1, 'adding it again makes no second copy');
+  check(await page.evaluate(() => window.thirdeyeDesktop.keep('/etc/hosts')) === null, 'only a recording the player gave it can be saved there');
+  await page.evaluate(() => { location.hash = '#coach'; });
   await page.reload();
   await page.waitForSelector('#libraryBtn:not([hidden])');
-  check(true, 'the start screen offers the recordings folder');
+  check(true, 'the Coach page offers the recordings folder');
 } finally {
   await app?.close().catch(() => {});
   fs.rmSync(scratch, { recursive: true, force: true });

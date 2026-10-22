@@ -88,7 +88,25 @@
 
   /** generateContent with model fallback: a busy, unavailable, or out-of-quota model hands off to the next one. */
   // prefer: models to try first for this one call (a judgment that must be right can ask for a stronger model)
-  async function generate(body, { signal, onNotice, prefer = [] } = {}) {
+  // Every model out of its per-minute allowance is a wait, not an end: a review sends a burst of heavy calls (clips of
+  // video, sheets of kill-feed lines), so the whole list is tried again after a minute, twice, before giving up. So is a
+  // model that was only busy while the rest were out: on Oct 22 the main model's daily limit ran out and its fallback
+  // answered 503 for a minute, and whole reviews ended. A used-up daily limit on every model, the free web searches, and
+  // Thirdeye's backend's own limits end at once.
+  const MINUTE_ROUNDS = 2;
+  async function generate(body, opts = {}) {
+    for (let round = 0; ; round++) {
+      try {
+        return await generateOnce(body, opts);
+      } catch (e) {
+        const minute = !usesSearch(body) && (e?.busy || (e?.status === 429 && !/PerDay|Thirdeye/i.test(JSON.stringify(e.details || ''))));
+        if (!minute || round >= MINUTE_ROUNDS || opts.signal?.aborted) throw e;
+        opts.onNotice?.(e?.busy ? 'Gemini is busy on every model it can use. Waiting a minute…' : 'Gemini is at its per-minute limit on every model. Waiting a minute…');
+        await sleep(60000);
+      }
+    }
+  }
+  async function generateOnce(body, { signal, onNotice, prefer = [] } = {}) {
     if (!hasKey()) throw new GeminiError('Add a Gemini API key to use the AI features.', 401);
     const preferred = getModel(), search = usesSearch(body);
     const general = [...new Set([...prefer, preferred, ...FALLBACK_MODELS])];
@@ -97,15 +115,16 @@
     const lane = (m) => m + (search ? ' +search' : '');
     const ready = all.filter((m) => !(coolUntil.get(m) > now()) && !(coolUntil.get(lane(m)) > now()));
     const models = ready.length ? ready : all;
-    let lastErr, dropped = false; // dropped: an earlier model is missing or out of quota for today
+    let lastErr, dropped = false; // dropped: an earlier model is missing for this key (not just out of today's quota)
     let sawQuota = null, sawBusy = null; // the reason worth reporting if every model fails
     for (let mi = 0; mi < models.length; mi++) {
       const model = models[mi], next = models[mi + 1];
       for (let attempt = 0; attempt < 2; attempt++) {
         try {
           const json = await callModel(model, body, signal);
-          // remember a Flash-Lite model that replaced a missing or used-up one; a regular Flash fallback is never saved,
-          // so the next call still starts on Flash-Lite
+          // remember a Flash-Lite model that replaced a missing one; a regular Flash fallback is never saved, so the next
+          // call still starts on Flash-Lite. One that stood in for a used-up daily quota isn't saved either: the main
+          // model is back the next day, and saved, the fallback would have run every review after (Oct 22)
           if (!search && !prefer.length && model !== preferred && dropped && isLite(model)) setModel(model);
           return json;
         } catch (e) {
@@ -116,7 +135,7 @@
           const busy = [500, 502, 503, 504].includes(e.status) || !!e.network;
           lastErr = e;
           if (e.status === 429) sawQuota = e; else if (busy) sawBusy = e;
-          if (modelProblem || dailyQuota) dropped = true;
+          if (modelProblem) dropped = true;
           if (modelProblem) { // retired or not offered to this key: stop asking it
             coolUntil.set(model, now() + 24 * 3600000); retired[model] = now() + 24 * 3600000;
             try { localStorage.setItem(RETIRED, JSON.stringify(retired)); } catch {}
@@ -144,6 +163,8 @@
     // Thirdeye's backend speaks for itself: its own limits, or that it can't be reached
     if (sawQuota && /Thirdeye/.test(JSON.stringify(sawQuota.details || ''))) throw new GeminiError(sawQuota.message, 429, sawQuota.details);
     if (sawBusy?.network && backend()) throw new GeminiError(sawBusy.message, 0, sawBusy.details);
+    // a model that was only busy, not out of its limit, may answer in a minute: generate waits for it
+    if (sawBusy && !sawBusy.network && !search) throw Object.assign(new GeminiError('Gemini is busy right now. Try again in a minute.', sawBusy.status, sawBusy.details), { busy: true });
     if (sawQuota) throw new GeminiError(search ? 'Gemini\'s free web searches are used up for now (the daily limit is small). Try again in a few minutes, or tomorrow.' : 'Gemini\'s free limit is used up on every model. Try again in a few minutes, or tomorrow if it\'s the daily limit.', 429, sawQuota.details);
     if (sawBusy) throw new GeminiError('Gemini is busy right now. Try again in a minute.', sawBusy.status, sawBusy.details);
     throw lastErr;
@@ -214,7 +235,8 @@
    * force: the model must call a tool every turn (mode ANY), so no call is spent on chatter; pair it with a tool that ends.
    * stopOn(error): a tool error that should end the whole run (e.g. a used-up quota) instead of going back to the model.
    * onStep({type:'think'|'call'|'result'|'error'|'text', step, name, args, result}) streams progress to the UI; 'think' fires as each model call starts.
-   * A tool can show the model pictures: a result with images: [{ mimeType, data, label? }] sends them after the tool
+   * A tool can show the model pictures: a result with images: [{ mimeType, data, label?, fps? }] (fps: a video's frames
+   *   a second, which Gemini samples it at) sends them after the tool
    *   answers, and the JSON result keeps only their count. keepImages: pictures stay for this many tool turns, then
    *   are swapped for a note, so a long run doesn't resend every picture on every call.
    * config: extra generationConfig fields (e.g. mediaResolution).
@@ -268,7 +290,7 @@
       else for (const p of calls) done.push(await run(p));
       const pics = done.flatMap(({ result }) => (Array.isArray(result?.images) ? result.images : []));
       const answers = done.map(({ name, result }) => ({ functionResponse: { name, response: { result: Array.isArray(result?.images) ? { ...result, images: `${result.images.length} attached` } : result } } }));
-      const shown = pics.flatMap((im) => [...(im.label ? [{ text: im.label }] : []), { inlineData: { mimeType: im.mimeType, data: im.data } }]);
+      const shown = pics.flatMap((im) => [...(im.label ? [{ text: im.label }] : []), { inlineData: { mimeType: im.mimeType, data: im.data }, ...(im.fps ? { videoMetadata: { fps: im.fps } } : {}) }]);
       contents.push({ role: 'user', parts: [...answers, ...shown] });
       const ended = done.find((d) => d.end);
       if (ended) return { text: '', contents, ended: { name: ended.name, result: ended.result } };

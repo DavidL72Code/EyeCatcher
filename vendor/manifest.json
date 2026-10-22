@@ -7,6 +7,14 @@
     "sha256": "fa696c53494b6b09a8b310ec51e3c44a59e79513234fb832255a38c686162009",
     "use": "decodes and encodes video (video.js)"
   },
+  "motion.js": {
+    "package": "motion",
+    "version": "13.5.1",
+    "license": "MIT",
+    "from": "dist/motion.js",
+    "sha256": "05645370a4dc2ea3b70ebaf8813929cf64381f655d8e9e3d9516d958ac270cc1",
+    "use": "Home's animations (motion.dev), as window.Motion"
+  },
   "chess.js": {
     "package": "chess.js",
     "version": "1.4.0",

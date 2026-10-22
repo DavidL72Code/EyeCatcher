@@ -88,19 +88,25 @@ async function intoLibrary(p, st) {
 const tokens = new Map(); // token -> path, for this launch
 let origin = '';
 
-// the path of a File the player dropped or picked, from the preload; saved in the Thirdeye folder when they agreed
-ipcMain.handle('recording:remember', async (e, p) => {
+// the path of a File the player dropped or picked, from the preload
+ipcMain.handle('recording:remember', (_, p) => {
   const st = isVideo(p) && stat(p);
   if (!st) return null;
   remember(p, st);
-  if (!(await libraryOn(BrowserWindow.fromWebContents(e.sender)))) return about(p, st);
+  return about(p, st);
+});
+// A remembered recording, saved in the Thirdeye folder when the player agrees: its place there, or null. The question
+// can sit unanswered, so the review never waits on this.
+ipcMain.handle('recording:keep', async (e, p) => {
+  const st = recordings()[p] && stat(p);
+  if (!st || !(await libraryOn(BrowserWindow.fromWebContents(e.sender)))) return null;
   try {
     const kept = await intoLibrary(p, st), kst = stat(kept);
     remember(kept, kst);
     return about(kept, kst);
   } catch (err) {
     console.warn("Couldn't save the recording in the Thirdeye folder:", err.message);
-    return about(p, st);
+    return null;
   }
 });
 ipcMain.handle('library:show', () => { if (settings().library === 'on' || process.env.THIRDEYE_LIBRARY === 'on') shell.openPath(libraryDir()); });

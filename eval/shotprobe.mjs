@@ -1,6 +1,6 @@
 // Whether the player fired, read from the HUD ammo counter (ThirdeyeAgent.shotsAround, no Gemini calls), against
-// stretches labeled by eye from ammo contact sheets on Oct 18, 2026. The guard that uses it refuses a moment only on
-// "no shots", so a wrong "no" is the costly mistake: it would throw out a real habit.
+// stretches labeled by eye from ammo contact sheets on Oct 18 and 22, 2026. The guard that uses it refuses a moment only
+// on "no shots", so a wrong "no" is the costly mistake: it would throw out a real habit.
 //   node eval/shotprobe.mjs
 import { chromium } from 'playwright';
 import { spawn } from 'node:child_process';
@@ -11,6 +11,9 @@ import { fileURLToPath } from 'node:url';
 const here = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(here, '..');
 const tenz = fs.readdirSync(path.join(here, 'recordings')).find((f) => /^Screen Recording 2026-10-17.*\.mov$/.test(f));
+const apex = fs.readdirSync(path.join(here, 'recordings')).find((f) => /^Screen Recording 2026-10-18.*\.mov$/.test(f));
+// a recording with no hand-made answer key is always read with the profile learned from it
+const LEARNED_ONLY = new Set([apex]);
 // from, to: the stretch; shots and bursts: what the magazine count shows frame by frame
 const LABELS = [
   { file: 'yt-vyse-ascent.mov', from: 397, to: 398.5, shots: 4, bursts: [4], note: 'Vandal 25 to 21' },
@@ -21,6 +24,11 @@ const LABELS = [
   { file: tenz, from: 225, to: 228.3, shots: 0, bursts: [], note: 'stays at 22 over the white gun skin' },
   { file: tenz, from: 229, to: 230.8, shots: 0, bursts: [], note: 'stays at 17' },
   { file: 'yt-vyse-ascent.mov', from: 397.6, to: 397.95, shots: 3, bursts: [3], note: '24 to 21, a short stretch' },
+  // Apex Legends: the R-301 count sits beside a white gun icon taller than its digits, on a see-through HUD
+  { file: apex, from: 44, to: 48, shots: 23, bursts: [19, 4], note: 'R-301 23 to 4 aiming down sights over a bright floor, 0 at 47.2, reloaded to 23 at 47.8' },
+  { file: apex, from: 36, to: 44, shots: 0, bursts: [], note: 'stays at 23 as the view swings past bright walls' },
+  { file: apex, from: 47.8, to: 51.6, shots: 0, bursts: [], note: 'stays at 23 after the reload' },
+  { file: apex, from: 51.6, to: 53, shots: 13, bursts: [13], note: '23 to 10 against a white sky' },
 ];
 
 const learnedPath = (video) => path.join(path.dirname(video), `${path.basename(video, path.extname(video))}.learned.json`);
@@ -36,11 +44,11 @@ try {
     await page.evaluate(() => { const i = document.createElement('input'); i.type = 'file'; i.id = 'f'; i.hidden = true; document.body.append(i); });
     await page.setInputFiles('#f', path.join(here, 'recordings', file));
     // PROFILE=learned: the profile eval/learncheck.mjs learned from this recording, instead of the hand-made answer key
-    if (process.env.PROFILE === 'learned') await page.evaluate((p) => { window.__profile = p; }, JSON.parse(fs.readFileSync(learnedPath(path.join(here, 'recordings', file)), 'utf8')));
+    if (process.env.PROFILE === 'learned' || LEARNED_ONLY.has(file)) await page.evaluate((p) => { window.__profile = p; }, JSON.parse(fs.readFileSync(learnedPath(path.join(here, 'recordings', file)), 'utf8')));
     const labels = LABELS.filter((l) => l.file === file);
     const got = await page.evaluate(async (labels) => {
       const A = window.ThirdeyeAgent, V = window.ThirdeyeVideo;
-      const profile = window.__profile || (await (await fetch('games/valorant.json')).json());
+      const profile = window.__profile || (await (await fetch('eval/answer-keys/valorant.json')).json());
       const video = await V.open(document.getElementById('f').files[0]);
       const out = [];
       for (const l of labels) out.push(await A.shotsAround({ video, profile, events: [], t: l.from, before: 0, after: l.to - l.from }));
@@ -50,7 +58,7 @@ try {
       const g = got[i], ok = g && g.fired === l.shots > 0;
       if (ok) right++;
       if (g && g.fired === false && l.shots > 0) wrongNo++;
-      console.log(`${ok ? 'ok  ' : 'MISS'} ${file.slice(0, 18)} ${l.from}-${l.to}: labeled ${l.shots} shots, read ${g ? `${g.fired ? 'fired' : 'no shots'} (${g.changes} steady changes, ${g.from.toFixed(2)}-${g.to.toFixed(2)})` : "can't tell"} (${l.note})`);
+      console.log(`${ok ? 'ok  ' : 'MISS'} ${(file === apex ? 'apex ' : '') + file.slice(0, 18)} ${l.from}-${l.to}: labeled ${l.shots} shots, read ${g ? `${g.fired ? 'fired' : 'no shots'} (${g.changes} steady changes, ${g.from.toFixed(2)}-${g.to.toFixed(2)})` : "can't tell"} (${l.note})`);
     });
     await page.close();
   }

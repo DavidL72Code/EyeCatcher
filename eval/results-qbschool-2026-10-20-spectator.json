@@ -1,0 +1,60 @@
+{
+ "about": "Second run, spectator mode (Oct 20 2026): same reels, key and rubric as eval/results-qbschool-2026-10-20.json. record: unit reads whose won/lost matches JT where his outcome clearly went one way.",
+ "runs": [
+  {
+   "id": "qb-lawrence-cle",
+   "minutes": 9.7,
+   "calls": 27,
+   "found": true,
+   "habit": "Failing to reset the feet under pressure.",
+   "grade": "match by tag (footwork), but 1 of 3 moments supported (snap 8); snaps 10 (TD) and 13 (completion) contradict it; its why says \"multiple incomplete passes\", false",
+   "reads_right": 5,
+   "reads_judged": 11,
+   "side": "Jaguars (right)"
+  },
+  {
+   "id": "qb-penix-gb",
+   "minutes": 7.7,
+   "calls": 29,
+   "found": false,
+   "habit": null,
+   "grade": "miss: no habit (code found 1 lost play; the interception was read as a run)",
+   "reads_right": 5,
+   "reads_judged": 10,
+   "side": "the white team (right)"
+  },
+  {
+   "id": "qb-young-atl",
+   "minutes": 11.8,
+   "calls": 30,
+   "found": false,
+   "habit": "Holding the ball too long in the pocket.",
+   "grade": "miss: no habit, after \"holding the ball too long\" was sent back by the claims check",
+   "reads_right": 7,
+   "reads_judged": 14,
+   "side": "Panthers (right)"
+  },
+  {
+   "id": "qb-jackson-ind",
+   "minutes": 4.8,
+   "calls": 27,
+   "found": false,
+   "habit": "Internal Clock Breakdown (Holding the Ball Too Long)",
+   "grade": "miss: no habit; the learn step named the white team \"Colts\", so the reads followed the wrong side",
+   "reads_right": 1,
+   "reads_judged": 6,
+   "side": "wrong (learned sides mislabeled)"
+  },
+  {
+   "id": "qb-purdy-mia",
+   "minutes": 9.5,
+   "calls": 27,
+   "found": true,
+   "habit": "Forcing passes under pressure instead of throwing the ball away.",
+   "grade": "false positive: \"forcing passes under pressure\" on 3 snaps JT praises, completions read as incompletions",
+   "reads_right": 5,
+   "reads_judged": 13,
+   "side": "49ers (right)"
+  }
+ ]
+}

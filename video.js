@@ -137,5 +137,47 @@
     return { uri: file.uri, mimeType: file.mimeType, name: file.name };
   }
 
-  root.ThirdeyeVideo = { open, grab, each, makeProxy, upload, toJpeg };
+  /**
+   * A short silent clip of the recording, from and to in seconds, at width px (of crop {x, y, w, h}, frame pixels, or the
+   * whole frame) and fps frames a second: what Gemini reads a moment from as video. Only the frames it keeps are drawn,
+   * and they're encoded as VP8 in WebM. On Oct 22 H.264 took 9.4 to 9.8 s to start in each new browser (the Mac's
+   * hardware encoder), against 0.4 s for VP8, and the old whole-stretch conversion took 12.8 s for a 7 s clip. Software
+   * H.264 in MP4 stands in where VP8 can't encode. stills: that many pictures from the clip, spread over it, for showing
+   * what it held once it's gone. Returns { mimeType, data (base64), bytes, blob, ms (to make), stills: [{ t, url }] }.
+   */
+  async function clip(v, from, to, { width = 960, fps = 8, bitrate = 1_500_000, crop, stills = 0, signal } = {}) {
+    const M = await lib();
+    if (signal?.aborted) throw stopped();
+    const t0 = performance.now();
+    const c = crop || { x: 0, y: 0, w: v.width, h: v.height };
+    const w = Math.max(2, Math.min(width, c.w) & ~1), h = Math.max(2, Math.round((c.h / c.w) * w / 2) * 2);
+    const vp8 = await M.canEncodeVideo('vp8', { width: w, height: h });
+    const canvas = new OffscreenCanvas(w, h), g = canvas.getContext('2d');
+    const output = new M.Output({ format: vp8 ? new M.WebMOutputFormat() : new M.Mp4OutputFormat({ fastStart: 'in-memory' }), target: new M.BufferTarget() });
+    const source = new M.CanvasSource(canvas, { codec: vp8 ? 'vp8' : 'avc', bitrate, keyFrameInterval: 2, latencyMode: 'realtime', ...(vp8 ? {} : { hardwareAcceleration: 'prefer-software' }) });
+    output.addVideoTrack(source, { frameRate: fps });
+    await output.start();
+    const sink = new M.CanvasSink(v.track, { crop: { left: c.x, top: c.y, width: c.w, height: c.h }, width: w, height: h, fit: 'fill', poolSize: 2 });
+    const times = [];
+    for (let t = from; t < to - 1e-6; t += 1 / fps) times.push(+t.toFixed(3));
+    const keep = new Set(stills > 0 ? Array.from({ length: Math.min(stills, times.length) }, (_, k) => Math.round((k * (times.length - 1)) / Math.max(1, stills - 1))) : []);
+    const shots = [];
+    let i = 0;
+    for await (const wc of sink.canvasesAtTimestamps(times.map((t) => v.start + t))) {
+      if (signal?.aborted) { await output.cancel(); throw stopped(); }
+      if (wc) {
+        g.drawImage(wc.canvas, 0, 0);
+        await source.add(i / fps, 1 / fps);
+        if (keep.has(i)) shots.push({ t: times[i], url: (await toJpeg(canvas, 0.7)).url });
+      }
+      i++;
+    }
+    await output.finalize();
+    const bytes = new Uint8Array(output.target.buffer), mimeType = vp8 ? 'video/webm' : 'video/mp4';
+    let bin = '';
+    for (let k = 0; k < bytes.length; k += 0x8000) bin += String.fromCharCode.apply(null, bytes.subarray(k, k + 0x8000));
+    return { mimeType, data: btoa(bin), bytes: bytes.length, blob: new Blob([bytes], { type: mimeType }), ms: Math.round(performance.now() - t0), stills: shots };
+  }
+
+  root.ThirdeyeVideo = { open, grab, each, makeProxy, upload, toJpeg, clip };
 })(window);
