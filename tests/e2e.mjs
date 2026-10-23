@@ -104,13 +104,13 @@ const oneOffCoach = [
 // a finding whose one moment the video check keeps rejecting: sent back twice, then told to decide, it still cites it,
 // and the review names what the moment that did hold up shows, with a note at each loss
 const SALVAGE_FIXES = [instead('0:13.8', 'Holds a wide angle alone as the enemy swings', 'Hold a tighter angle, near a teammate'), instead('0:46.8', 'WRONG: peeks with the knife out', 'Peek with the rifle out')];
-const LOSS_NOTES = [instead('1:05.8', 'Swings out a second time into the same enemy', 'Reset after the first contact'), instead('1:40.6', 'Takes the last duel on low health', 'Back off and heal first')];
+const LOSS_NOTES = [{ ...instead('1:05.8', 'Swings out a second time into the same enemy', 'Reset after the first contact'), because: 'the enemy had already seen them and held the angle' }, { ...instead('1:40.6', 'Takes the last duel on low health', 'Back off and heal first'), because: 'at 20 health, one shot from anyone ends it' }];
 const salvageCoach = [
   () => call(['frames', { at: '0:13.8', more: ['0:46.8', '1:05.8'], why: 'the deaths' }]),
   () => call(['frames', { at: '1:40.6', more: ['2:13.6'], why: 'the last deaths' }]),
-  () => call(['finish', { ...REASON, reason: 'Fighting wide angles alone', fixes: SALVAGE_FIXES, losses: LOSS_NOTES }]),
-  () => call(['finish', { ...REASON, reason: 'Fighting wide angles alone', fixes: SALVAGE_FIXES, losses: LOSS_NOTES }]),
-  () => call(['finish', { ...REASON, reason: 'Fighting wide angles alone', fixes: SALVAGE_FIXES, losses: LOSS_NOTES }]),
+  () => call(['finish', { ...REASON, reason: 'Fighting wide angles alone', fixes: SALVAGE_FIXES, turning_points: LOSS_NOTES }]),
+  () => call(['finish', { ...REASON, reason: 'Fighting wide angles alone', fixes: SALVAGE_FIXES, turning_points: LOSS_NOTES }]),
+  () => call(['finish', { ...REASON, reason: 'Fighting wide angles alone', fixes: SALVAGE_FIXES, turning_points: LOSS_NOTES }]),
 ];
 // what the learn call says about the synthetic match: where its HUD is, and the habits a coach would look for
 const LEARNED = {
@@ -496,18 +496,20 @@ try {
   await shot(page, 'verdict-oneoff');
   const oneOffUrl = page.url();
   await page.click('#cqPlay');
-  await page.waitForSelector('#caption:not([hidden])');
+  await page.waitForFunction(() => document.querySelector('#cqPlayText')?.textContent === 'Pause');
   await shot(page, 'critique-intro');
-  check(/^What cost you this match: Peeking the same corner twice\./.test(await page.locator('#caption .cap-text').innerText()) && await page.locator('#cqPlayText').innerText() === 'Pause', 'watching it, a voice and the caption start with the verdict');
-  await page.waitForFunction(() => /^0:15\. You lost this one\./.test(document.querySelector('#caption .cap-text')?.textContent || ''), null, { timeout: 30000 });
-  check(/^0:15\. You lost this one\. Killed by Enemy 1\.$/.test(await page.locator('#caption .cap-text').innerText()), `a moment they lost that the finding doesn't cite is said as the record has it (${await page.locator('#caption .cap-text').innerText()})`);
-  await page.waitForFunction(() => /This is it/.test(document.querySelector('#caption .cap-text')?.textContent || ''), null, { timeout: 30000 });
-  check(/^0:46\. This is it\. Peeks the corner they just lost at, the same way\. Instead: Take the fight from the other side/.test(await page.locator('#caption .cap-text').innerText()) && Math.abs(await page.evaluate(() => document.querySelector('#video').currentTime) - 46.8) < 0.3 && await page.locator('#cqChapters .cq-ch.on.habit').count() === 1 && await page.locator('.key.playing').count() === 1, 'then holds on the moment the finding cites, says what happened and what to do instead, and marks its chapter and card');
+  const said = () => (seen.voiceLines || []).map((l) => l.text);
+  check(said().some((t) => /^What cost you this match: Peeking the same corner twice\./.test(t)) && await page.locator('#caption').isHidden(), 'watching it, the voice starts with the verdict, with no caption over the video: the highlighted chapter under it says the line');
+  await page.waitForSelector('#cqChapters .cq-ch.on.habit', { timeout: 30000 });
+  await page.waitForFunction(() => Math.abs(document.querySelector('#video').currentTime - 46.8) < 0.3, null, { timeout: 30000 });
+  check(await page.locator('.key.playing').count() === 1 && /Peeks the corner they just lost at/.test(await page.locator('#cqChapters .cq-ch.on .cq-w').innerText()) && await page.locator('#caption').isHidden(), 'then holds on the moment the finding cites, its chapter highlighted under the video with the whole line, and marks its card');
+  check(said().some((t) => /^At \d+ seconds in\. You lost this one\. Killed by Enemy 1\.$/.test(t)), `a review with no turning points says each loss as the record has it, and their own death untraded says nothing about a trade (${said().find((t) => /Enemy 1/.test(t))})`);
+  check(said().some((t) => /^At \d+ seconds in\. Peeks the corner they just lost at, the same way\. Instead: Take the fight from the other side/.test(t)) && !said().some((t) => /This is it/.test(t)), 'each moment is said as its own, with no stock opening line repeated at every one');
   await page.waitForTimeout(900); await shot(page, 'critique-moment');
   await page.click('#cqStop');
   check(await page.locator('#caption').isHidden() && await page.locator('#cqPlayText').innerText() === 'Watch the critique', 'and stops when asked');
   check(await page.locator('#cqVoice optgroup').first().getAttribute('label') === 'Natural, made on this computer' && await page.locator('#cqVoice').inputValue() === 'kokoro:am_michael', 'the voice is Kokoro\'s Michael, made on this computer, unless they pick another');
-  check((seen.voiceLines || []).some((l) => l.voice === 'am_michael' && /^At \d+ seconds in\. This is it\. Peeks the corner/.test(l.text)), `each line is said by that voice (${(seen.voiceLines || []).length} lines asked for: ${(seen.voiceLines || []).slice(0, 4).map((l) => `${l.voice}: ${String(l.text).slice(0, 40)}`).join(' | ')})`);
+  check((seen.voiceLines || []).some((l) => l.voice === 'am_michael' && /^At \d+ seconds in\. Peeks the corner/.test(l.text)), `each line is said by that voice (${(seen.voiceLines || []).length} lines asked for: ${(seen.voiceLines || []).slice(0, 4).map((l) => `${l.voice}: ${String(l.text).slice(0, 40)}`).join(' | ')})`);
   check(await page.locator('#acceptBtn').count() === 0, 'a one-off is not put to them as a habit to work on');
   const agents = seen.verifyBodies.slice(checksBefore.agents);
   check(seen.claimChecks - checksBefore.claims === 1 && agents.length === 2, `the reason's moments are checked against the record and the video, like a habit's; agreeing with a planted false claim, the check gets one fresh try (${agents.length} calls)`);
@@ -527,7 +529,8 @@ try {
   const salvaged = await page.evaluate(() => JSON.parse(localStorage.getItem('thirdeye.v1')).matches.at(-1));
   check(seen.agentBodies.length === 5 && await page.locator('.verdict h2').innerText() === 'FIGHTING WIDE ANGLES ALONE' && salvaged.reason === 'Fighting wide angles alone', `sent back twice and told to decide, the finding still doesn't stand, and the review names it anyway from the moment that held up, never "nothing named" (${await page.locator('.verdict h2').innerText()})`);
   check(/didn't hold up after two send-backs, so this names what the moments both checks let stand \(1 of its moments were left out\)/.test(await page.locator('.verdict .trust.warn').innerText()) && await page.locator('.key-fix').count() === 1, `the report says so, and shows only the moment that held up (${await page.locator('.verdict .trust').innerText()})`);
-  check(await page.locator('#cqChapters .cq-ch').count() >= 4 && /Reset after the first contact/.test(await page.locator('#cqChapters').innerText()), 'the critique walks every loss, each with what went wrong and what to do instead');
+  const chapters = await page.locator('#cqChapters .cq-ch .cq-w').allInnerTexts();
+  check(chapters.length === 3 && chapters.some((t) => /Swings out a second time into the same enemy\. The enemy had already seen them and held the angle\. Instead: Reset after the first contact/.test(t)) && !chapters.some((t) => /Killed by/.test(t)), `the critique plays the moments that decided their losses, each with what made it lose and what to do instead, not every death (${chapters.length}: ${chapters.map((t) => t.slice(0, 40)).join(' | ')})`);
   seen.salvage = false;
 
   if (process.env.E2E_SHOTS) { await page.goto(`${base}#reviews`); await page.waitForSelector('#reviews:not([hidden])'); await page.waitForTimeout(800); await shot(page, 'reviews'); }

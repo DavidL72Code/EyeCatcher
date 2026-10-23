@@ -267,7 +267,8 @@
    * config: extra generationConfig fields (e.g. mediaResolution).
    * Full model turns are appended verbatim so Gemini 3 thought signatures are preserved.
    */
-  async function runAgent({ system, prompt, images = [], tools, onStep, maxSteps = 12, signal, onNotice, history = [], parallel = false, force = false, temperature = 0.3, stopOn = null, keepImages = Infinity, config = {} }) {
+  // prefer: models to try first for every turn (generate's), before the usual list
+  async function runAgent({ system, prompt, images = [], tools, onStep, maxSteps = 12, signal, onNotice, history = [], parallel = false, force = false, temperature = 0.3, stopOn = null, keepImages = Infinity, config = {}, prefer = [] }) {
     const decls = tools.map(({ name, description, parameters }) => ({ name, description, ...(parameters ? { parameters } : {}) }));
     const byName = Object.fromEntries(tools.map((t) => [t.name, t]));
     // images may carry a label (text before it) and, for video, fps, as a tool result's do
@@ -282,7 +283,7 @@
         ...(force ? { toolConfig: { functionCallingConfig: { mode: 'ANY' } } } : {}),
         systemInstruction: { parts: [{ text: system }] },
         generationConfig: { temperature, ...config },
-      }, { signal, onNotice });
+      }, { signal, onNotice, prefer });
       const content = resp?.candidates?.[0]?.content;
       if (!content) throw new GeminiError('The model returned no content (it may have been blocked).', 500, resp);
       contents.push(content);

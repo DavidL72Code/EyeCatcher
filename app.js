@@ -890,6 +890,7 @@
       <div class="key-body">
         <p class="key-when"><button class="t-btn" type="button" data-key="${i}">${C.mmss(e.t, true)}</button></p>
         <p class="key-what">${esc(e.what)}</p>
+        ${e.because ? `<p class="key-why"><span class="k">Why it lost</span> ${esc(e.because)}</p>` : ''}
         ${how ? `<p class="key-how"><span class="k">How it knew</span> ${how}</p>` : ''}
         ${e.better ? `<p class="key-fix"><span class="k">Fix</span> ${esc(e.better)}</p>` : ''}
       </div>
@@ -1075,7 +1076,11 @@
   // is said as the record has it, with no advice made up for it.
   // a record line as the voice says it: no team tags, no outcome word ahead of the clip read's story
   const spoken = (text) => {
-    const t = String(text || '').replace(/, (enemy|teammate)\)/g, ')').replace(/ \((enemy|teammate)\)/g, '').replace(/; not traded/, ', and nobody traded').replace(/^(won|lost|none)(;\s*(the enemy|they|you|the player) engaged first)?;?\s*/i, '').replace(/^fired in \d+ bursts;\s*/i, '').replace(/\bThe player\b/g, 'You').replace(/\bthe player\b/g, 'you').trim();
+    const t = String(text || '').replace(/, (enemy|teammate)\)/g, ')').replace(/ \((enemy|teammate)\)/g, '')
+      // a player by their character alone, the name the player knows them by ("Sova (Sova)", "zeytazin (Reyna)")
+      .replace(/(^|killed |knocked down |trading |by |; |, )([^;,()]+?) \(([A-Z][^(),]*)\)/g, '$1$3')
+      // their own death untraded says nothing when nobody was left to trade it; a teammate's untraded is theirs to have traded
+      .replace(/(killed you|knocked down you); not traded/, '$1').replace(/; not traded/, ', and nobody traded').replace(/^(won|lost|none)(;\s*(the enemy|they|you|the player) engaged first)?;?\s*/i, '').replace(/^fired in \d+ bursts;\s*/i, '').replace(/\bThe player\b/g, 'You').replace(/\bthe player\b/g, 'you').trim();
     return t ? t.replace(/\.?$/, '.') : '';
   };
   function critiqueChapters(r) {
@@ -1089,15 +1094,18 @@
       else if (e.kind === 'engagement' && e.outcome === 'lost' && !events.some((d) => d.kind === 'death' && d.t >= e.from - 1 && d.t <= e.to + 3)) losses.push({ t: e.to, text: `A fight you lost.${spoken(e.text) ? ` ${spoken(e.text)}` : ''}` });
       else if (e.kind === 'ally_death' && e.near === true && !e.tradedBy && !C.deathAt(events, e.t, deadFor)) losses.push({ t: e.t, text: `${spoken(e.text)} They were near you.` });
     }
-    const chapters = habit.map((e, i) => ({ t: e.t, habit: true, key: i, what: e.what, text: `${String(e.what || '').replace(/\.?$/, '.')}${e.better ? ` Instead: ${e.better.replace(/\.?$/, '.')}` : ''}` }));
-    // a loss the finding's own moment leads up to is told with it
-    // and each other loss with the review's note on it, what went wrong and what to do instead, where it has one
-    const notes = Array.isArray(r.losses) ? r.losses : [], noteAt = (t) => notes.find((n) => Math.abs(n.t - t) <= 3);
-    for (const l of losses) {
-      if (chapters.some((c) => c.habit && l.t >= c.t - 2 && l.t <= c.t + 8)) continue;
-      const n = noteAt(l.t), text = n ? `${String(n.what).replace(/\.?$/, '.')}${n.better ? ` Instead: ${n.better.replace(/\.?$/, '.')}` : ''}` : l.text;
-      chapters.push({ t: l.t, habit: false, what: text, text });
-    }
+    // each moment as its own situation: what happened, what made it lose there, what to do instead
+    const said = (e) => `${String(e.what || '').replace(/\.?$/, '.')}${e.because ? ` ${String(e.because).replace(/^./, (x) => x.toUpperCase()).replace(/\.?$/, '.')}` : ''}${e.better ? ` Instead: ${e.better.replace(/\.?$/, '.')}` : ''}`;
+    const cost = (e) => { const l = Number.isFinite(e.ledTo) && e.ledTo - e.t > 2 ? losses.find((x) => Math.abs(x.t - e.ledTo) <= 4) : null; return l ? ` That cost the fight at ${C.mmss(e.ledTo)}.` : ''; };
+    const chapters = habit.map((e, i) => ({ t: e.t, habit: true, key: i, what: e.what, text: `${said(e)}${cost(e)}` }));
+    // the moments that decided the fights they lost (turning points), not every death: a loss the finding's moment or
+    // a turning point leads to is told with it (the user, Oct 23: "highlight pivotal moments, not just every death")
+    const turns = Array.isArray(r.turning) ? r.turning : [];
+    const told = (t) => chapters.some((c) => t >= c.t - 2 && t <= c.t + 8 || (c.ledTo != null && Math.abs(t - c.ledTo) <= 4));
+    for (const e of turns) if (!chapters.some((c) => Math.abs(c.t - e.t) < 2)) chapters.push({ t: e.t, ledTo: e.ledTo, habit: false, turn: true, what: e.what, text: `${said(e)}${cost(e)}` });
+    habit.forEach((e, i) => { if (Number.isFinite(e.ledTo)) chapters[i].ledTo = e.ledTo; });
+    // a review from before turning points: each loss, as the record has it
+    if (!turns.length) for (const l of losses) if (!told(l.t)) chapters.push({ t: l.t, habit: false, what: l.text, text: l.text });
     return chapters.sort((a, b) => a.t - b.t);
   }
   // what the voice says, in order: the verdict, each chapter, the one costing them most, what to practice
@@ -1105,12 +1113,14 @@
     const chapters = run.cq || critiqueChapters(r), lines = [], n = chapters.filter((c) => c.habit).length;
     const name = r.found ? r.habit : r.reason || '';
     const head = r.found ? `The habit costing you fights: ${r.habit}.` : r.reason ? `What cost you this match: ${r.reason}.` : '';
-    if (head || r.why) lines.push({ i: null, text: `${head} ${firstLine(r.why)}${chapters.length > n ? ' Here is every moment you lost, and where it shows.' : ''}`.trim() });
+    if (head || r.why) lines.push({ i: null, text: `${head} ${firstLine(r.why)}${chapters.length > n ? ' Here are the moments that cost you, and where it shows.' : ''}`.trim() });
     chapters.forEach((c, i) => {
-      const lead = c.habit ? (name ? 'This is it' : 'Here') : 'You lost this one';
-      lines.push({ i, t: c.t, text: `${C.mmss(c.t)}. ${lead}. ${c.text}`, said: `At ${sayTime(c.t)}. ${lead}. ${c.text}` });
+      // no stock opening: "This is it. X dies." at every moment said the same thing each time (the user, Oct 23). Only a
+      // loss as the record has it, from a review before turning points, says it was lost.
+      const lead = c.habit || c.turn ? '' : 'You lost this one. ';
+      lines.push({ i, t: c.t, text: `${C.mmss(c.t)}. ${lead}${c.text}`, said: `At ${sayTime(c.t)}. ${lead}${c.text}` });
     });
-    if (name && chapters.length > n) lines.push({ i: null, text: `The one costing you the most: ${name}. It showed at ${n} of the ${chapters.length} moments you lost.` });
+    if (name && chapters.length > n) lines.push({ i: null, text: `The one costing you the most: ${name}. It showed at ${n} of the ${chapters.length} moments that cost you.` });
     if (r.drill) lines.push({ i: null, text: `The drill: ${firstLine(r.drill)}` });
     return lines;
   }
@@ -1206,7 +1216,6 @@
       if (line.t != null) await holdAt(line.i, token);
       while (cq.paused && token === cq.token) await pauseFor(200);
       if (token !== cq.token) return;
-      showCaption(line);
       await speak(line.said || line.text, token);
       if (token !== cq.token) return;
       await pauseFor(600);
@@ -1266,7 +1275,7 @@
     fillVoices();
     // the opening lines, made while the player reads the report
     lines.slice(0, 2).forEach((l) => lineAudio(l.said || l.text));
-    $('cqChapters').innerHTML = run.cq.map((c, i) => `<li><button class="cq-ch${c.habit ? ' habit' : ''}" type="button" data-i="${i}"><span class="cq-n">${c.habit ? c.key + 1 : ''}</span><span class="cq-t">${C.mmss(c.t, true)}</span><span class="cq-w">${c.habit ? '<b>Where it shows</b> ' : ''}${esc(c.what)}</span></button></li>`).join('');
+    $('cqChapters').innerHTML = run.cq.map((c, i) => `<li><button class="cq-ch${c.habit ? ' habit' : ''}" type="button" data-i="${i}"><span class="cq-n">${c.habit ? c.key + 1 : ''}</span><span class="cq-t">${C.mmss(c.t, true)}</span><span class="cq-w">${c.habit ? '<b>Where it shows</b> ' : ''}${esc(c.text)}</span></button></li>`).join('');
     box.hidden = false;
   }
   // over the picture itself, not the black bars around it

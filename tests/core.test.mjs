@@ -160,7 +160,9 @@ test('a clip look watches the run-up, inside the video, at least a second long',
   // the coach's default: 6 s before to 1 s after at 6 frames a second (Apex at 4:30 is 4:24 to 4:31)
   assert.deepEqual(C.clipPlan({ t: 270, duration: 400 }), { t: 270, from: 264, to: 271, fps: 6 });
   // what the model asks for is held to the clip's limits; a missing value is the default, not 0
-  assert.deepEqual(C.clipPlan({ t: 60, before: 30, after: 9, fps: 30, duration: 400 }), { t: 60, from: 60 - C.CLIP_LOOK.maxBefore, to: 60 + C.CLIP_LOOK.maxAfter, fps: 8 });
+  // a long run-up (to see the decision a fight was lost on) is sampled thinly, a short look keeps its rate
+  assert.deepEqual(C.clipPlan({ t: 60, before: 30, after: 9, fps: 30, duration: 400 }), { t: 60, from: 60 - C.CLIP_LOOK.maxBefore, to: 60 + C.CLIP_LOOK.maxAfter, fps: 3 });
+  assert.deepEqual(C.clipPlan({ t: 60, before: 3, after: 1, fps: 30, duration: 400 }), { t: 60, from: 57, to: 61, fps: 8 });
   assert.deepEqual(C.clipPlan({ t: 60, before: undefined, after: null, fps: 'x', duration: 400 }), { t: 60, from: 54, to: 61, fps: 6 });
   // at the start and the end of the video
   assert.deepEqual(C.clipPlan({ t: 2, duration: 400 }), { t: 2, from: 0, to: 3, fps: 6 });
@@ -343,7 +345,7 @@ test('sightings become one event per kill, with teams, the player, and trades', 
   assert.equal(zed.text, 'Omen (enemy) killed ZedCapetinha (teammate); traded by you 2 s later');
   assert.equal(omenKill.text, 'you killed Omen (enemy); trading ZedCapetinha');
   assert.equal(events[0].text, 'KAY/O (enemy) killed Omen (teammate); not traded', 'six seconds is too late to count as a trade');
-  assert.equal(events[5].text, 'Sova (enemy) killed you; not traded');
+  assert.equal(events[5].text, 'Sova (enemy) killed you'); // their own death untraded says nothing: often nobody was left to trade it
   assert.equal(events[1].seen, 1);
   assert.equal(events[0].seen, 2);
 });

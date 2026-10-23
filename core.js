@@ -307,6 +307,11 @@
   // board: the theory board, when a finding has to be a supported theory on it. coverLosses: the review has to have
   // looked at the player's losses (lossGap) before it decides either way.
   // citeLoss: a finding has to cite at least one moment where the match was lost (lossMoments).
+  // A moment the coach cites can be the one that decided a loss, before it (led_to: that loss's time): the mistake is
+  // often made seconds before the death, once the fight can't be won (the user, Oct 23: "the mistake wasn't made when I
+  // died, it was made before"). It counts at that loss when the loss comes within LEAD_MAX s after it.
+  const LEAD_MAX = 30;
+  const ledTo = (e, t) => { const to = parseTime(e?.led_to); return Number.isFinite(to) && to >= t && to - t <= LEAD_MAX ? to : t; };
   function checkFinish(args, { ledger, duration = Infinity, habits = [], measures = [], events = [], deadFor = 5, shots = [], aimTarget = 'head', board = null, coverLosses = false, citeLoss = false }) {
     const problems = [];
     const gap = coverLosses ? lossGap(events, ledger) : '';
@@ -328,7 +333,7 @@
         if (!text(e.what)) problems.push(`Say what happens at ${mmss(t)}.`);
         if (!seen(ledger, t)) { problems.push(`You haven't looked closely at ${mmss(t)}. Look with frames, or cite a moment you did look at.`); continue; }
         if (afterDeath(t)) { problems.push(afterDeath(t)); continue; }
-        shown.push(t);
+        shown.push(ledTo(e, t));
       }
       if (!shown.length) problems.push('Cite the moments you looked at that show the reason (fixes), each with what they should have done instead (better).');
       else if (!shown.some((t) => all.some((l) => t >= l.from && t <= l.to))) problems.push(`The reason they lost has to show where they lost: at least one of its moments at ${where}.`);
@@ -340,7 +345,7 @@
     if (text(args?.why).length < 20) problems.push('Explain how this habit cost fights (why).');
     if (text(args?.drill).length < 20) problems.push('Give one specific drill (drill).');
     if (!text(args?.recheck)) problems.push('Say what to check in the next match (recheck).');
-    const kept = [];
+    const kept = [], at = []; // at: the loss each moment counts at, its led_to when it decided one
     for (const e of Array.isArray(args?.evidence) ? args.evidence : []) {
       const t = parseTime(e?.t);
       if (!Number.isFinite(t) || t < 0 || t > duration + 1) { problems.push(`${e?.t ?? '?'} isn't a time in this match.`); continue; }
@@ -349,6 +354,7 @@
       if (afterDeath(t)) { problems.push(afterDeath(t)); continue; }
       if (kept.some((x) => Math.abs(x - t) < MIN_GAP)) { problems.push(`${mmss(t)} is the same moment as other evidence.`); continue; }
       kept.push(t);
+      at.push(ledTo(e, t));
     }
     // a habit about how they fire needs moments where they fired: an ammo counter that never moved says they didn't
     const habit = habits.find((h) => h.id === args?.habit_id);
@@ -356,13 +362,14 @@
       for (const t of [...kept]) {
         if (shots.find((x) => Math.abs(x.t - t) < 0.05)?.fired !== false) continue;
         problems.push(`At ${mmss(t)} the ammo counter doesn't change, so the player didn't fire and the moment can't show ${habit.name ? habit.name.toLowerCase() : habit.id}. If the moments you looked at don't show it, drop the theory (notes, status dropped) and name a habit they do show, or finish with found false.`);
-        kept.splice(kept.indexOf(t), 1);
+        const k = kept.indexOf(t);
+        kept.splice(k, 1); at.splice(k, 1);
       }
     }
     if (kept.length < MIN_EVIDENCE) problems.push(`Cite at least ${MIN_EVIDENCE} separate moments you looked at that show the habit (you have ${kept.length}). Moments where they got it right go in contrast, not evidence. If fewer than ${MIN_EVIDENCE} moments show it, finish with found false.`);
     // The habit that's losing them games has to show up where they lost, and more than once: one loss is an incident.
     if (citeLoss && kept.length) {
-      const all = lossMoments(events, { deadFor }), hit = all.filter((l) => kept.some((t) => t >= l.from && t <= l.to));
+      const all = lossMoments(events, { deadFor }), hit = all.filter((l) => at.some((t) => t >= l.from && t <= l.to));
       if (hit.length < MIN_LOSSES) {
         const where = all.slice(0, 6).map((l) => `${mmss(l.t)} ${l.what}`).join(', ');
         problems.push(`A habit that's losing them games has to show where they lost, at ${MIN_LOSSES} or more separate losses: their deaths, fights they lost, or teammates down near them that nobody traded. You cite ${hit.length} (in this match: ${where || 'none'}). If they don't show it, finish with found false.`);
@@ -689,11 +696,14 @@
 
   function feedText(e) {
     const you = (role) => e[role === 'killer' ? 'killerIsPlayer' : 'victimIsPlayer'];
-    const tag = (role) => [e[`${role}Character`], e[`${role}Team`] === 'ally' ? 'teammate' : e[`${role}Team`] === 'enemy' ? 'enemy' : ''].filter(Boolean).join(', ');
+    // the character once: a feed that writes characters for names read "Sova (Sova, enemy)"
+    const tag = (role) => [!sameName(e[`${role}Character`] || '', e[role] || '') && e[`${role}Character`], e[`${role}Team`] === 'ally' ? 'teammate' : e[`${role}Team`] === 'enemy' ? 'enemy' : ''].filter(Boolean).join(', ');
     const name = (role) => (you(role) ? 'you' : `${e[role]}${tag(role) ? ` (${tag(role)})` : ''}`);
     const parts = [`${name('killer')} ${e.knock ? 'knocked down' : 'killed'} ${name('victim')}${e.confirmed ? " (the screen's banner shows it too)" : ''}`];
     if (e.trades) parts.push(`trading ${e.trades}`);
-    if (e.victimTeam === 'ally') parts.push(e.tradedBy ? `traded by ${sameName(e.tradedBy, e.player) ? 'you' : e.tradedBy} ${round(e.tradedAt - e.t, 1)} s later` : 'not traded');
+    // a teammate's death untraded is the player's to have traded; their own, untraded, says nothing: often nobody was
+    // left alive to trade it (the user, Oct 23: "I was the only one alive, how were they supposed to trade")
+    if (e.victimTeam === 'ally') { if (e.tradedBy) parts.push(`traded by ${sameName(e.tradedBy, e.player) ? 'you' : e.tradedBy} ${round(e.tradedAt - e.t, 1)} s later`); else if (!e.victimIsPlayer) parts.push('not traded'); }
     if (e.kind === 'ally_death' && e.near != null) parts.push(e.near ? 'near you' : 'away from you');
     return parts.join('; ');
   }
@@ -1556,14 +1566,18 @@
    * clip is for what happened and in what order, like the run-up to a moment, and stills are for detail. The coach's
    * clip is encoded from it, and the app plays the same stretch while the coach watches.
    */
-  const CLIP_LOOK = { before: 6, after: 1, fps: 6, maxBefore: 8, maxAfter: 4 };
+  // maxBefore: far enough back to see the decision a fight was lost on, often 10 to 20 s before the death; a long clip is
+  // sampled more thinly (MAX_CLIP_FRAMES): 14 s at 6 a second, so the check against the video keeps the rate it was
+  // measured at and only a longer look back thins out
+  const CLIP_LOOK = { before: 6, after: 1, fps: 6, maxBefore: 20, maxAfter: 4 }, MAX_CLIP_FRAMES = 84;
   function clipPlan({ t, before = CLIP_LOOK.before, after = CLIP_LOOK.after, fps = CLIP_LOOK.fps, duration = Infinity, maxAfter = CLIP_LOOK.maxAfter }) {
     const last = Math.max(0, duration - 0.05), num = (x, d) => (Number.isFinite(+x) && x !== null ? +x : d);
     const b = clamp(num(before, CLIP_LOOK.before), 0, CLIP_LOOK.maxBefore), a = clamp(num(after, CLIP_LOOK.after), 0, maxAfter);
     const at = clamp(t, 0, last);
     let from = clamp(at - b, 0, last), to = clamp(at + a, 0, last);
     if (to - from < 1) { to = Math.min(last, from + 1); from = Math.max(0, to - 1); }
-    return { t: round(at, 2), from: round(from, 2), to: round(to, 2), fps: clamp(Math.round(num(fps, CLIP_LOOK.fps)) || CLIP_LOOK.fps, 2, 8) };
+    const want = clamp(Math.round(num(fps, CLIP_LOOK.fps)) || CLIP_LOOK.fps, 2, 8);
+    return { t: round(at, 2), from: round(from, 2), to: round(to, 2), fps: Math.max(2, Math.min(want, Math.floor(MAX_CLIP_FRAMES / Math.max(1, to - from)))) };
   }
   /**
    * How long after a claimed moment the check of it looks: to the end of the record's fight or play the moment falls in,
@@ -1627,7 +1641,7 @@
   const api = {
     mmss, parseTime, median, round, clamp, aimBand, aimOffset, headOnBody, enemyHead, summarizeAim, aimText,
     BudgetError, createBudget, left, spend, budgetLine,
-    SLACK, MIN_EVIDENCE, createLedger, recordLook, seen, deadForOf, deathAt, LOSS_LOOKS, losses, lossGap, lossMoments, atLoss, MIN_LOSSES, MAX_TRIES, fightOf, retryRefusal, problemKind, checkFinish,
+    SLACK, MIN_EVIDENCE, LEAD_MAX, createLedger, recordLook, seen, deadForOf, deathAt, LOSS_LOOKS, losses, lossGap, lossMoments, atLoss, MIN_LOSSES, MAX_TRIES, fightOf, retryRefusal, problemKind, checkFinish,
     STATUSES, applyNote, boardBrief, unreadDowns, unreadUnits, cutTimes, snapUnits, KINDS, normalizeEvents, mergeEvents, eventsBrief,
     pixelTeam, killfeedRows, teamLines, colorBands, fitGrid, rowDistance, SAME_ROW, sameRow, freshRows, nameKey, sameName, feedSightings, choosePlayer, whoIsPlayer, buildKillfeed, confirmByBanners, cutNames, aliasNames, feedCharacters, counterRises, hudKills, hudRecord, mergeCounts, riseSpans, lowSpans, timesIn, nearDeaths, NEAR_DEATH, controlClaims, sameSide, trustCounter, settleFights, pointsTaken, oneDeathEach, eventWindows, fightsFromClips, clipMoments, feedText, textRows, textEdge, onEdge, feedBand, nameColors, textFeedReads, textFeedSightings, teamsByColor,
     ammoReading, shotsFired, fireTimes, groupFights, mergeFights, MAX_FRAMES, framePlan, CLIP_LOOK, clipPlan, claimAfter, regionRect, READOUT_H, readoutRegion,
