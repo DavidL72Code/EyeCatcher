@@ -224,6 +224,8 @@
   // ---------- why a finish was sent back ----------
   // Each send-back as a kind of reason, so the same reason counts again whatever moment or move it names.
   const PROBLEM_KINDS = [
+    // a field to fill in, not a reason the finding is wrong: it never counts toward deciding now (agent.js)
+    ['format', /Give one specific drill|Say what to check in the next match|must be one of/],
     ['unseen', /haven't looked closely/],
     ['too_few', /Cite at least \d+ separate moments/],
     ['aim_count', /at least \d+ measure_aim readings/],
@@ -1112,7 +1114,8 @@
    * downs: deaths off the HP number reading 0. Returns { kills, deaths, downs, points, knows: { kills, deaths, health } }.
    */
   function hudRecord(counts, { side = '' } = {}) {
-    const n = counts?.cells || 0, knows = (xs) => n > 0 && (xs || []).length >= KNOWN_SHARE * n;
+    // a series read only around fights is known by its own cells (mergeCounts' cellsFor)
+    const knows = (xs, part) => { const n = counts?.cellsFor?.[part] ?? counts?.cells ?? 0; return n > 0 && (xs || []).length >= KNOWN_SHARE * n; };
     const rises = (xs, kind, text) => counterRises(xs).map((r) => ({ t: r.t, kind, seenBy: 'hud', by: r.by, text: text(r.by) }));
     const kills = rises(counts?.kills, 'kill', (by) => `you got ${by === 1 ? 'a kill' : `${by} kills`} (the HUD's kill count went up)`);
     const deaths = rises(counts?.deaths, 'death', () => "you died (the HUD's death count went up)");
@@ -1124,7 +1127,36 @@
     // the HP number at 0 after it wasn't: one death per stretch at 0, however long the death screen
     const hp = (counts?.health || []).filter((x) => Number.isFinite(x?.value)), downs = [];
     hp.forEach((x, i) => { if (x.value === 0 && (i === 0 ? false : hp[i - 1].value > 0)) downs.push({ t: x.t, kind: 'death', seenBy: 'hud', text: "you died (your health read 0)" }); });
-    return { kills, deaths, downs, points: points.sort((a, b) => a.t - b.t), knows: { kills: knows(counts?.kills), deaths: knows(counts?.deaths), health: knows(counts?.health) } };
+    return { kills, deaths, downs, points: points.sort((a, b) => a.t - b.t), knows: { kills: knows(counts?.kills, 'kill_count'), deaths: knows(counts?.deaths, 'kill_count'), health: knows(counts?.health, 'health') } };
+  }
+  /**
+   * Two counter reads of one match as one (agent.js passLog: a sparse read through it, a fine one around what happened):
+   * each series' readings together in time order, the first read's kept where both read a moment, a side's score under
+   * one name (sameSide), and cellsFor: how many moments each part was asked at, for hudRecord's known share.
+   */
+  const SERIES = { damage: 'damage', kills: 'kill_count', deaths: 'kill_count', assists: 'kill_count', health: 'health', healthMax: 'health' };
+  function mergeCounts(a, b) {
+    const reads = [a, b].filter(Boolean);
+    if (!reads.length) return null;
+    const join = (...xs) => { const m = new Map(); for (const r of xs.flat()) if (r && !m.has(r.t)) m.set(r.t, r); return [...m.values()].sort((p, q) => p.t - q.t); };
+    const out = { cells: reads.reduce((n, r) => n + (r.cells || 0), 0), calls: reads.reduce((n, r) => n + (r.calls || 0), 0), times: join(...reads.map((r) => (r.times || []).map((t) => ({ t })))).map((x) => x.t), scores: {}, cellsFor: {} };
+    for (const k of Object.keys(SERIES)) out[k] = join(...reads.map((r) => r[k] || []));
+    for (const r of reads) for (const [side, xs] of Object.entries(r.scores || {})) { const name = Object.keys(out.scores).find((k) => k === side || sameSide(k, side)) || side; out.scores[name] = join(out.scores[name] || [], xs); }
+    for (const part of new Set(Object.values(SERIES).concat('scoreboard'))) out.cellsFor[part] = reads.filter((r) => !r.asked || r.asked.includes(part)).reduce((n, r) => n + (r.cells || 0), 0);
+    return out;
+  }
+  /** Around each rise of a running count the sparse read found: from the reading before it to just after, to time it. */
+  function riseSpans(counts, step) {
+    const series = [counts?.kills, counts?.deaths, counts?.assists, ...Object.values(counts?.scores || {})];
+    return series.flatMap((xs) => counterRises(xs).map((r) => [r.t - step - 1, r.t + 1]));
+  }
+  /** Around each low of the HP number a sparse read found, to find how low it went. */
+  const lowSpans = (counts) => (counts?.health?.length ? nearDeaths(counts.health, { maxes: counts.healthMax }).map((n) => [n.t - 5, n.t + 5]) : []);
+  /** Every step s inside any of the spans ([from, to]), within from..to, on the step's own grid, each once, in order. */
+  function timesIn(spans, { from = 0, to = Infinity, step = 2 } = {}) {
+    const out = new Set();
+    for (const [a, b] of spans || []) for (let t = Math.max(from, Math.ceil(a / step) * step); t <= Math.min(to, b); t += step) out.add(+t.toFixed(2));
+    return [...out].sort((x, y) => x - y);
   }
   /**
    * Where the player may have nearly died, off the HUD's HP number: it fell under NEAR_LOW of full health, with no
@@ -1135,7 +1167,10 @@
    * level, 1373 to 1589 in ten minutes), else the health it reads most often. health, maxes: [{ t, value }], deaths:
    * [{ t }]. Returns [{ t, kind: 'near_death', hp, of, sure, seenBy, text }].
    */
-  const NEAR_DEATH = 0.25, NEAR_LOW = 0.4, NEAR_GAP = 5, MAX_NEAR = 10;
+  // NEAR_GAP: lows this far apart with no reading between, none high, are one low stretch: a new near-death needs health
+  // seen back up first. Read only around fights, the HP number has gaps, and League's one dip at 4:30, regenerating, read
+  // as three (4:30, 4:43, 5:07; Oct 23)
+  const NEAR_DEATH = 0.25, NEAR_LOW = 0.4, NEAR_GAP = 90, MAX_NEAR = 10;
   const modeOf = (xs) => { const n = new Map(); for (const x of xs) n.set(x, (n.get(x) || 0) + 1); return [...n].sort((a, b) => b[1] - a[1] || b[0] - a[0])[0]?.[0] ?? null; };
   function nearDeaths(health, { maxes = [], deaths = [] } = {}) {
     const hp = (health || []).filter((x) => Number.isFinite(x?.value) && Number.isFinite(x?.t)).sort((a, b) => a.t - b.t);
@@ -1594,7 +1629,7 @@
     BudgetError, createBudget, left, spend, budgetLine,
     SLACK, MIN_EVIDENCE, createLedger, recordLook, seen, deadForOf, deathAt, LOSS_LOOKS, losses, lossGap, lossMoments, atLoss, MIN_LOSSES, MAX_TRIES, fightOf, retryRefusal, problemKind, checkFinish,
     STATUSES, applyNote, boardBrief, unreadDowns, unreadUnits, cutTimes, snapUnits, KINDS, normalizeEvents, mergeEvents, eventsBrief,
-    pixelTeam, killfeedRows, teamLines, colorBands, fitGrid, rowDistance, SAME_ROW, sameRow, freshRows, nameKey, sameName, feedSightings, choosePlayer, whoIsPlayer, buildKillfeed, confirmByBanners, cutNames, aliasNames, feedCharacters, counterRises, hudKills, hudRecord, nearDeaths, NEAR_DEATH, controlClaims, sameSide, trustCounter, settleFights, pointsTaken, oneDeathEach, eventWindows, fightsFromClips, clipMoments, feedText, textRows, textEdge, onEdge, feedBand, nameColors, textFeedReads, textFeedSightings, teamsByColor,
+    pixelTeam, killfeedRows, teamLines, colorBands, fitGrid, rowDistance, SAME_ROW, sameRow, freshRows, nameKey, sameName, feedSightings, choosePlayer, whoIsPlayer, buildKillfeed, confirmByBanners, cutNames, aliasNames, feedCharacters, counterRises, hudKills, hudRecord, mergeCounts, riseSpans, lowSpans, timesIn, nearDeaths, NEAR_DEATH, controlClaims, sameSide, trustCounter, settleFights, pointsTaken, oneDeathEach, eventWindows, fightsFromClips, clipMoments, feedText, textRows, textEdge, onEdge, feedBand, nameColors, textFeedReads, textFeedSightings, teamsByColor,
     ammoReading, shotsFired, fireTimes, groupFights, mergeFights, MAX_FRAMES, framePlan, CLIP_LOOK, clipPlan, claimAfter, regionRect, READOUT_H, readoutRegion,
     emptyHistory, addMatch, acceptHabit, historyFor, dropHabit, compareAim, historyBrief,
   };

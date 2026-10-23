@@ -1139,6 +1139,27 @@ test("the player's own rows fix which team color is theirs, and a feed of cut-of
   assert.equal(C.cutNames([{ killer: 'PunK10', victim: 'VEN' }]), 0);
 });
 
+test('a sparse counter read through the match and a fine one around what happened read as one', () => {
+  // the K/D/A every 6 s, its death rise at 108; the fine read around it, every 2 s, finds it at 104
+  const coarse = { kills: [], deaths: [96, 102, 108, 114, 120, 126, 132, 138].map((t) => ({ t, value: t < 108 ? 4 : 5 })), assists: [], damage: [], health: [], healthMax: [], scores: { Blue: [{ t: 96, value: 1 }] }, cells: 8, times: [96, 102, 108, 114, 120, 126, 132, 138], asked: ['kill_count', 'scoreboard'], calls: 1 };
+  const spans = C.riseSpans(coarse, 6);
+  assert.deepEqual(spans, [[101, 109]]);
+  const at = C.timesIn(spans, { from: 0, to: 600, step: 2 }).filter((t) => !coarse.times.includes(t));
+  assert.deepEqual(at, [104, 106]);
+  const fine = { kills: [], deaths: [{ t: 104, value: 5 }, { t: 106, value: 5 }], assists: [], damage: [], health: [{ t: 104, value: 0 }, { t: 106, value: 0 }], healthMax: [], scores: { 'blue team': [{ t: 104, value: 1 }] }, cells: 2, times: at, asked: ['health', 'kill_count', 'scoreboard'], calls: 1 };
+  const m = C.mergeCounts(coarse, fine);
+  assert.deepEqual(m.deaths.map((x) => x.t), [96, 102, 104, 106, 108, 114, 120, 126, 132, 138]);
+  assert.deepEqual(C.counterRises(m.deaths), [{ t: 104, by: 1 }]);
+  assert.deepEqual(Object.keys(m.scores), ['Blue']); // one side under one name
+  assert.equal(m.cells, 10); assert.equal(m.calls, 2);
+  // health was asked only around the death: it's known by those 2 moments, not all 10
+  assert.deepEqual([m.cellsFor.health, m.cellsFor.kill_count], [2, 10]);
+  assert.equal(C.hudRecord(m).knows.health, true);
+  assert.equal(C.hudRecord({ ...m, cellsFor: undefined }).knows.health, false);
+  assert.equal(C.mergeCounts(null, null), null);
+  assert.equal(C.mergeCounts(coarse, null).deaths.length, 8);
+});
+
 test('the HP number under a quarter of full health, the reading next to it low too, is a near-death', () => {
   // Marvel Rivals, 1:17-1:21 and 4:26-4:31: 80 then 50 of 250 and healed (a near-death); 121 then 0 (the death itself)
   const hp = [[71, 250], [73, 250], [75, 250], [77, 80], [79, 50], [81, 139], [83, 250], [262, 250], [264, 250], [266, 121], [268, 0], [270, 0], [272, 250], [300, 250], [302, 40], [304, 250]].map(([t, value]) => ({ t, value }));

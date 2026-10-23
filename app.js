@@ -160,7 +160,7 @@
       setStatus('Deciding where to look');
       const result = await A.review({
         // the scan copy is made and sent only if a scan needs it: a game whose kill feed reads never does
-        video: run.video, file: (fresh) => { if (fresh) run.scanFile = null; return (run.scanFile ||= scanCopy(run.video, run.abort.signal, { fresh })); }, profile: game, history: seen, player: run.player || null, budget: C.createBudget(BUDGET),
+        video: run.video, file: (fresh) => { if (fresh) run.scanFile = null; return (run.scanFile ||= scanCopy(run.video, run.abort.signal, { fresh })); }, profile: game, history: seen, player: run.player || null, budget: C.createBudget(BUDGET), spent: run.learnCalls || 0,
         ask, confirm: checkIn, identify, onEvent: emit, onStep: step, signal: run.abort.signal,
         onNotice: (n) => setStatus(n, '', ''),
       });
@@ -205,6 +205,7 @@
       const r = await L.learnGame({ video, signal, onNotice: (n) => setStatus(n), onPhase: mark }).finally(stopFlip);
       profile = r.profile;
       frames = r.frames;
+      run.learnCalls = r.calls || 1;
       cache[sig] = { profile, expires: Date.now() + 24 * 3600e3 };
       write(LEARNED, cache);
     }
@@ -214,7 +215,7 @@
     return profile;
   }
   function drawLearned({ profile, shot, called }) {
-    if (called) run.calls++;
+    if (called) run.calls += run.learnCalls || 1;
     drawMeter();
     beatStart({ name: 'learn', why: `${profile.name}${profile.genre !== 'other' ? `, ${profile.genre}` : ''}` });
     const boxes = Object.entries(profile.regions).filter(([r]) => r !== 'aim').map(([r, [x, y, w, h]]) => `<span class="el" style="left:${x * 100}%;top:${y * 100}%;width:${w * 100}%;height:${h * 100}%"><span>${esc(REGION_NAMES[r] || r.replace(/_/g, ' '))}</span></span>`).join('');
@@ -348,6 +349,7 @@
     if (e.type === 'clips') { if (e.events) { run.events = e.events; drawEvents(e.events); } run.calls += e.calls; drawMeter(); beatOut(`Watched ${plural(e.windows.length, 'clip')}: ${e.seconds} s at 8 frames a second, in ${plural(e.calls, 'call')}`); for (const w of e.windows) if (w.reading?.story || w.reading?.outcome_why) beatOut(`${C.mmss(w.from)}–${C.mmss(w.to)}: ${w.reading.story || `${w.reading.outcome}, ${w.reading.outcome_why}`}`, 'muted'); }
     if (e.type === 'research') { if (e.research) drawResearch(run.game?.name || 'this game', e.research); else { beatOut(short(e.answer || 'Nothing came back')); beatOut(e.researched ? `From ${sourceLinks(e.sources) || 'the web'}` : "From the model's own knowledge: no web search worked", 'muted'); } }
     if (e.type === 'aim_call') { run.calls++; drawMeter(); }
+    if (e.type === 'closing') { run.calls += e.calls || 0; drawMeter(); }
     if (e.type === 'frames_checked') {
       run.calls += e.calls || 0; drawMeter();
       const off = (e.checked || []).filter((x) => x.verdict !== 'shows');
@@ -827,7 +829,9 @@
     const again = '<button class="pill" type="button" id="againBtn">Review again</button>';
     const ci = r.checkIn, checked = !ci ? '' : `<p class="checked${ci.agreed ? ' yes' : ''}">${ci.agreed ? 'You agreed this is it.' : r.found && ci.habit === r.habit ? "You weren't sure. It looked again and kept it." : `You said “${esc(ci.said || 'not really')}”, so it looked again.`}</p>`;
     // what checked it: the record and the video (a check of the video that agreed with a planted false claim doesn't count)
-    const trust = !r.verified ? '' : r.verified.unreliable ? '<p class="trust warn">Checked against the record. The check against the video didn\'t hold up this time.</p>' : '<p class="trust"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.2 4.2L19 7" /></svg>Checked against the record and the video</p>';
+    // a verdict the review put together after the coach's own didn't stand says where it came from
+    const salvaged = r.salvaged === 'checked' ? `<p class="trust warn">${esc(r.note)}, so this names what the moments both checks let stand${r.left > 0 ? ` (${r.left} of its moments were left out)` : ''}.</p>` : r.salvaged === 'record' ? `<p class="trust warn">${esc(r.note)}, so this comes from what the match record and the clip reads show at each loss, checked against the record. It wasn't checked against the video.</p>` : '';
+    const trust = salvaged || (!r.verified ? '' : r.verified.unreliable ? '<p class="trust warn">Checked against the record. The check against the video didn\'t hold up this time.</p>' : '<p class="trust"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.2 4.2L19 7" /></svg>Checked against the record and the video</p>');
     // one structure for every verdict: what it is, where it shows, what to practice
     const label = r.found ? 'The habit to fix' : r.reason ? 'What cost you this match' : r.stopped ? 'Review stopped' : 'The verdict';
     const headline = r.found ? r.habit : r.reason || (r.stopped ? 'No verdict yet' : r.fewLosses ? 'Nothing cost you here' : 'No single habit stood out');
@@ -1087,7 +1091,13 @@
     }
     const chapters = habit.map((e, i) => ({ t: e.t, habit: true, key: i, what: e.what, text: `${String(e.what || '').replace(/\.?$/, '.')}${e.better ? ` Instead: ${e.better.replace(/\.?$/, '.')}` : ''}` }));
     // a loss the finding's own moment leads up to is told with it
-    for (const l of losses) if (!chapters.some((c) => c.habit && l.t >= c.t - 2 && l.t <= c.t + 8)) chapters.push({ t: l.t, habit: false, what: l.text, text: l.text });
+    // and each other loss with the review's note on it, what went wrong and what to do instead, where it has one
+    const notes = Array.isArray(r.losses) ? r.losses : [], noteAt = (t) => notes.find((n) => Math.abs(n.t - t) <= 3);
+    for (const l of losses) {
+      if (chapters.some((c) => c.habit && l.t >= c.t - 2 && l.t <= c.t + 8)) continue;
+      const n = noteAt(l.t), text = n ? `${String(n.what).replace(/\.?$/, '.')}${n.better ? ` Instead: ${n.better.replace(/\.?$/, '.')}` : ''}` : l.text;
+      chapters.push({ t: l.t, habit: false, what: text, text });
+    }
     return chapters.sort((a, b) => a.t - b.t);
   }
   // what the voice says, in order: the verdict, each chapter, the one costing them most, what to practice

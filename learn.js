@@ -319,6 +319,15 @@
    * it's used, and the mistakes players make with it. Kept for RESEARCH_DAYS, the game and each character apart: the
    * meta moves with patches.
    */
+  /** Whether researchGame would answer from what's saved this week, with no call: the game, and the character or role asked. */
+  function researchSaved({ name, character = '', role = '', unit = 'play' }) {
+    const key = gameKey(name), research = cached(key);
+    if (!research) return false;
+    if (String(role || '').trim() && !cached(`${key}|role:${gameKey(String(role).trim().slice(0, 120))}|${gameKey(unit)}`)) return false;
+    if (!String(character || '').trim()) return true;
+    const listed = research.reference?.characters?.find((c) => gameKey(c.name) === gameKey(character) || gameKey(c.name).replace(/ /g, '') === gameKey(character).replace(/ /g, ''));
+    return !!cached(`${key}|${gameKey(listed?.name || String(character).trim())}`);
+  }
   async function researchGame({ name, genre, character = '', role = '', unit = 'play', checks = Object.keys(CHECKS), signal, onNotice }) {
     const key = gameKey(name), opts = { signal, onNotice }; // shared by every search in this research, so a failure is learned once
     const tagging = `checked_by, for each mistake, is what can check it in code: ${checks.map((c) => `${c} (${CHECKS[c]})`).join('; ')}; or none.`;
@@ -809,7 +818,7 @@
     const images = await Promise.all(pictures.map((c) => V.toJpeg(c, 0.85)));
     const parts = images.flatMap((im, i) => [{ text: `Picture ${i + 1}` }, { inlineData: { mimeType: im.mimeType, data: im.data } }]);
     const asked = character ? { ...VERIFY, properties: { ...VERIFY.properties, ...CHARACTER_READ.properties }, required: [...VERIFY.required, 'character'] } : VERIFY;
-    const resp = await G.generate({
+    const resp = await counted(G.generate)({
       contents: [{ role: 'user', parts: [...parts, { text: `Each picture is a ${profile.name} screen with numbered yellow boxes drawn on it; a number is the same box in every picture. For each box in each picture, say which one of these it mainly outlines: ${ELEMENTS.map((e) => `${e} (${WHAT[e]})`).join('; ')}; other for something else, nothing when it outlines only the game world. Look at the whole screen: the element a box claims may be somewhere else.${character ? " Then, character: which character (agent, hero, legend, champion, or fighter) the player plays, by the game's own name for it, from their own portrait and ability icons on the HUD and the character the camera follows; empty if you can't tell." : ''}` }] }],
       generationConfig: { temperature: 0, responseMimeType: 'application/json', responseSchema: asked, mediaResolution: 'MEDIA_RESOLUTION_HIGH' },
     }, { signal, onNotice });
@@ -826,7 +835,7 @@
     const at = ([x, y, w, h]) => [y, x, y + h, x + w].map((v) => Math.round(v * 1000));
     const shown = (d) => (d.shows === 'nothing' ? 'only the game world' : d.shows === 'other' ? (BARS.includes(d.name) ? "something that's neither a bar nor a number" : 'something else') : WHAT[d.shows] || d.shows);
     const plainImages = await Promise.all(clean.map((c) => V.toJpeg(c, 0.85)));
-    const ask = await G.generate({
+    const ask = await counted(G.generate)({
       contents: [{ role: 'user', parts: [...plainImages.flatMap((im, i) => [{ text: `Picture ${i + 1}` }, { inlineData: { mimeType: im.mimeType, data: im.data } }]), { text: `Each picture is a ${profile.name} screen. ${dropped.length ? `These elements were boxed in the wrong place: ${dropped.map((d) => `${d.name} (${WHAT[d.name]}${BARS.includes(d.name) ? ', a bar or a number' : ''}): the box [ymin, xmin, ymax, xmax] = [${at(d.box).join(', ')}] in 0-1000 showed ${shown(d)}`).join('; ')}. ` : ''}${missing.length ? `These weren't boxed at all: ${missing.map((n) => `${n} (${WHAT[n]}${n === 'health' ? ', written as a number' : ''})`).join('; ')}. ` : ''}For each one the screen shows${dropped.length ? ' somewhere else' : ''}, give a tight box [ymin, xmin, ymax, xmax] scaled 0-1000 in the picture where it's clearest. Leave out one the screen doesn't show.` }] }],
       generationConfig: { temperature: 0, responseMimeType: 'application/json', responseSchema: RELOCATE, mediaResolution: 'MEDIA_RESOLUTION_HIGH' },
     }, { signal, onNotice });
@@ -848,7 +857,7 @@
   const CHARACTER_READ = { type: 'object', properties: { character: str("the character's name as the game gives it, or empty if you can't tell") }, required: ['character'] };
   async function nameCharacter({ video, game, signal, onNotice }) {
     const shots = await V.grab(video, [0.2, 0.5, 0.8].map((k) => +(video.duration * k).toFixed(2)), { maxDim: 1280, quality: 0.85 });
-    const resp = await G.generate({
+    const resp = await counted(G.generate)({
       contents: [{ role: 'user', parts: [...shots.flatMap((f, i) => [{ text: `Moment ${i + 1}` }, { inlineData: { mimeType: f.mimeType, data: f.data } }]), { text: `These are three moments of one ${String(game || 'game').slice(0, 60)} recording from the player's own screen. Which character (agent, hero, legend, champion, or fighter) is the player playing? Look at their own portrait and ability icons on the HUD and at the character the camera follows, and give the game's own name for it; empty if you can't tell.` }] }],
       generationConfig: { temperature: 0, responseMimeType: 'application/json', responseSchema: CHARACTER_READ, mediaResolution: 'MEDIA_RESOLUTION_HIGH' },
     }, { signal, onNotice });
@@ -861,7 +870,11 @@
    * Returns { profile, frames, raw }: frames are the pictures the learn call saw, for the app to draw the learned boxes on.
    * onPhase(what) is told as each step ends, for timing.
    */
+  // the model calls learning a game takes, for the review's call budget (agent.js): counted where each is made
+  let made = 0;
+  const counted = (fn) => (...args) => { made++; return fn(...args); };
   async function learnGame({ video, checks = Object.keys(CHECKS), signal, onNotice, onPhase = () => {} }) {
+    made = 0;
     const times = Array.from({ length: SAMPLES }, (_, k) => +((video.duration * (k + 0.5)) / SAMPLES).toFixed(2));
     const frames = await V.grab(video, times, { maxDim: 1024, quality: 0.8 });
     onPhase('frames grabbed');
@@ -871,7 +884,7 @@ view: own_screen or spectator, as defined. In spectator footage: sides, the two 
 elements: every HUD or board element that shows the state of play, each with a tight box [ymin, xmin, ymax, xmax] scaled 0-1000 in the frame (frame, numbered from 1) where it's clearest. kill_feed: the list of recent kills, all its rows; ammo: the magazine count; health: the player's own health or shield bar, not an ability icon; damage: the counter of damage the player has dealt, if the game shows one, boxed on its own; kill_count: the counter of the player's own kills, or their kills, deaths, and assists (a K/D/A like 3/1/4), if the game shows one, boxed on its own; scoreboard: each side's score; abilities: the player's ability and ultimate icons with their charges or cooldowns, if the game has them; board: the board of a board game such as chess, never a playing field.
 fov_h: the game's default horizontal field of view if you know it, else 0.
 cues: up to 6 short facts about how key moments look on screen, such as a kill, a death, a round start, a capture.`;
-    const resp = await G.generate({
+    const resp = await counted(G.generate)({
       contents: [{ role: 'user', parts: [...parts, { text: prompt }] }],
       generationConfig: { temperature: 0, responseMimeType: 'application/json', responseSchema: schema() },
     }, { signal, onNotice });
@@ -892,10 +905,10 @@ cues: up to 6 short facts about how key moments look on screen, such as a kill, 
     delete checked.characterSeen;
     const profile = await learnLayout({ video, profile: checked, signal });
     onPhase('layout measured');
-    return { profile, frames, raw };
+    return { profile, frames, raw, calls: made };
   }
 
-  const api = { learnGame, researchGame, researchQuestion, habitsFor, researchBrief, cleanResearch, learnLayout, verifyRegions, toProfile, mergeBoxes, hueHistogram, pixelHues, twoTeamRows, feedRows, feedColors, judgeBoxes, barShaped, cleanCharacter, nameHue, rgbHue, alignedRows, portraitShare, CHECKS, ELEMENTS, GENRES, AIM, AIM_TARGETS };
+  const api = { learnGame, researchGame, researchSaved, researchQuestion, habitsFor, researchBrief, cleanResearch, learnLayout, verifyRegions, toProfile, mergeBoxes, hueHistogram, pixelHues, twoTeamRows, feedRows, feedColors, judgeBoxes, barShaped, cleanCharacter, nameHue, rgbHue, alignedRows, portraitShare, CHECKS, ELEMENTS, GENRES, AIM, AIM_TARGETS };
   root.ThirdeyeLearn = api;
   if (typeof module !== 'undefined') module.exports = api;
 })(typeof window !== 'undefined' ? window : globalThis);

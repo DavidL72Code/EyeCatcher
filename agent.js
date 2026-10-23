@@ -387,13 +387,13 @@ fights: every fight the player is in, from the first shot or hit to the last, in
   // One sheet a call, at most 48 cells (about 26 for a wide crop). More cells a call misread: with two or four sheets a
   // call (52 and 104 cells), League's assists read 5 for 20 and 72 cells after they went to 6, each time from about the
   // 33rd cell of the call on; shuffling the cells out of time order lost a third of them instead (Oct 22).
-  const COUNTER_STEP = 2, CELL_H = 80, SHEET_W = 1600, SHEET_H = 2400, SHEETS_PER_CALL = 1;
+  const COUNTER_STEP = 2, COARSE_STEP = 6, CELL_H = 80, SHEET_W = 1600, SHEET_H = 2400, SHEETS_PER_CALL = 1;
   const COUNTS = { type: 'object', properties: { cells: { type: 'array', items: { type: 'object', properties: {
     cell: { type: 'integer' }, readable: { type: 'boolean' }, kda: str("the player's own K/D/A counter copied exactly as written (like 3/1/4), or empty"), kills: { type: 'integer', description: "the player's kill count, where the HUD shows it as one number" }, damage: { type: 'integer' }, health: { type: 'integer', description: "the player's current health as the HUD writes it (the first number of 120/250)" }, health_max: { type: 'integer', description: "the player's full health where the HUD writes it (the second number of 120/250)" },
     scores: { type: 'array', items: { type: 'object', properties: { side: str("the side, by its color or name as the scoreboard shows it"), score: { type: 'integer' } }, required: ['side', 'score'] } },
   }, required: ['cell', 'readable'] } } }, required: ['cells'] };
   // at: the moments to read, in place of every COUNTER_STEP s from..to
-  async function readCounters({ video, profile, from, to, parts = ['damage', 'kill_count'], at = null, signal, onNotice }) {
+  async function readCounters({ video, profile, from, to, parts = ['damage', 'kill_count'], at = null, step = COUNTER_STEP, signal, onNotice }) {
     const have = parts.filter((r) => profile.regions?.[r]);
     if (!have.length) return null;
     const pad = (boxes, k) => {
@@ -402,7 +402,7 @@ fights: every fight the player is in, from the first shot or hit to the last, in
     };
     const counters = have.filter((r) => r === 'damage' || r === 'kill_count'), crops = [...(counters.length ? [pad(counters.map((r) => profile.regions[r]), 0.5)] : []), ...['scoreboard', 'health'].filter((r) => have.includes(r)).map((r) => pad([C.readoutRegion(profile.regions[r])], 0.2))];
     const times = at ? [...at] : [];
-    if (!at) for (let t = from; t <= Math.min(to, video.duration - 0.05); t += COUNTER_STEP) times.push(+t.toFixed(2));
+    if (!at) for (let t = from; t <= Math.min(to, video.duration - 0.05); t += step) times.push(+t.toFixed(2));
     const pieces = new Map();
     for (const [k, area] of crops.entries()) {
       await V.each(video, times, { crop: C.regionRect({ regions: { a: area } }, 'a', { w: video.width, h: video.height }), maxDim: 1280, signal }, ({ t, canvas, w, h }) => {
@@ -468,7 +468,7 @@ fights: every fight the player is in, from the first shot or hit to the last, in
     // a side the reads named only now and then is a misread name, not a side
     for (const [side, xs] of Object.entries(scores)) if (xs.length < 0.3 * times.length) delete scores[side];
     for (const xs of Object.values(scores)) xs.sort(order);
-    return { damage: damage.sort(order), kills: kills.sort(order), deaths: deaths.sort(order), assists: assists.sort(order), health: health.sort(order), healthMax: healthMax.sort(order), scores, cells: times.length, calls };
+    return { damage: damage.sort(order), kills: kills.sort(order), deaths: deaths.sort(order), assists: assists.sort(order), health: health.sort(order), healthMax: healthMax.sort(order), scores, cells: times.length, times, asked: have, calls };
   }
 
   /**
@@ -637,25 +637,32 @@ fights: every fight the player is in, from the first shot or hit to the last, in
     onPhase('deaths timed');
     // The HUD's counters say when the player hit someone (damage dealt rose) and caught kills the feed missed. Without a
     // damage counter, bursts of firing off the ammo counter stand in (most of those were looting or a reload).
-    const counts = await readCounters({ video, profile, from, to, signal, onNotice }).catch((e) => { if (e.name === 'AbortError') throw e; return null; });
+    // read every COARSE_STEP s through the match (a running count shows every rise that way; every 2 s, TenZ's took 7
+    // calls, Oct 23), then every 2 s only around what happened (passLog says more)
+    // with no damage or ammo counter to find their fights by, the HP number goes in too, or a near-death between their
+    // own kills and deaths goes unread (Marvel Rivals, Oct 23: 0 of 3)
+    const blind = !profile.regions?.damage && !profile.regions?.ammo;
+    const coarse = await readCounters({ video, profile, from, to, parts: ['damage', 'kill_count', ...(blind ? ['health'] : [])], step: COARSE_STEP, signal, onNotice }).catch((e) => { if (e.name === 'AbortError') throw e; return null; });
     onPhase('HUD counters read');
-    const hits = counts?.damage.length ? C.groupFights(C.counterRises(counts.damage).map((r) => r.t), { gap: 8, pad: 1.5 }) : [];
-    const firing = counts?.damage.length ? [] : await firingLog({ video, profile, events, from, to, signal });
-    if (!counts?.damage.length) onPhase('firing read');
+    const hits = coarse?.damage.length ? C.groupFights(C.counterRises(coarse.damage).map((r) => r.t), { gap: 8, pad: 1.5 }) : [];
+    const firing = coarse?.damage.length ? [] : await firingLog({ video, profile, events, from, to, signal });
+    if (!coarse?.damage.length) onPhase('firing read');
     // The HP number, for near-deaths, only where the player fights: around their own kills, deaths, and knocks, the hits
-    // and the bursts of firing code found. Read through the whole match, it cost Vyse 9 more calls (Oct 22).
-    const spans = [...events.filter((e) => e.kind === 'kill' || e.kind === 'death').map((e) => [e.t - 8, e.t + 3]), ...[...hits, ...firing].map((f) => [f.from - 2, f.to + 3])];
-    const hpAt = [...new Set(spans.flatMap(([a, b]) => { const out = []; for (let t = Math.max(from, Math.ceil(a / COUNTER_STEP) * COUNTER_STEP); t <= Math.min(to, b, video.duration - 0.05); t += COUNTER_STEP) out.push(+t.toFixed(2)); return out; }))].sort((a, b) => a - b);
-    const hpCounts = profile.regions?.health && hpAt.length ? await readCounters({ video, profile, parts: ['health'], at: hpAt, signal, onNotice }).catch((e) => { if (e.name === 'AbortError') throw e; return null; }) : null;
+    // and the bursts of firing code found. Read through the whole match, it cost Vyse 9 more calls (Oct 22). The kill
+    // count comes along, to time each rise the coarse read found.
+    const spans = [...events.filter((e) => e.kind === 'kill' || e.kind === 'death').map((e) => [e.t - 8, e.t + 3]), ...[...hits, ...firing].map((f) => [f.from - 2, f.to + 3]), ...(coarse ? [...C.riseSpans(coarse, COARSE_STEP), ...C.lowSpans(coarse)] : [])];
+    const read = new Set(coarse ? coarse.times : []), hpAt = C.timesIn(spans, { from, to: Math.min(to, video.duration - 0.05), step: COUNTER_STEP }).filter((t) => !read.has(t));
+    const hpCounts = hpAt.length ? await readCounters({ video, profile, parts: ['health', 'kill_count'], at: hpAt, signal, onNotice }).catch((e) => { if (e.name === 'AbortError') throw e; return null; }) : null;
+    const counts = C.mergeCounts(coarse, hpCounts);
     // read while the player is dead, the HUD shows the teammate they watch (Vyse, Oct 22: "11 of 100" twice after their
     // last death)
-    const deadFor = C.deadForOf(profile, events), aliveHp = (hpCounts?.health || []).filter((x) => !C.deathAt(events, x.t, deadFor));
+    const deadFor = C.deadForOf(profile, events), aliveHp = (counts?.health || []).filter((x) => !C.deathAt(events, x.t, deadFor));
     // The player's own K/D/A outranks the feed's idea of which rows are theirs: League's chat, boxed as its kill feed on
     // Oct 22, gave them four kills they didn't get and a death they didn't die, and missed one they did.
     // every second look this record may need, in one call (secondLooks): the K/D/A's sample, the feed's deaths it may
     // doubt, and the HP number's lows
     const hudNow = counts ? C.hudRecord(counts) : null, kdaRead = (counts?.deaths || []).length >= Math.min(10, 0.2 * (counts?.cells || 0)) && (counts?.deaths || []).length > 0;
-    const looks = await secondLooks({ video, profile, deaths: kdaRead ? [...hudNow.deaths.slice(0, 4), ...events.filter((e) => e.kind === 'death')] : [], near: aliveHp.length >= 3 ? C.nearDeaths(aliveHp, { maxes: hpCounts.healthMax }) : [], signal, onNotice });
+    const looks = await secondLooks({ video, profile, deaths: kdaRead ? [...hudNow.deaths.slice(0, 4), ...events.filter((e) => e.kind === 'death')] : [], near: aliveHp.length >= 3 ? C.nearDeaths(aliveHp, { maxes: counts.healthMax }) : [], signal, onNotice });
     const kda = await trustKda({ video, profile, counts, record: events, source: 'the kill feed', kdaOnly: true, keepTime: true, look: looks.look, signal, onNotice });
     if (kda.deaths) events = C.oneDeathEach([...kda.record, ...kda.unjudged].sort((a, b) => a.t - b.t));
     // A kill count alone only checks the feed: read off a box the learn call can place a little off, it rose where the
@@ -668,7 +675,7 @@ fights: every fight the player is in, from the first shot or hit to the last, in
     const windows = C.eventWindows(events.filter((e) => e.t >= from && e.t <= to), firing, { duration: video.duration, hits, deadFor: C.deadForOf(profile, events) });
     const notes = [...kda.notes, ...(missed.length ? [`The HUD's kill count rose at ${missed.map((k) => C.mmss(k.t)).join(', ')} with no kill of theirs in the kill feed near then; a kill may be missing there.`] : [])];
     const from_ = [...kda.from, ...(near.length ? [`near-deaths, where the HP number fell under ${Math.round(C.NEAR_DEATH * 100)}% of full health, each looked at again`] : [])];
-    return { player, fromFeed: true, calls: feed.calls + shown.calls + (counts?.calls || 0) + (hpCounts?.calls || 0) + kda.calls + looks.calls, counterCalls: counts?.calls || 0, hits: hits.length, ...(from_.length ? { recordFrom: ['kills and deaths from the kill feed', ...from_] } : {}), ...(notes.length ? { note: notes.join(' ') } : {}), windows, events };
+    return { player, fromFeed: true, calls: feed.calls + shown.calls + (counts?.calls || 0) + kda.calls + looks.calls, counterCalls: counts?.calls || 0, hits: hits.length, ...(from_.length ? { recordFrom: ['kills and deaths from the kill feed', ...from_] } : {}), ...(notes.length ? { note: notes.join(' ') } : {}), windows, events };
   }
 
   /**
@@ -724,7 +731,11 @@ fights: every fight the player is in, from the first shot or hit to the last, in
     // a kill count read while the player is dead isn't theirs: the screen shows the teammate they spectate (TenZ, Oct 22:
     // kills added off a teammate's count, each a second after one of the player's deaths)
     const deadFor = C.deadForOf(profile, out.record), live = (counts.kills || []).filter((x) => !C.deathAt(out.record, x.t, deadFor));
-    const kills = enough(live) && (!kdaOnly || kda) ? live : null;
+    // a count that stayed flat through deaths that held up isn't the player's K/D/A, so its kills aren't theirs either:
+    // TenZ's box in mid-screen never rose through 5 real deaths, and gave 4 kills they didn't get (Oct 23)
+    const flat = kda && !hud.deaths.length && out.record.some((e) => e.kind === 'death');
+    if (flat) out.notes.push("The HUD number read as the player's K/D/A didn't rise at any of their deaths, so its kills were left out.");
+    const kills = !flat && enough(live) && (!kdaOnly || kda) ? live : null;
     if (kills) {
       const r = C.trustCounter(out.record, C.hudRecord({ ...counts, kills }).kills, 'kill', { readings: kills, keepTime });
       Object.assign(out, { record: [...r.events, ...r.unjudged].sort((a, b) => a.t - b.t), kills: true });
@@ -742,11 +753,25 @@ fights: every fight the player is in, from the first shot or hit to the last, in
   // pass took the low-health tint for a death in League and Marvel Rivals, and a goal for the other side's in Rocket League.
   async function passLog({ video, file, profile, from, to, signal, onNotice, calls = 0, player = null, identify, ask }) {
     const unless = (e) => { if (e?.name === 'AbortError') throw e; return null; };
-    const [pass, counts] = await Promise.all([
+    // A running count (the K/D/A, a score, damage dealt) never goes back down, so read every COARSE_STEP s beside the
+    // pass it still shows every rise. The fine read, every COUNTER_STEP s, is only around what happened: each fight and
+    // moment the pass saw and each rise the coarse read found, to time it, with the HP number, which matters where they
+    // fight. Every 2 s through League's ten minutes, the four counters took 12 calls (Oct 23). With no K/D/A on the HUD,
+    // the HP number at 0 is how a death shows, so it's read through the match too.
+    const kdaHud = !!profile.regions?.kill_count;
+    const [pass, coarse] = await Promise.all([
       scanVideo({ file, profile, from, to, signal, onNotice }),
-      readCounters({ video, profile, from, to, parts: ['damage', 'kill_count', 'scoreboard', 'health'], signal, onNotice }).catch(unless),
+      readCounters({ video, profile, from, to, parts: ['damage', 'kill_count', 'scoreboard', ...(kdaHud ? [] : ['health'])], step: COARSE_STEP, signal, onNotice }).catch(unless),
     ]);
-    calls += 1 + (counts?.calls || 0);
+    const around = [
+      ...pass.events.filter((e) => e.kind === 'kill' || e.kind === 'death').map((e) => [e.t - 8, e.t + 3]),
+      ...pass.fights.map((f) => [f.from - 2, f.to + 3]),
+      ...(coarse ? [...C.riseSpans(coarse, COARSE_STEP), ...C.lowSpans(coarse)] : []),
+    ];
+    const read = new Set(coarse ? coarse.times : []), fineAt = C.timesIn(around, { from, to: Math.min(to, video.duration - 0.05), step: COUNTER_STEP }).filter((t) => !read.has(t));
+    const fine = fineAt.length ? await readCounters({ video, profile, parts: ['health', 'kill_count', 'scoreboard'], at: fineAt, signal, onNotice }).catch(unless) : null;
+    const counts = C.mergeCounts(coarse, fine);
+    calls += 1 + (coarse?.calls || 0) + (fine?.calls || 0);
     let side = profile.playerSide || '', hud = counts ? C.hudRecord(counts, { side }) : null;
     const notes = [], from_ = [];
     // the player's name as they confirmed it; one the learn call read off the screen can be a teammate's name tag
@@ -867,8 +892,12 @@ fights: every fight the player is in, from the first shot or hit to the last, in
     const dl = [];
     for (const d of [...deaths].sort((a, b) => a.t - b.t)) if (!dl.some((x) => Math.abs(x.t - d.t) < 3)) dl.push(d);
     // in time order, as the model reads them: given out of order, it answered in time order all the same
-    const nearSorted = [...near].sort((a, b) => a.t - b.t);
-    const dList = dl.slice(0, MAX_DEATH_LOOKS), nList = profile.regions?.health ? nearSorted.slice(0, MAX_DEATH_LOOKS) : [];
+    // the lowest when there are more than it looks at, and only those looked at are kept: League's health box also held
+    // the mana line, its mana read as health gave more than ten lows, and an eleventh, kept unlooked, was a near-death at
+    // full health (Oct 23)
+    const ratio = (e) => (e.of ? e.hp / e.of : 1);
+    const nearSorted = [...near].sort((a, b) => ratio(a) - ratio(b)).slice(0, MAX_DEATH_LOOKS).sort((a, b) => a.t - b.t);
+    const dList = dl.slice(0, MAX_DEATH_LOOKS), nList = profile.regions?.health ? nearSorted : [];
     const clamp = (t) => Math.max(0, Math.min(video.duration - 0.05, t)), hpCrop = profile.regions?.health ? C.regionRect({ regions: { hp: C.readoutRegion(profile.regions.health) } }, 'hp', { w: video.width, h: video.height }) : null;
     let said = null, calls = 0;
     if (dList.length || nList.length) {
@@ -911,7 +940,7 @@ fights: every fight the player is in, from the first shot or hit to the last, in
       const read = (m?.health || []).slice(0, 3).map((v, k) => ({ t: clamp(e.t + [-1, 0, 1][k]), v })).filter((x) => Number.isFinite(x.v) && x.v > 0);
       const low = read.length ? read.reduce((a, b) => (b.v < a.v ? b : a)) : null;
       return low && low.v <= C.NEAR_DEATH * e.of ? [{ ...e, t: +low.t.toFixed(2), hp: low.v, sure: true, text: `your health fell to ${low.v} of ${e.of} (the HUD's health number, looked at again)` }] : [];
-    }), ...nearSorted.slice(MAX_DEATH_LOOKS).filter((e) => e.sure)].sort((a, b) => a.t - b.t);
+    })].sort((a, b) => a.t - b.t);
     return { look, near: keptNear, calls };
   }
   // near-deaths with a death of theirs from 2 s before to 8 s after are that death (C.nearDeaths' rule, applied once the
@@ -973,20 +1002,22 @@ fights: every fight the player is in, from the first shot or hit to the last, in
   }
   const findHead = async (image, opts) => (await findHeads([image], opts))[0];
 
-  function brief({ profile, video, history, budget, goal, player = null }) {
+  // tools: the names offered, when not every tool is; the record (scan) read before the first turn isn't one
+  function brief({ profile, video, history, budget, goal, player = null, tools = null, calls = CALL_CAP }) {
+    const offers = (name) => !tools || tools.includes(name), rec = offers('scan') ? 'scan' : 'the record';
     const regions = Object.keys(profile.regions).filter((r) => r !== 'aim').join(', ') || 'none learned';
     const working = history?.habit, has = (r) => !!profile.regions[r];
     const feed = has('killfeed'), spec = profile.view === 'spectator', unit = profile.unit || 'play';
     const lines = [
-      spec ? `- scan: a low-detail pass over any stretch you choose lists each ${unit} in it, its start and end set at camera cuts, as windows for read_clips, with a guess at how each went. No looks.` : `- scan: the record of any stretch you choose: ${profile.genre === 'chess' && has('board') ? "every move, read off the board in code, each scored by a chess engine: centipawns given away, and a mistake (100+) or a blunder (250+) for the player's moves. No model calls" : feed ? "the whole kill feed, read from the full-quality recording: the player's kills and deaths, and teammates' too, with each side's team and whether each death was traded within 5 s; the fights; the times their health number fell under ${Math.round(C.NEAR_DEATH * 100)}% of full (near-deaths); and windows of about 10 s around each kill, knock, near-death, teammate down, hit, and burst of firing, for read_clips. Without a kill feed to read, a low-detail pass over the match stands in" : "a low-detail pass over the match lists the moments the player won or lost something, and round starts, checked in code against the HUD: their kills and deaths off a K/D/A counter where the HUD has one, each side's goals or points off the scoreboard in a sports game (with who scored, from the banner), and each death the pass saw looked at again when the HUD counts none, and the times their health number fell under ${Math.round(C.NEAR_DEATH * 100)}% of full (near-deaths)"}. No looks.`,
-      ...(spec ? [`- read_clips: reads ${unit}s scan listed, up to ${READ_UNITS} a call, as video at 8 frames a second: whether the player shows, what they did second by second, what their teammates and the opponents did, whether the ${unit} was won or lost for the player, and who decided it (the player, or others when it was out of their hands). It judges won and lost by what research says wins and loses a ${unit} in their role, once research has said. Until a ${unit} is read, how it went isn't known. A read ${unit} counts as looked at. No looks; 1 model call per 2 ${unit}s.`] : []),
-      ...(feed && profile.genre !== 'chess' ? [`- read_clips: reads windows scan listed, up to ${READ_MAX} a call, as video at 8 frames a second: what happened second by second, who engaged first, the fight's story, what the player did, where the teammates were, whether each teammate who went down was near the player${has('minimap') ? ' (off the minimap)' : ''}, and the abilities the player used. Until a window is read, a fight in it has only the kill feed's outcome, and a teammate down in it isn't known to be near. A read window counts as looked at. No looks; 1 model call per 2 windows.`] : []),
-      `- research: what matters in ${profile.name}, from the web (guides, the community, the current meta, the game's wiki${profile.character ? `, and the kit of ${profile.character}, who the player plays` : ''}${spec && player?.who ? `, and what wins and loses a ${unit} in the player's role, with its costly mistakes` : ''}), and the costly habits whose ids finish takes; or one question of your own. No looks. Free when already researched this week; else up to 10 calls from a small daily search allowance, a question 1 or 2.`,
+      spec ? `- ${offers('scan') ? 'scan: a low-detail pass over any stretch you choose' : 'the record, given with your first turn: a low-detail pass over the match'} lists each ${unit} in it, its start and end set at camera cuts, as windows for read_clips, with a guess at how each went. No looks.` : `- ${offers('scan') ? 'scan: the record of any stretch you choose' : 'the match record, given with your first turn'}: ${profile.genre === 'chess' && has('board') ? "every move, read off the board in code, each scored by a chess engine: centipawns given away, and a mistake (100+) or a blunder (250+) for the player's moves. No model calls" : feed ? "the whole kill feed, read from the full-quality recording: the player's kills and deaths, and teammates' too, with each side's team and whether each death was traded within 5 s; the fights; the times their health number fell under ${Math.round(C.NEAR_DEATH * 100)}% of full (near-deaths); and windows of about 10 s around each kill, knock, near-death, teammate down, hit, and burst of firing, for read_clips. Without a kill feed to read, a low-detail pass over the match stands in" : "a low-detail pass over the match lists the moments the player won or lost something, and round starts, checked in code against the HUD: their kills and deaths off a K/D/A counter where the HUD has one, each side's goals or points off the scoreboard in a sports game (with who scored, from the banner), and each death the pass saw looked at again when the HUD counts none, and the times their health number fell under ${Math.round(C.NEAR_DEATH * 100)}% of full (near-deaths)"}. No looks.`,
+      ...(spec && offers('read_clips') ? [`- read_clips: reads ${unit}s ${rec} listed, up to ${READ_UNITS} a call, as video at 8 frames a second: whether the player shows, what they did second by second, what their teammates and the opponents did, whether the ${unit} was won or lost for the player, and who decided it (the player, or others when it was out of their hands). It judges won and lost by what research says wins and loses a ${unit} in their role, once research has said. Until a ${unit} is read, how it went isn't known. A read ${unit} counts as looked at. No looks; 1 model call per 2 ${unit}s.`] : []),
+      ...(feed && profile.genre !== 'chess' && offers('read_clips') ? [`- read_clips: reads windows ${rec} listed, up to ${READ_MAX} a call, as video at 8 frames a second: what happened second by second, who engaged first, the fight's story, what the player did, where the teammates were, whether each teammate who went down was near the player${has('minimap') ? ' (off the minimap)' : ''}, and the abilities the player used. Until a window is read, a fight in it has only the kill feed's outcome, and a teammate down in it isn't known to be near. A read window counts as looked at. No looks; 1 model call per 2 windows.`] : []),
+      profile.research && !offers('scan') ? `- research: one question of your own about ${profile.name} (a matchup, a map, an ability), searched on the web; what matters in it is below, saved this week. No looks; 1 or 2 calls from a small daily search allowance.` : `- research: what matters in ${profile.name}, from the web (guides, the community, the current meta, the game's wiki${profile.character ? `, and the kit of ${profile.character}, who the player plays` : ''}${spec && player?.who ? `, and what wins and loses a ${unit} in the player's role, with its costly mistakes` : ''}), and the costly habits whose ids finish takes; or one question of your own. No looks. Free when already researched this week; else up to 10 calls from a small daily search allowance, a question 1 or 2.`,
       `- frames: full-quality frames around one moment, or up to ${MAX_MOMENTS} moments in one call (more), of the whole screen or one region (${regions}). 1 look per moment. as clip watches the run-up instead, ${C.CLIP_LOOK.before} s before to ${C.CLIP_LOOK.after} s after by default, as video: low detail per frame at a quarter of the tokens, for what happened and in what order; stills for detail${has('aim') ? ', and measure_aim for aim' : ''}. The pictures are removed after your next turn, so put what they showed on the board in your next call.${has('ammo') ? ' Code also reads the ammo counter 2 s either side of each moment and says whether the player fired (shots); trust that over your eye.' : ''}`,
       ...(has('aim') ? [`- measure_aim: code measures where the crosshair sat on the nearest enemy (above the head, the head, the upper body, the lower body), as head-heights below the head${profile.fovH ? ' and degrees' : ''}, at up to 6 moments in one call. 1 look per moment. It describes; it doesn't judge: where good ${profile.name} players aim is research's to say (aim_target). The player can trust a measured number; a height judged by eye from frames is a guess. It means most at the moment an enemy comes into view. A moment after the player's own death is skipped for free: the screen shows a death recap or a teammate's view then. Each fight can be measured twice; a third try is refused.`] : []),
       ...(hudRegions(profile).length ? [`- read_hud: reads what one screen element shows (${hudRegions(profile).join(', ')}) at up to 8 moments, in one model call. No looks. For numbers and text the video holds, like a clock or a count.`] : []),
       `- ask_player: one short question about a moment, for what video can't show, like what they expected there. The app plays that moment for them. At most ${MAX_ASKS} per review.`,
-      spec ? `- finish: ends the review. evidence holds only moments that show the habit; moments where they got it right go in contrast, which the player sees too. Before either answer, look at the ${unit}s they lost: code hands finish back until you have looked at each (${C.LOSS_LOOKS} of them when there are more), and while fewer than ${C.MIN_LOSSES} are known lost and listed ${unit}s are still unread. Code also hands it back if any moment wasn't looked at closely (frames or read_clips), if fewer than ${C.MIN_EVIDENCE} separate moments show the habit, if the habit isn't a supported theory on the board with those moments, if its moments aren't at ${C.MIN_LOSSES} or more separate ${unit}s they lost (scan and read_clips list them as where_they_lost), if a claim goes against the clip reads (a text check reads each claim against them) or against the frames at that moment (a second look that never saw the review), and once if you never looked at a ${unit} they won. Each evidence moment also says what they should have done instead (better): that is the player's report. A habit needs ${C.MIN_LOSSES} or more ${unit}s they lost. With fewer, or when no habit repeats, finish with found false, reason (the biggest reason they lost, even if it happened once), and fixes (the moments you looked at that show it, at least one in a ${unit} they lost, each with what to do instead), checked the same way. Only a match where every listed ${unit} is read and none was lost ends with nothing named. Once code accepts a habit, the player checks it before it's final; if they don't agree, what they said comes back and you get one more look.` : `- finish: ends the review. evidence holds only moments that show the habit; moments where they got it right go in contrast, which the player sees too. Before either answer, look at the fights they lost: code hands finish back until you have looked at each of their deaths and lost fights (${C.LOSS_LOOKS} of them when there are more). Code also hands it back if any moment wasn't looked at closely (frames${has('aim') ? ' or measure_aim' : ''}), if fewer than ${C.MIN_EVIDENCE} separate moments show the habit, if the habit isn't a supported theory on the board with those moments, if its moments aren't at ${C.MIN_LOSSES} or more separate losses (their deaths, times their health number fell under ${Math.round(C.NEAR_DEATH * 100)}% of full, fights they lost, teammates down near them that nobody traded, or in chess moves the engine flags; scan lists them as where_they_lost), if a claim goes against the kill feed or the clips (a text check reads each claim against them) or against the frames at that moment (a second look that never saw the review), if a moment is from after the player died, if a habit about firing cites a moment where the ammo counter shows no shots, and once if you never looked at a moment they won. Each evidence moment also says what they should have done instead (better): that is the player's report. A habit needs ${C.MIN_LOSSES} or more separate losses. With fewer, or when no habit repeats, finish with found false, reason (the biggest reason they lost, even if it happened once), and fixes (the moments you looked at that show it, at least one where they lost, each with what to do instead), checked the same way: looked at closely, against the record, and against the frames. Only a match with nothing lost ends with nothing named. Once code accepts a habit, the player checks it before it's final; if they don't agree, what they said comes back and you get one more look.`,
+      spec ? `- finish: ends the review. evidence holds only moments that show the habit; moments where they got it right go in contrast, which the player sees too. Before either answer, look at the ${unit}s they lost: code hands finish back until you have looked at each (${C.LOSS_LOOKS} of them when there are more), and while fewer than ${C.MIN_LOSSES} are known lost and listed ${unit}s are still unread. Code also hands it back if any moment wasn't looked at closely (frames or read_clips), if fewer than ${C.MIN_EVIDENCE} separate moments show the habit, if the habit isn't a supported theory on the board with those moments, if its moments aren't at ${C.MIN_LOSSES} or more separate ${unit}s they lost (${rec} and read_clips list them as where_they_lost), if a claim goes against the clip reads (a text check reads each claim against them) or against the frames at that moment (a second look that never saw the review), and once if you never looked at a ${unit} they won. Each evidence moment also says what they should have done instead (better): that is the player's report. In losses, give each loss you looked at, whether the finding is about it or not, what went wrong there and what to do instead: the critique says it at each one, so the player gets a review of the whole match. A habit needs ${C.MIN_LOSSES} or more ${unit}s they lost. With fewer, or when no habit repeats, finish with found false, reason (the biggest reason they lost, even if it happened once), and fixes (the moments you looked at that show it, at least one in a ${unit} they lost, each with what to do instead), checked the same way. Only a match where every listed ${unit} is read and none was lost ends with nothing named. Once code accepts a habit, the player checks it before it's final; if they don't agree, what they said comes back and you get one more look.` : `- finish: ends the review. evidence holds only moments that show the habit; moments where they got it right go in contrast, which the player sees too. Before either answer, look at the fights they lost: code hands finish back until you have looked at each of their deaths and lost fights (${C.LOSS_LOOKS} of them when there are more). Code also hands it back if any moment wasn't looked at closely (frames${has('aim') ? ' or measure_aim' : ''}), if fewer than ${C.MIN_EVIDENCE} separate moments show the habit, if the habit isn't a supported theory on the board with those moments, if its moments aren't at ${C.MIN_LOSSES} or more separate losses (their deaths, times their health number fell under ${Math.round(C.NEAR_DEATH * 100)}% of full, fights they lost, teammates down near them that nobody traded, or in chess moves the engine flags; ${rec} lists them as where_they_lost), if a claim goes against the kill feed or the clips (a text check reads each claim against them) or against the frames at that moment (a second look that never saw the review), if a moment is from after the player died, if a habit about firing cites a moment where the ammo counter shows no shots, and once if you never looked at a moment they won. Each evidence moment also says what they should have done instead (better): that is the player's report. In losses, give each loss you looked at, whether the finding is about it or not, what went wrong there and what to do instead: the critique says it at each one, so the player gets a review of the whole match. A habit needs ${C.MIN_LOSSES} or more separate losses. With fewer, or when no habit repeats, finish with found false, reason (the biggest reason they lost, even if it happened once), and fixes (the moments you looked at that show it, at least one where they lost, each with what to do instead), checked the same way: looked at closely, against the record, and against the frames. Only a match with nothing lost ends with nothing named. Once code accepts a habit, the player checks it before it's final; if they don't agree, what they said comes back and you get one more look.`,
     ];
     const r = profile.research;
     const opening = spec ? `You are Thirdeye, a coach reviewing one recorded ${profile.name} match after it ended, from ${FOOTAGE}. The player: ${whoLine(player)}${profile.sides?.length ? `. The sides: ${profile.sides.map((x) => `${x.name} (${x.look})`).join('; ')}` : ''}. Judge the player, not their team.` : `You are Thirdeye, a coach reviewing one recorded ${profile.name} match after it ended, from the player's own screen.`;
@@ -1005,7 +1036,7 @@ Every tool also takes:
 - why: what this step checks, in a few plain words. The player watches the review live and reads it.
 - notes: changes to the theory board (testing, supported, or dropped, with the moments behind it in evidence). There is no separate step for notes: send what your last look showed with your next call. A theory is supported only by moments you looked at, listed in its evidence; until then code keeps it at testing. A finding is the supported theory, with its moments: send them with finish if they aren't on the board yet.
 
-Budget: ${budget.looks} looks and ${budget.turns} turns. A turn is one model call from a small daily allowance, and turns run out first, so check several moments in one call wherever you can. Every tool result says what's left. Running out before finish wastes the review. Call a tool every turn.
+Budget: ${budget.looks} looks, ${budget.turns} turns, and ${calls} model calls in all, every read and check included. A turn is one model call from a small daily allowance, so check several moments in one call wherever you can, and call several tools in one turn when one doesn't need the other's answer (they run together). Every tool result says what's left. Running out before finish wastes the review. Call a tool every turn.
 ${profile.teamGame && !spec ? `\nIt's a team game. A teammate's loss near the player, unanswered, can matter as much as the player's own${has('minimap') ? '; the minimap region shows where everyone was' : ''}.\n` : ''}
 How ${profile.name} looks on screen:
 ${profile.cues.map((c) => `- ${c}`).join('\n') || '- (nothing learned yet: look before you judge)'}
@@ -1111,6 +1142,11 @@ ${spec ? `- Judge the player's own decisions and execution in each ${unit}, apar
    */
   const VERIFY = { steps: 3, looks: 2, together: 2, wait: 30000, after: 3, most: 8 };
   const LAST_TURNS = 1; // turns left at which only finish runs
+  // Model calls a whole review may take, learning a new game included (the user's 20 to 25 for the whole thing, Oct 23):
+  // review's spent. Within CHECK_RESERVE of it only finish runs, and the last finish still gets its checks, up to
+  // CHECK_RESERVE past it: ended there instead, TenZ and Vyse named nothing (Oct 23).
+  const CALL_CAP = 25, CHECK_RESERVE = 3, MIN_REVIEW_CALLS = 15;
+  class CallCap extends Error {} // ends the review: not a tool error the coach can answer
   const VERDICTS = ['shows', 'goes_against', 'cant_tell'];
   const AREAS = ['killfeed', 'minimap', 'abilities', 'board']; // regions that are an area, not a number to read
   const JUDGED = { type: 'object', properties: { facts: { type: 'array', items: { type: 'object', properties: { fact: str('one fact the claim states'), saw: str('what you saw about it, in plain words'), verdict: { type: 'string', enum: VERDICTS } }, required: ['fact', 'saw', 'verdict'] } } }, required: ['facts'] };
@@ -1158,7 +1194,7 @@ ${spec ? `- Judge the player's own decisions and execution in each ${unit}, apar
     let calls = 0;
     const footage = profile.view === 'spectator' ? 'footage of the whole match' : "the player's own screen";
     // how a fact is judged, the same however the claims are grouped
-    const rules = `Name every fact the claim states (what happened, what the player did or didn't do, where others were, what it led to), say what you saw about each, and judge it: shows when you can see it, goes_against when you can see otherwise, cant_tell when the video doesn't show it either way. A fact you can't see is cant_tell, never shows. A number decides what it can: health, the player's own kill or death count, a score that went up between the numbers before and after. When the player's own kill or death count is in view and doesn't change, they didn't get a kill or die there, whatever the picture seems to show. A team's kill total isn't the player's kills. A death shows as a death or respawn screen, a kill cam, or the camera leaving the player; a red tint at the screen's edges while they still move is low health. After a death the screen can show a teammate's view: that isn't the player. A banner or announcement names who it is about; check the name, which the screen can write in other case or spacing (TheName and THE NAME are one). A player can be named by their player name or by the character they play: a claim naming one where the screen shows the other is no contradiction on its own. Small text (a name, a banner, a combat report) reads better as stills.`;
+    const rules = `Name every fact the claim states (what happened, what the player did or didn't do, where others were, what it led to), say what you saw about each, and judge it: shows when you can see it, goes_against when you can see otherwise, cant_tell when the video doesn't show it either way. A fact you can't see is cant_tell, never shows. A number decides what it can: health, the player's own kill or death count, a score that went up between the numbers before and after. When the player's own kill or death count is in view and doesn't change, they didn't get a kill or die there, whatever the picture seems to show. So with their health above 0 just after the moment and the player still acting, they weren't killed there, whatever the kill feed says: both sides can play the same character. A team's kill total isn't the player's kills. A death shows as a death or respawn screen, a kill cam, or the camera leaving the player; a red tint at the screen's edges while they still move is low health. A claim that they die at a moment means they're alive just before it: dead through the whole run-up, they died earlier, which goes against it. After a death the screen can show a teammate's view: that isn't the player. A banner or announcement names who it is about; check the name, which the screen can write in other case or spacing (TheName and THE NAME are one). A player can be named by their player name or by the character they play: a claim naming one where the screen shows the other is no contradiction on its own. Small text (a name, a banner, a combat report) reads better as stills.`;
     const system = `You check one claim about a moment of a recorded ${profile.name} match against the video, ${footage}. Someone else made it; you don't know who or why, and it may be false.${who ? ` ${who}.` : ''} You have the run-up to the moment as video, to a few seconds after it, and the HUD's numbers a few seconds before, at, and after it; look shows more (stills, or another part of the HUD: ${regions.join(', ') || 'none learned'}). Then call verdict once: ${rules}`;
     const judge = async (c) => {
       let looks = 0;
@@ -1232,10 +1268,13 @@ ${spec ? `- Judge the player's own decisions and execution in each ${unit}, apar
    * t }) asks which kill-feed name is theirs. onEvent streams what the UI draws.
    * Resolves with the finding, or { stopped } when the budget ran out first.
    */
-  async function review({ video, file, profile, history, goal, player = null, budget = C.createBudget(), ask, confirm, identify, onEvent = () => {}, onStep, onNotice, signal }) {
-    const s = { judged: new Map(), claimed: new Map(), events: [], feed: [], windows: [], habits: [...(profile.habits || [])], research: profile.research || null, aimTarget: profile.aimTarget, scanned: [], board: [], measures: [], checkCalls: 0, ledger: C.createLedger(), asks: 0, scanTokens: 0, scanCalls: 0, clipCalls: 0, clipSeconds: 0, aimCalls: 0, skipped: 0, shots: new Map(), tried: [], refused: 0, hudCalls: 0, sendBacks: new Map(), mustDecide: null, forced: null, player };
+  async function review({ video, file, profile, history, goal, player = null, budget = C.createBudget(), spent = 0, ask, confirm, identify, onEvent = () => {}, onStep, onNotice, signal }) {
+    const s = { attempts: [], judged: new Map(), claimed: new Map(), events: [], feed: [], windows: [], habits: [...(profile.habits || [])], research: profile.research || null, aimTarget: profile.aimTarget, scanned: [], board: [], measures: [], checkCalls: 0, ledger: C.createLedger(), asks: 0, scanTokens: 0, scanCalls: 0, clipCalls: 0, clipSeconds: 0, aimCalls: 0, skipped: 0, shots: new Map(), tried: [], refused: 0, hudCalls: 0, sendBacks: new Map(), mustDecide: null, forced: null, player };
     const frame = { w: video.width, h: video.height };
-    const left = () => C.budgetLine(budget);
+    let turns = 0;
+    const callsUsed = () => turns + s.scanCalls + s.aimCalls + s.hudCalls + s.checkCalls + s.clipCalls;
+    const cap = Math.max(MIN_REVIEW_CALLS, CALL_CAP - (+spent || 0)), room = () => cap - callsUsed();
+    const left = () => `${C.budgetLine(budget)}; ${Math.max(0, room())} of ${cap} model calls`;
     const at = (v) => {
       const t = C.parseTime(v);
       if (!Number.isFinite(t) || t < 0 || t > video.duration + 0.5) throw new Error(`${v} isn't a time in this match (it is ${C.mmss(video.duration)} long). Use M:SS.`);
@@ -1303,6 +1342,8 @@ ${spec ? `- Judge the player's own decisions and execution in each ${unit}, apar
         if (s.mustDecide && name !== 'finish') throw new Error(`Decide now: ${s.mustDecide.habit} was sent back twice for the same reason. Call finish with a habit or a reason the evidence shows.`);
         // the last two turns are for deciding: Vyse (Oct 22) spent its turns measuring for an aim check the moments
         // couldn't meet (the enemies that killed it were off screen), and the review ended with nothing named
+        if (room() < (name === 'finish' ? -CHECK_RESERVE : 0)) throw new CallCap(`The review has used its ${cap} model calls.`);
+        if (name !== 'finish' && room() <= CHECK_RESERVE) throw new Error(`${callsUsed()} of the review's ${cap} model calls are spent, and the rest are for checking the finding: decide now. Call finish with a habit the evidence you have already shows, or with found false and the biggest reason they lost (reason, and fixes at moments you looked at, one of them where they lost).`);
         if (name !== 'finish' && C.left(budget).turns <= LAST_TURNS) throw new Error(`${C.left(budget).turns === 1 ? 'One turn' : 'No turns'} left after this: decide now. Call finish with a habit the evidence you have already shows, or with found false and the biggest reason they lost (reason, and fixes at moments you looked at, one of them where they lost).`);
         const noted = applyNotes(a.notes);
         onEvent({ type: 'step', name, why: !properties.why && typeof a.why === 'string' ? a.why.slice(0, 120) : '' });
@@ -1531,13 +1572,14 @@ ${spec ? `- Judge the player's own decisions and execution in each ${unit}, apar
         description: `Ends the review with one habit (${C.MIN_EVIDENCE}+ separate moments you looked at closely), or with found false and the biggest reason they lost when no habit repeats.`,
         properties: {
           found: { type: 'boolean' },
-          reason: str('with found false: the biggest reason they lost in this match, in a few words, even if it happened once'),
+          reason: str("with found false: the biggest reason they lost in this match, in a few words, even if it happened once: something the player did or didn't do, never a note about the review or how many losses there were"),
           habit_id: str('a habit id research listed, or other'),
           habit: str('the habit in a few words'),
           why: str('how it cost them fights and games, in one to three sentences'),
           evidence: lessons('only moments where they do the habit, each with what to do instead'),
           fixes: lessons('with found false: the moments you looked at that show the reason, at least one where they lost, each with what to do instead'),
           contrast: moments('optional: moments where they got it right, for comparison; never also in evidence'),
+          losses: lessons("every loss you looked at (their deaths, near-deaths, fights or points they lost), whether the finding is about it or not: what went wrong there, and what to do instead. The critique says it at each one, so the player gets a review of the whole match"),
           drill: str('one specific drill'),
           recheck: str('what to check in the next match'),
           progress: { type: 'string', enum: ['better', 'same', 'worse', 'unclear'] },
@@ -1553,6 +1595,11 @@ ${spec ? `- Judge the player's own decisions and execution in each ${unit}, apar
           // code doesn't answer for the coach until it's read.
           // nothing is named without the match record: on Oct 22 a scan refused by Gemini left it empty, and three reviews
           // still named a reason off a few frames
+          // what code can settle itself costs no send-back: a moment of contrast (optional) it never looked at is left
+          // out, and a missing recheck is the finding itself (Rocket League and League, Oct 23: sent back twice for one
+          // of these, the reviews ended with nothing named)
+          if (Array.isArray(a.contrast)) a.contrast = a.contrast.filter((c) => C.seen(s.ledger, C.parseTime(c?.t)));
+          if (!String(a.recheck || '').trim() && (a.habit || a.reason)) a.recheck = `Whether ${String(a.habit || a.reason).trim().replace(/\.$/, '').replace(/^./, (c) => c.toLowerCase())} shows up again.`;
           if (!s.scanned.length) {
             const problems = [`The match record isn't read yet${s.scanError ? ` (the scan failed: ${s.scanError})` : ''}. Scan the match before finishing: a habit or a reason has to rest on where they lost.`];
             onEvent({ type: 'rejected', problems });
@@ -1589,17 +1636,22 @@ ${spec ? `- Judge the player's own decisions and execution in each ${unit}, apar
           }
           // every claim the finding makes has to fit what the record and the clips show: a habit's evidence, or the moments
           // of the one reason they lost
-          const claimed = a.found !== false ? a.evidence : a.reason ? a.fixes : null;
+          const claimed = a.found !== false ? a.evidence : a.reason ? a.fixes : null, contra = new Set();
           if (!problems.length && claimed?.length) {
             // each moment with what the finding says it shows: TenZ's "taking duels without using utility" cited deaths
             // as "engaged an enemy and was killed", which the record fits, and the Gatecrash it shows 4 s before each
             // went unchecked (Oct 23)
             const named = String((a.found !== false ? a.habit || '' : a.reason) || '').trim().replace(/\.$/, '').slice(0, 120);
             const asSaid = named ? claimed.map((e) => ({ ...e, what: `${String(e?.what || '').trim()} (the finding says this moment shows: ${named})` })) : claimed;
-            const c = await checkClaims({ evidence: asSaid, events: s.events, clips: s.windows.filter((w) => w.reading), profile, memo: s.claimed, signal, onNotice }).catch((e) => { if (e.name === 'AbortError') throw e; return { contradicted: [], calls: 0 }; });
+            // the notes at each loss ride along in the same call; one the record goes against is left out, not sent back
+            const notes = (Array.isArray(a.losses) ? a.losses : []).filter((e) => e?.what && Number.isFinite(C.parseTime(e?.t)) && C.seen(s.ledger, C.parseTime(e.t)));
+            const noteKey = (t, what) => `${C.round(t, 1)}|${String(what || '').trim().slice(0, 400)}`, isNote = new Set(notes.map((e) => noteKey(C.parseTime(e.t), e.what)));
+            const c = await checkClaims({ evidence: [...asSaid, ...notes], events: s.events, clips: s.windows.filter((w) => w.reading), profile, memo: s.claimed, signal, onNotice }).catch((e) => { if (e.name === 'AbortError') throw e; return { contradicted: [], calls: 0 }; });
             s.checkCalls += c.calls;
-            if (c.calls) onEvent({ type: 'claims_checked', contradicted: c.contradicted });
-            for (const x of c.contradicted) problems.push(`At ${C.mmss(x.t, true)} your claim "${x.claim}" goes against what the record shows: ${x.fact}. Say what really happened there, cite other moments, or name what the moments do show.`);
+            const against = c.contradicted.filter((x) => !isNote.has(noteKey(x.t, x.claim))), wrongNotes = new Set(c.contradicted.filter((x) => isNote.has(noteKey(x.t, x.claim))).map((x) => noteKey(x.t, x.claim)));
+            a.losses = notes.filter((e) => !wrongNotes.has(noteKey(C.parseTime(e.t), e.what)));
+            if (c.calls) onEvent({ type: 'claims_checked', contradicted: against });
+            for (const x of against) { contra.add(C.round(x.t, 1)); problems.push(`At ${C.mmss(x.t, true)} your claim "${x.claim}" goes against what the record shows: ${x.fact}. Say what really happened there, cite other moments, or name what the moments do show.`); }
           }
           // and every fact it states has to show in the video, to an agent of its own that never saw the review (verifyClaims)
           if (!problems.length && claimed?.length) {
@@ -1614,6 +1666,9 @@ ${spec ? `- Judge the player's own decisions and execution in each ${unit}, apar
             s.checkCalls += v.calls;
             s.verified = v;
             onEvent({ type: 'frames_checked', ...v });
+            // what of this finding both checks let stand, for the review's ending if no finding is accepted (salvage)
+            const passed = v.unreliable ? [] : claimed.filter((e) => !contra.has(C.round(C.parseTime(e.t), 1)) && v.checked.some((x) => Math.abs(x.t - C.parseTime(e.t)) < 0.05 && x.verdict === 'shows'));
+            s.attempts.push({ a: { ...a }, passed: passed.map((e) => ({ t: C.parseTime(e.t), what: e.what, ...(e.better ? { better: String(e.better) } : {}) })) });
             if (!v.unreliable) {
               for (const x of v.checked.filter((c) => c.verdict === 'goes_against')) {
                 const f = x.facts.find((y) => y.verdict === 'goes_against');
@@ -1636,7 +1691,7 @@ ${spec ? `- Judge the player's own decisions and execution in each ${unit}, apar
               return { ok: true, forced: true };
             }
             // The same kind of reason twice for one habit: more looking won't change it, so the next call has to decide.
-            const kinds = [...new Set(problems.map(C.problemKind))].filter((k) => k !== 'won_fight');
+            const kinds = [...new Set(problems.map(C.problemKind))].filter((k) => k !== 'won_fight' && k !== 'format');
             const again = kinds.filter((k) => s.sendBacks.get(`${key}|${k}`));
             for (const k of kinds) s.sendBacks.set(`${key}|${k}`, (s.sendBacks.get(`${key}|${k}`) || 0) + 1);
             if (again.length && named) {
@@ -1664,44 +1719,62 @@ ${spec ? `- Judge the player's own decisions and execution in each ${unit}, apar
       }),
     ].filter(Boolean); // tools the learned profile has no use for are left out
 
-    let turns = 0;
+    // The record every review needs, read before the coach's first turn: as a tool it took a turn of its own, and a coach
+    // that asked again took more (League, Oct 23: scan three times, 0:00 to 10:00 each). Research rides along when it's
+    // saved this week, at no call; else it stays the coach's to ask for, at its cost.
+    const byName = Object.fromEntries(tools.map((t) => [t.name, t])), L = root.ThirdeyeLearn;
+    const saved = !s.research && byName.research && L?.researchSaved?.({ name: profile.name, character: spec ? '' : profile.character, role: spec ? s.player?.who || '' : '', unit });
+    const soft = (e) => { if (e?.name === 'AbortError') throw e; return { error: String(e?.message || e).slice(0, 200) }; };
+    const [record, researched] = await Promise.all([
+      byName.scan.execute({ from: '0:00', to: C.mmss(video.duration, true), why: 'the match record, read before the coach starts' }).catch(soft),
+      saved ? byName.research.execute({}).catch(soft) : null,
+    ]);
+    // a tool with nothing to work on is left out, so no turn goes on it: the scan once it's read; read_clips with no
+    // windows to read (League, Oct 23: read_clips twice, each answered "scan first")
+    const offered = tools.filter((t) => !(t.name === 'scan' && s.scanned.length) && !(t.name === 'read_clips' && !s.windows.length));
     const run = await G.runAgent({
-      system: brief({ profile, video, history, budget, goal, player }),
-      prompt: `Review this match.${goal ? ' They also told you what to look at (above).' : ''}`,
-      tools,
+      system: brief({ profile: { ...profile, research: s.research || profile.research }, video, history, budget, goal, player, tools: offered.map((t) => t.name), calls: cap }),
+      prompt: [
+        `Review this match.${goal ? ' They also told you what to look at (above).' : ''}`,
+        record.error ? `The match record couldn't be read before your first turn (${record.error}). Scan again before anything else.` : `The match record, read before your first turn:\n${JSON.stringify(record)}`,
+        researched && !researched.error ? `What research found, saved this week:\n${JSON.stringify(researched)}` : '',
+      ].filter(Boolean).join('\n\n'),
+      tools: offered,
       maxSteps: budget.turns,
       keepImages: 1,
       force: true,
       temperature: 0, // the same match reviewed again takes the same steps, as far as the model allows
       signal,
       onNotice,
-      stopOn: (e) => e?.status === 429 || e?.name === 'AbortError',
+      stopOn: (e) => e?.status === 429 || e?.name === 'AbortError' || e instanceof CallCap,
       onStep: (st) => {
         if (st.type === 'think') { turns++; C.spend(budget, 'turns'); }
         onStep?.(st);
       },
     }).catch((e) => {
-      if (/step limit/.test(e.message)) return { stopped: true };
+      if (/step limit/.test(e.message) || e instanceof CallCap) return { stopped: true };
       throw e;
     });
 
     // a check against the video that agreed with a claim the record shows is false can't vouch for anything: the result
     // says so (verified.unreliable), and the report shows it beside the finding
-    const stats = { turns, looks: budget.used.looks, scanTokens: s.scanTokens, scanCalls: s.scanCalls, clipCalls: s.clipCalls, clipSeconds: s.clipSeconds, aimCalls: s.aimCalls, hudCalls: s.hudCalls, skipped: s.skipped, refused: s.refused, asks: s.asks, calls: turns + s.scanCalls + s.aimCalls + s.hudCalls + s.checkCalls, checkCalls: s.checkCalls };
+    const stats = { turns, looks: budget.used.looks, scanTokens: s.scanTokens, scanCalls: s.scanCalls, clipCalls: s.clipCalls, clipSeconds: s.clipSeconds, aimCalls: s.aimCalls, hudCalls: s.hudCalls, skipped: s.skipped, refused: s.refused, asks: s.asks, calls: callsUsed(), checkCalls: s.checkCalls };
     const base = { events: s.events, board: s.board, measures: s.measures, ledger: s.ledger, stats, aim: C.summarizeAim(s.measures), checkIn: s.checkIn || null };
     // what couldn't be backed isn't said, but where they lost still is
     const lostAt = () => { const l = C.lossMoments(s.events, { deadFor: deadFor() }); return l.length ? ` Where you lost: ${l.slice(0, 6).map((x) => `${C.mmss(x.t)} ${x.what}`).join(', ')}.` : ''; };
     if (run.stopped && !s.scanned.length) return { ...base, found: false, stopped: true, why: `The match record couldn't be read${s.scanError ? ` (${s.scanError})` : ''}, so nothing is named. Try again in a little while.` };
-    if (run.stopped) return { ...base, found: false, stopped: true, why: `The review ran out of turns before it could settle on a habit or a reason.${lostAt()}` };
-    if (s.doubted) return { ...base, found: false, why: `You didn't think ${s.checkIn.habit} was it, and the review had no turns left to look again, so no single habit is named.` };
+    // Every review names what cost them and critiques where they lost: a finding that didn't stand, or no turns left, is
+    // not "nothing named" (the user, Oct 23: "it should be doing critiques throughout"). salvage says what can be said.
+    if (run.stopped) return salvage('stopped');
+    if (s.doubted) return salvage('doubted');
     if (s.fewLosses) {
       // said only as far as the record could be checked
       const unsure = s.deathsUnchecked ? ' No kill feed, death counter, or HP number could be read to check the deaths, which come from a low-detail pass alone, so one it missed is not ruled out.' : '';
       return { ...base, found: false, fewLosses: true, why: s.fewLosses.length ? `Code found one loss in this match: ${C.mmss(s.fewLosses[0].t)}, ${s.fewLosses[0].what}. A habit shows up more than once, so one loss can't show one, and no single habit is named.${unsure}` : unsure ? `Code found nothing lost in what it could read: no death, no lost fight, and no teammate down near you without a trade.${unsure} No single habit is named.` : "Code found nothing lost in this match: no death, no lost fight, no teammate down near you without a trade, and no move the engine calls a mistake. So nothing in it can be losing you games, and no single habit is named." };
     }
-    if (s.forced) return { ...base, found: false, forced: true, why: `The coach couldn't back ${s.forced.habit} after being sent back twice for the same reason (${s.forced.reason.split(/(?<=\.)\s/)[0]}), so it isn't named.${lostAt()}` };
-    const f = run.ended.name === 'finish' ? lastFinish(run.contents) : null;
-    if (!f) return { ...base, found: false, stopped: true, why: 'The review ended without a finding.' };
+    if (s.forced) return salvage('forced');
+    const f = run.ended?.name === 'finish' ? lastFinish(run.contents) : null;
+    if (!f) return salvage('stopped');
     // measured aim numbers outrank the agent's own call on progress
     const measured = history?.habit?.baseline && base.aim ? C.compareAim(history.habit.baseline, base.aim) : null;
     return {
@@ -1722,7 +1795,52 @@ ${spec ? `- Judge the player's own decisions and execution in each ${unit}, apar
       contrast: toMoments(f.contrast),
       // only moments it looked at: the report shows them with their frames
       fixes: f.found === false ? toMoments(f.fixes).filter((e) => C.seen(s.ledger, e.t)).slice(0, 4) : [],
+      losses: toMoments(f.losses).filter((e) => C.seen(s.ledger, e.t)),
     };
+
+    // With no finding accepted: the latest one's moments that both checks let stand, if one is where they lost, named
+    // as what cost them this match; else one call that names it, and says what went wrong at each loss, from the
+    // record and the clip reads alone, checked against the record. Only a match with no record says nothing.
+    async function salvage(why) {
+      const deadAt = deadFor(), lost = C.lossMoments(s.events, { deadFor: deadAt });
+      const note = why === 'forced' ? `The coach's finding (${s.forced.habit}) didn't hold up after two send-backs` : why === 'doubted' ? `You didn't think ${s.checkIn.habit} was it` : 'The review ran out of calls before a finding passed its checks';
+      for (const t of [...s.attempts].reverse()) {
+        if (!t.passed.some((m) => C.atLoss(s.events, m.t, deadAt)) || (why === 'doubted' && (t.a.habit || t.a.reason) === s.checkIn.habit)) continue;
+        return { ...base, found: false, salvaged: 'checked', reason: String(t.a.found !== false ? t.a.habit || '' : t.a.reason || '').slice(0, 160), why: t.a.why || '', drill: t.a.drill || '', recheck: t.a.recheck || '', fixes: t.passed.slice(0, 4), losses: toMoments(t.a.losses).filter((e) => C.seen(s.ledger, e.t)), left: (t.a.found !== false ? t.a.evidence : t.a.fixes)?.length - t.passed.length || 0, note, ...(s.verified ? { verified: { controls: s.verified.controls, fooled: s.verified.fooled, unreliable: s.verified.unreliable } } : {}) };
+      }
+      if (!lost.length) return { ...base, found: false, stopped: true, why: `${note}, and code found nothing lost to say it about.` };
+      const r = await closing(lost, why).catch((e) => { if (e?.name === 'AbortError') throw e; return null; });
+      Object.assign(stats, { calls: callsUsed(), checkCalls: s.checkCalls });
+      if (r) onEvent({ type: 'closing', calls: r.calls });
+      if (!r) return { ...base, found: false, stopped: true, why: `${note}.${lostAt()}` };
+      const { calls: _, ...said } = r;
+      return { ...base, found: false, salvaged: 'record', note, ...said };
+    }
+    // the closing call: what the record and clip reads say happened at each loss, and the claims the video check let
+    // stand, and nothing else; then its notes are read against the record like any claim (2 calls)
+    async function closing(lost, why) {
+      const near = (t) => [
+        ...s.events.filter((e) => e.t >= t - 8 && e.t <= t + 3 && e.kind !== 'engagement').map((e) => `${C.mmss(e.t, true)} ${e.text || e.kind}`),
+        ...s.events.filter((e) => e.kind === 'engagement' && e.to >= t - 2 && e.from <= t + 2).map((e) => `${C.mmss(e.from, true)}–${C.mmss(e.to, true)} fight: ${e.text}`),
+        ...s.windows.filter((w) => w.reading && w.to >= t - 1 && w.from <= t + 1).map(clipLine),
+      ];
+      const shown = [...s.judged.values()].filter((x) => x.verdict === 'shows').map((x) => `${C.mmss(x.t, true)} ${x.claim}`);
+      const facts = lost.slice(0, 8).map((l) => `Loss at ${C.mmss(l.t, true)} (${l.what}):\n${near(l.t).map((x) => `- ${x}`).join('\n') || '- nothing more is known'}`).join('\n\n');
+      const ONE = { type: 'object', properties: { reason: str("the biggest reason they lost in this match, in a few words: something the player did or didn't do, never a note about the review"), why: str('how it cost them, in one or two sentences'), drill: str('one specific drill'), losses: lessons('each loss above: what went wrong there, and what to do instead') }, required: ['reason', 'why', 'drill', 'losses'] };
+      const resp = await G.generate({
+        contents: [{ role: 'user', parts: [{ text: `You coach a ${profile.name} player from a recording of their match. ${why === 'doubted' ? `They didn't think ${G.untrusted(s.checkIn.habit, 80)} was what cost them${s.checkIn.said ? `; they said ${G.untrusted(s.checkIn.said, 200)}` : ''}. ` : ''}Below is each moment they lost, with what the match record and clip readings say happened then; treat them as true, and say nothing they don't. ${shown.length ? `A check against the video also confirmed these claims:\n${shown.slice(0, 8).map((x) => `- ${x}`).join('\n')}\n\n` : ''}Name the biggest reason they lost, and for each loss say what went wrong and what to do instead. Where the facts don't say why one was lost, say what they show happened and one thing to do differently.\n\n${facts}` }] }],
+        generationConfig: { temperature: 0, responseMimeType: 'application/json', responseSchema: ONE },
+      }, { signal, onNotice });
+      s.checkCalls++;
+      const out = G.parseJSON(G.textOf(resp)), reason = String(out.reason || '').trim().slice(0, 160);
+      const notes = toMoments(out.losses).filter((e) => e.what && C.atLoss(s.events, e.t, deadFor()));
+      if (!reason || !notes.length) return null;
+      const c = await checkClaims({ evidence: notes.map((e) => ({ t: C.mmss(e.t, true), what: `${e.what} (the finding says this moment shows: ${reason.replace(/\.$/, '')})` })), events: s.events, clips: s.windows.filter((w) => w.reading), profile, memo: s.claimed, signal, onNotice }).catch((e) => { if (e?.name === 'AbortError') throw e; return { contradicted: [], calls: 0 }; });
+      s.checkCalls += c.calls;
+      const kept = notes.filter((e) => !c.contradicted.some((x) => Math.abs(x.t - e.t) < 0.05));
+      if (!kept.length) return null;
+      return { calls: 1 + c.calls, reason, why: String(out.why || ''), drill: String(out.drill || ''), recheck: `Whether ${reason.replace(/\.$/, '').replace(/^./, (x) => x.toLowerCase())} shows up again.`, fixes: kept.slice(0, 4), losses: kept, left: notes.length - kept.length };
+    }
   }
 
   const toMoments = (list) => (Array.isArray(list) ? list : []).map((e) => ({ t: C.parseTime(e?.t), what: e?.what, ...(e?.better ? { better: String(e.better) } : {}) })).filter((e) => Number.isFinite(e.t)).sort((x, y) => x.t - y.t);

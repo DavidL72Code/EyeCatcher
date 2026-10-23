@@ -34,6 +34,8 @@ const scanEvents = [
 ];
 const call = (...calls) => ({ candidates: [{ content: { role: 'model', parts: calls.map(([name, args]) => ({ functionCall: { name, args } })) } }] });
 const text = (s) => ({ candidates: [{ content: { role: 'model', parts: [{ text: typeof s === 'string' ? s : JSON.stringify(s) }] } }] });
+// the match record code reads before the coach's first turn, as the first prompt gives it
+const firstRecord = (b) => { const t = b.contents[0].parts.map((p) => p.text || '').join(' '), m = t.match(/The match record, read before your first turn:\n(\{[\s\S]*?\})(\n\n|$)/); return m ? JSON.parse(m[1]) : null; };
 const lastResults = (b) => [...b.contents].reverse().find((c) => c.parts?.some((p) => p.functionResponse))?.parts.filter((p) => p.functionResponse).map((p) => p.functionResponse) || [];
 const ev = (t, what) => ({ t, what });
 
@@ -43,7 +45,7 @@ const FINDING = { found: true, habit_id: 'crosshair_below_head_level', habit: 'C
 const instead = (t, what, better) => ({ t, what, better });
 const EVIDENCE = [instead('0:13.8', 'Chest height as Enemy 1 appears', 'Hold the crosshair at head height on that corner'), instead('0:46.8', 'Same at the doorway', 'Pre-aim the doorway at head height'), instead('2:13.6', 'Again before the last death', 'Raise the crosshair before swinging')];
 const coach = [
-  () => call(['research', { why: 'what matters in this game' }], ['scan', { from: '0:00', to: '2:30', why: 'every fight in the match' }]),
+  () => call(['research', { why: 'what matters in this game' }]),
   () => call(['measure_aim', { at: '0:13.8', why: 'crosshair height before the first death' }]),
   () => call(['ask_player', { question: 'Did you expect someone at that corner?', at: '0:14', options: ['Yes', 'No'], why: 'whether that angle was a surprise', notes: [{ theory: 'Crosshair sits low', status: 'testing', evidence: [ev('0:13.8', 'chest height at first sight')] }] }]),
   () => call(['measure_aim', { at: '0:46.8', more: ['1:40.6', '2:13.6', '2:15'], why: 'the same before the other deaths' }]),
@@ -65,7 +67,7 @@ const LEARNED_CHESS = {
 };
 const CHESS_FINDING = { found: true, habit_id: 'blunders_when_the_clock_is_low', habit: 'Blunders when the clock is low', why: 'Once your clock fell under 30 seconds you started hanging pieces, and the game turned.', drill: 'Play 10 games of 3+2 and pre-plan two safe moves when under 30 s.', recheck: 'Count blunders made with under 30 s left.' };
 const chessCoach = [
-  () => call(['research', { why: 'what matters in chess' }], ['scan', { from: '0:00', to: '2:12', why: 'every move and its grade' }]),
+  () => call(['research', { why: 'what matters in chess' }]),
   () => call(['read_hud', { element: 'player_clock', at: '1:14', more: ['1:22', '0:34'], why: 'their clock at the blunders' }]),
   () => call(['frames', { at: '1:14', more: ['1:22', '0:34'], before: 1, after: 0.5, fps: 2, why: 'the blunders, and a quiet move' }]),
   () => call(['finish', { ...CHESS_FINDING, evidence: [ev('1:14', 'Nce5 hangs a knight'), ev('1:22', 'Bxa6 drops the bishop'), ev('0:34', 'c3')] }]),
@@ -84,7 +86,7 @@ const ROLE = { role: 'setter', won_unit: 'The set lands where the hitter can att
 const SPEC_FINDING = { found: true, habit_id: 'other', habit: 'Late to the ball on the set', why: 'You got to the ball late on the points you lost, so your sets came out off target and the hitter could not attack.', drill: 'Twenty passes a session where you are at the target before the pass lands.', recheck: 'Whether you are set before the pass arrives.' };
 const SPEC_EVIDENCE = [instead('0:10', 'Arrives late, the set drifts', 'Move to the target as the serve is hit'), instead('0:50', 'Late again, off-target set', 'Beat the pass to the target'), instead('1:35', 'Late on the last lost point', 'Get there first, then set')];
 const specCoach = [
-  () => call(['research', { why: 'what matters, and what wins a point for a setter' }], ['scan', { from: '0:00', to: '2:30', why: 'every point in the match' }]),
+  () => call(['research', { why: 'what matters, and what wins a point for a setter' }]),
   () => call(['finish', { found: false, why: 'Nothing looked lost in the quick pass, so no single habit stands out.' }]),
   () => call(['read_clips', { windows: ['W1', 'W2', 'W3', 'W4', 'W5', 'W6'], why: 'how each point went for them' }]),
   () => call(['frames', { at: '0:10', more: ['0:50', '1:35'], as: 'clip', why: 'their part in the points they lost', notes: [{ theory: 'Late to the ball', status: 'testing' }] }]),
@@ -94,12 +96,21 @@ const specCoach = [
 // biggest reason has to be named, at a death it looked at
 const REASON = { found: false, reason: 'Peeking the same corner twice', why: 'After losing the duel at the corner, they peeked it again the same way and died to the same angle.', drill: 'After a death, take the next fight from a different angle.', recheck: 'Whether they re-peek a corner they just died at.' };
 const oneOffCoach = [
-  () => call(['finish', { ...REASON, fixes: [instead('0:46.8', 'Peeks the corner they just lost at, the same way', 'Take the fight from the other side')] }]),
-  () => call(['scan', { from: '0:00', to: '2:30', why: 'every fight in the match' }]),
   () => call(['finish', { found: false, why: 'The deaths had different causes, so no single habit stands out.' }]),
   () => call(['frames', { at: '0:13.8', more: ['0:46.8', '1:05.8'], why: 'the deaths' }]),
   () => call(['frames', { at: '1:40.6', why: 'the last death I have not seen' }]),
   () => call(['finish', { ...REASON, fixes: [instead('0:46.8', 'Peeks the corner they just lost at, the same way', 'Take the fight from the other side, or wait for a teammate')] }]),
+];
+// a finding whose one moment the video check keeps rejecting: sent back twice, then told to decide, it still cites it,
+// and the review names what the moment that did hold up shows, with a note at each loss
+const SALVAGE_FIXES = [instead('0:13.8', 'Holds a wide angle alone as the enemy swings', 'Hold a tighter angle, near a teammate'), instead('0:46.8', 'WRONG: peeks with the knife out', 'Peek with the rifle out')];
+const LOSS_NOTES = [instead('1:05.8', 'Swings out a second time into the same enemy', 'Reset after the first contact'), instead('1:40.6', 'Takes the last duel on low health', 'Back off and heal first')];
+const salvageCoach = [
+  () => call(['frames', { at: '0:13.8', more: ['0:46.8', '1:05.8'], why: 'the deaths' }]),
+  () => call(['frames', { at: '1:40.6', more: ['2:13.6'], why: 'the last deaths' }]),
+  () => call(['finish', { ...REASON, reason: 'Fighting wide angles alone', fixes: SALVAGE_FIXES, losses: LOSS_NOTES }]),
+  () => call(['finish', { ...REASON, reason: 'Fighting wide angles alone', fixes: SALVAGE_FIXES, losses: LOSS_NOTES }]),
+  () => call(['finish', { ...REASON, reason: 'Fighting wide angles alone', fixes: SALVAGE_FIXES, losses: LOSS_NOTES }]),
 ];
 // what the learn call says about the synthetic match: where its HUD is, and the habits a coach would look for
 const LEARNED = {
@@ -127,7 +138,7 @@ function gemini(body) {
     seen.verifyBodies = [...(seen.verifyBodies || []), body];
     const claims = [...prompt.matchAll(/Claim (\d+), at [^:]+:[\d.]+: <data>([^<]*)<\/data>/g)].map((m) => ({ n: +m[1], what: m[2] }));
     // seen.fooled: a checker that agrees with everything, planted claims included
-    const planted = /^The player (is killed|dies) here\.$|health is full here|own side scores here/, against = (c) => planted.test(c.what) && !seen.fooled;
+    const planted = /^The player (is killed|dies) here\.$|health is full here|own side scores here/, against = (c) => /^WRONG/.test(c.what) || (planted.test(c.what) && !seen.fooled);
     return text({ claims: claims.map((c) => ({ claim: c.n, facts: [{ fact: c.what, saw: against(c) ? 'the opposite' : 'just that', verdict: against(c) ? 'goes_against' : 'shows' }] })) });
   }
   if (parts.some((p) => p.fileData)) { seen.scans++; seen.scanBody = body; return text(seen.spectator ? { units: UNITS } : { events: scanEvents }); }
@@ -178,7 +189,7 @@ function gemini(body) {
     return text({ images: Array.from({ length: n }, (_, i) => { const b = headBox(heads[seen.heads++ % heads.length]); return { image: i + 1, players: [{ head_2d: [470, 480, 530, 520], body_2d: [470, 470, 700, 530], name_tag: 'Teammate', teammate: true }, { head_2d: [0, 950, 40, 990], body_2d: [600, 0, 700, 20], name_tag: '', teammate: false }, { head_2d: b, body_2d: [b[0], b[1] - 10, b[2] + 200, b[3] + 10], name_tag: '', teammate: false }] }; }) });
   }
   seen.agentBodies.push(body);
-  const turn = body.contents.filter((c) => c.role === 'model').length, list = seen.spectator ? specCoach : seen.chess ? chessCoach : seen.oneOff ? oneOffCoach : coach;
+  const turn = body.contents.filter((c) => c.role === 'model').length, list = seen.spectator ? specCoach : seen.chess ? chessCoach : seen.salvage ? salvageCoach : seen.oneOff ? oneOffCoach : coach;
   return (list[turn] || list.at(-1))();
 }
 
@@ -256,10 +267,11 @@ try {
   check(await page.locator('.beat.learn .beat-why').innerText() === 'Synthetic test match, shooter' && await page.locator('.beat.learn .screen-map .el').count() === 2, 'the first card shows the game and what was found on screen, boxed');
   check(seen.research === 4 && /What matters in Synthetic test match: Crosshair placement · Trading teammates/.test(await page.locator('.beat.research').innerText()) && await page.locator('.beat.research .matters a[href="https://example.org/guide"]').count() === 1, 'the coach researches what matters in the game (guides, community, meta, wiki), shown with its sources on its own card');
   const researched = lastResults(seen.agentBodies[1]).find((r) => r.name === 'research')?.response.result || {};
+  check(new RegExp(`\\d+ of ${25 - (seen.learns + (seen.boxChecks || 0) + (seen.relocates || 0))} model calls`).test(researched.budget || ''), `every tool result tells the coach how many model calls are left of the 25 for the whole review, learning the game included (${researched.budget})`);
   check(researched.from === 'the web (2 sources)' && researched.rewards === 'Rounds won' && researched.habits?.some((h) => /^crosshair_below_head_level: /.test(h)) && !/What matters in Synthetic test match/.test(seen.agentBodies[0].systemInstruction.parts[0].text), "the coach learns what the game rewards, what matters, and the habits' ids when it calls research, not before");
   check(/Kill feed seen, with no colored rows to measure: it's read as plain text/.test(await page.locator('.beat.learn').innerText()), 'a kill feed with no team colors is said to be read as plain text');
   check(await page.locator('.beat').first().locator('.beat-kind').innerText() === 'Question' && await page.locator('.beat').count() === 5, 'the breakdown has a card per step, newest first');
-  check(await page.locator('.beat.scan .beat-why').innerText() === 'every fight in the match' && /^8 fights \(3 won, 5 lost, 0 no one fell\); 3 kills, 5 deaths, 0 teammates down$/.test(await page.locator('.beat.scan .beat-out').innerText()), "the scan card says what it checked and what it found");
+  check(await page.locator('.beat.scan .beat-why').innerText() === 'the match record, read before the coach starts' && /^8 fights \(3 won, 5 lost, 0 no one fell\); 3 kills, 5 deaths, 0 teammates down$/.test(await page.locator('.beat.scan .beat-out').innerText()), "the scan card says what it checked and what it found");
   check(/^2\.2 heads low$/.test(await page.locator('.beat.measure_aim figcaption').first().innerText()) && await page.locator('.beat.measure_aim .box').count() === 1, 'the aim card shows the measured frame, its box, and its number');
   check(/New theory Crosshair sits low\s*0:13 chest height at first sight/.test(await page.locator('.beat.measure_aim .beat-take').innerText()), "the coach's take lands on the card it was about");
   const firstAgent = seen.agentBodies[0];
@@ -309,7 +321,7 @@ try {
   check(await page.locator('#status').isHidden(), 'the spinner is gone when done');
   check(/0:31\s*On the head, and the fight was won/.test(await page.locator('.contrast').innerText()), 'moments they got right show apart from the evidence');
   check(await page.locator('.log .theory.supported').count() === 1, 'the board is kept under How it got here');
-  const calls = 1 + 9 + 1 + seen.feedCalls + seen.deathChecks + 3 + seen.claimChecks + seen.verifyBodies.length;
+  const learning = seen.learns + (seen.boxChecks || 0) + (seen.relocates || 0), calls = learning + 9 + 1 + seen.feedCalls + seen.deathChecks + 3 + seen.claimChecks + seen.verifyBodies.length;
   check(seen.claimChecks === 1, `the finding's claims are checked against the record once, when it passes the other checks (${seen.claimChecks})`);
   const vb = seen.verifyBodies[0], vText = vb.contents[0].parts.map((p) => p.text || '').join(' ');
   const vClaims = [...vText.matchAll(/Claim \d+, at [^:]+:[\d.]+: <data>([^<]*)/g)].map((m) => m[1]);
@@ -318,7 +330,7 @@ try {
   check(vClaims.filter((x) => /^The player (is killed|dies) here\.$/.test(x)).length === 2 && vClaims.length === 5, `two claims the record shows are false are planted among the three, unmarked (${vClaims.join(' | ')})`);
   check(seen.deathChecks === 1, `each death the low-detail pass saw is looked at again, in one call (${seen.deathChecks})`);
   const summary = await page.locator('#logSummary').innerText();
-  check(summary === `How it got here: ${calls} calls, 6 looks`, `the review counts its model calls (${calls}: learning the game, 9 turns, the scan's ${1 + seen.feedCalls + seen.deathChecks} with its look again at the deaths, 3 aim, 1 claim check, ${seen.verifyBodies.length} by the agent that checks the finding against the video; the page says "${summary}")`);
+  check(summary === `How it got here: ${calls} calls, 6 looks`, `the review counts its model calls (${calls}: learning the game in ${learning} (the learn call, the box check, and the ask again for a box), 9 turns, the scan's ${1 + seen.feedCalls + seen.deathChecks} with its look again at the deaths, 3 aim, 1 claim check, ${seen.verifyBodies.length} by the agent that checks the finding against the video; the page says "${summary}")`);
   check(await page.locator('.log .beat').count() === 11 && await page.locator('#logBox').evaluate((d) => !d.open), 'the breakdown folds into How it got here');
   check(await page.locator('.log .beat-kind').first().evaluate((e) => e.textContent) === 'Reading the screen', 'the log reads in order, first step first');
   await page.click('.key:nth-child(2) .key-frame');
@@ -402,7 +414,7 @@ try {
   await page.click('#checkin [data-yes]');
   await page.waitForSelector('#verdict:not([hidden])', { timeout: 60000 });
   check(seen.learns === 2 && seen.gameFiles === 0 && seen.research === 8, 'a new game is learned from its own recording, with no profile file, and researched once (4 searches)');
-  const chessScan = lastResults(seen.agentBodies[1]).find((r) => r.name === 'scan')?.response.result;
+  const chessScan = firstRecord(seen.agentBodies[0]);
   const want = chessTruth.recordings[path.basename(chessFile)].moves.filter((m) => m.color === 'w');
   check(chessScan?.counts.your_moves === want.length && chessScan.counts.your_blunders >= 5, `the scan reads every move of theirs and grades it (${JSON.stringify(chessScan?.counts)}; truth: ${want.length} moves, ${want.filter((m) => m.grade === 'blunder').length} blunders)`);
   check(/1\. e4/.test(chessScan?.events) && /19\. Nce5 \(blunder/.test(chessScan?.events), 'moves come out numbered, with the blunder named');
@@ -442,7 +454,7 @@ try {
   check(/The player: <data>#7, the setter<\/data> on <data>Blue<\/data> \(<data>blue shirts<\/data>\)\. The sides: Blue \(blue shirts\); Red \(red shirts\)\. Judge the player, not their team\./.test(specBrief), 'the coach is told who the player is, as their words, and to judge them, not their team');
   check(!seen.agentBodies[0].tools[0].functionDeclarations.some((f) => f.name === 'measure_aim'), 'no aim to measure in footage of the whole match');
   check(/Synthetic court match, sports/.test(await page.locator('.beat.learn .beat-why').innerText()) && /Footage of the whole match, read point by point: Blue \(blue shirts\) vs Red \(red shirts\)/.test(await page.locator('.beat.learn').innerText()), 'the first card says how the footage is read');
-  const specScan = lastResults(seen.agentBodies[1]).find((r) => r.name === 'scan')?.response.result;
+  const specScan = firstRecord(seen.agentBodies[0]);
   check(specScan?.counts.units === 6 && specScan.counts.the_pass_thought_lost === 3 && /^W1 0:0\d\.\d–0:\d\d\.\d: a point, the low-detail pass saw: Red wins the point$/.test(specScan.windows[0]), `the scan lists each point as a window to read (${JSON.stringify(specScan?.counts)}; ${specScan?.windows?.[0]})`);
   const researchedSpec = lastResults(seen.agentBodies[1]).find((r) => r.name === 'research')?.response.result;
   check(seen.roleSearch === 1 && /<data>#7, the setter<\/data>/.test(seen.roleAsk) && /^setter: a point is won when The set lands/.test(researchedSpec?.their_role || ''), 'research looks up what wins and loses a point in their role, their words as data');
@@ -474,9 +486,9 @@ try {
   await page.evaluate(() => localStorage.removeItem('thirdeye.learned'));
   await page.setInputFiles('#fileInput', fixture);
   await page.waitForSelector('#verdict:not([hidden])', { timeout: 120000 });
-  const blind = lastResults(seen.agentBodies[1]).find((r) => r.name === 'finish')?.response.result;
-  check(blind?.ok === false && /^The match record isn't read yet\. Scan the match before finishing/.test(blind.problems[0]), 'a finding before the match record is read is sent back: nothing is named off a few frames');
-  const bare = lastResults(seen.agentBodies[3]).find((r) => r.name === 'finish')?.response.result;
+  const record = firstRecord(seen.agentBodies[0]), offered = seen.agentBodies[0].tools[0].functionDeclarations.map((f) => f.name);
+  check(record?.counts?.your_deaths === 5 && !offered.includes('scan'), `the coach starts with the match record, read before its first turn, so no turn goes on asking for it (${record?.counts?.your_deaths} deaths; tools: ${offered.join(', ')})`);
+  const bare = lastResults(seen.agentBodies[1]).find((r) => r.name === 'finish')?.response.result;
   check(bare?.ok === false && bare.problems.some((x) => /Name the biggest reason they lost in this match \(reason\), even if it happened once: what cost them the most at 0:\d\d .*their death/.test(x)), `ending with nothing named, after five deaths, is sent back for the reason (${(bare?.problems || []).map((x) => x.slice(0, 60)).join(' | ')})`);
   check(/what cost you this match · once, not a habit/i.test(await page.locator('.verdict .kind').innerText()) && await page.locator('.verdict h2').innerText() === REASON.reason.toUpperCase() && await page.locator('.key-fix').count() === 1, 'the verdict names what cost them, once, with the moment and what to do instead');
   // the critique: the finding played back with a voice over the video, moment by moment
@@ -504,6 +516,19 @@ try {
   const kept = await page.evaluate(() => JSON.parse(localStorage.getItem('thirdeye.v1')).matches.at(-1));
   check(kept.found === false && kept.reason === REASON.reason, 'history keeps the reason');
   seen.oneOff = false;
+
+  console.log("a finding that doesn't hold up still names what cost them, from what did");
+  seen.agentBodies.length = 0;
+  seen.salvage = true;
+  await page.goto(`${base}#coach`);
+  await page.evaluate(() => localStorage.removeItem('thirdeye.learned'));
+  await page.setInputFiles('#fileInput', fixture);
+  await page.waitForSelector('#verdict:not([hidden])', { timeout: 120000 });
+  const salvaged = await page.evaluate(() => JSON.parse(localStorage.getItem('thirdeye.v1')).matches.at(-1));
+  check(seen.agentBodies.length === 5 && await page.locator('.verdict h2').innerText() === 'FIGHTING WIDE ANGLES ALONE' && salvaged.reason === 'Fighting wide angles alone', `sent back twice and told to decide, the finding still doesn't stand, and the review names it anyway from the moment that held up, never "nothing named" (${await page.locator('.verdict h2').innerText()})`);
+  check(/didn't hold up after two send-backs, so this names what the moments both checks let stand \(1 of its moments were left out\)/.test(await page.locator('.verdict .trust.warn').innerText()) && await page.locator('.key-fix').count() === 1, `the report says so, and shows only the moment that held up (${await page.locator('.verdict .trust').innerText()})`);
+  check(await page.locator('#cqChapters .cq-ch').count() >= 4 && /Reset after the first contact/.test(await page.locator('#cqChapters').innerText()), 'the critique walks every loss, each with what went wrong and what to do instead');
+  seen.salvage = false;
 
   if (process.env.E2E_SHOTS) { await page.goto(`${base}#reviews`); await page.waitForSelector('#reviews:not([hidden])'); await page.waitForTimeout(800); await shot(page, 'reviews'); }
   console.log('phone width');
