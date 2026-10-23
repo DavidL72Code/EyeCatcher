@@ -20,6 +20,10 @@
   const write = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} };
   const today = () => new Date().toLocaleDateString('en-CA');
   const niceDate = (d) => new Date(`${d}T12:00:00`).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  // when a review was made: its own time, or the time its id was made at (uid), so older reviews have one too
+  const madeAt = (m) => { const t = m?.at ?? (/^m[0-9a-z]{8,}$/.test(m?.id || '') ? parseInt(m.id.slice(1, -4), 36) : NaN); return t > 1.6e12 && t < 4e12 ? t : null; };
+  const niceWhen = (m) => { const t = madeAt(m); return t ? new Date(t).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }) : niceDate(m.date); };
+  const newestFirst = (list) => [...list].reverse().sort((a, b) => (madeAt(b) ?? 0) - (madeAt(a) ?? 0));
   const uid = () => `m${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`;
 
   const vid = $('video'), timeline = $('timeline');
@@ -750,7 +754,7 @@
   async function finishReview(r) {
     stopStatus();
     run.done = true;
-    const match = { id: run.id, date: today(), name: run.video.name, video: { size: run.video.size, lastModified: run.video.file.lastModified }, game: run.game.name, found: r.found, habit: r.habit, ...(r.reason ? { reason: r.reason } : {}), habitId: r.habitId, drill: r.drill, recheck: r.recheck, aim: r.aim, progress: r.progress, stats: r.stats, status: 'new' };
+    const match = { id: run.id, date: today(), at: Date.now(), name: run.video.name, video: { size: run.video.size, lastModified: run.video.file.lastModified }, game: run.game.name, found: r.found, habit: r.habit, ...(r.reason ? { reason: r.reason } : {}), habitId: r.habitId, drill: r.drill, recheck: r.recheck, aim: r.aim, progress: r.progress, stats: r.stats, status: 'new' };
     history = C.addMatch(history, match);
     write(STORE, history);
     files.set(run.id, run.file);
@@ -1463,11 +1467,11 @@
   // ---------- past reviews ----------
   // the sidebar's latest three, each a way back into its review
   async function renderRecent() {
-    const latest = [...history.matches].reverse().slice(0, 3), box = $('sideRecent');
+    const latest = newestFirst(history.matches).slice(0, 3), box = $('sideRecent');
     box.hidden = !latest.length;
     if (!latest.length) return;
     const thumbs = await R.thumbs().catch(() => ({}));
-    box.innerHTML = `<h2>Latest</h2><ol>${latest.map((m) => `<li><a href="#review/${esc(m.id)}"><span class="sr-shot">${thumbs[m.id] ? `<img src="${thumbs[m.id]}" alt="" />` : ''}</span><span class="sr-text"><span class="sr-habit">${esc(m.found ? m.habit : m.reason || 'Nothing named')}</span><span class="sr-meta">${esc(gameName(m.game))} · ${niceDate(m.date)}</span></span></a></li>`).join('')}</ol>`;
+    box.innerHTML = `<h2>Latest</h2><ol>${latest.map((m) => `<li><a href="#review/${esc(m.id)}"><span class="sr-shot">${thumbs[m.id] ? `<img src="${thumbs[m.id]}" alt="" />` : ''}</span><span class="sr-text"><span class="sr-habit">${esc(m.found ? m.habit : m.reason || 'Nothing named')}</span><span class="sr-meta">${niceWhen(m)} · ${esc(gameName(m.game))}</span></span></a></li>`).join('')}</ol>`;
   }
 
   const TAGS = { better: 'Better', same: 'Same', worse: 'Worse' };
@@ -1482,7 +1486,7 @@
     renderStart();
     const thumbs = await R.thumbs().catch(() => ({}));
     const shelves = new Map();
-    for (const m of [...history.matches].reverse()) {
+    for (const m of newestFirst(history.matches)) {
       const name = gameName(m.game), k = name.toLowerCase();
       if (!shelves.has(k)) shelves.set(k, { name, list: [] });
       shelves.get(k).list.push(m);
@@ -1492,7 +1496,7 @@
       return `<li><a class="card" href="#review/${esc(m.id)}">
         <span class="c-shot">${thumbs[m.id] ? `<img src="${thumbs[m.id]}" alt="" />` : '<svg aria-hidden="true"><use href="#eye" /></svg>'}${tag ? `<span class="c-tag${tag.on ? ' on' : ''}">${esc(tag.text)}</span>` : ''}</span>
         <span class="c-habit${m.found ? '' : ' none'}">${esc(m.found ? m.habit : m.reason || 'Nothing named')}</span>
-        <span class="c-meta">${niceDate(m.date)}</span>
+        <span class="c-meta">${niceWhen(m)}</span>
       </a></li>`;
     };
     const working = history.habit && gameName(history.habit.game).toLowerCase();
@@ -1522,7 +1526,7 @@
     releaseLater(old);
     run = { id, replay: true, done: true, rec, file: null, handle: rec?.handle || null, video: { name: m.name, duration: rec?.video.duration || 0 }, game: rec?.game || null, workingOn: rec?.workingOn || null, abort: new AbortController(), looks: 0, turns: 0, calls: 0, beat: null, log: [] };
     $('crumbs').hidden = false;
-    $('crumbs').innerHTML = `<a class="back" href="#reviews"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3 5 8l5 5" /></svg>All reviews</a><span>${niceDate(m.date)} · ${esc(m.game || '')} · ${esc(m.name)}</span>${D && rec?.path ? `<button class="quiet reveal" type="button" id="revealBtn">${/Mac/.test(navigator.userAgent) ? 'Show in Finder' : 'Show the file'}</button>` : ''}`;
+    $('crumbs').innerHTML = `<a class="back" href="#reviews"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3 5 8l5 5" /></svg>All reviews</a><span>${niceWhen(m)} · ${esc(m.game || '')} · ${esc(m.name)}</span>${D && rec?.path ? `<button class="quiet reveal" type="button" id="revealBtn">${/Mac/.test(navigator.userAgent) ? 'Show in Finder' : 'Show the file'}</button>` : ''}`;
     $('revealBtn')?.addEventListener('click', () => D.reveal(rec.path));
     if (!rec) {
       $('review').classList.add('bare');
