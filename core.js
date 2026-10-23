@@ -1257,7 +1257,7 @@
    * sample (t under 0.5) happened before the recording, so it has no window.
    * events: from the kill feed; firing: [{ from, to }]. Returns [{ from, to, events, firing }] in time order.
    */
-  const CLIP_RANK = { death: 4, near_death: 3, ally_death: 3, kill: 2 };
+  const CLIP_RANK = { death: 4, point_lost: 4, near_death: 3, ally_death: 3, kill: 2, point_won: 2 };
   // hits: fights from the damage-dealt counter (the player hit someone), ranked with kills
   // deadFor: a teammate going down while the player is dead gets no window; the player wasn't there
   function eventWindows(events, firing = [], { duration = Infinity, before = 7, after = 3, max = 16, hits = [], deadFor = 5 } = {}) {
@@ -1276,6 +1276,11 @@
     return [...out].sort((a, b) => b.rank - a.rank || a.from - b.from).slice(0, max).sort((a, b) => a.from - b.from)
       .map(({ rank, ...w }) => ({ ...w, from: round(w.from, 1), to: round(w.to, 1) }));
   }
+  // When a window holding a loss (their death, a point against) is read as video, it starts this far back, to show what
+  // led to it: the decision that lost a fight is often well before the death (League, Oct 23: an overextension alone
+  // and a Warwick ult, read off a few stills as "turret range"). The window itself, one fight, stays as it is.
+  const RUN_UP = 18;
+  const readFrom = (w) => { const loss = (w.events || []).filter((e) => e.kind === 'death' || e.kind === 'point_lost').map((e) => e.t); return loss.length ? Math.max(0, Math.min(w.from, Math.min(...loss) - RUN_UP)) : w.from; };
   /**
    * The fights, from the clip read of each window: one engagement per window, unless the clip shows no fight there and
    * the kill feed has nothing in it (a reload or a weapon swap). Its outcome is the kill feed's (a death of theirs in
@@ -1287,6 +1292,8 @@
     const inside = (w, kind) => (events || []).some((e) => e.kind === kind && e.t >= w.from && e.t <= w.to);
     windows.forEach((w, i) => {
       const r = readings[i];
+      // a window kept to be watched, over a record that has its fights already (no kill feed): no fight of its own
+      if (w.watch) return;
       // A unit of play (footage of the whole match): once read, a play with the read's outcome for the player and who
       // decided it; unread, nothing is known about it yet (unreadUnits).
       if (w.unit) {
@@ -1597,12 +1604,14 @@
   /**
    * A HUD readout's box [x, y, w, h] grown to at least minH of the screen tall, about its middle, for reading its number:
    * a learned health box can hold only the bar under the number (Marvel Rivals' 32/250, Oct 22), and read off the bar
-   * alone the HP never showed the 0 of a death.
+   * alone the HP never showed the 0 of a death. Not wider, by default: grown to 10% wide, League's kill-count box beside
+   * its K/D/A read it, but one learned on the stats panel read attack damage and move speed rising as deaths (Oct 23).
+   * A box in the wrong place is better read as nothing than as another number.
    */
-  const READOUT_H = 0.07;
-  function readoutRegion([x, y, w, h], minH = READOUT_H) {
-    if (h >= minH) return [x, y, w, h];
-    return [x, round(clamp(y + h / 2 - minH / 2, 0, 1 - minH), 4), w, minH];
+  const READOUT_H = 0.07, READOUT_W = 0;
+  function readoutRegion([x, y, w, h], minH = READOUT_H, minW = READOUT_W) {
+    const ww = Math.max(w, minW), hh = Math.max(h, minH);
+    return [ww === w ? x : round(clamp(x + w / 2 - ww / 2, 0, 1 - ww), 4), hh === h ? y : round(clamp(y + h / 2 - hh / 2, 0, 1 - hh), 4), ww, hh];
   }
 
   // ---------- history across matches ----------
@@ -1643,8 +1652,8 @@
     BudgetError, createBudget, left, spend, budgetLine,
     SLACK, MIN_EVIDENCE, LEAD_MAX, createLedger, recordLook, seen, deadForOf, deathAt, LOSS_LOOKS, losses, lossGap, lossMoments, atLoss, MIN_LOSSES, MAX_TRIES, fightOf, retryRefusal, problemKind, checkFinish,
     STATUSES, applyNote, boardBrief, unreadDowns, unreadUnits, cutTimes, snapUnits, KINDS, normalizeEvents, mergeEvents, eventsBrief,
-    pixelTeam, killfeedRows, teamLines, colorBands, fitGrid, rowDistance, SAME_ROW, sameRow, freshRows, nameKey, sameName, feedSightings, choosePlayer, whoIsPlayer, buildKillfeed, confirmByBanners, cutNames, aliasNames, feedCharacters, counterRises, hudKills, hudRecord, mergeCounts, riseSpans, lowSpans, timesIn, nearDeaths, NEAR_DEATH, controlClaims, sameSide, trustCounter, settleFights, pointsTaken, oneDeathEach, eventWindows, fightsFromClips, clipMoments, feedText, textRows, textEdge, onEdge, feedBand, nameColors, textFeedReads, textFeedSightings, teamsByColor,
-    ammoReading, shotsFired, fireTimes, groupFights, mergeFights, MAX_FRAMES, framePlan, CLIP_LOOK, clipPlan, claimAfter, regionRect, READOUT_H, readoutRegion,
+    pixelTeam, killfeedRows, teamLines, colorBands, fitGrid, rowDistance, SAME_ROW, sameRow, freshRows, nameKey, sameName, feedSightings, choosePlayer, whoIsPlayer, buildKillfeed, confirmByBanners, cutNames, aliasNames, feedCharacters, counterRises, hudKills, hudRecord, mergeCounts, riseSpans, lowSpans, timesIn, nearDeaths, NEAR_DEATH, controlClaims, sameSide, trustCounter, settleFights, pointsTaken, oneDeathEach, eventWindows, readFrom, RUN_UP, fightsFromClips, clipMoments, feedText, textRows, textEdge, onEdge, feedBand, nameColors, textFeedReads, textFeedSightings, teamsByColor,
+    ammoReading, shotsFired, fireTimes, groupFights, mergeFights, MAX_FRAMES, framePlan, CLIP_LOOK, clipPlan, claimAfter, regionRect, READOUT_H, READOUT_W, readoutRegion,
     emptyHistory, addMatch, acceptHabit, historyFor, dropHabit, compareAim, historyBrief,
   };
   root.ThirdeyeCore = api;

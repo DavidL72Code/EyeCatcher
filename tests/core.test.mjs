@@ -190,6 +190,9 @@ test('a readout box thin as a bar grows about its middle to hold the number abov
   assert.ok(y < 0.905 && y + h > 0.948);
   assert.deepEqual(C.readoutRegion([0.1, 0.02, 0.3, 0.09]), [0.1, 0.02, 0.3, 0.09]);
   assert.deepEqual(C.readoutRegion([0.4, 0.99, 0.1, 0.01]), [0.4, 0.93, 0.1, 0.07]);
+  // not wider by default (a box on the wrong panel read other numbers as the count); asked, it widens about its middle
+  assert.deepEqual(C.readoutRegion([0.889, 0.006, 0.029, 0.018]), [0.889, 0, 0.029, 0.07]);
+  assert.deepEqual(C.readoutRegion([0.889, 0.006, 0.029, 0.018], 0.07, 0.1), [0.8535, 0, 0.1, 0.07]);
 });
 
 test('history keeps the accepted habit and compares the next match to its baseline', () => {
