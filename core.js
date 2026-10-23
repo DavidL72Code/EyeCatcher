@@ -225,7 +225,7 @@
   // Each send-back as a kind of reason, so the same reason counts again whatever moment or move it names.
   const PROBLEM_KINDS = [
     // a field to fill in, not a reason the finding is wrong: it never counts toward deciding now (agent.js)
-    ['format', /Give one specific drill|Say what to check in the next match|must be one of/],
+    ['format', /Give one specific drill|Say what to check in the next match|must be one of|isn't in the match record or a name on screen|Each moment you cite is the loss itself/],
     ['unseen', /haven't looked closely/],
     ['too_few', /Cite at least \d+ separate moments/],
     ['aim_count', /at least \d+ measure_aim readings/],
@@ -1614,6 +1614,18 @@
     return [ww === w ? x : round(clamp(x + w / 2 - ww / 2, 0, 1 - ww), 4), hh === h ? y : round(clamp(y + h / 2 - hh / 2, 0, 1 - hh), 4), ww, hh];
   }
 
+  /**
+   * The characters a claim names that nothing backs: names from the game's roster (research's reference) found in text
+   * but not in what the record shows (its lines, kill-feed names and characters, the player's own). The clip reads
+   * named a different champion for one death each run (Rengar, Syndra; Oct 23), none of them shown.
+   */
+  const asWord = (n) => new RegExp(`(^|[^a-z0-9])${String(n).toLowerCase().replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}([^a-z0-9]|$)`);
+  const namesIn = (text, roster) => { const t = String(text || '').toLowerCase(); return [...new Set((roster || []).filter((n) => String(n || '').length >= 3 && asWord(n).test(t)))]; };
+  function unshownNames(text, roster, recordText) {
+    const known = new Set(namesIn(recordText, roster).map((n) => n.toLowerCase()));
+    return namesIn(text, roster).filter((n) => !known.has(n.toLowerCase()));
+  }
+
   // ---------- history across matches ----------
   const emptyHistory = () => ({ habit: null, matches: [] });
   const addMatch = (history, match) => ({ ...history, matches: [...(history.matches || []), match].slice(-30) });
@@ -1653,7 +1665,7 @@
     SLACK, MIN_EVIDENCE, LEAD_MAX, createLedger, recordLook, seen, deadForOf, deathAt, LOSS_LOOKS, losses, lossGap, lossMoments, atLoss, MIN_LOSSES, MAX_TRIES, fightOf, retryRefusal, problemKind, checkFinish,
     STATUSES, applyNote, boardBrief, unreadDowns, unreadUnits, cutTimes, snapUnits, KINDS, normalizeEvents, mergeEvents, eventsBrief,
     pixelTeam, killfeedRows, teamLines, colorBands, fitGrid, rowDistance, SAME_ROW, sameRow, freshRows, nameKey, sameName, feedSightings, choosePlayer, whoIsPlayer, buildKillfeed, confirmByBanners, cutNames, aliasNames, feedCharacters, counterRises, hudKills, hudRecord, mergeCounts, riseSpans, lowSpans, timesIn, nearDeaths, NEAR_DEATH, controlClaims, sameSide, trustCounter, settleFights, pointsTaken, oneDeathEach, eventWindows, readFrom, RUN_UP, fightsFromClips, clipMoments, feedText, textRows, textEdge, onEdge, feedBand, nameColors, textFeedReads, textFeedSightings, teamsByColor,
-    ammoReading, shotsFired, fireTimes, groupFights, mergeFights, MAX_FRAMES, framePlan, CLIP_LOOK, clipPlan, claimAfter, regionRect, READOUT_H, READOUT_W, readoutRegion,
+    ammoReading, shotsFired, fireTimes, groupFights, mergeFights, MAX_FRAMES, framePlan, CLIP_LOOK, clipPlan, claimAfter, regionRect, READOUT_H, READOUT_W, readoutRegion, namesIn, unshownNames,
     emptyHistory, addMatch, acceptHabit, historyFor, dropHabit, compareAim, historyBrief,
   };
   root.ThirdeyeCore = api;

@@ -1165,6 +1165,13 @@ test('a sparse counter read through the match and a fine one around what happene
   assert.equal(C.mergeCounts(coarse, null).deaths.length, 8);
 });
 
+test('a character a claim names that the record never shows is found, a name it does show is not', () => {
+  const roster = ['Syndra', 'Blitzcrank', 'Miss Fortune', 'Vi', 'Warwick'];
+  assert.deepEqual(C.unshownNames('Ambushed and killed by Syndra while Blitzcrank pulled', roster, 'Blitzcrank (teammate) ; Miss Fortune'), ['Syndra']);
+  assert.deepEqual(C.unshownNames('Caught by warwick in the river', roster, 'Warwick (enemy) killed you'), []);
+  assert.deepEqual(C.unshownNames('a vision ward', roster, ''), []); // "vi" inside a word, and too short to count anyway
+});
+
 test('the HP number under a quarter of full health, the reading next to it low too, is a near-death', () => {
   // Marvel Rivals, 1:17-1:21 and 4:26-4:31: 80 then 50 of 250 and healed (a near-death); 121 then 0 (the death itself)
   const hp = [[71, 250], [73, 250], [75, 250], [77, 80], [79, 50], [81, 139], [83, 250], [262, 250], [264, 250], [266, 121], [268, 0], [270, 0], [272, 250], [300, 250], [302, 40], [304, 250]].map(([t, value]) => ({ t, value }));

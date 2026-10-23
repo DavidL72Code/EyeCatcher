@@ -756,6 +756,7 @@
   const VERIFY = { type: 'object', properties: { boxes: { type: 'array', items: { type: 'object', properties: { image: { type: 'integer' }, box: { type: 'integer' }, outlines: { type: 'string', enum: [...ELEMENTS, 'other', 'nothing'] } }, required: ['image', 'box', 'outlines'] } } }, required: ['boxes'] };
   // the counters a no-kill-feed record is read off (agent.js readCounters): the player's K/D/A, each side's score, their HP
   const RECORD = ['kill_count', 'scoreboard', 'health'];
+  const KDA_READ = { type: 'object', properties: { kda: { type: 'object', properties: { reads: { type: 'array', items: { type: 'string', description: 'what the K/D/A reads in that picture, like 3/1/4, or empty' } }, box: { type: 'integer', description: 'the number of the box that holds it; 0 when none does' } }, required: ['reads', 'box'] } } };
   const RELOCATE = { type: 'object', properties: { found: { type: 'array', items: { type: 'object', properties: { name: { type: 'string', enum: ELEMENTS }, picture: { type: 'integer' }, box: BOX }, required: ['name', 'picture', 'box'] } } }, required: ['found'] };
   /**
    * Whether a region [x, y, w, h] is long like a bar or a row of digits in a frame { w, h }: twice as long as it is
@@ -817,15 +818,27 @@
     }
     const images = await Promise.all(pictures.map((c) => V.toJpeg(c, 0.85)));
     const parts = images.flatMap((im, i) => [{ text: `Picture ${i + 1}` }, { inlineData: { mimeType: im.mimeType, data: im.data } }]);
-    const asked = character ? { ...VERIFY, properties: { ...VERIFY.properties, ...CHARACTER_READ.properties }, required: [...VERIFY.required, 'character'] } : VERIFY;
+    // and where the player's own K/D/A is, if the HUD shows one: the learn call has boxed League's on it, beside it (the
+    // CS), and on the stats panel, from one run to the next (Oct 23), and a box off it read the wrong number as deaths
+    const kdaAsk = profile.genre !== 'chess' && names.some((n) => n === 'kill_count' || n === 'scoreboard');
+    const withKda = kdaAsk ? { ...VERIFY, properties: { ...VERIFY.properties, ...KDA_READ.properties } } : VERIFY;
+    const asked = character ? { ...withKda, properties: { ...withKda.properties, ...CHARACTER_READ.properties }, required: [...withKda.required, 'character'] } : withKda;
     const resp = await counted(G.generate)({
-      contents: [{ role: 'user', parts: [...parts, { text: `Each picture is a ${profile.name} screen with numbered yellow boxes drawn on it; a number is the same box in every picture. For each box in each picture, say which one of these it mainly outlines: ${ELEMENTS.map((e) => `${e} (${WHAT[e]})`).join('; ')}; other for something else, nothing when it outlines only the game world. Look at the whole screen: the element a box claims may be somewhere else.${character ? " Then, character: which character (agent, hero, legend, champion, or fighter) the player plays, by the game's own name for it, from their own portrait and ability icons on the HUD and the character the camera follows; empty if you can't tell." : ''}` }] }],
+      contents: [{ role: 'user', parts: [...parts, { text: `Each picture is a ${profile.name} screen with numbered yellow boxes drawn on it; a number is the same box in every picture. For each box in each picture, say which one of these it mainly outlines: ${ELEMENTS.map((e) => `${e} (${WHAT[e]})`).join('; ')}; other for something else, nothing when it outlines only the game world. Look at the whole screen: the element a box claims may be somewhere else.${kdaAsk ? " Then kda: if the HUD shows the player's own kills, deaths, and assists written together (like 3/1/4), what it reads in each picture, and the number of the box that holds it, 0 when none of the boxes does." : ''}${character ? " Then, character: which character (agent, hero, legend, champion, or fighter) the player plays, by the game's own name for it, from their own portrait and ability icons on the HUD and the character the camera follows; empty if you can't tell." : ''}` }] }],
       generationConfig: { temperature: 0, responseMimeType: 'application/json', responseSchema: asked, mediaResolution: 'MEDIA_RESOLUTION_HIGH' },
     }, { signal, onNotice });
     const answer = G.parseJSON(G.textOf(resp));
     const seen = character ? { characterSeen: String(answer.character || '').trim() } : {};
     const said = (answer.boxes || []).map((x) => ({ ...x, outlines: x.outlines === 'kill_feed' ? 'killfeed' : x.outlines }));
     const { kept, dropped, regions } = judgeBoxes({ names, said, digits, pictures: times.length, regions: profile.regions, frame, strict });
+    const kdaReads = (answer.kda?.reads || []).map((r) => String(r || '').trim()).filter((r) => /^\d{1,2}\s*\/\s*\d{1,2}\s*\/\s*\d{1,2}$/.test(r));
+    const kdaShown = kdaAsk && kdaReads.length >= Math.ceil(times.length / 2), kdaBox = Number(answer.kda?.box) || 0;
+    const holds = (n) => names.indexOf(n) + 1 === kdaBox && !!regions[n];
+    if (kdaShown && !holds('kill_count') && !holds('scoreboard')) {
+      if (regions.kill_count) { dropped.push({ name: 'kill_count', shows: 'other', box: regions.kill_count, kda: kdaReads[0] }); delete regions.kill_count; }
+      kept.splice(0, kept.length, ...kept.filter((k) => !/^kill_count\b/.test(k)));
+    }
+    const kdaHint = kdaShown ? kdaReads[0] : '';
     // The counters that make the record, any the learn call didn't box, are asked for once with the boxes that went:
     // it boxed League's K/D/A counter in one call and missed it in the next (Oct 22). One more call per recording.
     const missing = again && profile.genre !== 'chess' ? RECORD.filter((n) => !regions[n] && !dropped.some((d) => d.name === n)) : [];
@@ -836,7 +849,7 @@
     const shown = (d) => (d.shows === 'nothing' ? 'only the game world' : d.shows === 'other' ? (BARS.includes(d.name) ? "something that's neither a bar nor a number" : 'something else') : WHAT[d.shows] || d.shows);
     const plainImages = await Promise.all(clean.map((c) => V.toJpeg(c, 0.85)));
     const ask = await counted(G.generate)({
-      contents: [{ role: 'user', parts: [...plainImages.flatMap((im, i) => [{ text: `Picture ${i + 1}` }, { inlineData: { mimeType: im.mimeType, data: im.data } }]), { text: `Each picture is a ${profile.name} screen. ${dropped.length ? `These elements were boxed in the wrong place: ${dropped.map((d) => `${d.name} (${WHAT[d.name]}${BARS.includes(d.name) ? ', a bar or a number' : ''}): the box [ymin, xmin, ymax, xmax] = [${at(d.box).join(', ')}] in 0-1000 showed ${shown(d)}`).join('; ')}. ` : ''}${missing.length ? `These weren't boxed at all: ${missing.map((n) => `${n} (${WHAT[n]}${n === 'health' ? ', written as a number' : ''})`).join('; ')}. ` : ''}For each one the screen shows${dropped.length ? ' somewhere else' : ''}, give a tight box [ymin, xmin, ymax, xmax] scaled 0-1000 in the picture where it's clearest. Leave out one the screen doesn't show.` }] }],
+      contents: [{ role: 'user', parts: [...plainImages.flatMap((im, i) => [{ text: `Picture ${i + 1}` }, { inlineData: { mimeType: im.mimeType, data: im.data } }]), { text: `Each picture is a ${profile.name} screen. ${dropped.length ? `These elements were boxed in the wrong place: ${dropped.map((d) => `${d.name} (${WHAT[d.name]}${BARS.includes(d.name) ? ', a bar or a number' : ''}${d.name === 'kill_count' && kdaHint ? `, the K/D/A, which reads ${kdaHint} in one of these pictures` : ''}): the box [ymin, xmin, ymax, xmax] = [${at(d.box).join(', ')}] in 0-1000 showed ${d.kda ? 'another number' : shown(d)}`).join('; ')}. ` : ''}${missing.length ? `These weren't boxed at all: ${missing.map((n) => `${n} (${WHAT[n]}${n === 'health' ? ', written as a number' : ''})`).join('; ')}. ` : ''}For each one the screen shows${dropped.length ? ' somewhere else' : ''}, give a tight box [ymin, xmin, ymax, xmax] scaled 0-1000 in the picture where it's clearest. Leave out one the screen doesn't show.` }] }],
       generationConfig: { temperature: 0, responseMimeType: 'application/json', responseSchema: RELOCATE, mediaResolution: 'MEDIA_RESOLUTION_HIGH' },
     }, { signal, onNotice });
     const wanted = new Set([...dropped.map((d) => d.name), ...missing]);
