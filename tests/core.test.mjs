@@ -164,6 +164,13 @@ test('a clip look watches the run-up, inside the video, at least a second long',
   assert.deepEqual(C.clipPlan({ t: 60, before: undefined, after: null, fps: 'x', duration: 400 }), { t: 60, from: 54, to: 61, fps: 6 });
   // at the start and the end of the video
   assert.deepEqual(C.clipPlan({ t: 2, duration: 400 }), { t: 2, from: 0, to: 3, fps: 6 });
+  assert.deepEqual(C.clipPlan({ t: 60, after: 7, maxAfter: 8, duration: 400 }), { t: 60, from: 54, to: 67, fps: 6 });
+  // a claim's check runs to the end of the fight its moment falls in, 3 to 8 s after it
+  const fights = [{ t: 103, kind: 'engagement', from: 103, to: 109 }, { t: 108, kind: 'death' }, { t: 300, kind: 'engagement', from: 290, to: 330 }];
+  assert.equal(C.claimAfter(fights, 103), 7);
+  assert.equal(C.claimAfter(fights, 108.5), 3);
+  assert.equal(C.claimAfter(fights, 200), 3);
+  assert.equal(C.claimAfter(fights, 295), 8);
   assert.deepEqual(C.clipPlan({ t: 399.5, before: 0, after: 0, duration: 400 }), { t: 399.5, from: 398.95, to: 399.95, fps: 6 });
 });
 

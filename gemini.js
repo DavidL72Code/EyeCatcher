@@ -85,6 +85,7 @@
   // models that just hit a rate limit sit out until their cooldown ends, so the next request doesn't wait on them again.
   // Google Search grounding has its own free quota, so search calls cool down separately from plain calls.
   const coolUntil = new Map();
+  const minuteCool = new Map(); // of those, the ones sitting out only a per-minute limit
   const now = () => Date.now();
   const usesSearch = (body) => (body.tools || []).some((t) => t.google_search);
   // models this key can't use are remembered for a day across page loads, so no request is wasted on them
@@ -159,7 +160,7 @@
             await sleep(wait);
             continue;
           }
-          if (e.status === 429) coolUntil.set(lane(model), now() + (retryDelayMs(e.details) ?? 60000));
+          if (e.status === 429) { const until = now() + (retryDelayMs(e.details) ?? 60000); coolUntil.set(lane(model), until); minuteCool.set(lane(model), until); }
           if (busy) coolUntil.set(model, now() + 60000); // overloaded twice running: let the next request start elsewhere
           if (busy || e.status === 429) break; // still failing after a retry: next model
           throw e;
@@ -175,12 +176,15 @@
     // limits, so the first key's waits don't apply)
     if (outForDay && spare() && !second) {
       second = true;
-      coolUntil.clear();
+      coolUntil.clear(); minuteCool.clear();
       for (const [m, t] of Object.entries(retired)) if (t > now()) coolUntil.set(m, t);
       onNotice?.("Gemini's daily limit is used up on the first key. Switching to the second key…");
       return generateOnce(body, { signal, onNotice, prefer });
     }
     if (sawBusy?.network && backend()) throw new GeminiError(sawBusy.message, 0, sawBusy.details);
+    // a model left out only while it sits out a per-minute limit may answer in a minute too, the others being out for the
+    // day: on Oct 23 Vyse's review ended on "used up on every model" while 3.1 Flash-Lite sat out its 20 s
+    if (!sawMinute && all.some((m) => !models.includes(m) && minuteCool.get(lane(m)) > now())) sawMinute = { details: lastErr?.details };
     // a model that was only busy, or only at its per-minute limit, may answer in a minute: generate waits for it, though
     // the last model tried was out for the day (Oct 22: 3.5 Flash-Lite at its per-minute limit, 3.5 Flash out, and the
     // check ended)

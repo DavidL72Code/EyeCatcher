@@ -1522,13 +1522,22 @@
    * clip is encoded from it, and the app plays the same stretch while the coach watches.
    */
   const CLIP_LOOK = { before: 6, after: 1, fps: 6, maxBefore: 8, maxAfter: 4 };
-  function clipPlan({ t, before = CLIP_LOOK.before, after = CLIP_LOOK.after, fps = CLIP_LOOK.fps, duration = Infinity }) {
+  function clipPlan({ t, before = CLIP_LOOK.before, after = CLIP_LOOK.after, fps = CLIP_LOOK.fps, duration = Infinity, maxAfter = CLIP_LOOK.maxAfter }) {
     const last = Math.max(0, duration - 0.05), num = (x, d) => (Number.isFinite(+x) && x !== null ? +x : d);
-    const b = clamp(num(before, CLIP_LOOK.before), 0, CLIP_LOOK.maxBefore), a = clamp(num(after, CLIP_LOOK.after), 0, CLIP_LOOK.maxAfter);
+    const b = clamp(num(before, CLIP_LOOK.before), 0, CLIP_LOOK.maxBefore), a = clamp(num(after, CLIP_LOOK.after), 0, maxAfter);
     const at = clamp(t, 0, last);
     let from = clamp(at - b, 0, last), to = clamp(at + a, 0, last);
     if (to - from < 1) { to = Math.min(last, from + 1); from = Math.max(0, to - 1); }
     return { t: round(at, 2), from: round(from, 2), to: round(to, 2), fps: clamp(Math.round(num(fps, CLIP_LOOK.fps)) || CLIP_LOOK.fps, 2, 8) };
+  }
+  /**
+   * How long after a claimed moment the check of it looks: to the end of the record's fight or play the moment falls in,
+   * since a claim cited at its start says how it ended (League, Oct 23: "caught, leading to a lost fight and death" at
+   * the fight's 1:43, the death at 1:48, judged on a clip that stopped at 1:46), at least `least` and at most `most` s.
+   */
+  function claimAfter(events, t, { least = 3, most = 8 } = {}) {
+    const ends = (events || []).filter((e) => Number.isFinite(e?.from) && Number.isFinite(e?.to) && e.from - 1 <= t && t <= e.to).map((e) => e.to + 1 - t);
+    return round(clamp(ends.length ? Math.max(...ends) : least, least, most), 2);
   }
   /** A named screen region of the game profile, in frame pixels. */
   function regionRect(profile, name, frame) {
@@ -1586,7 +1595,7 @@
     SLACK, MIN_EVIDENCE, createLedger, recordLook, seen, deadForOf, deathAt, LOSS_LOOKS, losses, lossGap, lossMoments, atLoss, MIN_LOSSES, MAX_TRIES, fightOf, retryRefusal, problemKind, checkFinish,
     STATUSES, applyNote, boardBrief, unreadDowns, unreadUnits, cutTimes, snapUnits, KINDS, normalizeEvents, mergeEvents, eventsBrief,
     pixelTeam, killfeedRows, teamLines, colorBands, fitGrid, rowDistance, SAME_ROW, sameRow, freshRows, nameKey, sameName, feedSightings, choosePlayer, whoIsPlayer, buildKillfeed, confirmByBanners, cutNames, aliasNames, feedCharacters, counterRises, hudKills, hudRecord, nearDeaths, NEAR_DEATH, controlClaims, sameSide, trustCounter, settleFights, pointsTaken, oneDeathEach, eventWindows, fightsFromClips, clipMoments, feedText, textRows, textEdge, onEdge, feedBand, nameColors, textFeedReads, textFeedSightings, teamsByColor,
-    ammoReading, shotsFired, fireTimes, groupFights, mergeFights, MAX_FRAMES, framePlan, CLIP_LOOK, clipPlan, regionRect, READOUT_H, readoutRegion,
+    ammoReading, shotsFired, fireTimes, groupFights, mergeFights, MAX_FRAMES, framePlan, CLIP_LOOK, clipPlan, claimAfter, regionRect, READOUT_H, readoutRegion,
     emptyHistory, addMatch, acceptHabit, historyFor, dropHabit, compareAim, historyBrief,
   };
   root.ThirdeyeCore = api;

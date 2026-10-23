@@ -69,3 +69,12 @@ test('one model at its per-minute limit and the rest out for the day: a minute l
   assert.equal(G.textOf(await ask(G, notices)), 'ok');
   assert.ok(notices.some((n) => /per-minute limit\. Waiting a minute/.test(n)));
 });
+
+test('the one model left sits out its per-minute limit and the rest are out for the day: the next call waits for it', async () => {
+  // Vyse, Oct 23: 3.1 Flash-Lite hit its per-minute limit twice and 3.5 Flash answered; on the next call only 3.5 Flash
+  // was left to try, out for the day, and the review ended on "used up on every model"
+  const { G, notices } = load((model, n) => (model === 'gemini-3.1-flash-lite' ? (n <= 2 ? 'minute' : 200) : model === 'gemini-3.5-flash' && n === 1 ? 200 : 429));
+  assert.equal(G.textOf(await ask(G, notices)), 'ok');
+  assert.equal(G.textOf(await ask(G, notices)), 'ok');
+  assert.ok(notices.some((n) => /per-minute limit\. Waiting a minute/.test(n)));
+});

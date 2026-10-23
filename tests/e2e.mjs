@@ -166,7 +166,7 @@ function gemini(body) {
   if (!body.tools && /a quick look took for their death/.test(prompt)) { seen.deathChecks = (seen.deathChecks || 0) + 1; return text({ deaths: [...prompt.matchAll(/Death (\d+),/g)].map((m) => ({ death: +m[1], dead: true, why: 'the death screen' })) }); }
   // each moment a finding cites, looked at again blind: the frames fit them all
   // the check of a finding's claims against the record: these all fit
-  if (!body.tools && /A coach reviewing/.test(prompt)) { seen.claimChecks++; return text({ claims: [...prompt.matchAll(/Claim (\d+),/g)].map((m) => ({ claim: +m[1], verdict: 'agrees', fact: 'the record' })) }); }
+  if (!body.tools && /A coach reviewing/.test(prompt)) { seen.claimChecks++; return text({ claims: [...prompt.matchAll(/Claim (\d+),/g)].map((m) => ({ claim: +m[1], facts: [{ states: 'what it says', verdict: 'agrees', fact: 'the record' }] })) }); }
   // the synthetic kill feed's names aren't known here, so the scan falls back to the low-detail pass
   if (!body.tools && /kill feed/.test(prompt)) { seen.feedCalls++; return text({ rows: [] }); }
   // the report's marks for moments no measurement covers

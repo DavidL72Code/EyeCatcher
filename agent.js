@@ -776,7 +776,11 @@ fights: every fight the player is in, from the first shot or hit to the last, in
     // Every second look this record may need, in one call: the K/D/A's sample, the pass's deaths, the HP number's
     // zeros, and its lows (secondLooks)
     const downs = hud?.knows.health ? hud.downs : [];
-    const looks = await secondLooks({ video, profile, deaths: [...(hud?.deaths || []).slice(0, 4), ...record.filter((e) => e.kind === 'death'), ...downs], near: hud?.knows.health ? C.nearDeaths(counts.health, { maxes: counts.healthMax }) : [], signal, onNotice });
+    // Lows of the HP number are candidates wherever it was read, since the second look decides each: League's, read at
+    // 140 of 300 moments, wasn't trusted for deaths, and its 280 of 1589 at 4:30 was dropped with it (Oct 23). Only where
+    // it was read throughout does a low it read twice stand when the second look fails.
+    const lows = counts?.health?.length ? C.nearDeaths(counts.health, { maxes: counts.healthMax }).map((e) => (hud.knows.health ? e : { ...e, sure: false })) : [];
+    const looks = await secondLooks({ video, profile, deaths: [...(hud?.deaths || []).slice(0, 4), ...record.filter((e) => e.kind === 'death'), ...downs], near: lows, signal, onNotice });
     calls += looks.calls;
     // Deaths: a K/D/A counter's where it was read (a failed call or a hidden HUD leaves stretches unread), else the HP
     // number's at 0, else each the pass saw looked at again. Kills: a kill count's, where it was read.
@@ -804,7 +808,7 @@ fights: every fight the player is in, from the first shot or hit to the last, in
     const firing = await firingLog({ video, profile, events: record, from, to, signal });
     const hits = await firingLog({ video, profile, events: record, from, to, signal, region: 'damage' });
     record = C.oneDeathEach(record);
-    // the times they nearly died, off the HP number where it was read throughout: losses too, a habit shows there
+    // the times they nearly died, off the HP number and its second look: losses too, a habit shows there
     const near = notDeaths(looks.near, record.filter((e) => e.kind === 'death'));
     if (near.length) { record = [...record, ...near].sort((a, b) => a.t - b.t); from_.push(`near-deaths, where the HP number fell under ${Math.round(C.NEAR_DEATH * 100)}% of full health, each looked at again`); }
     let fights = C.mergeFights(firing, pass.fights, record, hits);
@@ -1051,14 +1055,16 @@ ${spec ? `- Judge the player's own decisions and execution in each ${unit}, apar
   /**
    * Each claim a finding makes, checked against what the review knows as fact: the match record (the kill feed, the
    * board) and the clip reads of that moment. One text-only call; a claim that goes against them is sent back with the
-   * fact. A claim nothing covers stands: the coach may have seen it in frames. Returns { contradicted: [{ t, claim, fact }],
-   * calls }.
+   * fact. A claim nothing covers stands: the coach may have seen it in frames. Each claim is judged fact by fact, as the
+   * check against the video is: judged whole, TenZ's "engaged an enemy and was killed (taking duels without using
+   * utility)" agreed with a record that had the player's Gatecrash 4 s before (Oct 23). Returns { contradicted: [{ t,
+   * claim, fact }], calls }.
    */
-  const CLAIMS = { type: 'object', properties: { claims: { type: 'array', items: { type: 'object', properties: { claim: { type: 'integer' }, verdict: { type: 'string', enum: ['agrees', 'goes_against', 'not_covered'] }, fact: str('the fact it agrees with or goes against, quoted from the facts') }, required: ['claim', 'verdict', 'fact'] } } }, required: ['claims'] };
+  const CLAIMS = { type: 'object', properties: { claims: { type: 'array', items: { type: 'object', properties: { claim: { type: 'integer' }, facts: { type: 'array', items: { type: 'object', properties: { states: str('one thing the claim states'), verdict: { type: 'string', enum: ['agrees', 'goes_against', 'not_covered'] }, fact: str('the fact it agrees with or goes against, quoted from the facts; empty when none') }, required: ['states', 'verdict', 'fact'] } } }, required: ['claim', 'facts'] } } }, required: ['claims'] };
   // memo: claims already checked against the same facts, by moment, words, and facts, so a finding sent back and sent
   // again asks only about what's new (on Vyse, Oct 22, six finish calls checked the same moments six times)
   async function checkClaims({ evidence, events, clips, profile, memo = new Map(), signal, onNotice }) {
-    const items = (Array.isArray(evidence) ? evidence : []).map((e) => ({ t: C.parseTime(e?.t), what: String(e?.what || '').slice(0, 240) })).filter((e) => Number.isFinite(e.t) && e.what);
+    const items = (Array.isArray(evidence) ? evidence : []).map((e) => ({ t: C.parseTime(e?.t), what: String(e?.what || '').slice(0, 400) })).filter((e) => Number.isFinite(e.t) && e.what);
     const facts = items.map(({ t }) => {
       const record = (events || []).filter((e) => e.t >= t - 8 && e.t <= t + 5 && e.kind !== 'engagement').map((e) => `${C.mmss(e.t, true)} ${e.text || e.kind}`);
       const fights = (events || []).filter((e) => e.kind === 'engagement' && e.to >= t - 2 && e.from <= t + 2).map((e) => `${C.mmss(e.from, true)}–${C.mmss(e.to, true)} fight: ${e.text}`);
@@ -1071,11 +1077,14 @@ ${spec ? `- Judge the player's own decisions and execution in each ${unit}, apar
     if (!asked.length) return { contradicted: known, calls: 0 };
     const text = asked.map((e, n) => `Claim ${n + 1}, at ${C.mmss(e.t, true)}: "${e.what}"\nFacts near then:\n${e.facts.map((f) => `- ${f}`).join('\n')}`).join('\n\n');
     const resp = await G.generate({
-      contents: [{ role: 'user', parts: [{ text: `A coach reviewing a ${profile.name} match made these claims about moments in it. The facts under each come from the match record (the kill feed) and clip-by-clip readings of the video; treat them as true. For each claim: agrees when the facts back it or fit it, goes_against when a fact says otherwise (a different player went down, the player traded the kill, nobody fell, it happened at another time), not_covered when the facts say nothing about it. fact: quote the fact you mean.\n\n${text}` }] }],
+      contents: [{ role: 'user', parts: [{ text: `A coach reviewing a ${profile.name} match made these claims about moments in it. The facts under each come from the match record (the kill feed) and clip-by-clip readings of the video; treat them as true. For each claim, name every thing it states (what happened, what the player did or didn't do, what it led to), and judge each one: agrees when the facts back it or fit it, goes_against when a fact says otherwise (a different player went down, the player traded the kill, nobody fell, it happened at another time), not_covered when the facts say nothing about it. A player can be named by their player name or by the character they play: a claim naming one where the facts give only the other is not_covered, not goes_against, unless a fact ties that name to someone else. fact: quote the fact you mean.\n\n${text}` }] }],
       generationConfig: { temperature: 0, responseMimeType: 'application/json', responseSchema: CLAIMS },
     }, { signal, onNotice });
     const out = G.parseJSON(G.textOf(resp)).claims || [];
-    const against = out.filter((c) => c.verdict === 'goes_against' && asked[c.claim - 1]).map((c) => ({ t: asked[c.claim - 1].t, claim: asked[c.claim - 1].what, fact: String(c.fact || '').slice(0, 200), key: asked[c.claim - 1].key }));
+    const against = out.flatMap((c) => {
+      const e = asked[c.claim - 1], f = (Array.isArray(c.facts) ? c.facts : []).find((x) => x?.verdict === 'goes_against');
+      return e && f ? [{ t: e.t, claim: e.what, fact: `${String(f.fact || '').slice(0, 200)} (against "${String(f.states || '').slice(0, 120)}")`, key: e.key }] : [];
+    });
     for (const e of asked) memo.set(e.key, against.find((x) => x.key === e.key)?.fact || null);
     return { contradicted: [...known, ...against.map(({ key, ...x }) => x)], calls: 1 };
   }
@@ -1100,7 +1109,7 @@ ${spec ? `- Judge the player's own decisions and execution in each ${unit}, apar
    * and then counts as unreliable. Returns { checked: [{ t, claim, verdict, facts }], controls, fooled, unreliable,
    * calls }.
    */
-  const VERIFY = { steps: 3, looks: 2, together: 2, wait: 30000, after: 3 };
+  const VERIFY = { steps: 3, looks: 2, together: 2, wait: 30000, after: 3, most: 8 };
   const LAST_TURNS = 1; // turns left at which only finish runs
   const VERDICTS = ['shows', 'goes_against', 'cant_tell'];
   const AREAS = ['killfeed', 'minimap', 'abilities', 'board']; // regions that are an area, not a number to read
@@ -1125,18 +1134,20 @@ ${spec ? `- Judge the player's own decisions and execution in each ${unit}, apar
     const frame = { w: video.width, h: video.height }, clamp = (x) => Math.max(0, Math.min(video.duration - 0.05, x));
     // a number's box grown to hold the number (C.readoutRegion): Rivals' health box held only the bar under it
     const cropOf = (region) => (region === 'full' ? C.regionRect(profile, null, frame) : C.regionRect({ regions: { r: AREAS.includes(region) ? profile.regions[region] : C.readoutRegion(profile.regions[region]) } }, 'r', frame));
+    // to 3 s after the moment, or the end of the record's fight it falls in (C.claimAfter): a claim often says what it
+    // led to (Rocket League, Oct 22: "...allowing the opponent to score" at 4:13, the goal at 4:16, judged against a clip
+    // that stopped at 4:14)
+    const afterOf = (t) => C.claimAfter(events, t, { least: VERIFY.after, most: VERIFY.most });
     const numbers = async (t) => {
       const out = [];
       for (const r of readouts) {
-        const shots = await V.grab(video, [t - 3, t, t + VERIFY.after - 0.5].map(clamp), { crop: cropOf(r), maxDim: 640, quality: 0.9 });
+        const shots = await V.grab(video, [t - 3, t, t + afterOf(t) - 0.5].map(clamp), { crop: cropOf(r), maxDim: 640, quality: 0.9 });
         out.push(...shots.map((f) => ({ mimeType: f.mimeType, data: f.data, label: `The HUD's ${r.replace('_', ' ')} at ${C.mmss(f.t, true)}` })));
       }
       return out;
     };
-    // to 3 s after the moment: a claim often says what it led to (Rocket League, Oct 22: "...allowing the opponent to
-    // score" at 4:13, the goal at 4:16, judged against a clip that stopped at 4:14)
     const runUp = async (t, region = 'full') => {
-      const span = C.clipPlan({ t, after: VERIFY.after, duration: video.duration });
+      const span = C.clipPlan({ t, after: afterOf(t), maxAfter: VERIFY.most, duration: video.duration });
       const c = await V.clip(video, span.from, span.to, { crop: cropOf(region), fps: span.fps, signal, ...LOOK_CLIP }).catch((e) => { if (e?.name === 'AbortError') throw e; return null; });
       if (c) return [{ mimeType: c.mimeType, data: c.data, fps: span.fps, label: `${region === 'full' ? 'The screen' : `The HUD's ${region.replace('_', ' ')}`} from ${C.mmss(span.from, true)} to ${C.mmss(span.to, true)}, as video at ${span.fps} frames a second (its own clock's 0:00 is ${C.mmss(span.from, true)})` }];
       return (await V.grab(video, [t - 1, t, t + 0.5].map(clamp), { crop: cropOf(region), maxDim: region === 'full' ? 1024 : 640, quality: 0.85 })).map((f) => ({ mimeType: f.mimeType, data: f.data, label: `The screen at ${C.mmss(f.t, true)}` }));
@@ -1147,8 +1158,8 @@ ${spec ? `- Judge the player's own decisions and execution in each ${unit}, apar
     let calls = 0;
     const footage = profile.view === 'spectator' ? 'footage of the whole match' : "the player's own screen";
     // how a fact is judged, the same however the claims are grouped
-    const rules = `Name every fact the claim states (what happened, what the player did or didn't do, where others were, what it led to), say what you saw about each, and judge it: shows when you can see it, goes_against when you can see otherwise, cant_tell when the video doesn't show it either way. A fact you can't see is cant_tell, never shows. A number decides what it can: health, the player's own kill or death count, a score that went up between the numbers before and after. When the player's own kill or death count is in view and doesn't change, they didn't get a kill or die there, whatever the picture seems to show. A team's kill total isn't the player's kills. A death shows as a death or respawn screen, a kill cam, or the camera leaving the player; a red tint at the screen's edges while they still move is low health. After a death the screen can show a teammate's view: that isn't the player. A banner or announcement names who it is about; check the name, which the screen can write in other case or spacing (TheName and THE NAME are one). Small text (a name, a banner, a combat report) reads better as stills.`;
-    const system = `You check one claim about a moment of a recorded ${profile.name} match against the video, ${footage}. Someone else made it; you don't know who or why, and it may be false.${who ? ` ${who}.` : ''} You have the run-up to the moment as video and the HUD's numbers a few seconds before, at, and a second after it; look shows more (stills, or another part of the HUD: ${regions.join(', ') || 'none learned'}). Then call verdict once: ${rules}`;
+    const rules = `Name every fact the claim states (what happened, what the player did or didn't do, where others were, what it led to), say what you saw about each, and judge it: shows when you can see it, goes_against when you can see otherwise, cant_tell when the video doesn't show it either way. A fact you can't see is cant_tell, never shows. A number decides what it can: health, the player's own kill or death count, a score that went up between the numbers before and after. When the player's own kill or death count is in view and doesn't change, they didn't get a kill or die there, whatever the picture seems to show. A team's kill total isn't the player's kills. A death shows as a death or respawn screen, a kill cam, or the camera leaving the player; a red tint at the screen's edges while they still move is low health. After a death the screen can show a teammate's view: that isn't the player. A banner or announcement names who it is about; check the name, which the screen can write in other case or spacing (TheName and THE NAME are one). A player can be named by their player name or by the character they play: a claim naming one where the screen shows the other is no contradiction on its own. Small text (a name, a banner, a combat report) reads better as stills.`;
+    const system = `You check one claim about a moment of a recorded ${profile.name} match against the video, ${footage}. Someone else made it; you don't know who or why, and it may be false.${who ? ` ${who}.` : ''} You have the run-up to the moment as video, to a few seconds after it, and the HUD's numbers a few seconds before, at, and after it; look shows more (stills, or another part of the HUD: ${regions.join(', ') || 'none learned'}). Then call verdict once: ${rules}`;
     const judge = async (c) => {
       let looks = 0;
       const tools = [
@@ -1580,7 +1591,12 @@ ${spec ? `- Judge the player's own decisions and execution in each ${unit}, apar
           // of the one reason they lost
           const claimed = a.found !== false ? a.evidence : a.reason ? a.fixes : null;
           if (!problems.length && claimed?.length) {
-            const c = await checkClaims({ evidence: claimed, events: s.events, clips: s.windows.filter((w) => w.reading), profile, memo: s.claimed, signal, onNotice }).catch((e) => { if (e.name === 'AbortError') throw e; return { contradicted: [], calls: 0 }; });
+            // each moment with what the finding says it shows: TenZ's "taking duels without using utility" cited deaths
+            // as "engaged an enemy and was killed", which the record fits, and the Gatecrash it shows 4 s before each
+            // went unchecked (Oct 23)
+            const named = String((a.found !== false ? a.habit || '' : a.reason) || '').trim().replace(/\.$/, '').slice(0, 120);
+            const asSaid = named ? claimed.map((e) => ({ ...e, what: `${String(e?.what || '').trim()} (the finding says this moment shows: ${named})` })) : claimed;
+            const c = await checkClaims({ evidence: asSaid, events: s.events, clips: s.windows.filter((w) => w.reading), profile, memo: s.claimed, signal, onNotice }).catch((e) => { if (e.name === 'AbortError') throw e; return { contradicted: [], calls: 0 }; });
             s.checkCalls += c.calls;
             if (c.calls) onEvent({ type: 'claims_checked', contradicted: c.contradicted });
             for (const x of c.contradicted) problems.push(`At ${C.mmss(x.t, true)} your claim "${x.claim}" goes against what the record shows: ${x.fact}. Say what really happened there, cite other moments, or name what the moments do show.`);
@@ -1720,5 +1736,5 @@ ${spec ? `- Judge the player's own decisions and execution in each ${unit}, apar
     return null;
   }
 
-  root.ThirdeyeAgent = { review, brief, verifyClaims, confirmNear, secondLooks, scanUnits, cutLog, unitLog, readUnits, confirmDeaths, pointBanners, passLog, textFeedRect, readCounters, readHud, scanVideo, shotsAround, refineDeaths, feedStrips, readKillfeed, feedSheet, readTextFeed, readBanners, readClips, ROWS_PER_CALL, fightLog, findHeads, findHead, MAX_ASKS };
+  root.ThirdeyeAgent = { review, brief, checkClaims, verifyClaims, confirmNear, secondLooks, scanUnits, cutLog, unitLog, readUnits, confirmDeaths, pointBanners, passLog, textFeedRect, readCounters, readHud, scanVideo, shotsAround, refineDeaths, feedStrips, readKillfeed, feedSheet, readTextFeed, readBanners, readClips, ROWS_PER_CALL, fightLog, findHeads, findHead, MAX_ASKS };
 })(window);
