@@ -10,8 +10,10 @@
   const MODEL_STORE = 'gemini_model';
   // Tried in order when a model is busy, out of quota, or missing. Every Flash-Lite model comes before regular Flash:
   // Flash-Lite's free daily allowance is far larger, and gemini-3.5-flash was overloaded (503) most of the time in testing.
-  // Regular Flash is only a last resort.
-  const FALLBACK_MODELS = ['gemini-3.5-flash-lite', 'gemini-3.1-flash-lite', 'gemini-flash-lite-latest', 'gemini-3.5-flash', 'gemini-flash-latest'];
+  // Regular Flash is only a last resort. Only fixed versions: an alias (gemini-flash-latest) moves to whatever Google
+  // releases next, so a review could run on a model nobody chose and spend that model's small daily allowance (Oct 22:
+  // the key showed 3.6 and 3.8 Flash requests that no code names).
+  const FALLBACK_MODELS = ['gemini-3.5-flash-lite', 'gemini-3.1-flash-lite', 'gemini-3.5-flash'];
   // Google Search grounding is free only on Gemini 2.5 Flash and Flash-Lite (500 grounded prompts a day, shared, counted
   // per prompt, so one prompt with several searches counts once). Gemini 3 and newer have none on the free tier, so
   // search calls use only these; with a paid key, GEMINI_SEARCH_ALL=1 in .env lets them fall back to the others.
@@ -24,7 +26,11 @@
   const storedKey = () => read(KEY_STORE);
   const storedModel = () => read(MODEL_STORE);
   // apps without a key field set Gemini.preferEnv so .env beats a key saved in the browser earlier
-  function getKey() { return (api.preferEnv ? ENV.GEMINI_API_KEY || storedKey() : storedKey() || ENV.GEMINI_API_KEY) || ''; }
+  // A second key in .env (GEMINI_API_KEY2) takes over once every model is out of its daily limit on the first: each key
+  // has its own free daily allowance. It stays on for the rest of the page's life; the next page starts on the first.
+  let second = false;
+  const spare = () => (!backend() && ENV.GEMINI_API_KEY2) || '';
+  function getKey() { return (second && spare()) || (api.preferEnv ? ENV.GEMINI_API_KEY || storedKey() : storedKey() || ENV.GEMINI_API_KEY) || ''; }
   function setKey(k) { try { localStorage.setItem(KEY_STORE, (k || '').trim()); } catch {} }
   function getModel() { return storedModel() || ENV.GEMINI_MODEL || FALLBACK_MODELS[0]; }
   function setModel(m) { try { localStorage.setItem(MODEL_STORE, (m || '').trim()); } catch {} }
@@ -101,7 +107,7 @@
       } catch (e) {
         const minute = !usesSearch(body) && (e?.busy || (e?.status === 429 && !/PerDay|Thirdeye/i.test(JSON.stringify(e.details || ''))));
         if (!minute || round >= MINUTE_ROUNDS || opts.signal?.aborted) throw e;
-        opts.onNotice?.(e?.busy ? 'Gemini is busy on every model it can use. Waiting a minute…' : 'Gemini is at its per-minute limit on every model. Waiting a minute…');
+        opts.onNotice?.(e?.busy ? (e.status === 429 ? 'Gemini is at its per-minute limit. Waiting a minute…' : 'Gemini is busy on every model it can use. Waiting a minute…') : 'Gemini is at its per-minute limit on every model. Waiting a minute…');
         await sleep(60000);
       }
     }
@@ -116,7 +122,8 @@
     const ready = all.filter((m) => !(coolUntil.get(m) > now()) && !(coolUntil.get(lane(m)) > now()));
     const models = ready.length ? ready : all;
     let lastErr, dropped = false; // dropped: an earlier model is missing for this key (not just out of today's quota)
-    let sawQuota = null, sawBusy = null; // the reason worth reporting if every model fails
+    let outForDay = models.length > 0; // every model tried was out of its daily limit (or missing) on this key
+    let sawQuota = null, sawBusy = null, sawMinute = null; // the reason worth reporting if every model fails
     for (let mi = 0; mi < models.length; mi++) {
       const model = models[mi], next = models[mi + 1];
       for (let attempt = 0; attempt < 2; attempt++) {
@@ -135,7 +142,9 @@
           const busy = [500, 502, 503, 504].includes(e.status) || !!e.network;
           lastErr = e;
           if (e.status === 429) sawQuota = e; else if (busy) sawBusy = e;
+          if (e.status === 429 && !dailyQuota && retryDelayMs(e.details) != null) sawMinute = e;
           if (modelProblem) dropped = true;
+          if (!modelProblem && !dailyQuota && !(e.status === 429 && retryDelayMs(e.details) == null)) outForDay = false;
           if (modelProblem) { // retired or not offered to this key: stop asking it
             coolUntil.set(model, now() + 24 * 3600000); retired[model] = now() + 24 * 3600000;
             try { localStorage.setItem(RETIRED, JSON.stringify(retired)); } catch {}
@@ -162,9 +171,21 @@
     // busy model explains the failure better than the last model in the list being retired.
     // Thirdeye's backend speaks for itself: its own limits, or that it can't be reached
     if (sawQuota && /Thirdeye/.test(JSON.stringify(sawQuota.details || ''))) throw new GeminiError(sawQuota.message, 429, sawQuota.details);
+    // every model out for the day on this key: the second key, when there is one, gets the whole list again (its own
+    // limits, so the first key's waits don't apply)
+    if (outForDay && spare() && !second) {
+      second = true;
+      coolUntil.clear();
+      for (const [m, t] of Object.entries(retired)) if (t > now()) coolUntil.set(m, t);
+      onNotice?.("Gemini's daily limit is used up on the first key. Switching to the second key…");
+      return generateOnce(body, { signal, onNotice, prefer });
+    }
     if (sawBusy?.network && backend()) throw new GeminiError(sawBusy.message, 0, sawBusy.details);
-    // a model that was only busy, not out of its limit, may answer in a minute: generate waits for it
+    // a model that was only busy, or only at its per-minute limit, may answer in a minute: generate waits for it, though
+    // the last model tried was out for the day (Oct 22: 3.5 Flash-Lite at its per-minute limit, 3.5 Flash out, and the
+    // check ended)
     if (sawBusy && !sawBusy.network && !search) throw Object.assign(new GeminiError('Gemini is busy right now. Try again in a minute.', sawBusy.status, sawBusy.details), { busy: true });
+    if (sawMinute && !search) throw Object.assign(new GeminiError("Gemini is at its per-minute limit. Try again in a minute.", 429, sawMinute.details), { busy: true });
     if (sawQuota) throw new GeminiError(search ? 'Gemini\'s free web searches are used up for now (the daily limit is small). Try again in a few minutes, or tomorrow.' : 'Gemini\'s free limit is used up on every model. Try again in a few minutes, or tomorrow if it\'s the daily limit.', 429, sawQuota.details);
     if (sawBusy) throw new GeminiError('Gemini is busy right now. Try again in a minute.', sawBusy.status, sawBusy.details);
     throw lastErr;
@@ -245,7 +266,8 @@
   async function runAgent({ system, prompt, images = [], tools, onStep, maxSteps = 12, signal, onNotice, history = [], parallel = false, force = false, temperature = 0.3, stopOn = null, keepImages = Infinity, config = {} }) {
     const decls = tools.map(({ name, description, parameters }) => ({ name, description, ...(parameters ? { parameters } : {}) }));
     const byName = Object.fromEntries(tools.map((t) => [t.name, t]));
-    const first = [...images.map((im) => ({ inlineData: { mimeType: im.mimeType, data: im.data } })), { text: prompt }];
+    // images may carry a label (text before it) and, for video, fps, as a tool result's do
+    const first = [...images.flatMap((im) => [...(im.label ? [{ text: im.label }] : []), { inlineData: { mimeType: im.mimeType, data: im.data }, ...(im.fps ? { videoMetadata: { fps: im.fps } } : {}) }]), { text: prompt }];
     const contents = [...history, { role: 'user', parts: first }];
     for (let step = 0; step < maxSteps; step++) {
       onStep?.({ type: 'think', step });

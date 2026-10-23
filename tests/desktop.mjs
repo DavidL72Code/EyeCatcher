@@ -36,6 +36,8 @@ try {
   check(await page.evaluate(() => typeof window.thirdeyeDesktop?.remember === 'function' && typeof window.require === 'undefined' && typeof window.process === 'undefined'), 'the page gets the recording bridge and nothing of Node');
   const gem = await page.evaluate(() => ({ env: { ...window.__ENV__ }, has: window.Gemini.hasKey(), via: window.Gemini.backendUrl(), keyBox: !document.querySelector('#keyBox').hidden }));
   check(gem.via === 'http://127.0.0.1:8799' && !('GEMINI_API_KEY' in gem.env) && gem.has && !gem.keyBox, 'Gemini goes through the backend: the page has its address and no key, and asks for none');
+  const voice = await page.evaluate(() => fetch('/voice').then((r) => (r.ok ? r.json() : { status: r.status })));
+  check(voice.voices?.am_michael === 'Michael', `the critique's voice is made on this computer, for the app's own page (${JSON.stringify(voice)})`);
   const blocked = await page.evaluate(async () => {
     const seen = [];
     document.addEventListener('securitypolicyviolation', (e) => seen.push(new URL(e.blockedURI).host));

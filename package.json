@@ -29,5 +29,8 @@
   "main": "desktop/main.mjs",
   "engines": {
     "node": ">=20"
+  },
+  "dependencies": {
+    "kokoro-js": "1.2.1"
   }
 }

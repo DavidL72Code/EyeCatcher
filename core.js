@@ -157,16 +157,18 @@
   }
 
   // ---------- the player's losses ----------
-  // A match is lost in the player's deaths and the fights they lost, so a review looks at each before it decides either
-  // way, LOSS_LOOKS of them when there are more.
+  // A match is lost in the player's deaths, the fights they lost, and the times they nearly died, so a review looks at
+  // each before it decides either way, LOSS_LOOKS of them when there are more.
   const LOSS_LOOKS = 4;
+  const nearWhat = (e) => `a near-death (health ${e.hp} of ${e.of})`;
   /**
-   * The player's deaths, and the fights they lost with no death of theirs in them, in time order, each { t, what, seen }.
-   * A death is seen when a look covers it or the second before it; a fight when a look overlaps it.
+   * The player's deaths, near-deaths, and the fights they lost with no death of theirs in them, in time order, each
+   * { t, what, seen }. A death is seen when a look covers it or the second before it; a fight when a look overlaps it.
    */
   function losses(events, ledger) {
     const deaths = (events || []).filter((e) => e.kind === 'death');
     const out = deaths.map((e) => ({ t: e.t, what: 'their death', seen: seen(ledger, e.t) || seen(ledger, e.t - 1) }));
+    for (const e of (events || []).filter((x) => x.kind === 'near_death')) out.push({ t: e.t, what: nearWhat(e), seen: seen(ledger, e.t) || seen(ledger, e.t - 1) || seen(ledger, e.t - 2) });
     for (const e of (events || []).filter((x) => x.kind === 'point_lost')) out.push({ t: e.t, what: 'a point the other side scored', seen: seen(ledger, e.t) || seen(ledger, e.t - 3) });
     for (const f of (events || []).filter((e) => (e.kind === 'engagement' || e.kind === 'play') && e.outcome === 'lost')) {
       if (deaths.some((d) => d.t >= f.from - 1 && d.t <= f.to + 3)) continue;
@@ -175,17 +177,18 @@
     return out.sort((a, b) => a.t - b.t);
   }
   /**
-   * Where the match was lost, as a finding has to show it: the player's deaths, the fights they lost, a teammate's death
-   * near them that nobody traded (near from the clip read of that moment), and in chess the player's moves the engine
-   * calls a mistake or worse. Each { from, to, what } spans the
-   * moments that can show it: the 6 s before a death or an untraded teammate death to 2 s after, a lost fight with 2 s
-   * to spare, a graded move from 3 s before it lands.
+   * Where the match was lost, as a finding has to show it: the player's deaths and near-deaths, the fights they lost, a
+   * teammate's death near them that nobody traded (near from the clip read of that moment), and in chess the player's
+   * moves the engine calls a mistake or worse. Each { from, to, what } spans the moments that can show it: the 6 s before
+   * a death, a near-death, or an untraded teammate death to 2 s after, a lost fight with 2 s to spare, a graded move
+   * from 3 s before it lands.
    */
   // deadFor (deadForOf): a teammate going down while the player is dead is no loss of theirs; the screen shows someone else
   function lossMoments(events, { deadFor = 5 } = {}) {
     const out = [];
     for (const e of events || []) {
       if (e.kind === 'death') out.push({ t: e.t, from: e.t - 6, to: e.t + 2, what: 'their death' });
+      else if (e.kind === 'near_death') out.push({ t: e.t, from: e.t - 6, to: e.t + 2, what: nearWhat(e) });
       else if (e.kind === 'ally_death' && !e.tradedBy && e.near === true && !deathAt(events, e.t, deadFor)) out.push({ t: e.t, from: e.t - 6, to: e.t + 2, what: `${e.victim || 'a teammate'} down near them, not traded` });
       else if (e.kind === 'engagement' && e.outcome === 'lost') out.push({ t: e.from, from: e.from - 2, to: e.to + 2, what: 'a fight they lost' });
       else if (e.kind === 'point_lost') out.push({ t: e.t, from: e.t - 8, to: e.t + 1, what: 'a point the other side scored' });
@@ -232,11 +235,50 @@
     ['same_moment', /same moment as other evidence|in both evidence and contrast/],
     ['board', /Put the finding on the board first/],
     ['losses', /fights they lost before deciding/],
-    ['no_loss', /has to show where they lost/],
+    ['no_loss', /losing them games has to show where they lost/],
     ['contradicts', /goes against what the record shows/],
     ['frames', /the frames don't fit your claim/],
+    ['no_reason', /Name the biggest reason they lost|has to show where they lost: at least one/],
+    ['unshown', /the video doesn't show/],
   ];
   const problemKind = (text) => PROBLEM_KINDS.find(([, re]) => re.test(text))?.[0] || 'other';
+
+  // ---------- controls for the claim checker ----------
+  /**
+   * Claims the record shows are false, planted unmarked among a finding's claims for the agent that checks them against
+   * the video (agent.js verifyClaims): one that agrees with a control isn't checking, it's agreeing. Each is false in a
+   * way the video shows: one of the player's kills called their death (no death of theirs from 6 s before to 8 s after
+   * it), a death at a quiet moment (no death, near-death, kill, or point within QUIET s), a near-death called full
+   * health, a point the other side scored called their own.
+   * "Alive a second after a death" was tried first and isn't one: Valorant then shows a teammate's view, alive and
+   * moving. Deaths count only when the record's were checked (sure). Nearest the finding's own moments first, so the
+   * checker looks at the same stretches, but never at one of them. Returns up to max [{ t, what, control }].
+   */
+  const QUIET = 12, DEAD_LONG = 60;
+  function controlClaims(events, moments, { sure = true, max = 2, duration = Infinity } = {}) {
+    const near = (t) => Math.min(...(moments || []).map((m) => Math.abs(m.t - t)), Infinity);
+    const taken = (t) => (moments || []).some((m) => Math.abs(m.t - t) < 6);
+    const marks = (events || []).filter((e) => ['death', 'near_death', 'kill', 'point_won', 'point_lost', 'point'].includes(e.kind));
+    const out = [];
+    const deaths = (events || []).filter((e) => e.kind === 'death');
+    for (const e of events || []) {
+      if (e.kind === 'near_death') out.push({ t: e.t, what: "The player's health is full here.", control: true });
+      else if (e.kind === 'point_lost') out.push({ t: e.t, what: "The player's own side scores here.", control: true });
+      else if (e.kind === 'kill' && sure && !deaths.some((d) => d.t >= e.t - 6 && d.t <= e.t + 8)) out.push({ t: e.t, what: 'The player is killed here.', control: true });
+    }
+    // quiet moments near each cited one, a death there being false
+    if (sure && marks.some((e) => e.kind === 'death')) {
+      for (const m of moments || []) for (const d of [-QUIET - 6, QUIET + 6, -2 * QUIET, 2 * QUIET]) {
+        const t = round(m.t + d, 1);
+        // and not while they may still be dead: a League respawn takes 30 s and more, and "dies here" planted on its
+        // death screen wasn't false enough to plant (Oct 22)
+        if (t > 8 && t < duration - 3 && !marks.some((e) => Math.abs(e.t - t) <= QUIET) && !marks.some((e) => e.kind === 'death' && t > e.t && t - e.t < DEAD_LONG)) { out.push({ t, what: 'The player dies here.', control: true }); break; }
+      }
+    }
+    const kept = [];
+    for (const c of out.filter((c) => !taken(c.t)).sort((a, b) => near(a.t) - near(b.t))) if (kept.length < max && !kept.some((k) => Math.abs(k.t - c.t) < 6)) kept.push(c);
+    return kept.sort((a, b) => a.t - b.t);
+  }
 
   // ---------- retries ----------
   // Re-measuring a fight a moment earlier, again and again, hunts for the reading a theory wants. A second try is fair
@@ -267,12 +309,29 @@
     const problems = [];
     const gap = coverLosses ? lossGap(events, ledger) : '';
     if (gap) problems.push(gap);
-    if (args?.found === false) {
-      if (text(args.why).length < 20) problems.push('Say why no single habit stands out (why, one or two sentences).');
-      return problems;
-    }
     // the death itself can be evidence (dying alone); seconds later the screen is a recap or a teammate's view
     const afterDeath = (t) => { const d = deathAt(events, t, deadFor); return d && t > d.t + 2 ? `At ${mmss(t)} the player was dead (they died about ${mmss(d.t)}), so the screen shows someone else. Cite moments from their own view.` : ''; };
+    if (args?.found === false) {
+      if (text(args.why).length < 20) problems.push('Say how that cost them (why, one or two sentences).');
+      // No habit repeats, but something still cost them: with any loss in the match, the biggest reason is named, as a
+      // one-off, at moments that were looked at, one of them where they lost
+      const all = citeLoss ? lossMoments(events, { deadFor }) : [];
+      if (!all.length) return problems;
+      const where = all.slice(0, 6).map((l) => `${mmss(l.t)} ${l.what}`).join(', ');
+      if (!text(args.reason)) problems.push(`No habit has to repeat for something to have cost them. Name the biggest reason they lost in this match (reason), even if it happened once: what cost them the most at ${where}.`);
+      const shown = [];
+      for (const e of Array.isArray(args.fixes) ? args.fixes : []) {
+        const t = parseTime(e?.t);
+        if (!Number.isFinite(t) || t < 0 || t > duration + 1) { problems.push(`${e?.t ?? '?'} isn't a time in this match.`); continue; }
+        if (!text(e.what)) problems.push(`Say what happens at ${mmss(t)}.`);
+        if (!seen(ledger, t)) { problems.push(`You haven't looked closely at ${mmss(t)}. Look with frames, or cite a moment you did look at.`); continue; }
+        if (afterDeath(t)) { problems.push(afterDeath(t)); continue; }
+        shown.push(t);
+      }
+      if (!shown.length) problems.push('Cite the moments you looked at that show the reason (fixes), each with what they should have done instead (better).');
+      else if (!shown.some((t) => all.some((l) => t >= l.from && t <= l.to))) problems.push(`The reason they lost has to show where they lost: at least one of its moments at ${where}.`);
+      return problems;
+    }
     const ids = [...habits.map((h) => h.id), 'other'];
     if (!text(args?.habit)) problems.push('Name the habit (habit).');
     if (!ids.includes(args?.habit_id)) problems.push(`habit_id must be one of: ${ids.join(', ')}.`);
@@ -383,7 +442,7 @@
   // ---------- events from a scan ----------
   // kill and death are the player's own; ally_death and ally_kill are teammates'
   // move and opponent_move are chess moves, each with the engine's grade for it
-  const KINDS = ['kill', 'death', 'ally_death', 'ally_kill', 'round_start', 'round_end', 'engagement', 'play', 'point_won', 'point_lost', 'point', 'ability', 'move', 'opponent_move', 'other'];
+  const KINDS = ['kill', 'death', 'near_death', 'ally_death', 'ally_kill', 'round_start', 'round_end', 'engagement', 'play', 'point_won', 'point_lost', 'point', 'ability', 'move', 'opponent_move', 'other'];
   function mergeEvents(a, b) {
     const out = [];
     // two chess moves of one side can land within 2 s in a fast game, so a numbered ply is its own event
@@ -610,9 +669,26 @@
   const mostCommon = (xs) => { const c = new Map(); for (const x of xs) if (x) c.set(x, (c.get(x) || 0) + 1); return [...c].sort((a, b) => b[1] - a[1])[0]?.[0] ?? null; };
   const other = (team) => (team === 'ally' ? 'enemy' : team === 'enemy' ? 'ally' : null);
 
+  /**
+   * Each name's character (agent, hero, legend), from the portrait the kill feed draws by it, read with the name: kept only
+   * when two or more reads of the name agree on it and it's two thirds of the reads that name one, so one squinted
+   * portrait names nobody. Returns Map nameKey to character.
+   */
+  function feedCharacters(sightings) {
+    const said = new Map();
+    for (const s of sightings || []) for (const [who, c] of [[s.killer, s.killerChar], [s.victim, s.victimChar]]) if (text(who) && text(c)) (said.get(nameKey(who)) || said.set(nameKey(who), []).get(nameKey(who))).push(text(c));
+    const out = new Map();
+    for (const [k, list] of said) {
+      const top = mostCommon(list.map((c) => c.toLowerCase())), n = list.filter((c) => c.toLowerCase() === top).length;
+      if (top && n >= 2 && n >= (2 / 3) * list.length) out.set(k, list.find((c) => c.toLowerCase() === top));
+    }
+    return out;
+  }
+
   function feedText(e) {
     const you = (role) => e[role === 'killer' ? 'killerIsPlayer' : 'victimIsPlayer'];
-    const name = (role) => (you(role) ? 'you' : `${e[role]}${e[`${role}Team`] === 'ally' ? ' (teammate)' : e[`${role}Team`] === 'enemy' ? ' (enemy)' : ''}`);
+    const tag = (role) => [e[`${role}Character`], e[`${role}Team`] === 'ally' ? 'teammate' : e[`${role}Team`] === 'enemy' ? 'enemy' : ''].filter(Boolean).join(', ');
+    const name = (role) => (you(role) ? 'you' : `${e[role]}${tag(role) ? ` (${tag(role)})` : ''}`);
     const parts = [`${name('killer')} ${e.knock ? 'knocked down' : 'killed'} ${name('victim')}${e.confirmed ? " (the screen's banner shows it too)" : ''}`];
     if (e.trades) parts.push(`trading ${e.trades}`);
     if (e.victimTeam === 'ally') parts.push(e.tradedBy ? `traded by ${sameName(e.tradedBy, e.player) ? 'you' : e.tradedBy} ${round(e.tradedAt - e.t, 1)} s later` : 'not traded');
@@ -620,6 +696,8 @@
     return parts.join('; ');
   }
 
+  // the characters a read named from the portraits by each name, when it named any
+  const chars = (r) => ({ ...(text(r?.killer_character) ? { killerChar: text(r.killer_character).slice(0, 30) } : {}), ...(text(r?.victim_character) ? { victimChar: text(r.victim_character).slice(0, 30) } : {}) });
   /**
    * Sightings from one read of numbered row strips: Gemini's names for each line, with that row's team colors from
    * pixels. strips: [{ t, after, left, right }] in line order, line 1 first; after is the last time the row wasn't there.
@@ -628,7 +706,7 @@
     return (Array.isArray(read) ? read : [])
       .map((r) => ({ r, s: strips[r?.line - 1] }))
       .filter(({ r, s }) => s && text(r.killer) && text(r.victim))
-      .map(({ r, s }) => ({ t: s.t, ...(Number.isFinite(s.after) ? { after: s.after } : {}), killer: text(r.killer), victim: text(r.victim), killerSide: s.left ?? null, victimSide: s.right ?? null, mine: !!r.players_own, ...(s.fp ? { fp: s.fp } : {}) }));
+      .map(({ r, s }) => ({ t: s.t, ...(Number.isFinite(s.after) ? { after: s.after } : {}), killer: text(r.killer), victim: text(r.victim), ...chars(r), killerSide: s.left ?? null, victimSide: s.right ?? null, mine: !!r.players_own, ...(s.fp ? { fp: s.fp } : {}) }));
   }
 
   /**
@@ -709,6 +787,7 @@
   // twoTeams: every kill is between the player's team and one other, as in Valorant. A battle royale has many teams, so
   // most kills are between two others, and a side the feed didn't show stays unknown.
   function buildKillfeed(sightings, { window = 8, trade = 5, player: known = null, twoTeams = true } = {}) {
+    const chars = feedCharacters(sightings);
     const groups = [];
     for (const s of [...sightings].filter((x) => x?.killer && x?.victim && Number.isFinite(x.t)).sort((a, b) => a.t - b.t)) {
       const g = groups.find((x) => s.t - x.last <= window && sameName(x.killer, s.killer) && sameName(x.victim, s.victim));
@@ -744,7 +823,8 @@
       // Squadmates can't take each other out, so a "kill" inside the player's team is a misread line (a chat message,
       // "FYR_rLayze: Thanks Silent Gaming."), not a kill. In a two-team feed, the color fix-ups below settle it instead.
       if (!twoTeams && killerTeam === 'ally' && victimTeam === 'ally') return null;
-      return { t: round(g.list[0].t, 2), ...(Number.isFinite(g.list[0].after) ? { after: g.list[0].after } : {}), kind, killer, victim, killerTeam, victimTeam, killerIsPlayer, victimIsPlayer, seen: g.list.length, player, ...(g.list.every((s) => s.knock) ? { knock: true } : {}), ...(g.list[0].fp ? { fp: g.list[0].fp } : {}) };
+      const killerCharacter = chars.get(nameKey(killer)), victimCharacter = chars.get(nameKey(victim));
+      return { t: round(g.list[0].t, 2), ...(Number.isFinite(g.list[0].after) ? { after: g.list[0].after } : {}), kind, killer, victim, killerTeam, victimTeam, killerIsPlayer, victimIsPlayer, seen: g.list.length, player, ...(killerCharacter ? { killerCharacter } : {}), ...(victimCharacter ? { victimCharacter } : {}), ...(g.list.every((s) => s.knock) ? { knock: true } : {}), ...(g.list[0].fp ? { fp: g.list[0].fp } : {}) };
     }).filter(Boolean);
     // A flash or smoke over the kill feed can tint one reading. Names seen on one team again and again outvote it; a
     // name on both teams (both can pick the same agent) is never trusted this way.
@@ -928,7 +1008,7 @@
       if (reads.some(({ r }) => r.kind === 'message' || chat(r.text?.split(/\s+/).slice(0, 3).join(' ')) || chat(r.killer) || chat(r.victim))) continue;
       for (const { r, st } of reads) {
         if (!['kill', 'knock'].includes(r.kind) || !text(r.killer) || !text(r.victim)) continue;
-        out.push({ t: st.t, ...(Number.isFinite(st.after) ? { after: st.after } : {}), killer: text(r.killer), victim: text(r.victim), killerColor: st.colors?.left ?? null, victimColor: st.colors?.right ?? null, killerSide: null, victimSide: null, mine: false, ...(r.kind === 'knock' ? { knock: true } : {}), ...(st.row?.fp ? { fp: st.row.fp } : {}) });
+        out.push({ t: st.t, ...(Number.isFinite(st.after) ? { after: st.after } : {}), killer: text(r.killer), victim: text(r.victim), ...chars(r), killerColor: st.colors?.left ?? null, victimColor: st.colors?.right ?? null, killerSide: null, victimSide: null, mine: false, ...(r.kind === 'knock' ? { knock: true } : {}), ...(st.row?.fp ? { fp: st.row.fp } : {}) });
       }
     }
     return out.sort((a, b) => a.t - b.t);
@@ -941,7 +1021,7 @@
    */
   function textFeedSightings(read, strips) {
     return (Array.isArray(read) ? read : []).map((r) => ({ r, s: strips[r?.line - 1] })).filter(({ r, s }) => s && text(r.killer) && text(r.victim)).map(({ r, s }) => ({
-      t: s.t, ...(Number.isFinite(s.after) ? { after: s.after } : {}), killer: text(r.killer), victim: text(r.victim),
+      t: s.t, ...(Number.isFinite(s.after) ? { after: s.after } : {}), killer: text(r.killer), victim: text(r.victim), ...chars(r),
       killerColor: s.colors?.left ?? null, victimColor: s.colors?.right ?? null, killerSide: null, victimSide: null, mine: false, ...(r.knock ? { knock: true } : {}), ...(s.row?.fp ? { fp: s.row.fp } : {}),
     }));
   }
@@ -1047,6 +1127,40 @@
     return { kills, deaths, downs, points: points.sort((a, b) => a.t - b.t), knows: { kills: knows(counts?.kills), deaths: knows(counts?.deaths), health: knows(counts?.health) } };
   }
   /**
+   * Where the player may have nearly died, off the HUD's HP number: it fell under NEAR_LOW of full health, with no
+   * death of theirs from 8 s after it back to 2 s before (that's the death itself). One per stretch of low readings, at
+   * its lowest. sure: the reading next to it was low too; read every 2 s, most dips show once (Marvel Rivals' 30 of 250
+   * at 5:10), and one low number alone can be a misread, so those get a second look (agent.js confirmNear). Full health
+   * is the HUD's own maximum read nearest that moment where it writes one (250 of 120/250; League's grows with each
+   * level, 1373 to 1589 in ten minutes), else the health it reads most often. health, maxes: [{ t, value }], deaths:
+   * [{ t }]. Returns [{ t, kind: 'near_death', hp, of, sure, seenBy, text }].
+   */
+  const NEAR_DEATH = 0.25, NEAR_LOW = 0.4, NEAR_GAP = 5, MAX_NEAR = 10;
+  const modeOf = (xs) => { const n = new Map(); for (const x of xs) n.set(x, (n.get(x) || 0) + 1); return [...n].sort((a, b) => b[1] - a[1] || b[0] - a[0])[0]?.[0] ?? null; };
+  function nearDeaths(health, { maxes = [], deaths = [] } = {}) {
+    const hp = (health || []).filter((x) => Number.isFinite(x?.value) && Number.isFinite(x?.t)).sort((a, b) => a.t - b.t);
+    const tops = (maxes || []).filter((x) => Number.isFinite(x?.value) && x.value > 0 && Number.isFinite(x?.t));
+    const usual = modeOf(tops.map((x) => x.value)) ?? modeOf(hp.map((x) => x.value).filter((v) => v > 0));
+    const fullAt = (t) => tops.filter((x) => Math.abs(x.t - t) <= MAX_NEAR).sort((a, b) => Math.abs(a.t - t) - Math.abs(b.t - t))[0]?.value ?? usual;
+    if (!usual || hp.length < 3) return [];
+    const out = [];
+    let run = [];
+    const close = () => {
+      const low = run.length ? run.reduce((a, b) => (b.value < a.value ? b : a)) : null;
+      const full = low && fullAt(low.t);
+      // under NEAR_LOW is a candidate: read every 2 s, a dip to 50 of 250 showed as 80 (Rivals 1:18), and the second
+      // look a second either side of it finds the low; sure, without one: under NEAR_DEATH, the next reading low too
+      if (low && !(deaths || []).some((d) => d.t >= low.t - 2 && d.t <= low.t + 8)) out.push({ t: low.t, kind: 'near_death', hp: low.value, of: full, sure: run.length >= 2 && low.value <= NEAR_DEATH * full, seenBy: 'hud', text: `your health fell to ${low.value} of ${full} (the HUD's health number)` });
+      run = [];
+    };
+    for (const x of hp) {
+      if (run.length && x.t - run.at(-1).t > NEAR_GAP) close();
+      if (x.value > 0 && x.value <= NEAR_LOW * fullAt(x.t)) run.push(x); else close();
+    }
+    close();
+    return out;
+  }
+  /**
    * A low-detail pass's events of one kind checked against the counter's rises of it: one with a rise within slack s
    * stays, at the counter's time; one without goes (dropped lists them); a rise the pass missed is added. readings: the
    * counter's own readings, when it wasn't read throughout (a failed call, a hidden HUD): an event with no reading within
@@ -1098,7 +1212,7 @@
    * sample (t under 0.5) happened before the recording, so it has no window.
    * events: from the kill feed; firing: [{ from, to }]. Returns [{ from, to, events, firing }] in time order.
    */
-  const CLIP_RANK = { death: 4, ally_death: 3, kill: 2 };
+  const CLIP_RANK = { death: 4, near_death: 3, ally_death: 3, kill: 2 };
   // hits: fights from the damage-dealt counter (the player hit someone), ranked with kills
   // deadFor: a teammate going down while the player is dead gets no window; the player wasn't there
   function eventWindows(events, firing = [], { duration = Infinity, before = 7, after = 3, max = 16, hits = [], deadFor = 5 } = {}) {
@@ -1461,7 +1575,7 @@
       if (h.drill) lines.push(`Their drill: ${h.drill}`);
       if (h.recheck) lines.push(`What to recheck: ${h.recheck}`);
     }
-    const recent = (history?.matches || []).slice(-5).map((m) => `${m.date}: ${m.found ? m.habit : 'no single habit'}${m.progress ? ` (${m.progress} than baseline)` : ''}`);
+    const recent = (history?.matches || []).slice(-5).map((m) => `${m.date}: ${m.found ? m.habit : m.reason ? `no habit; cost them once: ${m.reason}` : 'no single habit'}${m.progress ? ` (${m.progress} than baseline)` : ''}`);
     if (recent.length) lines.push(`Recent reviews:\n${recent.join('\n')}`);
     return lines.join('\n') || 'First review for this player.';
   }
@@ -1471,7 +1585,7 @@
     BudgetError, createBudget, left, spend, budgetLine,
     SLACK, MIN_EVIDENCE, createLedger, recordLook, seen, deadForOf, deathAt, LOSS_LOOKS, losses, lossGap, lossMoments, atLoss, MIN_LOSSES, MAX_TRIES, fightOf, retryRefusal, problemKind, checkFinish,
     STATUSES, applyNote, boardBrief, unreadDowns, unreadUnits, cutTimes, snapUnits, KINDS, normalizeEvents, mergeEvents, eventsBrief,
-    pixelTeam, killfeedRows, teamLines, colorBands, fitGrid, rowDistance, SAME_ROW, sameRow, freshRows, nameKey, sameName, feedSightings, choosePlayer, whoIsPlayer, buildKillfeed, confirmByBanners, cutNames, aliasNames, counterRises, hudKills, hudRecord, sameSide, trustCounter, settleFights, pointsTaken, oneDeathEach, eventWindows, fightsFromClips, clipMoments, feedText, textRows, textEdge, onEdge, feedBand, nameColors, textFeedReads, textFeedSightings, teamsByColor,
+    pixelTeam, killfeedRows, teamLines, colorBands, fitGrid, rowDistance, SAME_ROW, sameRow, freshRows, nameKey, sameName, feedSightings, choosePlayer, whoIsPlayer, buildKillfeed, confirmByBanners, cutNames, aliasNames, feedCharacters, counterRises, hudKills, hudRecord, nearDeaths, NEAR_DEATH, controlClaims, sameSide, trustCounter, settleFights, pointsTaken, oneDeathEach, eventWindows, fightsFromClips, clipMoments, feedText, textRows, textEdge, onEdge, feedBand, nameColors, textFeedReads, textFeedSightings, teamsByColor,
     ammoReading, shotsFired, fireTimes, groupFights, mergeFights, MAX_FRAMES, framePlan, CLIP_LOOK, clipPlan, regionRect, READOUT_H, readoutRegion,
     emptyHistory, addMatch, acceptHabit, historyFor, dropHabit, compareAim, historyBrief,
   };

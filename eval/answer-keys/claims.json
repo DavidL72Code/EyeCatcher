@@ -1,0 +1,62 @@
+{
+  "about": "Claims about moments of the eval recordings, each labeled true or false off the frames, to measure the agent that checks a finding against the video (agent.js verifyClaims; eval/verifycheck.mjs). Labels come from full-size crops read by eye on Oct 22, or from the frame-read answer keys in eval/answer-keys/games. A claim is true only when every fact in it is. The regions are what the learn call boxed in a run that read the record right. player: who the review knows the player is (the name they confirmed, the character, a side the scoreboard showed). events: what the record holds, from the answer keys, for the false claims the checker plants itself.",
+  "recordings": [
+    {
+      "file": "yt-vyse-ascent.mov",
+      "player": { "name": "Im Muted", "character": "Omen" },
+      "profile": { "name": "Valorant", "view": "own_screen", "regions": { "killfeed": [0.668, 0.073, 0.321, 0.205], "minimap": [0, 0, 0.344, 0.528], "ammo": [0.694, 0.908, 0.081, 0.078], "health": [0.206, 0.905, 0.11, 0.082], "abilities": [0.32, 0.88, 0.364, 0.12] } },
+      "events": [{ "t": 127, "kind": "death" }, { "t": 82, "kind": "kill" }, { "t": 85, "kind": "kill" }, { "t": 193, "kind": "kill" }, { "t": 212, "kind": "kill" }, { "t": 320, "kind": "kill" }, { "t": 398, "kind": "kill" }, { "t": 462, "kind": "kill" }, { "t": 476, "kind": "kill" }, { "t": 788, "kind": "kill" }, { "t": 325, "kind": "death" }, { "t": 399, "kind": "death" }, { "t": 479, "kind": "death" }, { "t": 601, "kind": "death" }, { "t": 667, "kind": "death" }],
+      "claims": [
+        { "t": "5:20.5", "claim": "The player kills an enemy Killjoy.", "truth": true, "how": "kill feed 'Im Muted -> Killjoy' and the kill skull at 5:20.5" },
+        { "t": "5:22.5", "claim": "The player has a rifle, a Vandal, out.", "truth": false, "how": "a Sheriff (pistol) from 5:14.5 to 5:24.6" },
+        { "t": "5:24.6", "claim": "The player walks out of the doorway into the open B site with a pistol out.", "truth": true, "how": "through the Market doorway into B site, Sheriff in hand, 5:22.5 to 5:24.6; dead at 5:25" },
+        { "t": "6:36.5", "claim": "No smoke or other ability is up on the site.", "truth": false, "how": "a purple smoke wall and teammate utility on B site from 6:34 to 6:38" },
+        { "t": "6:36.5", "claim": "The player is behind the wooden boxes on B site with a rifle out.", "truth": true, "how": "behind the wooden boxes, Vandal out, from 6:34 to 6:38.2 (out in the open site at 6:30.5, in a smoke beside the boxes at 6:32.5)" },
+        { "t": "6:38.2", "claim": "The player kills an enemy Omen.", "truth": true, "how": "kill feed 'Im Muted -> Omen' and the kill skull at 6:38.2" },
+        { "t": "6:39.5", "claim": "The player is killed by an enemy KAY/O, and the round is lost.", "truth": true, "how": "KILLED BY KAY/O combat report and the LOST banner at 6:39.5" }
+      ]
+    },
+    {
+      "file": "marvel-rivals/mr-punk-magik.attack.mp4",
+      "player": { "name": "PunK10", "character": "Magik" },
+      "profile": { "name": "Marvel Rivals", "view": "own_screen", "regions": { "scoreboard": [0.299, 0.019, 0.403, 0.052], "health": [0.377, 0.921, 0.247, 0.032], "abilities": [0.749, 0.831, 0.251, 0.163], "killfeed": [0.831, 0.215, 0.103, 0.101] } },
+      "events": [{ "t": 267.3, "kind": "death" }, { "t": 69.7, "kind": "kill" }, { "t": 127.5, "kind": "kill" }, { "t": 132.5, "kind": "kill" }, { "t": 134.7, "kind": "kill" }, { "t": 141.2, "kind": "kill" }, { "t": 146.7, "kind": "kill" }, { "t": 208.2, "kind": "kill" }, { "t": 219.0, "kind": "kill" }, { "t": 222.5, "kind": "kill" }, { "t": 325.5, "kind": "kill" }, { "t": 353.5, "kind": "kill" }, { "t": 377.5, "kind": "kill" }, { "t": 425.5, "kind": "kill" }, { "t": 482.5, "kind": "kill" }, { "t": 79, "kind": "near_death", "hp": 50, "of": 250 }, { "t": 310, "kind": "near_death", "hp": 30, "of": 250 }, { "t": 457, "kind": "near_death", "hp": 42, "of": 250 }],
+      "claims": [
+        { "t": "1:19", "claim": "She is at full health.", "truth": false, "how": "50/250 at 1:18.5 to 1:19.5" },
+        { "t": "2:15", "claim": "She gets a triple elimination, and a TRIPLE banner shows.", "truth": true, "how": "kill feed 'PunK10 -> GameGuyBenn' at 2:14.7, TRIPLE banner 2:15 to 2:17 (answer key)" },
+        { "t": "3:14", "claim": "She dies here.", "truth": false, "how": "low health, 97/250, back over 130 by 3:15; no death (answer key)" },
+        { "t": "4:27.3", "claim": "She is killed and goes down.", "truth": true, "how": "HP 32 then 0/250 at 4:27.3, she drops; kill feed 'VEN -> PunK10' at 4:27.4 (answer key)" },
+        { "t": "4:30", "claim": "She is being revived: a Reviving banner shows over her.", "truth": true, "how": "0/250 and a yellow Reviving banner over her at 4:29.5 and 4:30.3, at a teammate's beacon" },
+        { "t": "5:10", "claim": "Her health is down to about 30 of 250.", "truth": true, "how": "30/250 at 5:10" },
+        { "t": "5:10", "claim": "Her health is down to about 30 of 250, and she dies from it.", "truth": false, "how": "30/250 at 5:10, then 113 at 5:10.5 and healed; no death" },
+        { "t": "5:53.5", "claim": "She gets a kill.", "truth": true, "how": "kill feed 'PunK10 -> MR.ELK' at 5:53.5, KO banner 5:54 to 5:56 (answer key)" }
+      ]
+    },
+    {
+      "file": "league-of-legends/lol-hacklet-mf.14-24.mp4",
+      "player": { "name": "xHACKLETx", "character": "Miss Fortune" },
+      "profile": { "name": "League of Legends", "view": "own_screen", "regions": { "abilities": [0.38, 0.909, 0.189, 0.048], "minimap": [0.819, 0.673, 0.181, 0.327], "kill_count": [0.324, 0.918, 0.023, 0.019], "scoreboard": [0.708, 0.007, 0.293, 0.026], "health": [0.38, 0.964, 0.189, 0.031], "gold": [0.551, 0.97, 0.052, 0.029] } },
+      "events": [{ "t": 106.5, "kind": "death" }, { "t": 535, "kind": "death" }, { "t": 270, "kind": "near_death", "hp": 280, "of": 1589 }],
+      "claims": [
+        { "t": "1:22", "claim": "The player's health is under a quarter of full.", "truth": false, "how": "488/1373 at 1:22 (36%)" },
+        { "t": "1:46.5", "claim": "The player dies.", "truth": true, "how": "the K/D/A deaths go 4 to 5; gray death screen (answer key)" },
+        { "t": "4:27.5", "claim": "The player gets a kill.", "truth": false, "how": "an assist: the K/D/A kills stay at 1 and the assists go up (answer key)" },
+        { "t": "4:30", "claim": "The player's health is under a quarter of full.", "truth": true, "how": "280/1589 at 4:30" },
+        { "t": "8:55", "claim": "The player dies.", "truth": true, "how": "the K/D/A deaths go 5 to 6 (answer key)" },
+        { "t": "9:32", "claim": "The player dies.", "truth": false, "how": "only two deaths, at 1:46.5 and 8:55; a review invented this one (loop 10)" }
+      ]
+    },
+    {
+      "file": "rocket-league/rl-somey-gc2.match1.mp4",
+      "player": { "name": "TheSomey", "side": "orange" },
+      "profile": { "name": "Rocket League", "view": "own_screen", "regions": { "scoreboard": [0.377, 0.004, 0.247, 0.091], "abilities": [0.831, 0.686, 0.169, 0.299] } },
+      "events": [{ "t": 255, "kind": "point_lost" }],
+      "claims": [
+        { "t": "2:02", "claim": "The player demolishes an opponent's car, and a DEMOLITION banner shows.", "truth": true, "how": "the demolition at 2:00.5, DEMOLITION banner at 2:02 (answer key)" },
+        { "t": "3:26.5", "claim": "The player scores a goal.", "truth": true, "how": "goal banner naming TheSomey (answer key)" },
+        { "t": "4:15", "claim": "The player's team scores a goal.", "truth": false, "how": "Nyal scored for blue, against the player's orange (answer key)" },
+        { "t": "4:44.5", "claim": "The player scores a goal.", "truth": false, "how": "teammate Forky Jr. scored (answer key)" }
+      ]
+    }
+  ]
+}

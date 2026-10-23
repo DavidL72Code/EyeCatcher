@@ -1,0 +1,1128 @@
+{
+ "about": "eval/verifycheck.mjs on eval/answer-keys/claims.json, Oct 22 2026: the per-claim verifier agents (agent.js verifyClaims), two runs, then Rocket League alone twice after telling it who the player is more plainly.",
+ "runs": {
+  "about": "eval/verifycheck.mjs on eval/answer-keys/claims.json",
+  "rows": [
+   {
+    "run": 1,
+    "file": "yt-vyse-ascent.mov",
+    "t": "5:20.5",
+    "claim": "The player kills an enemy Killjoy.",
+    "truth": true,
+    "verdict": "shows",
+    "facts": [
+     {
+      "fact": "The player kills an enemy Killjoy.",
+      "saw": "The killfeed at 5:19.5 (04.833 into clip) shows 'Im Muted' killing 'Killjoy'.",
+      "verdict": "shows"
+     }
+    ],
+    "unreliable": false
+   },
+   {
+    "run": 1,
+    "file": "yt-vyse-ascent.mov",
+    "t": "5:22.5",
+    "claim": "The player has a rifle, a Vandal, out.",
+    "truth": false,
+    "verdict": "goes_against",
+    "facts": [
+     {
+      "fact": "The player has a rifle, a Vandal, out.",
+      "saw": "The player is holding a Sheriff pistol.",
+      "verdict": "goes_against"
+     }
+    ],
+    "unreliable": false
+   },
+   {
+    "run": 1,
+    "file": "yt-vyse-ascent.mov",
+    "t": "5:24.6",
+    "claim": "The player walks out of the doorway into the open B site with a pistol out.",
+    "truth": true,
+    "verdict": "shows",
+    "facts": [
+     {
+      "fact": "The player walks out of the doorway into the open B site with a pistol out.",
+      "saw": "the player moves out of the doorway onto B site holding a Sheriff pistol",
+      "verdict": "shows"
+     }
+    ],
+    "unreliable": false
+   },
+   {
+    "run": 1,
+    "file": "yt-vyse-ascent.mov",
+    "t": "6:36.5",
+    "claim": "No smoke or other ability is up on the site.",
+    "truth": false,
+    "verdict": "goes_against",
+    "facts": [
+     {
+      "fact": "No smoke or other ability is up on the site.",
+      "saw": "Omen's dark smoke and pink ability effects (such as Seared / Paranoia or similar visual FX) are clearly visible on the site.",
+      "verdict": "goes_against"
+     }
+    ],
+    "unreliable": false
+   },
+   {
+    "run": 1,
+    "file": "yt-vyse-ascent.mov",
+    "t": "6:36.5",
+    "claim": "The player is behind the wooden boxes on B site with a rifle out.",
+    "truth": true,
+    "verdict": "shows",
+    "facts": [
+     {
+      "fact": "The player is behind the wooden boxes on B site with a rifle out",
+      "saw": "At 6:36.5 (which corresponds to 00:06.167 in the video), the player is positioned behind the wooden cover structure on B site holding a rifle.",
+      "verdict": "shows"
+     }
+    ],
+    "unreliable": false
+   },
+   {
+    "run": 1,
+    "file": "yt-vyse-ascent.mov",
+    "t": "6:38.2",
+    "claim": "The player kills an enemy Omen.",
+    "truth": true,
+    "verdict": "shows",
+    "facts": [
+     {
+      "fact": "The player kills an enemy Omen.",
+      "saw": "The player (Im Muted, playing KAY/O) shoots and kills Omen on the stairs at 05:35.5 (timestamp 6:37.7), which appears in the killfeed as Im Muted killing Omen.",
+      "verdict": "shows"
+     }
+    ],
+    "unreliable": false
+   },
+   {
+    "run": 1,
+    "file": "yt-vyse-ascent.mov",
+    "t": "6:39.5",
+    "claim": "The player is killed by an enemy KAY/O, and the round is lost.",
+    "truth": true,
+    "verdict": "shows",
+    "facts": [
+     {
+      "fact": "The player is killed by an enemy KAY/O",
+      "saw": "The killfeed and combat report show the player was killed by KAY/O",
+      "verdict": "shows"
+     },
+     {
+      "fact": "the round is lost",
+      "saw": "LOST / TEAM ELIMINATED appears on screen",
+      "verdict": "shows"
+     }
+    ],
+    "unreliable": false
+   },
+   {
+    "run": 1,
+    "file": "marvel-rivals/mr-punk-magik.attack.mp4",
+    "t": "1:19",
+    "claim": "She is at full health.",
+    "truth": false,
+    "verdict": "goes_against",
+    "facts": [
+     {
+      "fact": "She is at full health",
+      "saw": "The HUD health display at 1:19.0 (00:06.000 in video) shows 50 / 250 HP, which is not full health",
+      "verdict": "goes_against"
+     }
+    ],
+    "unreliable": false
+   },
+   {
+    "run": 1,
+    "file": "marvel-rivals/mr-punk-magik.attack.mp4",
+    "t": "2:15",
+    "claim": "She gets a triple elimination, and a TRIPLE banner shows.",
+    "truth": true,
+    "verdict": "shows",
+    "facts": [
+     {
+      "fact": "She gets a triple elimination",
+      "saw": "The killfeed and eliminations counter show the player getting a triple elimination around this time (reaching triple at 06.0)",
+      "verdict": "shows"
+     },
+     {
+      "fact": "a TRIPLE banner shows",
+      "saw": "A TRIPLE banner appears on the right side of the screen as the triple elimination is achieved",
+      "verdict": "shows"
+     }
+    ],
+    "unreliable": false
+   },
+   {
+    "run": 1,
+    "file": "marvel-rivals/mr-punk-magik.attack.mp4",
+    "t": "3:14",
+    "claim": "She dies here.",
+    "truth": false,
+    "verdict": "goes_against",
+    "facts": [
+     {
+      "fact": "She dies here (at 3:14.0).",
+      "saw": "At 3:14.0 (00:06.0 in video), the player's health drops to 97/250 and then recovers/changes, and the player continues moving and fighting without dying or respawning.",
+      "verdict": "goes_against"
+     }
+    ],
+    "unreliable": false
+   },
+   {
+    "run": 1,
+    "file": "marvel-rivals/mr-punk-magik.attack.mp4",
+    "t": "4:27.3",
+    "claim": "She is killed and goes down.",
+    "truth": true,
+    "verdict": "shows",
+    "facts": [
+     {
+      "fact": "She is killed and goes down.",
+      "saw": "At 4:27.3 (00:06.0 in video), her health bar drops to 0/250 and she falls/dies.",
+      "verdict": "shows"
+     }
+    ],
+    "unreliable": false
+   },
+   {
+    "run": 1,
+    "file": "marvel-rivals/mr-punk-magik.attack.mp4",
+    "t": "4:30",
+    "claim": "She is being revived: a Reviving banner shows over her.",
+    "truth": true,
+    "verdict": "shows",
+    "facts": [
+     {
+      "fact": "She is being revived: a Reviving banner shows over her.",
+      "saw": "At 4:30.0, the player character (PunK10) is inside a revival capsule and a yellow 'Reviving' banner is displayed over them.",
+      "verdict": "shows"
+     }
+    ],
+    "unreliable": false
+   },
+   {
+    "run": 1,
+    "file": "marvel-rivals/mr-punk-magik.attack.mp4",
+    "t": "5:10",
+    "claim": "Her health is down to about 30 of 250.",
+    "truth": true,
+    "verdict": "shows",
+    "facts": [
+     {
+      "fact": "Her health is down to about 30 of 250",
+      "saw": "at 5:10.0 (the frame at 00:06.000 in video or the health close-up for 5:10.0), the health bar displays 30 / 250",
+      "verdict": "shows"
+     }
+    ],
+    "unreliable": false
+   },
+   {
+    "run": 1,
+    "file": "marvel-rivals/mr-punk-magik.attack.mp4",
+    "t": "5:10",
+    "claim": "Her health is down to about 30 of 250, and she dies from it.",
+    "truth": false,
+    "verdict": "goes_against",
+    "facts": [
+     {
+      "fact": "Her health is down to about 30 of 250",
+      "saw": "health drops to 30 out of 250 at 00:04.2 (5:08.2) and remains low at 30 out of 250 at 00:06.0 (5:10.0)",
+      "verdict": "shows"
+     },
+     {
+      "fact": "she dies from it",
+      "saw": "health recovers to 113 and then 185 instead of dying",
+      "verdict": "goes_against"
+     }
+    ],
+    "unreliable": false
+   },
+   {
+    "run": 1,
+    "file": "marvel-rivals/mr-punk-magik.attack.mp4",
+    "t": "5:53.5",
+    "claim": "She gets a kill.",
+    "truth": true,
+    "verdict": "shows",
+    "facts": [
+     {
+      "fact": "She gets a kill",
+      "saw": "the player Pun410 gets a kill in the killfeed around 5:53.5",
+      "verdict": "shows"
+     }
+    ],
+    "unreliable": false
+   },
+   {
+    "run": 1,
+    "file": "league-of-legends/lol-hacklet-mf.14-24.mp4",
+    "t": "1:22",
+    "claim": "The player's health is under a quarter of full.",
+    "truth": false,
+    "verdict": "goes_against",
+    "facts": [
+     {
+      "fact": "The player's health is under a quarter of full.",
+      "saw": "At 1:22.0 (shown in the HUD health image), the player's health is 488 out of 1373, which is 488 / 1373 = ~35.5%, higher than a quarter (25%)",
+      "verdict": "goes_against"
+     }
+    ],
+    "unreliable": false
+   },
+   {
+    "run": 1,
+    "file": "league-of-legends/lol-hacklet-mf.14-24.mp4",
+    "t": "1:46.5",
+    "claim": "The player dies.",
+    "truth": true,
+    "verdict": "shows",
+    "facts": [
+     {
+      "fact": "The player dies.",
+      "saw": "The health bar drops to 0 / 1479 and the death recap/respawn screen appears.",
+      "verdict": "shows"
+     }
+    ],
+    "unreliable": false
+   },
+   {
+    "run": 1,
+    "file": "league-of-legends/lol-hacklet-mf.14-24.mp4",
+    "t": "4:27.5",
+    "claim": "The player gets a kill.",
+    "truth": false,
+    "verdict": "goes_against",
+    "facts": [
+     {
+      "fact": "The player gets a kill.",
+      "saw": "The player's individual KDA scoreboard shows 1/5/5 at 4:24.5, 4:27.5, and 4:28.5 without changing.",
+      "verdict": "goes_against"
+     }
+    ],
+    "unreliable": false
+   },
+   {
+    "run": 1,
+    "file": "league-of-legends/lol-hacklet-mf.14-24.mp4",
+    "t": "4:30",
+    "claim": "The player's health is under a quarter of full.",
+    "truth": true,
+    "verdict": "shows",
+    "facts": [
+     {
+      "fact": "The player's health is under a quarter of full.",
+      "saw": "At 4:30.0, the player's health is 280 out of 1589, which is 280/1589 = 0.176 or about 17.6%, which is under a quarter (25%) of full.",
+      "verdict": "shows"
+     }
+    ],
+    "unreliable": false
+   },
+   {
+    "run": 1,
+    "file": "league-of-legends/lol-hacklet-mf.14-24.mp4",
+    "t": "8:55",
+    "claim": "The player dies.",
+    "truth": true,
+    "verdict": "shows",
+    "facts": [
+     {
+      "fact": "The player dies.",
+      "saw": "at 8:55.0 (0:06.000 in video) the player's health drops to 0/1820 and death screen appears",
+      "verdict": "shows"
+     }
+    ],
+    "unreliable": false
+   },
+   {
+    "run": 1,
+    "file": "league-of-legends/lol-hacklet-mf.14-24.mp4",
+    "t": "9:32",
+    "claim": "The player dies.",
+    "truth": false,
+    "verdict": "goes_against",
+    "facts": [
+     {
+      "fact": "The player dies.",
+      "saw": "The player's health and stats at 9:29.0, 9:32.0, and 9:33.0 show 0 / 1820 health and 1/6/7 KDA which does not change, indicating the player is already dead throughout this segment.",
+      "verdict": "goes_against"
+     }
+    ],
+    "unreliable": false
+   },
+   {
+    "run": 1,
+    "file": "rocket-league/rl-somey-gc2.match1.mp4",
+    "t": "2:02",
+    "claim": "The player demolishes an opponent's car, and a DEMOLITION banner shows.",
+    "truth": true,
+    "verdict": "shows",
+    "facts": [
+     {
+      "fact": "The player demolishes an opponent's car",
+      "saw": "At around 04.33 - 04.50 in the video clip (approx 2:00 game time), the player boosts directly into an opponent car (NYAL) causing an explosion.",
+      "verdict": "shows"
+     },
+     {
+      "fact": "a DEMOLITION banner shows",
+      "saw": "Directly following the explosion, a 'DEMOLITION' banner appears in the middle of the screen from around 04.83 to 05.83.",
+      "verdict": "shows"
+     }
+    ],
+    "unreliable": false
+   },
+   {
+    "run": 1,
+    "file": "rocket-league/rl-somey-gc2.match1.mp4",
+    "t": "3:26.5",
+    "claim": "The player scores a goal.",
+    "truth": true,
+    "verdict": "goes_against",
+    "facts": [
+     {
+      "fact": "The player scores a goal.",
+      "saw": "The player's teammate, THESOMEY, scores a goal, which is announced on screen as THESOMEY SCORED!",
+      "verdict": "goes_against"
+     }
+    ],
+    "unreliable": false
+   },
+   {
+    "run": 1,
+    "file": "rocket-league/rl-somey-gc2.match1.mp4",
+    "t": "4:15",
+    "claim": "The player's team scores a goal.",
+    "truth": false,
+    "verdict": "shows",
+    "facts": [
+     {
+      "fact": "The player's team scores a goal.",
+      "saw": "The blue team score goes from 0 to 1 at 4:15.0 with 'NYAL SCORED!' displayed on screen",
+      "verdict": "shows"
+     }
+    ],
+    "unreliable": false
+   },
+   {
+    "run": 1,
+    "file": "rocket-league/rl-somey-gc2.match1.mp4",
+    "t": "4:44.5",
+    "claim": "The player scores a goal.",
+    "truth": false,
+    "verdict": "shows",
+    "facts": [
+     {
+      "fact": "The player scores a goal.",
+      "saw": "FORKY JR scores a goal on the orange team, and the perspective is from that player.",
+      "verdict": "shows"
+     }
+    ],
+    "unreliable": false
+   },
+   {
+    "run": 2,
+    "file": "yt-vyse-ascent.mov",
+    "t": "5:20.5",
+    "claim": "The player kills an enemy Killjoy.",
+    "truth": true,
+    "verdict": "shows",
+    "facts": [
+     {
+      "fact": "The player kills an enemy Killjoy.",
+      "saw": "The player (named Im Muted) gets a kill on Killjoy in the killfeed.",
+      "verdict": "shows"
+     }
+    ],
+    "unreliable": false
+   },
+   {
+    "run": 2,
+    "file": "yt-vyse-ascent.mov",
+    "t": "5:22.5",
+    "claim": "The player has a rifle, a Vandal, out.",
+    "truth": false,
+    "verdict": "goes_against",
+    "facts": [
+     {
+      "fact": "The player has a rifle, a Vandal, out",
+      "saw": "The player has a Sheriff pistol out, not a rifle or Vandal",
+      "verdict": "goes_against"
+     }
+    ],
+    "unreliable": false
+   },
+   {
+    "run": 2,
+    "file": "yt-vyse-ascent.mov",
+    "t": "5:24.6",
+    "claim": "The player walks out of the doorway into the open B site with a pistol out.",
+    "truth": true,
+    "verdict": "shows",
+    "facts": [
+     {
+      "fact": "The player walks out of the doorway into the open B site with a pistol out.",
+      "saw": "The player walks out of the doorway into B site holding a Sheriff pistol.",
+      "verdict": "shows"
+     }
+    ],
+    "unreliable": false
+   },
+   {
+    "run": 2,
+    "file": "yt-vyse-ascent.mov",
+    "t": "6:36.5",
+    "claim": "No smoke or other ability is up on the site.",
+    "truth": false,
+    "verdict": "goes_against",
+    "facts": [
+     {
+      "fact": "No smoke or other ability is up on the site.",
+      "saw": "Omen's dark smoke and other ability effects are clearly visible on the site.",
+      "verdict": "goes_against"
+     }
+    ],
+    "unreliable": false
+   },
+   {
+    "run": 2,
+    "file": "yt-vyse-ascent.mov",
+    "t": "6:36.5",
+    "claim": "The player is behind the wooden boxes on B site with a rifle out.",
+    "truth": true,
+    "verdict": "shows",
+    "facts": [
+     {
+      "fact": "The player is behind the wooden boxes on B site with a rifle out at 6:36.5",
+      "saw": "At 6:36.5 (timestamp 00:06.000 to 00:06.167 in the video), the player is positioned behind the wooden stack on B site and holding a rifle (Vandal).",
+      "verdict": "shows"
+     }
+    ],
+    "unreliable": false
+   },
+   {
+    "run": 2,
+    "file": "yt-vyse-ascent.mov",
+    "t": "6:38.2",
+    "claim": "The player kills an enemy Omen.",
+    "truth": true,
+    "verdict": "shows",
+    "facts": [
+     {
+      "fact": "The player kills an enemy Omen.",
+      "saw": "The player shoots and kills an enemy Omen on the stairs around 05:35 in the video clock.",
+      "verdict": "shows"
+     }
+    ],
+    "unreliable": false
+   },
+   {
+    "run": 2,
+    "file": "yt-vyse-ascent.mov",
+    "t": "6:39.5",
+    "claim": "The player is killed by an enemy KAY/O, and the round is lost.",
+    "truth": true,
+    "verdict": "shows",
+    "facts": [
+     {
+      "fact": "The player is killed by an enemy KAY/O",
+      "saw": "In the combat report and killfeed, the player is eliminated by KAY/O",
+      "verdict": "shows"
+     },
+     {
+      "fact": "the round is lost",
+      "saw": "The screen displays 'LOST' and 'TEAM ELIMINATED'",
+      "verdict": "shows"
+     }
+    ],
+    "unreliable": false
+   },
+   {
+    "run": 2,
+    "file": "marvel-rivals/mr-punk-magik.attack.mp4",
+    "t": "1:19",
+    "claim": "She is at full health.",
+    "truth": false,
+    "verdict": "goes_against",
+    "facts": [
+     {
+      "fact": "She is at full health at 1:19.0",
+      "saw": "the health HUD at 1:19.0 shows 50/250 health",
+      "verdict": "goes_against"
+     }
+    ],
+    "unreliable": false
+   },
+   {
+    "run": 2,
+    "file": "marvel-rivals/mr-punk-magik.attack.mp4",
+    "t": "2:15",
+    "claim": "She gets a triple elimination, and a TRIPLE banner shows.",
+    "truth": true,
+    "verdict": "shows",
+    "facts": [
+     {
+      "fact": "She gets a triple elimination",
+      "saw": "The killfeed and scoreboard indicators at 2:15.0 show a triple elimination (TRIPLE banner and counter)",
+      "verdict": "shows"
+     },
+     {
+      "fact": "a TRIPLE banner shows",
+      "saw": "A large 'TRIPLE!' banner appears on the right side of the screen at 2:15.0 (timestamp 00:06.0)",
+      "verdict": "shows"
+     }
+    ],
+    "unreliable": false
+   },
+   {
+    "run": 2,
+    "file": "marvel-rivals/mr-punk-magik.attack.mp4",
+    "t": "3:14",
+    "claim": "She dies here.",
+    "truth": false,
+    "verdict": "goes_against",
+    "facts": [
+     {
+      "fact": "She dies here.",
+      "saw": "At 3:14.0 (00:06.0 in clip), the player's health drops to 97/250 and then 130/283, but does not hit zero or show a death screen.",
+      "verdict": "goes_against"
+     }
+    ],
+    "unreliable": false
+   },
+   {
+    "run": 2,
+    "file": "marvel-rivals/mr-punk-magik.attack.mp4",
+    "t": "4:27.3",
+    "claim": "She is killed and goes down.",
+    "truth": true,
+    "verdict": "shows",
+    "facts": [
+     {
+      "fact": "She is killed and goes down.",
+      "saw": "The player's health drops from 209/250 to 0/250 by 4:27.3, and the health bar empties.",
+      "verdict": "shows"
+     }
+    ],
+    "unreliable": false
+   },
+   {
+    "run": 2,
+    "file": "marvel-rivals/mr-punk-magik.attack.mp4",
+    "t": "4:30",
+    "claim": "She is being revived: a Reviving banner shows over her.",
+    "truth": true,
+    "verdict": "shows",
+    "facts": [
+     {
+      "fact": "She is being revived",
+      "saw": "the player character is at 0/250 health inside a respawn beacon tube",
+      "verdict": "shows"
+     },
+     {
+      "fact": "a Reviving banner shows over her",
+      "saw": "a yellow banner with skull icon and 'Reviving' text is displayed over the player character",
+      "verdict": "shows"
+     }
+    ],
+    "unreliable": false
+   },
+   {
+    "run": 2,
+    "file": "marvel-rivals/mr-punk-magik.attack.mp4",
+    "t": "5:10",
+    "claim": "Her health is down to about 30 of 250.",
+    "truth": true,
+    "verdict": "shows",
+    "facts": [
+     {
+      "fact": "Her health is down to about 30 of 250 at 5:10.0",
+      "saw": "the health display shows 30 / 250",
+      "verdict": "shows"
+     }
+    ],
+    "unreliable": false
+   },
+   {
+    "run": 2,
+    "file": "marvel-rivals/mr-punk-magik.attack.mp4",
+    "t": "5:10",
+    "claim": "Her health is down to about 30 of 250, and she dies from it.",
+    "truth": false,
+    "verdict": "goes_against",
+    "facts": [
+     {
+      "fact": "Her health is down to about 30 of 250",
+      "saw": "at 5:10.0 (00:06.0 in video) her health is 30/250",
+      "verdict": "shows"
+     },
+     {
+      "fact": "she dies from it",
+      "saw": "her health recovers to 113/251 shortly after and she does not die",
+      "verdict": "goes_against"
+     }
+    ],
+    "unreliable": false
+   },
+   {
+    "run": 2,
+    "file": "marvel-rivals/mr-punk-magik.attack.mp4",
+    "t": "5:53.5",
+    "claim": "She gets a kill.",
+    "truth": true,
+    "verdict": "shows",
+    "facts": [
+     {
+      "fact": "She gets a kill",
+      "saw": "The killfeed shows the player Pun410 getting an elimination",
+      "verdict": "shows"
+     }
+    ],
+    "unreliable": false
+   },
+   {
+    "run": 2,
+    "file": "league-of-legends/lol-hacklet-mf.14-24.mp4",
+    "t": "1:22",
+    "claim": "The player's health is under a quarter of full.",
+    "truth": false,
+    "verdict": "goes_against",
+    "facts": [
+     {
+      "fact": "The player's health is under a quarter of full.",
+      "saw": "At 1:22.0 (shown in the provided health HUD crop at 1:22.0), the player's health is 488 / 1373, which is 488 out of 1373 (greater than a quarter, as 1373 / 4 = 343.25).",
+      "verdict": "goes_against"
+     }
+    ],
+    "unreliable": false
+   },
+   {
+    "run": 2,
+    "file": "league-of-legends/lol-hacklet-mf.14-24.mp4",
+    "t": "1:46.5",
+    "claim": "The player dies.",
+    "truth": true,
+    "verdict": "shows",
+    "facts": [
+     {
+      "fact": "The player dies.",
+      "saw": "The player's health drops to 0 and they enter the death/respawn state with a death timer around 1:46.5.",
+      "verdict": "shows"
+     }
+    ],
+    "unreliable": false
+   },
+   {
+    "run": 2,
+    "file": "league-of-legends/lol-hacklet-mf.14-24.mp4",
+    "t": "4:27.5",
+    "claim": "The player gets a kill.",
+    "truth": false,
+    "verdict": "goes_against",
+    "facts": [
+     {
+      "fact": "The player gets a kill.",
+      "saw": "The player's kill count remains 1/5/5 in the scoreboard and 0 champion kills throughout the clip.",
+      "verdict": "goes_against"
+     }
+    ],
+    "unreliable": false
+   },
+   {
+    "run": 2,
+    "file": "league-of-legends/lol-hacklet-mf.14-24.mp4",
+    "t": "4:30",
+    "claim": "The player's health is under a quarter of full.",
+    "truth": true,
+    "verdict": "shows",
+    "facts": [
+     {
+      "fact": "The player's health is under a quarter of full.",
+      "saw": "At 4:30.0 (video timestamp 0:06.0), the player's health is 280 out of 1589, which is well under a quarter (1589 / 4 = 397.25)",
+      "verdict": "shows"
+     }
+    ],
+    "unreliable": false
+   },
+   {
+    "run": 2,
+    "file": "league-of-legends/lol-hacklet-mf.14-24.mp4",
+    "t": "8:55",
+    "claim": "The player dies.",
+    "truth": true,
+    "verdict": "shows",
+    "facts": [
+     {
+      "fact": "The player dies.",
+      "saw": "The health drops to 0 / 1820 and the death/respawn timer appears at 8:55.0.",
+      "verdict": "shows"
+     }
+    ],
+    "unreliable": false
+   },
+   {
+    "run": 2,
+    "file": "league-of-legends/lol-hacklet-mf.14-24.mp4",
+    "t": "9:32",
+    "claim": "The player dies.",
+    "truth": false,
+    "verdict": "goes_against",
+    "facts": [
+     {
+      "fact": "The player dies at 9:32.0",
+      "saw": "The player's health and KDA remain 0/1820 and 1/6/7 with no death or respawn screen occurring around 9:32.0",
+      "verdict": "goes_against"
+     }
+    ],
+    "unreliable": false
+   },
+   {
+    "run": 2,
+    "file": "rocket-league/rl-somey-gc2.match1.mp4",
+    "t": "2:02",
+    "claim": "The player demolishes an opponent's car, and a DEMOLITION banner shows.",
+    "truth": true,
+    "verdict": "shows",
+    "facts": [
+     {
+      "fact": "The player demolishes an opponent's car",
+      "saw": "At around 00:04.333 - 00:04.500 in the video, the player bumps into an opponent's car (NYAL) with boost, causing a massive explosion with a red/orange screen flash representing a demolition.",
+      "verdict": "shows"
+     },
+     {
+      "fact": "a DEMOLITION banner shows",
+      "saw": "Shortly after the demolition, at 00:04.833 and onwards, a large 'DEMOLITION' banner appears in orange across the upper middle section of the screen.",
+      "verdict": "shows"
+     }
+    ],
+    "unreliable": false
+   },
+   {
+    "run": 2,
+    "file": "rocket-league/rl-somey-gc2.match1.mp4",
+    "t": "3:26.5",
+    "claim": "The player scores a goal.",
+    "truth": true,
+    "verdict": "shows",
+    "facts": [
+     {
+      "fact": "The player scores a goal.",
+      "saw": "The notification says 'THESOMEY SCORED!' (where THESOMEY is the player name on the orange team), and the orange score increases to 1.",
+      "verdict": "shows"
+     }
+    ],
+    "unreliable": false
+   },
+   {
+    "run": 2,
+    "file": "rocket-league/rl-somey-gc2.match1.mp4",
+    "t": "4:15",
+    "claim": "The player's team scores a goal.",
+    "truth": false,
+    "verdict": "shows",
+    "facts": [
+     {
+      "fact": "The player's team scores a goal.",
+      "saw": "Blue team score increases from 0 to 1 and 'NYAL SCORED!' appears on screen.",
+      "verdict": "shows"
+     }
+    ],
+    "unreliable": false
+   },
+   {
+    "run": 2,
+    "file": "rocket-league/rl-somey-gc2.match1.mp4",
+    "t": "4:44.5",
+    "claim": "The player scores a goal.",
+    "truth": false,
+    "verdict": "shows",
+    "facts": [
+     {
+      "fact": "The player scores a goal.",
+      "saw": "FORKY JR scored a goal at around 00:06.000, and the replay/scoreboard shows FORKY JR is the player's name (the car has FORKY JR above it and on the scoreboard).",
+      "verdict": "shows"
+     }
+    ],
+    "unreliable": false
+   }
+  ],
+  "checks": [
+   {
+    "run": 1,
+    "file": "yt-vyse-ascent.mov",
+    "calls": 11,
+    "controls": 2,
+    "fooled": [],
+    "unreliable": false
+   },
+   {
+    "run": 1,
+    "file": "yt-vyse-ascent.mov",
+    "calls": 6,
+    "controls": 2,
+    "fooled": [],
+    "unreliable": false
+   },
+   {
+    "run": 1,
+    "file": "marvel-rivals/mr-punk-magik.attack.mp4",
+    "calls": 8,
+    "controls": 2,
+    "fooled": [],
+    "unreliable": false
+   },
+   {
+    "run": 1,
+    "file": "marvel-rivals/mr-punk-magik.attack.mp4",
+    "calls": 9,
+    "controls": 2,
+    "fooled": [],
+    "unreliable": false
+   },
+   {
+    "run": 1,
+    "file": "league-of-legends/lol-hacklet-mf.14-24.mp4",
+    "calls": 7,
+    "controls": 2,
+    "fooled": [],
+    "unreliable": false
+   },
+   {
+    "run": 1,
+    "file": "league-of-legends/lol-hacklet-mf.14-24.mp4",
+    "calls": 4,
+    "controls": 2,
+    "fooled": [],
+    "unreliable": false
+   },
+   {
+    "run": 1,
+    "file": "rocket-league/rl-somey-gc2.match1.mp4",
+    "calls": 5,
+    "controls": 0,
+    "fooled": [],
+    "unreliable": false
+   },
+   {
+    "run": 2,
+    "file": "yt-vyse-ascent.mov",
+    "calls": 11,
+    "controls": 2,
+    "fooled": [],
+    "unreliable": false
+   },
+   {
+    "run": 2,
+    "file": "yt-vyse-ascent.mov",
+    "calls": 5,
+    "controls": 2,
+    "fooled": [],
+    "unreliable": false
+   },
+   {
+    "run": 2,
+    "file": "marvel-rivals/mr-punk-magik.attack.mp4",
+    "calls": 8,
+    "controls": 2,
+    "fooled": [],
+    "unreliable": false
+   },
+   {
+    "run": 2,
+    "file": "marvel-rivals/mr-punk-magik.attack.mp4",
+    "calls": 9,
+    "controls": 2,
+    "fooled": [],
+    "unreliable": false
+   },
+   {
+    "run": 2,
+    "file": "league-of-legends/lol-hacklet-mf.14-24.mp4",
+    "calls": 7,
+    "controls": 2,
+    "fooled": [],
+    "unreliable": false
+   },
+   {
+    "run": 2,
+    "file": "league-of-legends/lol-hacklet-mf.14-24.mp4",
+    "calls": 4,
+    "controls": 2,
+    "fooled": [],
+    "unreliable": false
+   },
+   {
+    "run": 2,
+    "file": "rocket-league/rl-somey-gc2.match1.mp4",
+    "calls": 5,
+    "controls": 0,
+    "fooled": [],
+    "unreliable": false
+   }
+  ]
+ },
+ "rocket_league_after": {
+  "about": "eval/verifycheck.mjs on eval/answer-keys/claims.json",
+  "rows": [
+   {
+    "run": 1,
+    "file": "rocket-league/rl-somey-gc2.match1.mp4",
+    "t": "2:02",
+    "claim": "The player demolishes an opponent's car, and a DEMOLITION banner shows.",
+    "truth": true,
+    "verdict": "shows",
+    "facts": [
+     {
+      "fact": "The player demolishes an opponent's car",
+      "saw": "around 04.333 - 04.500 in the video, the player crashes into an opponent car (NYAL) creating a large explosion, and 'DEMOLITION' appears on screen.",
+      "verdict": "shows"
+     },
+     {
+      "fact": "a DEMOLITION banner shows",
+      "saw": "from 04.833 through 05.833, a large 'DEMOLITION' banner is clearly visible in the center-top of the screen.",
+      "verdict": "shows"
+     }
+    ],
+    "unreliable": false
+   },
+   {
+    "run": 1,
+    "file": "rocket-league/rl-somey-gc2.match1.mp4",
+    "t": "3:26.5",
+    "claim": "The player scores a goal.",
+    "truth": true,
+    "verdict": "shows",
+    "facts": [
+     {
+      "fact": "The player scores a goal.",
+      "saw": "The banner 'THESOMEY SCORED!' appears and the orange team's score increases to 1.",
+      "verdict": "shows"
+     }
+    ],
+    "unreliable": false
+   },
+   {
+    "run": 1,
+    "file": "rocket-league/rl-somey-gc2.match1.mp4",
+    "t": "4:15",
+    "claim": "The player's team scores a goal.",
+    "truth": false,
+    "verdict": "shows",
+    "facts": [
+     {
+      "fact": "The player's team scores a goal.",
+      "saw": "The blue team's score changes from 0 to 1 at 4:15, and the banner 'NYAL SCORED!' appears with goal celebration effects.",
+      "verdict": "shows"
+     }
+    ],
+    "unreliable": false
+   },
+   {
+    "run": 1,
+    "file": "rocket-league/rl-somey-gc2.match1.mp4",
+    "t": "4:44.5",
+    "claim": "The player scores a goal.",
+    "truth": false,
+    "verdict": "shows",
+    "facts": [
+     {
+      "fact": "The player scores a goal.",
+      "saw": "FORKY JR scores, and the scoreboard updates to 3-1, but the player's name in the match is [GES] Forky Jr, while the scorer banner explicitly shows FORKY JR (the name of the player, distinguishing play",
+      "verdict": "shows"
+     }
+    ],
+    "unreliable": false
+   },
+   {
+    "run": 2,
+    "file": "rocket-league/rl-somey-gc2.match1.mp4",
+    "t": "2:02",
+    "claim": "The player demolishes an opponent's car, and a DEMOLITION banner shows.",
+    "truth": true,
+    "verdict": "shows",
+    "facts": [
+     {
+      "fact": "The player demolishes an opponent's car",
+      "saw": "At around 00:04.333 to 00:04.500 in the video, the player bumps into an opponent's car, triggering an explosion and a DEMOLITION notification.",
+      "verdict": "shows"
+     },
+     {
+      "fact": "a DEMOLITION banner shows",
+      "saw": "A large orange DEMOLITION banner appears on screen right after the explosion.",
+      "verdict": "shows"
+     }
+    ],
+    "unreliable": false
+   },
+   {
+    "run": 2,
+    "file": "rocket-league/rl-somey-gc2.match1.mp4",
+    "t": "3:26.5",
+    "claim": "The player scores a goal.",
+    "truth": true,
+    "verdict": "shows",
+    "facts": [
+     {
+      "fact": "The player scores a goal.",
+      "saw": "The screen displays 'THESOMEY SCORED!' at 00:06.000, and the orange team score increases from 0 to 1 on the scoreboard.",
+      "verdict": "shows"
+     }
+    ],
+    "unreliable": false
+   },
+   {
+    "run": 2,
+    "file": "rocket-league/rl-somey-gc2.match1.mp4",
+    "t": "4:15",
+    "claim": "The player's team scores a goal.",
+    "truth": false,
+    "verdict": "shows",
+    "facts": [
+     {
+      "fact": "The player's team scores a goal.",
+      "saw": "The blue team scores a goal, raising the blue score from 0 to 1 as shown on the scoreboard at 4:15.0.",
+      "verdict": "shows"
+     }
+    ],
+    "unreliable": false
+   },
+   {
+    "run": 2,
+    "file": "rocket-league/rl-somey-gc2.match1.mp4",
+    "t": "4:44.5",
+    "claim": "The player scores a goal.",
+    "truth": false,
+    "verdict": "shows",
+    "facts": [
+     {
+      "fact": "The player scores a goal.",
+      "saw": "Forky Jr scores a goal at around 05:45 in the clip (4:44.5 game time), and the player is Forky Jr as seen on the scoreboard and player nametag.",
+      "verdict": "shows"
+     }
+    ],
+    "unreliable": false
+   }
+  ],
+  "checks": [
+   {
+    "run": 1,
+    "file": "rocket-league/rl-somey-gc2.match1.mp4",
+    "calls": 5,
+    "controls": 0,
+    "fooled": [],
+    "unreliable": false
+   },
+   {
+    "run": 2,
+    "file": "rocket-league/rl-somey-gc2.match1.mp4",
+    "calls": 5,
+    "controls": 0,
+    "fooled": [],
+    "unreliable": false
+   }
+  ]
+ }
+}

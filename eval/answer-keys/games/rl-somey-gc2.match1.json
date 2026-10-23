@@ -11,5 +11,7 @@
   ],
   "deaths": [],
   "kills": [{ "t": 120.5, "what": "the player demolishes an opponent: DEMOLITION banner at 2:02, the player drives on", "kind": "demolition" }],
-  "notes": "Rocket League has no deaths; a demolition of the player would be one, and none was seen. The only loss of the player's side is the 4:15 goal."
+  "notes": "Rocket League has no deaths; a demolition of the player would be one, and none was seen. The only loss of the player's side is the 4:15 goal.",
+  "near_deaths": [],
+  "near_deaths_how": "Rocket League has no health, so no near-deaths."
 }

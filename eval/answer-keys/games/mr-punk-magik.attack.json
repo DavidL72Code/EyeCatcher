@@ -43,5 +43,29 @@
     { "t": "4:14-4:25", "what": "her ultimate (Darkchild effects, raised max HP, dipping to 64/250 at 4:18). This is not a death. CORRECTION to the brief: the 4:27-4:31 moment is a real death, revived by a teammate (see deaths)." },
     { "t": "5:07-5:10", "what": "low health with red and orange edges: HP 72/250, then 40/257 and 30/250 at 5:09-5:10, healed to 185 at 5:11 and 278 at 5:12." },
     { "t": "7:35-7:37", "what": "low health: HP 70/250 at 7:35 and 42/250 at 7:37, healed to 218 at 7:38." }
+  ],
+  "near_deaths_how": "Near-deaths: health under 25% of full, with no death right after. Candidates from 2 s HP reads over the whole clip (agent.js readCounters, Oct 22) and the 1 s reads above, each checked by eye on full-size crops of the HP readout at 0.5 s (Oct 22). A dip shorter than a second may be missing.",
+  "near_deaths": [
+    {
+      "t": "1:19",
+      "hp": "50/250",
+      "how": "50/250 at 1:18.5, 1:19 and 1:19.5; 80 at 1:17 and 82 at 1:20, healed after."
+    },
+    {
+      "t": "5:10",
+      "hp": "30/250",
+      "how": "109 at 5:09.5, 30/250 at 5:10, 113 at 5:10.5 as she heals."
+    },
+    {
+      "t": "7:37",
+      "hp": "42/250",
+      "how": "47/250 at 7:36.5, 42/250 at 7:37, 161/250 at 7:37.5."
+    }
+  ],
+  "near_borderline": [
+    {
+      "t": "4:18",
+      "what": "about 64/250 (blurred, could be 54) during her ultimate, 70/250 at 4:18.6: right at 25%, so a record either way is fine."
+    }
   ]
 }

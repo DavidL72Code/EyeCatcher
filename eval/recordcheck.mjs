@@ -1,6 +1,7 @@
 // How true a review's record is, against a ground-truth file written off the frames (eval/answer-keys/games): the
-// player's deaths and kills found and invented, each goal or point given to the right side and scorer, the losses the
-// record holds that really happened, and the finding's evidence moments that sit at a real loss.
+// player's deaths, near-deaths, and kills found and invented, each goal or point given to the right side and scorer,
+// the losses the record holds that really happened, and the finding's moments (a habit's evidence, or the moments of
+// the one reason they lost) that sit at a real loss.
 //   node eval/recordcheck.mjs <truth.json> <run.json> [more run.json...]
 // A run.json is what the review harness saves: { events, evidence, habit, found, finishes }.
 import fs from 'node:fs';
@@ -14,7 +15,7 @@ const secs = (v) => { if (typeof v === 'number') return v; const m = String(v).m
 const timed = (list) => (Array.isArray(list) ? list : []).map((x) => ({ ...x, t: secs(x.t) }));
 
 export function check(truthIn, run) {
-  const truth = { ...truthIn, deaths: timed(truthIn.deaths), kills: timed(truthIn.kills), points: timed(truthIn.points) };
+  const truth = { ...truthIn, deaths: timed(truthIn.deaths), kills: timed(truthIn.kills), points: timed(truthIn.points), near_deaths: timed(truthIn.near_deaths), near_borderline: timed(truthIn.near_borderline) };
   const ev = run.events || [];
   const at = (e) => e.t ?? e.from;
   const out = {};
@@ -24,6 +25,13 @@ export function check(truthIn, run) {
     const found = real.filter((r) => said.some((e) => Math.abs(at(e) - r.t) <= SLACK));
     const invented = said.filter((e) => !real.some((r) => Math.abs(at(e) - r.t) <= SLACK) && !(truth.points || []).some((p) => Math.abs(at(e) - p.t) <= 4));
     out[key] = { real: real.length, found: found.length, invented: invented.map((e) => mmss(at(e))) };
+  }
+  // near-deaths: a record of one at a borderline moment (health right at the line) is neither found nor invented
+  if (truthIn.near_deaths) {
+    const said = ev.filter((e) => e.kind === 'near_death'), real = truth.near_deaths;
+    const found = real.filter((r) => said.some((e) => Math.abs(at(e) - r.t) <= SLACK));
+    const invented = said.filter((e) => ![...real, ...truth.near_borderline].some((r) => Math.abs(at(e) - r.t) <= SLACK));
+    out.near_deaths = { real: real.length, found: found.length, invented: invented.map((e) => mmss(at(e))) };
   }
   // goals and points: the right side, and whether the player scored it
   if (truth.points.length) {
@@ -37,20 +45,20 @@ export function check(truthIn, run) {
     out.points = { real: rows.length, recorded: rows.filter((r) => r.said).length, sideRight: rows.filter((r) => r.sideRight).length, scorerRight: rows.filter((r) => r.scorerRight).length, rows };
   }
   // the losses the record holds: real when a true death or a point the other side scored is there
-  const trueLosses = [...(truth.deaths || []), ...(truth.points || []).filter((p) => p.side !== truth.side)];
-  const lossEvents = ev.filter((e) => e.kind === 'death' || e.kind === 'point_lost' || ((e.kind === 'engagement' || e.kind === 'play') && e.outcome === 'lost'));
+  const trueLosses = [...(truth.deaths || []), ...truth.near_deaths, ...truth.near_borderline, ...(truth.points || []).filter((p) => p.side !== truth.side)];
+  const lossEvents = ev.filter((e) => e.kind === 'death' || e.kind === 'near_death' || e.kind === 'point_lost' || ((e.kind === 'engagement' || e.kind === 'play') && e.outcome === 'lost'));
   const realAt = (t, from = t, to = t) => trueLosses.some((l) => l.t >= from - 4 && l.t <= to + 4);
   out.losses = { recorded: lossEvents.length, real: lossEvents.filter((e) => realAt(at(e), e.from ?? at(e), e.to ?? at(e))).length, invented: lossEvents.filter((e) => !realAt(at(e), e.from ?? at(e), e.to ?? at(e))).map((e) => `${mmss(at(e))} ${e.kind}`) };
   // the finding's evidence moments at a real loss (6 s before it to 2 s after)
-  const evidence = run.found ? run.evidence || [] : [];
+  const evidence = run.found ? run.evidence || [] : run.reason ? run.fixes || [] : [];
   out.evidence = { cited: evidence.length, atRealLoss: evidence.filter((t) => trueLosses.some((l) => t >= l.t - 8 && t <= l.t + 2)).length, away: evidence.filter((t) => !trueLosses.some((l) => t >= l.t - 8 && t <= l.t + 2)).map(mmss) };
-  out.habit = run.found ? run.habit : 'none';
+  out.habit = run.found ? run.habit : run.reason ? `one-off: ${run.reason}` : 'none';
   return out;
 }
 
 export function line(name, r) {
   const parts = [`${name}: habit ${r.habit}`];
-  for (const k of ['deaths', 'kills']) if (r[k].real || r[k].invented.length) parts.push(`${k} ${r[k].found}/${r[k].real} found${r[k].invented.length ? `, invented ${r[k].invented.join(' ')}` : ''}`);
+  for (const k of ['deaths', 'near_deaths', 'kills']) if (r[k] && (r[k].real || r[k].invented.length)) parts.push(`${k} ${r[k].found}/${r[k].real} found${r[k].invented.length ? `, invented ${r[k].invented.join(' ')}` : ''}`);
   if (r.points) parts.push(`points ${r.points.recorded}/${r.points.real} recorded, side right ${r.points.sideRight}, scorer right ${r.points.scorerRight}`);
   parts.push(`losses ${r.losses.real}/${r.losses.recorded} real${r.losses.invented.length ? ` (invented ${r.losses.invented.join(', ')})` : ''}`);
   if (r.evidence.cited) parts.push(`evidence at a real loss ${r.evidence.atRealLoss}/${r.evidence.cited}${r.evidence.away.length ? ` (away: ${r.evidence.away.join(' ')})` : ''}`);

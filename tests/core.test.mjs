@@ -1131,3 +1131,68 @@ test("the player's own rows fix which team color is theirs, and a feed of cut-of
   assert.equal(C.cutNames([{ killer: 'PunK10', victim: 'S' }, { killer: 'VEN', victim: 'lu' }, { killer: 'A', victim: 'B' }, { killer: 'Alejos2001', victim: 'MR.ELK' }]), 0.75);
   assert.equal(C.cutNames([{ killer: 'PunK10', victim: 'VEN' }]), 0);
 });
+
+test('the HP number under a quarter of full health, the reading next to it low too, is a near-death', () => {
+  // Marvel Rivals, 1:17-1:21 and 4:26-4:31: 80 then 50 of 250 and healed (a near-death); 121 then 0 (the death itself)
+  const hp = [[71, 250], [73, 250], [75, 250], [77, 80], [79, 50], [81, 139], [83, 250], [262, 250], [264, 250], [266, 121], [268, 0], [270, 0], [272, 250], [300, 250], [302, 40], [304, 250]].map(([t, value]) => ({ t, value }));
+  const near = C.nearDeaths(hp, { maxes: [{ t: 71, value: 250 }], deaths: [{ t: 267.3 }] });
+  // the lone 40 at 302 is as likely a misread as a dip read once: it's kept, marked for a second look
+  assert.deepEqual(near.map((e) => [e.t, e.hp, e.of, e.sure]), [[79, 50, 250, true], [302, 40, 250, false]]);
+  // a fall to near nothing just before a death is the death, not a near-death
+  assert.deepEqual(C.nearDeaths([...series([100, 100, 30, 20, 100]), { t: 10, value: 100 }], { deaths: [{ t: 9 }] }), []);
+  // with no full health written, the health read most often stands in
+  assert.deepEqual(C.nearDeaths(series([100, 100, 100, 35, 20, 100])).map((e) => e.t), [8]);
+  // full health is the one written nearest the moment: League's grows with each level (1373 at 1:22, 1589 at 4:30)
+  const lol = [[80, 609], [82, 488], [84, 601], [266, 940], [268, 807], [270, 280], [272, 303]].map(([t, value]) => ({ t, value }));
+  const tops = [[80, 1373], [82, 1373], [84, 1479], [266, 1589], [268, 1589], [270, 1589], [272, 1589]].map(([t, value]) => ({ t, value }));
+  // 488 of 1373 (36%) is only a candidate for the second look; 280 of 1589, read low twice, is sure
+  assert.deepEqual(C.nearDeaths(lol, { maxes: tops }).map((e) => [e.t, e.hp, e.of, e.sure]), [[82, 488, 1373, false], [270, 280, 1589, true]]);
+  // a near-death is a loss a habit can show at, like a death
+  assert.deepEqual(C.lossMoments(near.slice(0, 1)).map((l) => [l.t, l.what]), [[79, 'a near-death (health 50 of 250)']]);
+  assert.equal(C.losses(near, C.createLedger())[0].what, 'a near-death (health 50 of 250)');
+});
+
+test('with no habit and a loss in the match, finish names the biggest reason, at a loss it looked at', () => {
+  const ledger = C.createLedger();
+  for (const t of [20, 60]) C.recordLook(ledger, { from: t - 1, to: t + 1, kind: 'frames' });
+  const events = [{ t: 62, kind: 'death' }], opts = { ledger, duration: 120, events, citeLoss: true };
+  const why = 'They pushed into two enemies alone and died before help came.';
+  const bare = C.checkFinish({ found: false, why }, opts);
+  assert.ok(bare.some((p) => /Name the biggest reason they lost in this match \(reason\), even if it happened once: what cost them the most at 1:02 their death/.test(p)));
+  assert.equal(C.problemKind(bare.find((p) => /Name the biggest reason/.test(p))), 'no_reason');
+  // its moments have to be looked at, and one of them where they lost
+  const away = C.checkFinish({ found: false, why, reason: 'Pushing alone', fixes: [{ t: '0:20', what: 'walks out alone', better: 'wait for a teammate' }] }, opts);
+  assert.deepEqual(away.map(C.problemKind), ['no_reason']);
+  assert.deepEqual(C.checkFinish({ found: false, why, reason: 'Pushing alone', fixes: [{ t: '1:00', what: 'pushes two enemies alone', better: 'wait for a teammate' }] }, opts), []);
+  // a match with nothing lost has nothing to explain
+  assert.deepEqual(C.checkFinish({ found: false, why: 'Nothing was lost in this match.' }, { ...opts, events: [] }), []);
+});
+
+test('the claims planted for the checker are ones the record shows are false, near the finding\'s own moments', () => {
+  const events = [{ t: 14.6, kind: 'death' }, { t: 120, kind: 'death' }, { t: 79, kind: 'near_death', hp: 50, of: 250 }, { t: 200, kind: 'point_lost' }];
+  const moments = [{ t: 60 }, { t: 85 }];
+  // a death at a quiet moment near a cited one (nothing in the record within 12 s, and not within a minute after a death
+  // of theirs: 42 s is 27 s after the one at 14.6 s, and they may still be on its screen), and the near-death called full
+  assert.deepEqual(C.controlClaims(events, moments, { duration: 300 }).map((c) => [c.t, c.what]), [[79, "The player's health is full here."], [103, 'The player dies here.']]);
+  // one of the player's kills, with no death of theirs near it, called their death
+  assert.deepEqual(C.controlClaims([{ t: 30, kind: 'kill' }, { t: 50, kind: 'kill' }, { t: 55, kind: 'death' }], [{ t: 40 }], { max: 1 }).map((c) => [c.t, c.what]), [[30, 'The player is killed here.']]);
+  // with the record's deaths unchecked, no death is planted: it might be one
+  assert.deepEqual(C.controlClaims(events, moments, { sure: false }).map((c) => c.what), ["The player's health is full here.", "The player's own side scores here."]);
+  // one within 6 s of a cited moment would be judged on the same pictures as the claim: left out
+  assert.deepEqual(C.controlClaims([{ t: 84, kind: 'near_death', hp: 50, of: 250 }], moments, { sure: false }), []);
+});
+
+test("a kill-feed name's character is kept only when two or more reads of it agree", () => {
+  const sightings = [
+    { t: 10, killer: 'VEÑ', victim: 'PunK10', killerChar: 'Hela' }, { t: 11, killer: 'VEN', victim: 'PunK10', killerChar: 'Hela' },
+    { t: 40, killer: 'PunK10', victim: 'MR.ELK', victimChar: 'Rocket Raccoon' }, // one read: not enough
+    { t: 70, killer: 'StarBoii', victim: 'PunK10', killerChar: 'Luna Snow' }, { t: 71, killer: 'StarBoii', victim: 'PunK10', killerChar: 'Hela' },
+  ];
+  const chars = C.feedCharacters(sightings);
+  assert.equal(chars.get(C.nameKey('VEN')), undefined); // VEÑ and VEN are two keys; each has one read
+  assert.equal(chars.get(C.nameKey('VEÑ')), undefined);
+  assert.equal(C.feedCharacters([sightings[0], { ...sightings[0], t: 12 }]).get(C.nameKey('VEÑ')), 'Hela');
+  assert.equal(chars.get(C.nameKey('MR.ELK')), undefined);
+  assert.equal(chars.get(C.nameKey('StarBoii')), undefined); // the reads disagree
+  assert.match(C.feedText({ kind: 'death', killer: 'VEÑ', victim: 'PunK10', killerTeam: 'enemy', victimIsPlayer: true, killerCharacter: 'Hela' }), /^VEÑ \(Hela, enemy\) killed you/);
+});

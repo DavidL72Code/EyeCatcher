@@ -67,6 +67,27 @@
   }
 
   /**
+   * The HUD number code read at a moment, when that number is the point: the health readout at a near-death (or 0 at a
+   * death the HP number shows) and the scoreboard at a point either side scored, each within a second of the moment so
+   * the frame shows it. The box is the readout's own, grown to hold its number (C.readoutRegion). No reading, no mark.
+   */
+  const NUMBER_NEAR = 1.2; // s between the reading and the moment's frame
+  function hudMarks({ profile, moments, events }) {
+    const box = (name) => { const r = profile?.regions?.[name]; if (!r) return null; const [x, y, w, h] = C.readoutRegion(r); return [y, x, y + h, x + w]; };
+    return moments.map((m) => {
+      const near = (kinds) => (events || []).filter((e) => kinds.includes(e.kind) && Math.abs(e.t - m.t) <= NUMBER_NEAR).sort((a, b) => Math.abs(a.t - m.t) - Math.abs(b.t - m.t))[0];
+      const low = near(['near_death']);
+      if (low && box('health')) return { fact: { box: box('health'), label: `Health ${low.hp} of ${low.of}` }, note: `The HUD's health read ${low.hp} of ${low.of}` };
+      const died = near(['death']);
+      // only a death the HP number itself read as 0 (a K/D/A death can show another number: League's read 1)
+      if (died && /health read 0/.test(died.text || '') && box('health')) return { fact: { box: box('health'), label: 'Health 0' }, note: "The HUD's health read 0" };
+      const point = near(['point_won', 'point_lost']);
+      if (point && box('scoreboard')) return { fact: { box: box('scoreboard'), label: point.kind === 'point_won' ? 'Your side scores' : 'The other side scores' }, note: point.text || '' };
+      return null;
+    });
+  }
+
+  /**
    * A full frame at each moment, with the marks code can stand behind. Resolves with
    * { keys: [{ t, shot: { t, url }, aspect, measured?, problem?, fix?, fact?, moves?, note? }], shots } (shots keep the
    * image data).
@@ -75,15 +96,16 @@
     const frame = { w: video.width, h: video.height };
     const shots = moments.length ? await V.grab(video, moments.map((e) => e.t), { maxDim: 1280, quality: 0.82 }) : [];
     const lines = await feedMarks({ video, profile, moments, events }).catch(() => moments.map(() => null));
+    const numbers = hudMarks({ profile, moments, events });
     const keys = moments.map((e, i) => {
       const s = shots.find((x) => Math.abs(x.t - e.t) < 1e-3);
       const m = profile?.regions?.aim && measures.find((x) => Math.abs(x.t - e.t) < 0.35 && Array.isArray(x.box));
       const move = (events || []).filter((x) => x.kind === 'move' && x.squares && x.board && Math.abs(x.t - e.t) <= 2).sort((a, b) => Math.abs(a.t - e.t) - Math.abs(b.t - e.t))[0];
-      const marks = m ? aimMarks(m, profile, frame) : move ? moveMarks(move) : lines[i] || {};
+      const marks = m ? aimMarks(m, profile, frame) : move ? moveMarks(move) : lines[i] || numbers[i] || {};
       return { t: e.t, shot: s ? { t: s.t, url: s.url } : null, aspect: frame.w / frame.h, ...marks };
     });
     return { keys, shots };
   }
 
-  root.ThirdeyeReport = { prepare, aimMarks, moveMarks, squareAt };
+  root.ThirdeyeReport = { prepare, aimMarks, moveMarks, squareAt, hudMarks };
 })(window);

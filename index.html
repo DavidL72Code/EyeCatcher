@@ -179,6 +179,7 @@ Millennium eye in raised gold. Big Shoulders Display for the verdict and big num
           <video id="video" playsinline controls preload="metadata"></video>
           <div class="vmarks" id="vmarks" hidden></div>
           <div class="now" id="now" aria-live="polite" hidden></div>
+          <p class="caption" id="caption" aria-live="polite" hidden></p>
           <button class="follow" id="followBtn" type="button" hidden>Follow the coach</button>
           <div class="reattach" id="reattach" hidden></div>
         </div>
@@ -189,6 +190,22 @@ Millennium eye in raised gold. Big Shoulders Display for the verdict and big num
         </div>
         <div class="axis" id="axis" aria-hidden="true"></div>
         <ul class="legend" id="legend" aria-hidden="true"><li class="k-kill">Your kill</li><li class="k-death">Your death</li><li class="k-ally">Teammate died</li><li class="k-fight">Fight</li><li class="k-look">Looked at</li></ul>
+        <ol class="stages" id="stages" aria-label="Where the review is" hidden>
+          <li data-s="learn"><i aria-hidden="true"></i><b>Reading the screen</b><span></span></li>
+          <li data-s="record"><i aria-hidden="true"></i><b>The match record</b><span></span></li>
+          <li data-s="look"><i aria-hidden="true"></i><b>Looking closely</b><span></span></li>
+          <li data-s="check"><i aria-hidden="true"></i><b>Checking it</b><span></span></li>
+          <li data-s="verdict"><i aria-hidden="true"></i><b>The verdict</b><span></span></li>
+        </ol>
+        <section class="critique" id="critique" aria-label="The critique" hidden>
+          <div class="cq-bar">
+            <button class="cq-play" id="cqPlay" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z" /></svg><span id="cqPlayText">Watch the critique</span></button>
+            <p class="cq-meta" id="cqMeta"></p>
+            <label class="cq-voice"><span class="sr-only">Voice</span><select id="cqVoice" aria-label="Voice" hidden></select></label>
+            <button class="quiet cq-stop" id="cqStop" type="button" hidden>Stop</button>
+          </div>
+          <ol class="cq-chapters" id="cqChapters"></ol>
+        </section>
       </div>
 
       <aside class="rail" id="rail">

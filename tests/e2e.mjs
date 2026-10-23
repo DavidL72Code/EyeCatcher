@@ -15,10 +15,12 @@ const fixture = path.join(root, 'tests/fixtures', truth.file);
 
 // the app's own server, as the dev server and the desktop app run it: its security policy and headers are under test
 // too. The key is a stand-in; Gemini is answered below.
-const server = await startServer({ port: 0, reload: false, env: { GEMINI_API_KEY: 'TEST', THIRDEYE_BACKEND: '' } });
+const server = await startServer({ port: 0, reload: false, env: { GEMINI_API_KEY: 'TEST', GEMINI_API_KEY2: 'TEST2', THIRDEYE_BACKEND: '' } });
 const base = `http://127.0.0.1:${server.port}/`;
 const fail = [];
 const check = (c, m) => { if (!c) { fail.push(m); console.log('  FAIL -', m); } else console.log('  ok -', m); };
+// E2E_SHOTS=<dir>: screenshots of the main screens, to look at
+const shot = async (page, name) => { if (process.env.E2E_SHOTS) await page.screenshot({ path: path.join(process.env.E2E_SHOTS, `${name}.png`) }); };
 
 // ---- fixtures (test only) ----
 const CROP = { x: 384, y: 158, w: 512, h: 403 }; // the Valorant profile's aim region on a 1280x720 frame
@@ -88,6 +90,17 @@ const specCoach = [
   () => call(['frames', { at: '0:10', more: ['0:50', '1:35'], as: 'clip', why: 'their part in the points they lost', notes: [{ theory: 'Late to the ball', status: 'testing' }] }]),
   () => call(['finish', { ...SPEC_FINDING, evidence: SPEC_EVIDENCE, notes: [{ id: 'T1', status: 'supported', evidence: SPEC_EVIDENCE.map((e) => ev(e.t, e.what)) }] }]),
 ];
+// no habit repeats across the deaths, but one thing cost them the most: ending with nothing named is sent back, and the
+// biggest reason has to be named, at a death it looked at
+const REASON = { found: false, reason: 'Peeking the same corner twice', why: 'After losing the duel at the corner, they peeked it again the same way and died to the same angle.', drill: 'After a death, take the next fight from a different angle.', recheck: 'Whether they re-peek a corner they just died at.' };
+const oneOffCoach = [
+  () => call(['finish', { ...REASON, fixes: [instead('0:46.8', 'Peeks the corner they just lost at, the same way', 'Take the fight from the other side')] }]),
+  () => call(['scan', { from: '0:00', to: '2:30', why: 'every fight in the match' }]),
+  () => call(['finish', { found: false, why: 'The deaths had different causes, so no single habit stands out.' }]),
+  () => call(['frames', { at: '0:13.8', more: ['0:46.8', '1:05.8'], why: 'the deaths' }]),
+  () => call(['frames', { at: '1:40.6', why: 'the last death I have not seen' }]),
+  () => call(['finish', { ...REASON, fixes: [instead('0:46.8', 'Peeks the corner they just lost at, the same way', 'Take the fight from the other side, or wait for a teammate')] }]),
+];
 // what the learn call says about the synthetic match: where its HUD is, and the habits a coach would look for
 const LEARNED = {
   game: 'Synthetic test match', genre: 'shooter', first_person: true, crosshair_center: true, fov_h: 103, team_game: false, rounds: true, respawn_seconds: 0,
@@ -108,6 +121,15 @@ const RESEARCH = {
 function gemini(body) {
   const parts = body.contents?.[0]?.parts || [];
   const prompt = parts.map((p) => p.text || '').join(' ');
+  // the check of a finding against the video: every claim in one call, each with its own pictures; the claims the record
+  // shows are false (planted by code) go against the video, the coach's show
+  if (!body.tools && /^Each claim below is about a moment of a recorded/.test(parts[0]?.text || '')) {
+    seen.verifyBodies = [...(seen.verifyBodies || []), body];
+    const claims = [...prompt.matchAll(/Claim (\d+), at [^:]+:[\d.]+: <data>([^<]*)<\/data>/g)].map((m) => ({ n: +m[1], what: m[2] }));
+    // seen.fooled: a checker that agrees with everything, planted claims included
+    const planted = /^The player (is killed|dies) here\.$|health is full here|own side scores here/, against = (c) => planted.test(c.what) && !seen.fooled;
+    return text({ claims: claims.map((c) => ({ claim: c.n, facts: [{ fact: c.what, saw: against(c) ? 'the opposite' : 'just that', verdict: against(c) ? 'goes_against' : 'shows' }] })) });
+  }
   if (parts.some((p) => p.fileData)) { seen.scans++; seen.scanBody = body; return text(seen.spectator ? { units: UNITS } : { events: scanEvents }); }
   if (!body.tools && /Identify the game/.test(prompt)) { seen.learns++; return text(seen.spectator ? LEARNED_SPEC : seen.chess ? LEARNED_CHESS : LEARNED); }
   // the role's research: a search, then put in shape
@@ -143,7 +165,6 @@ function gemini(body) {
   // each death the low-detail pass saw, looked at again: the synthetic match's deaths are all real
   if (!body.tools && /a quick look took for their death/.test(prompt)) { seen.deathChecks = (seen.deathChecks || 0) + 1; return text({ deaths: [...prompt.matchAll(/Death (\d+),/g)].map((m) => ({ death: +m[1], dead: true, why: 'the death screen' })) }); }
   // each moment a finding cites, looked at again blind: the frames fit them all
-  if (!body.tools && /what a coach says happened there/.test(prompt)) { seen.frameChecks = (seen.frameChecks || 0) + 1; return text({ moments: [...prompt.matchAll(/Moment (\d+),/g)].map((m) => ({ moment: +m[1], shows: 'what the coach says', verdict: 'shows' })) }); }
   // the check of a finding's claims against the record: these all fit
   if (!body.tools && /A coach reviewing/.test(prompt)) { seen.claimChecks++; return text({ claims: [...prompt.matchAll(/Claim (\d+),/g)].map((m) => ({ claim: +m[1], verdict: 'agrees', fact: 'the record' })) }); }
   // the synthetic kill feed's names aren't known here, so the scan falls back to the low-detail pass
@@ -157,7 +178,7 @@ function gemini(body) {
     return text({ images: Array.from({ length: n }, (_, i) => { const b = headBox(heads[seen.heads++ % heads.length]); return { image: i + 1, players: [{ head_2d: [470, 480, 530, 520], body_2d: [470, 470, 700, 530], name_tag: 'Teammate', teammate: true }, { head_2d: [0, 950, 40, 990], body_2d: [600, 0, 700, 20], name_tag: '', teammate: false }, { head_2d: b, body_2d: [b[0], b[1] - 10, b[2] + 200, b[3] + 10], name_tag: '', teammate: false }] }; }) });
   }
   seen.agentBodies.push(body);
-  const turn = body.contents.filter((c) => c.role === 'model').length, list = seen.spectator ? specCoach : seen.chess ? chessCoach : coach;
+  const turn = body.contents.filter((c) => c.role === 'model').length, list = seen.spectator ? specCoach : seen.chess ? chessCoach : seen.oneOff ? oneOffCoach : coach;
   return (list[turn] || list.at(-1))();
 }
 
@@ -173,6 +194,13 @@ try {
     if (/\/games\//.test(u.pathname)) seen.gameFiles++;
     // code from anywhere but the app itself; fonts and Gemini (answered below) are the only other hosts
     if (!['127.0.0.1', 'fonts.googleapis.com', 'fonts.gstatic.com', 'generativelanguage.googleapis.com'].includes(u.hostname) && !/^(data|blob):/.test(r.url())) seen.outside.push(u.host);
+  });
+  // the critique's voice (the local server's Kokoro, scripts/voice.mjs): a quarter second of silence for each line
+  const silence = (() => { const n = 4000, b = Buffer.alloc(44 + n * 2); b.write('RIFF', 0); b.writeUInt32LE(36 + n * 2, 4); b.write('WAVE', 8); b.write('fmt ', 12); b.writeUInt32LE(16, 16); b.writeUInt16LE(1, 20); b.writeUInt16LE(1, 22); b.writeUInt32LE(16000, 24); b.writeUInt32LE(32000, 28); b.writeUInt16LE(2, 32); b.writeUInt16LE(16, 34); b.write('data', 36); b.writeUInt32LE(n * 2, 40); return b; })();
+  await page.route('**/voice', async (route) => {
+    if (route.request().method() === 'GET') return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ voices: { am_michael: 'Michael', af_heart: 'Heart' } }) });
+    seen.voiceLines = [...(seen.voiceLines || []), JSON.parse(route.request().postData() || '{}')];
+    return route.fulfill({ status: 200, contentType: 'audio/wav', body: silence });
   });
   await page.route('https://generativelanguage.googleapis.com/**', async (route) => {
     const req = route.request(), url = req.url();
@@ -194,7 +222,8 @@ try {
   const first = await page.goto(base);
   check(/script-src 'self';/.test(first.headers()['content-security-policy']) && /connect-src 'self' https:\/\/generativelanguage\.googleapis\.com/.test(first.headers()['content-security-policy']), 'the page runs under a policy: only its own scripts, talking only to itself and Gemini');
   const fromElsewhere = await (await fetch(`${base}env.js`, { headers: { 'Sec-Fetch-Site': 'cross-site', 'Sec-Fetch-Dest': 'script' } })).text();
-  check(!/GEMINI_API_KEY/.test(fromElsewhere) && /GEMINI_API_KEY/.test(await page.evaluate(async () => (await fetch('/env.js')).text())), "the key goes to Thirdeye's own page and to no other site");
+  const ownEnv = await page.evaluate(async () => (await fetch('/env.js')).text());
+  check(!/GEMINI_API_KEY|TEST2/.test(fromElsewhere) && /"GEMINI_API_KEY":"TEST"/.test(ownEnv) && /"GEMINI_API_KEY2":"TEST2"/.test(ownEnv), "both keys go to Thirdeye's own page and to no other site");
   check(await page.locator('#homeTitle').innerText() === "FIND THE HABIT THAT'S\nLOSING YOU GAMES." && await page.locator('#home').isVisible() && await page.locator('#tabs [aria-current]').innerText() === 'Home', 'Home opens first, in the sidebar, with the headline');
   check(/scenes\/apex\.mp4$/.test(await page.locator('#demoVideo').getAttribute('src')) && await page.locator('#demoHud .el').count() === 4 && /Reading the screen/i.test(await page.locator('#demoNow .now-kind').innerText()), "Home plays a real match with Thirdeye's steps over it");
   check(await page.locator('#scenes .scene').count() === 4, 'and offers four scenarios');
@@ -216,6 +245,7 @@ try {
   check(await page.locator('#now').isVisible() && /A question for you/i.test(await page.locator('#now .now-kind').innerText()) && +(await page.locator('#now .now-n').innerText()) > 2, 'over the video, the caption says which step the coach is on and what it is doing');
   check(await page.evaluate(() => document.body.classList.contains('live') && getComputedStyle(document.querySelector('#tabs a[data-tab="reviews"]')).pointerEvents === 'none'), "while a review runs, the header can't take you away from it");
   check(await page.locator('.question p').innerText() === 'Did you expect someone at that corner?', 'the question shows');
+  await shot(page, 'live');
   check(seen.uploads === 1 && seen.uploadBytes > 50000 && seen.uploadBytes < 5e6, `the scan copy was uploaded once (${seen.uploadBytes} bytes)`);
   check(seen.scanBody?.contents[0].parts[0].videoMetadata?.startOffset === '0s' && seen.scanBody.generationConfig.mediaResolution === 'MEDIA_RESOLUTION_LOW', 'scan clips the copy and asks for low resolution');
   const ticks = await page.locator('.tick').count();
@@ -242,6 +272,7 @@ try {
   check(await page.locator('#statusText').innerText() === 'Waiting for you', 'and the coach waits for them');
   await page.click('#checkin [data-yes]');
   await page.waitForSelector('#verdict:not([hidden])', { timeout: 60000 });
+  await page.waitForTimeout(1200); await shot(page, 'verdict-habit');
   check(await page.locator('.verdict .checked.yes').innerText() === 'You agreed this is it.', 'their yes makes it final, and the verdict says so');
   const after = (i) => lastResults(seen.agentBodies[i]);
   const askReply = seen.agentBodies.map(lastResults).flat().find((r) => r.name === 'ask_player');
@@ -278,12 +309,16 @@ try {
   check(await page.locator('#status').isHidden(), 'the spinner is gone when done');
   check(/0:31\s*On the head, and the fight was won/.test(await page.locator('.contrast').innerText()), 'moments they got right show apart from the evidence');
   check(await page.locator('.log .theory.supported').count() === 1, 'the board is kept under How it got here');
-  const calls = 1 + 9 + 1 + seen.feedCalls + seen.deathChecks + 3 + seen.claimChecks + seen.frameChecks;
+  const calls = 1 + 9 + 1 + seen.feedCalls + seen.deathChecks + 3 + seen.claimChecks + seen.verifyBodies.length;
   check(seen.claimChecks === 1, `the finding's claims are checked against the record once, when it passes the other checks (${seen.claimChecks})`);
-  check(seen.frameChecks === 1, `each moment of the finding is looked at again, blind, once it passes the other checks (${seen.frameChecks})`);
+  const vb = seen.verifyBodies[0], vText = vb.contents[0].parts.map((p) => p.text || '').join(' ');
+  const vClaims = [...vText.matchAll(/Claim \d+, at [^:]+:[\d.]+: <data>([^<]*)/g)].map((m) => m[1]);
+  check(seen.verifyBodies.length === 1 && vb.contents.length === 1 && !vb.tools && vb.contents[0].parts.filter((p) => /^video\//.test(p.inlineData?.mimeType || '')).length === vClaims.length, `the finding's claims are checked against the video in one call, each with its own run-up as video (${seen.verifyBodies.length} calls, ${vClaims.length} claims)`);
+  check(!/Crosshair below head level|Crosshair sits low|theory|Crosshair placement|Trading teammates|They are working on/.test(vText) && !vb.systemInstruction, "the check starts in a context of its own: the claims and the video, none of the coach's reasoning, board, research, or history");
+  check(vClaims.filter((x) => /^The player (is killed|dies) here\.$/.test(x)).length === 2 && vClaims.length === 5, `two claims the record shows are false are planted among the three, unmarked (${vClaims.join(' | ')})`);
   check(seen.deathChecks === 1, `each death the low-detail pass saw is looked at again, in one call (${seen.deathChecks})`);
   const summary = await page.locator('#logSummary').innerText();
-  check(summary === `How it got here: ${calls} calls, 6 looks`, `the review counts its model calls (${calls}: learning the game, 9 turns, the scan's ${1 + seen.feedCalls + seen.deathChecks} with its look again at the deaths, 3 aim, 1 claim check, 1 look again at the finding's moments; the page says "${summary}")`);
+  check(summary === `How it got here: ${calls} calls, 6 looks`, `the review counts its model calls (${calls}: learning the game, 9 turns, the scan's ${1 + seen.feedCalls + seen.deathChecks} with its look again at the deaths, 3 aim, 1 claim check, ${seen.verifyBodies.length} by the agent that checks the finding against the video; the page says "${summary}")`);
   check(await page.locator('.log .beat').count() === 11 && await page.locator('#logBox').evaluate((d) => !d.open), 'the breakdown folds into How it got here');
   check(await page.locator('.log .beat-kind').first().evaluate((e) => e.textContent) === 'Reading the screen', 'the log reads in order, first step first');
   await page.click('.key:nth-child(2) .key-frame');
@@ -332,7 +367,9 @@ try {
   await page.click('.cards li:nth-child(2) .card');
   await page.waitForSelector('#verdict:not([hidden])');
   check(await page.locator('.verdict h2').innerText() === 'CROSSHAIR BELOW HEAD LEVEL' && await page.locator('.key-fix').count() === 3 && await page.locator('.key .chip.bad').count() === 3, 'an older one opens with its marked-up moments and what to do instead');
-  check(await page.locator('.log .beat').count() === 11 && await page.locator('#logBox').evaluate((d) => d.open), 'its log is open, with every step');
+  check(await page.locator('.log .beat').count() === 11 && !(await page.locator('#logBox').evaluate((d) => d.open)), 'its log keeps every step, folded under the verdict');
+  await page.click('#logSummary');
+  check(await page.locator('#logBox').evaluate((d) => d.open), 'and opens on a click');
   check(await page.locator('.log .beat img').count() >= 4 && await page.locator('.log .beat.measure_aim .box').count() >= 1, 'the log keeps the frames and measured boxes');
   check(await page.locator('.tick').count() === truth.duels.length && await page.locator('.pin').count() === 3, 'the timeline is drawn again');
   await page.waitForFunction(() => !!document.querySelector('#video').getAttribute('src'));
@@ -428,8 +465,55 @@ try {
   check((await page.evaluate(() => JSON.parse(localStorage.getItem('thirdeye.players') || '{}')))['synthetic court match|spectator']?.who === '#7, the setter', 'who they are is kept for the next review of this game');
   seen.spectator = false;
 
+  console.log('no habit repeats: the biggest reason they lost is named anyway');
+  seen.agentBodies.length = 0;
+  seen.oneOff = true;
+  const checksBefore = { claims: seen.claimChecks, agents: seen.verifyBodies.length };
+  seen.fooled = true;
+  await page.goto(`${base}#coach`);
+  await page.evaluate(() => localStorage.removeItem('thirdeye.learned'));
+  await page.setInputFiles('#fileInput', fixture);
+  await page.waitForSelector('#verdict:not([hidden])', { timeout: 120000 });
+  const blind = lastResults(seen.agentBodies[1]).find((r) => r.name === 'finish')?.response.result;
+  check(blind?.ok === false && /^The match record isn't read yet\. Scan the match before finishing/.test(blind.problems[0]), 'a finding before the match record is read is sent back: nothing is named off a few frames');
+  const bare = lastResults(seen.agentBodies[3]).find((r) => r.name === 'finish')?.response.result;
+  check(bare?.ok === false && bare.problems.some((x) => /Name the biggest reason they lost in this match \(reason\), even if it happened once: what cost them the most at 0:\d\d .*their death/.test(x)), `ending with nothing named, after five deaths, is sent back for the reason (${(bare?.problems || []).map((x) => x.slice(0, 60)).join(' | ')})`);
+  check(/what cost you this match · once, not a habit/i.test(await page.locator('.verdict .kind').innerText()) && await page.locator('.verdict h2').innerText() === REASON.reason.toUpperCase() && await page.locator('.key-fix').count() === 1, 'the verdict names what cost them, once, with the moment and what to do instead');
+  // the critique: the finding played back with a voice over the video, moment by moment
+  check(await page.locator('#critique').isVisible() && await page.locator('#cqChapters .cq-ch').count() === 5 && await page.locator('#cqChapters .cq-ch.habit').count() === 1 && /^Narrated · 5 moments, 1 where it shows · about \d+:\d\d$/.test(await page.locator('#cqMeta').innerText()), `under the video, the critique lists every moment they lost as a chapter, the habit's flagged (${await page.locator('#cqMeta').innerText()})`);
+  await shot(page, 'verdict-oneoff');
+  const oneOffUrl = page.url();
+  await page.click('#cqPlay');
+  await page.waitForSelector('#caption:not([hidden])');
+  await shot(page, 'critique-intro');
+  check(/^What cost you this match: Peeking the same corner twice\./.test(await page.locator('#caption .cap-text').innerText()) && await page.locator('#cqPlayText').innerText() === 'Pause', 'watching it, a voice and the caption start with the verdict');
+  await page.waitForFunction(() => /^0:15\. You lost this one\./.test(document.querySelector('#caption .cap-text')?.textContent || ''), null, { timeout: 30000 });
+  check(/^0:15\. You lost this one\. Killed by Enemy 1\.$/.test(await page.locator('#caption .cap-text').innerText()), `a moment they lost that the finding doesn't cite is said as the record has it (${await page.locator('#caption .cap-text').innerText()})`);
+  await page.waitForFunction(() => /This is it/.test(document.querySelector('#caption .cap-text')?.textContent || ''), null, { timeout: 30000 });
+  check(/^0:46\. This is it\. Peeks the corner they just lost at, the same way\. Instead: Take the fight from the other side/.test(await page.locator('#caption .cap-text').innerText()) && Math.abs(await page.evaluate(() => document.querySelector('#video').currentTime) - 46.8) < 0.3 && await page.locator('#cqChapters .cq-ch.on.habit').count() === 1 && await page.locator('.key.playing').count() === 1, 'then holds on the moment the finding cites, says what happened and what to do instead, and marks its chapter and card');
+  await page.waitForTimeout(900); await shot(page, 'critique-moment');
+  await page.click('#cqStop');
+  check(await page.locator('#caption').isHidden() && await page.locator('#cqPlayText').innerText() === 'Watch the critique', 'and stops when asked');
+  check(await page.locator('#cqVoice optgroup').first().getAttribute('label') === 'Natural, made on this computer' && await page.locator('#cqVoice').inputValue() === 'kokoro:am_michael', 'the voice is Kokoro\'s Michael, made on this computer, unless they pick another');
+  check((seen.voiceLines || []).some((l) => l.voice === 'am_michael' && /^At \d+ seconds in\. This is it\. Peeks the corner/.test(l.text)), `each line is said by that voice (${(seen.voiceLines || []).length} lines asked for: ${(seen.voiceLines || []).slice(0, 4).map((l) => `${l.voice}: ${String(l.text).slice(0, 40)}`).join(' | ')})`);
+  check(await page.locator('#acceptBtn').count() === 0, 'a one-off is not put to them as a habit to work on');
+  const agents = seen.verifyBodies.slice(checksBefore.agents);
+  check(seen.claimChecks - checksBefore.claims === 1 && agents.length === 2, `the reason's moments are checked against the record and the video, like a habit's; agreeing with a planted false claim, the check gets one fresh try (${agents.length} calls)`);
+  check(/The check against the video didn't hold up this time/.test(await page.locator('.verdict .trust.warn').innerText()) && (await page.evaluate(() => JSON.parse(localStorage.getItem('thirdeye.v1')).matches.at(-1))).found === false, "and when it agrees with one again, the report says the video check doesn't count");
+  seen.fooled = false;
+  const kept = await page.evaluate(() => JSON.parse(localStorage.getItem('thirdeye.v1')).matches.at(-1));
+  check(kept.found === false && kept.reason === REASON.reason, 'history keeps the reason');
+  seen.oneOff = false;
+
+  if (process.env.E2E_SHOTS) { await page.goto(`${base}#reviews`); await page.waitForSelector('#reviews:not([hidden])'); await page.waitForTimeout(800); await shot(page, 'reviews'); }
   console.log('phone width');
   await page.setViewportSize({ width: 375, height: 812 });
+  if (process.env.E2E_SHOTS) {
+    await page.goto(oneOffUrl);
+    await page.waitForSelector('#verdict:not([hidden])');
+    await page.waitForTimeout(1200);
+    await page.screenshot({ path: path.join(process.env.E2E_SHOTS, 'phone-review.png'), fullPage: true });
+  }
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
   check(overflow <= 0, `no sideways scroll at 375 px (${overflow})`);
   await page.goto(base);

@@ -28,7 +28,7 @@ export function settings(env = { ...readEnv(path.join(path.dirname(fileURLToPath
     // the desktop app's page and the local dev server
     origins: list(env.ALLOWED_ORIGINS, 'http://127.0.0.1:5170,http://127.0.0.1:5177,http://localhost:5177'),
     // the models the app asks for (gemini.js): Flash-Lite first, regular Flash as the last resort, 2.5 for search
-    models: list(env.ALLOWED_MODELS, 'gemini-3.5-flash-lite,gemini-3.1-flash-lite,gemini-flash-lite-latest,gemini-3.5-flash,gemini-flash-latest,gemini-2.5-flash-lite,gemini-2.5-flash'),
+    models: list(env.ALLOWED_MODELS, 'gemini-3.5-flash-lite,gemini-3.1-flash-lite,gemini-3.5-flash,gemini-2.5-flash-lite,gemini-2.5-flash'),
     perMinute: +(env.RATE_PER_MINUTE || 30),
     perDay: +(env.CALLS_PER_DAY || 200), // one review is about 20 to 40 calls
     uploadsPerDay: +(env.UPLOADS_PER_DAY || 6),

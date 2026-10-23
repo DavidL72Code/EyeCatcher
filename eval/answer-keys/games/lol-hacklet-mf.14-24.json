@@ -9,5 +9,19 @@
   ],
   "kills": [],
   "assists": [{ "t": 57.5 }, { "t": 87.5 }, { "t": 267.5 }, { "t": 537.5 }],
-  "not_deaths": [{ "t": 349, "what": "low-health red tint; K/D/A unchanged" }, { "t": 474, "what": "nothing; K/D/A unchanged" }]
+  "not_deaths": [{ "t": 349, "what": "low-health red tint; K/D/A unchanged" }, { "t": 474, "what": "nothing; K/D/A unchanged" }],
+  "near_deaths_how": "Near-deaths: health under 25% of full (League's full health grows with level), with no death right after. Candidates from 2 s HP reads over the whole clip (Oct 22), each checked by eye on full-size crops of the HP bar at 1 s. A dip shorter than 2 s may be missing.",
+  "near_deaths": [
+    {
+      "t": "4:30",
+      "hp": "280/1589",
+      "how": "940/1589 at 4:27, 807 at 4:28, 321 at 4:29, 280 at 4:30, 286 at 4:31, 303 at 4:32, around the 4:27.5 assist."
+    }
+  ],
+  "not_near_deaths": [
+    {
+      "t": "1:22",
+      "what": "488/1373 at 1:22 (36%), then a level up to 599/1479."
+    }
+  ]
 }

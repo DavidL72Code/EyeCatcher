@@ -779,7 +779,9 @@
     }
     return { kept, dropped, regions };
   }
-  async function verifyRegions({ video, profile, signal, onNotice, again = true, strict = false }) {
+  // character: the learn call's read of who the player plays, read again here from the same whole frames (no call of
+  // its own); the answer comes back as characterSeen
+  async function verifyRegions({ video, profile, signal, onNotice, again = true, strict = false, character = '' }) {
     // the kill feed is checked in code where it's read, by its rows or lines, and is empty in most frames: the model
     // once called an empty Valorant feed's box the scoreboard, and the review lost its record
     const names = Object.keys(profile.regions).filter((r) => r !== 'aim' && r !== 'killfeed');
@@ -806,16 +808,19 @@
     }
     const images = await Promise.all(pictures.map((c) => V.toJpeg(c, 0.85)));
     const parts = images.flatMap((im, i) => [{ text: `Picture ${i + 1}` }, { inlineData: { mimeType: im.mimeType, data: im.data } }]);
+    const asked = character ? { ...VERIFY, properties: { ...VERIFY.properties, ...CHARACTER_READ.properties }, required: [...VERIFY.required, 'character'] } : VERIFY;
     const resp = await G.generate({
-      contents: [{ role: 'user', parts: [...parts, { text: `Each picture is a ${profile.name} screen with numbered yellow boxes drawn on it; a number is the same box in every picture. For each box in each picture, say which one of these it mainly outlines: ${ELEMENTS.map((e) => `${e} (${WHAT[e]})`).join('; ')}; other for something else, nothing when it outlines only the game world. Look at the whole screen: the element a box claims may be somewhere else.` }] }],
-      generationConfig: { temperature: 0, responseMimeType: 'application/json', responseSchema: VERIFY, mediaResolution: 'MEDIA_RESOLUTION_HIGH' },
+      contents: [{ role: 'user', parts: [...parts, { text: `Each picture is a ${profile.name} screen with numbered yellow boxes drawn on it; a number is the same box in every picture. For each box in each picture, say which one of these it mainly outlines: ${ELEMENTS.map((e) => `${e} (${WHAT[e]})`).join('; ')}; other for something else, nothing when it outlines only the game world. Look at the whole screen: the element a box claims may be somewhere else.${character ? " Then, character: which character (agent, hero, legend, champion, or fighter) the player plays, by the game's own name for it, from their own portrait and ability icons on the HUD and the character the camera follows; empty if you can't tell." : ''}` }] }],
+      generationConfig: { temperature: 0, responseMimeType: 'application/json', responseSchema: asked, mediaResolution: 'MEDIA_RESOLUTION_HIGH' },
     }, { signal, onNotice });
-    const said = (G.parseJSON(G.textOf(resp)).boxes || []).map((x) => ({ ...x, outlines: x.outlines === 'kill_feed' ? 'killfeed' : x.outlines }));
+    const answer = G.parseJSON(G.textOf(resp));
+    const seen = character ? { characterSeen: String(answer.character || '').trim() } : {};
+    const said = (answer.boxes || []).map((x) => ({ ...x, outlines: x.outlines === 'kill_feed' ? 'killfeed' : x.outlines }));
     const { kept, dropped, regions } = judgeBoxes({ names, said, digits, pictures: times.length, regions: profile.regions, frame, strict });
     // The counters that make the record, any the learn call didn't box, are asked for once with the boxes that went:
     // it boxed League's K/D/A counter in one call and missed it in the next (Oct 22). One more call per recording.
     const missing = again && profile.genre !== 'chess' ? RECORD.filter((n) => !regions[n] && !dropped.some((d) => d.name === n)) : [];
-    if (!again || (!dropped.length && !missing.length)) return { ...profile, regions, verified: { kept, dropped, moved: [] } };
+    if (!again || (!dropped.length && !missing.length)) return { ...profile, ...seen, regions, verified: { kept, dropped, moved: [] } };
     // Each box that went is asked for once more, with what the first one showed, on the same frames without boxes, and
     // the new boxes are checked like the first (with no third try).
     const at = ([x, y, w, h]) => [y, x, y + h, x + w].map((v) => Math.round(v * 1000));
@@ -827,12 +832,12 @@
     }, { signal, onNotice });
     const wanted = new Set([...dropped.map((d) => d.name), ...missing]);
     const found = mergeBoxes((G.parseJSON(G.textOf(ask)).found || []).filter((f) => wanted.has(f.name)));
-    if (!Object.keys(found).length) return { ...profile, regions, verified: { kept, dropped, moved: [] } };
+    if (!Object.keys(found).length) return { ...profile, ...seen, regions, verified: { kept, dropped, moved: [] } };
     // a box for an element the learn call never drew has to be agreed on by the check call, not just hold digits
     const second = await verifyRegions({ video, profile: { ...profile, regions: found }, signal, onNotice, again: false, strict: Object.keys(found).some((n) => missing.includes(n)) });
     const moved = Object.keys(second.regions).filter((name) => dropped.some((d) => d.name === name)).map((name) => ({ name, shows: dropped.find((d) => d.name === name).shows, from: dropped.find((d) => d.name === name).box, to: second.regions[name] }));
     const added = Object.keys(second.regions).filter((name) => missing.includes(name));
-    return { ...profile, regions: { ...regions, ...second.regions }, verified: { kept, dropped: dropped.filter((d) => !second.regions[d.name]), moved, added } };
+    return { ...profile, ...seen, regions: { ...regions, ...second.regions }, verified: { kept, dropped: dropped.filter((d) => !second.regions[d.name]), moved, added } };
   }
   const mostCommonOf = (xs) => { const n = new Map(); for (const x of xs) n.set(x, (n.get(x) || 0) + 1); return [...n].sort((a, b) => b[1] - a[1])[0]?.[0] || null; };
 
@@ -872,16 +877,19 @@ cues: up to 6 short facts about how key moments look on screen, such as a kill, 
     }, { signal, onNotice });
     const raw = G.parseJSON(G.textOf(resp));
     onPhase('learn call');
-    // the character, read again on its own; kept only when both reads agree, since a wrong one brings the wrong kit and
-    // its habits (League, Oct 22: Miss Fortune read as Samira, and the review coached Samira's Style ranks)
-    if (String(raw?.character || '').trim()) {
-      const again = await nameCharacter({ video, game: raw.game, signal, onNotice }).catch((e) => { if (e.name === 'AbortError') throw e; return null; });
-      if (again !== null && !sameCharacter(raw.character, again)) { raw.characterUnsure = [raw.character, again || 'unknown']; raw.character = ''; }
-    }
     // every box is checked against the screen before anything reads from it; what matters in the game is the coach's to
     // look up (agent.js research), when and as it chooses
-    const checked = await verifyRegions({ video, profile: toProfile(raw, checks), signal, onNotice }).catch((e) => { if (e.name === 'AbortError') throw e; return toProfile(raw, checks); });
+    const named = String(raw?.character || '').trim();
+    const checked = await verifyRegions({ video, profile: toProfile(raw, checks), character: named, signal, onNotice }).catch((e) => { if (e.name === 'AbortError') throw e; return toProfile(raw, checks); });
     onPhase('boxes checked');
+    // the character, read a second time apart from the learn call (by the box check, which sees the whole screen, or on
+    // its own when there was no box to check), and kept only when both reads agree: a wrong one brings the wrong kit
+    // and its habits (League, Oct 22: Miss Fortune read as Samira, and the review coached Samira's Style ranks)
+    if (named) {
+      const again = checked.characterSeen !== undefined ? checked.characterSeen : await nameCharacter({ video, game: raw.game, signal, onNotice }).catch((e) => { if (e.name === 'AbortError') throw e; return null; });
+      if (again !== null && !sameCharacter(named, again)) { raw.characterUnsure = [named, again || 'unknown']; raw.character = ''; checked.character = null; }
+    }
+    delete checked.characterSeen;
     const profile = await learnLayout({ video, profile: checked, signal });
     onPhase('layout measured');
     return { profile, frames, raw };

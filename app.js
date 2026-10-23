@@ -145,6 +145,7 @@
     renderStart();
     setVideo(file);
     setStatus('Opening the recording');
+    if (!run?.replay) stage('learn', '');
     try {
       run.video = await V.open(file);
       run.log.push(['mark', { what: 'opened', ms: Math.round(performance.now() - run.t0) }]);
@@ -159,7 +160,7 @@
       setStatus('Deciding where to look');
       const result = await A.review({
         // the scan copy is made and sent only if a scan needs it: a game whose kill feed reads never does
-        video: run.video, file: () => (run.scanFile ||= scanCopy(run.video, run.abort.signal)), profile: game, history: seen, player: run.player || null, budget: C.createBudget(BUDGET),
+        video: run.video, file: (fresh) => { if (fresh) run.scanFile = null; return (run.scanFile ||= scanCopy(run.video, run.abort.signal, { fresh })); }, profile: game, history: seen, player: run.player || null, budget: C.createBudget(BUDGET),
         ask, confirm: checkIn, identify, onEvent: emit, onStep: step, signal: run.abort.signal,
         onNotice: (n) => setStatus(n, '', ''),
       });
@@ -240,10 +241,14 @@
   }
 
   // The scan copy is made and sent once per recording; Gemini keeps it for 48 hours, so a rerun within a day reuses it.
-  async function scanCopy(video, signal) {
-    const sig = `${video.name}|${video.size}|${video.file.lastModified}`;
+  // A copy is its uploader's, so it's kept per key (a fingerprint of the key, never the key); fresh: the cached one was
+  // refused (another key's, or gone), make it again.
+  const keyTag = () => { if (G.backendUrl()) return 'backend'; let h = 2166136261; for (const ch of G.getKey()) h = Math.imul(h ^ ch.charCodeAt(0), 16777619); return (h >>> 0).toString(36); };
+  async function scanCopy(video, signal, { fresh = false } = {}) {
+    const sig = `${video.name}|${video.size}|${video.file.lastModified}|${keyTag()}`;
     const cache = read(UPLOADS, {});
     for (const [k, v] of Object.entries(cache)) if (!(v.expires > Date.now())) delete cache[k];
+    if (fresh) delete cache[sig];
     if (cache[sig]) return cache[sig].file;
     const pct = (p) => `${Math.round(p * 100)}%`;
     setStatus('Making the scan copy', '', '0%');
@@ -257,9 +262,27 @@
     return file;
   }
 
+  // Where the review is, in the order a review goes: what it has done lit, what it is doing marked, each with a short note
+  const STAGES = ['learn', 'record', 'look', 'check', 'verdict'];
+  function stage(name, note) {
+    const at = STAGES.indexOf(name), list = $('stages');
+    if (at < 0) return;
+    list.hidden = false;
+    list.querySelectorAll('li').forEach((li) => {
+      const k = STAGES.indexOf(li.dataset.s);
+      li.classList.toggle('done', k < at);
+      li.classList.toggle('cur', k === at);
+      if (k === at && note != null) li.querySelector('span').textContent = note;
+    });
+  }
+  const stageNote = (name, note) => { const li = $('stages').querySelector(`[data-s="${name}"] span`); if (li) li.textContent = note; };
+
   function resetReview() {
     ['track', 'axis', 'beats', 'board', 'verdict', 'question', 'checkin', 'crumbs', 'reattach'].forEach((id) => { $(id).innerHTML = ''; });
-    ['breakdown', 'board', 'verdict', 'question', 'checkin', 'meter', 'log', 'crumbs', 'reattach'].forEach((id) => { $(id).hidden = true; });
+    stopCritique();
+    ['breakdown', 'board', 'verdict', 'question', 'checkin', 'meter', 'log', 'crumbs', 'reattach', 'critique', 'caption'].forEach((id) => { $(id).hidden = true; });
+    $('stages').querySelectorAll('li').forEach((li) => { li.className = ''; li.querySelector('span').textContent = ''; });
+    $('stages').hidden = true;
     $('finalBoard').innerHTML = '';
     $('board').after($('breakdown')); // a finished review moves it into the log
     timeline.querySelectorAll('.pin').forEach((p) => p.remove());
@@ -309,7 +332,12 @@
   }
 
   function onEvent(e) {
-    if (e.type === 'learned') drawLearned(e);
+    if (e.type === 'learned') { drawLearned(e); stage('record', ''); }
+    if (e.type === 'scan') { const n = (k) => (e.events || []).filter((x) => x.kind === k && (x.to ?? x.t) >= e.from - 1 && x.t <= e.to + 1).length; stageNote('record', e.counts?.units != null ? `${e.counts.units} ${e.counts.unit || 'play'}s` : [n('death') && `${n('death')} death${n('death') === 1 ? '' : 's'}`, n('near_death') && `${n('near_death')} near-death${n('near_death') === 1 ? '' : 's'}`, n('point_lost') && `${n('point_lost')} against`, n('kill') && `${n('kill')} kill${n('kill') === 1 ? '' : 's'}`].filter(Boolean).join(' · ') || 'read'); }
+    if (e.type === 'step' && ['frames', 'measure_aim', 'read_clips', 'read_hud', 'ask_player'].includes(e.name)) stage('look');
+    if ((e.type === 'look' || e.type === 'clips') && run.looks) stageNote('look', `${run.looks} look${run.looks === 1 ? '' : 's'}`);
+    if (e.type === 'step' && e.name === 'finish') stage('check', 'against the record and the video');
+    if (e.type === 'rejected') stageNote('check', 'sent back, looking again');
     if (e.type === 'scanning' && e.progress != null) setStatus(`Reading the match ${C.mmss(e.from)}–${C.mmss(e.to)}`, '', `${Math.round(e.progress * 100)}%`);
     if (e.type === 'step') { beatStart(e); if (e.why) nowWhy(e.why); }
     if (e.type === 'scanning') { if (e.progress != null) sweepTo(e.from + e.progress * (e.to - e.from)); else fastForward(e.from, e.to); }
@@ -320,7 +348,12 @@
     if (e.type === 'clips') { if (e.events) { run.events = e.events; drawEvents(e.events); } run.calls += e.calls; drawMeter(); beatOut(`Watched ${plural(e.windows.length, 'clip')}: ${e.seconds} s at 8 frames a second, in ${plural(e.calls, 'call')}`); for (const w of e.windows) if (w.reading?.story || w.reading?.outcome_why) beatOut(`${C.mmss(w.from)}–${C.mmss(w.to)}: ${w.reading.story || `${w.reading.outcome}, ${w.reading.outcome_why}`}`, 'muted'); }
     if (e.type === 'research') { if (e.research) drawResearch(run.game?.name || 'this game', e.research); else { beatOut(short(e.answer || 'Nothing came back')); beatOut(e.researched ? `From ${sourceLinks(e.sources) || 'the web'}` : "From the model's own knowledge: no web search worked", 'muted'); } }
     if (e.type === 'aim_call') { run.calls++; drawMeter(); }
-    if (e.type === 'frames_checked') { run.calls++; drawMeter(); beatOut(e.contradicted.length ? `Looked at again, blind: ${e.contradicted.map((x) => `${C.mmss(x.t)} doesn't fit (it shows ${x.shows})`).join('; ')}` : "Looked at again, blind: the frames fit every moment", e.contradicted.length ? 'warn' : 'muted'); }
+    if (e.type === 'frames_checked') {
+      run.calls += e.calls || 0; drawMeter();
+      const off = (e.checked || []).filter((x) => x.verdict !== 'shows');
+      const fact = (x) => x.facts?.find((f) => f.verdict !== 'shows');
+      beatOut(e.unreliable ? `Checked against the video, one agent per claim: they also agreed with a claim the record shows is false, so the check doesn't count` : off.length ? `Checked against the video, one agent per claim: ${off.map((x) => `${C.mmss(x.t)} ${x.verdict === 'goes_against' ? "doesn't fit" : "isn't shown"}${fact(x) ? ` (${fact(x).fact}: ${fact(x).saw})` : ''}`).join('; ')}` : `Checked against the video, one agent per claim: every fact in every moment shows${e.controls ? `, and they caught the ${e.controls === 1 ? 'false claim' : `${e.controls} false claims`} planted among them` : ''}`, e.unreliable || off.length ? 'warn' : 'muted');
+    }
     if (e.type === 'claims_checked') { run.calls++; drawMeter(); beatOut(e.contradicted.length ? `Checked against the kill feed and the clips: ${e.contradicted.map((x) => `${C.mmss(x.t)} doesn't fit (${x.fact})`).join('; ')}` : 'Checked against the kill feed and the clips: every moment fits', e.contradicted.length ? 'warn' : 'muted'); }
     if (e.type === 'hud') { run.calls++; drawMeter(); beatShots(e.shots, e.values[0]?.t ?? 0); beatOut(e.values.map((v) => `${C.mmss(v.t, true)} ${v.value ?? '(unreadable)'}`).join(' · ')); }
     if (e.type === 'frames' && e.clip) { beatShots(shown(e.frames), e.t, null, e.clip); nowPhase(`Sending ${C.mmss(e.clip.from, true)}–${C.mmss(e.clip.to, true)} to the coach as video, ${e.clip.fps} frames a second`, shown(e.frames)); }
@@ -337,7 +370,7 @@
     if (e.type === 'checked') beatOut(e.agreed ? 'You agreed: this is it' : `You said: ${e.said || 'not really'}. It looks again.`, e.agreed ? 'muted' : 'warn');
     if (e.type === 'decide') beatOut('Sent back twice for the same reason: it has to decide now', 'warn');
     if (e.type === 'forced') { setStatus('Ending without a habit'); beatOut(`Couldn't back ${e.habit}: no habit named`, 'warn'); }
-    if (e.type === 'few_losses') { setStatus('Ending without a habit'); beatOut(e.losses.length ? `One loss in this match (${C.mmss(e.losses[0].t)}): a habit shows up more than once, so none is named` : 'Nothing was lost in this match: no habit named', 'warn'); }
+    if (e.type === 'few_losses') { setStatus('Ending: nothing was lost'); beatOut('Nothing was lost in this match: no death, near-death, or lost fight to explain', 'warn'); }
   }
 
   // ---------- following the coach: the video shows what it's looking at, as it looks ----------
@@ -715,7 +748,7 @@
   async function finishReview(r) {
     stopStatus();
     run.done = true;
-    const match = { id: run.id, date: today(), name: run.video.name, video: { size: run.video.size, lastModified: run.video.file.lastModified }, game: run.game.name, found: r.found, habit: r.habit, habitId: r.habitId, drill: r.drill, recheck: r.recheck, aim: r.aim, progress: r.progress, stats: r.stats, status: 'new' };
+    const match = { id: run.id, date: today(), name: run.video.name, video: { size: run.video.size, lastModified: run.video.file.lastModified }, game: run.game.name, found: r.found, habit: r.habit, ...(r.reason ? { reason: r.reason } : {}), habitId: r.habitId, drill: r.drill, recheck: r.recheck, aim: r.aim, progress: r.progress, stats: r.stats, status: 'new' };
     history = C.addMatch(history, match);
     write(STORE, history);
     files.set(run.id, run.file);
@@ -760,7 +793,7 @@
   // the recordings of the newest reviews, newest first: those copies are kept
   const videosOfRecent = () => [...history.matches].reverse().map((m) => m.video);
 
-  // the moments the report shows with a frame: the habit's, or with no habit, what to do better
+  // the moments the report shows with a frame: the habit's, or with no habit, the reason's (what to do better)
   const reportMoments = (r) => (r.found ? r.evidence : r.fixes || []);
 
   function renderReport(r, match) {
@@ -770,6 +803,7 @@
     $('now').hidden = true;
     $('player').classList.remove('holding');
     $('review').classList.add('done');
+    $('stages').hidden = true;
     ['question', 'checkin', 'board', 'meter'].forEach((id) => { $(id).hidden = true; });
     $('eyeMark').hidden = true;
     const v = $('verdict');
@@ -780,29 +814,34 @@
     drawBoard($('finalBoard'), r.board || [], false);
     $('logBody').append($('breakdown'));
     [...$('beats').children].reverse().forEach((li) => $('beats').append(li));
-    $('logBox').open = past;
+    // folded: the verdict and its moments lead; the steps are there for whoever wants them
+    $('logBox').open = false;
     paintLogSummary(r);
 
     const moments = reportMoments(r), instead = moments.some((e) => e.better);
     run.moments = moments;
+    run.result = r;
+    stopCritique();
+    renderCritique(r);
     const list = moments.length ? `<ol class="keys">${moments.map((_, i) => keyHtml(i)).join('')}</ol>` : '';
-    const again = '<button class="pill primary" type="button" id="againBtn">Review again</button>';
+    const again = '<button class="pill" type="button" id="againBtn">Review again</button>';
     const ci = r.checkIn, checked = !ci ? '' : `<p class="checked${ci.agreed ? ' yes' : ''}">${ci.agreed ? 'You agreed this is it.' : r.found && ci.habit === r.habit ? "You weren't sure. It looked again and kept it." : `You said “${esc(ci.said || 'not really')}”, so it looked again.`}</p>`;
-    if (!r.found) {
-      v.innerHTML = `<p class="label">${r.stopped ? 'Review stopped' : 'The verdict'}</p><h2><span class="pen">${r.stopped ? 'No verdict yet' : 'No single habit stood out'}</span></h2>${checked}${working}${r.why ? `<p class="why">${esc(r.why)}</p>` : ''}
-        ${list ? `<h3>What to do better</h3>${list}` : ''}
-        <div class="actions">${again}</div>`;
-    } else {
-      const habit = run.game?.habits?.find((h) => h.id === r.habitId);
-      const metric = r.aim && (habit ? habit.measuredBy === 'aim' : /crosshair/.test(r.habitId))
-        ? `<p class="metric"><b>${Math.abs(r.aim.heads).toFixed(1)}</b><span>heads ${r.aim.heads >= 0 ? 'below' : 'above'} the head when enemies appeared, median of ${r.aim.n} measured</span></p>` : '';
-      const contrast = r.contrast?.length ? `<h3>Where you got it right</h3><ul class="contrast">${r.contrast.map((e) => `<li><button class="t-btn" type="button" data-t="${e.t}">${C.mmss(e.t)}</button><span>${esc(e.what)}</span></li>`).join('')}</ul>` : '';
-      v.innerHTML = `<p class="label">The habit to fix</p><h2><span class="pen">${esc(r.habit)}</span></h2>${checked}${working}${metric}
-        ${r.why ? `<p class="why">${esc(r.why)}</p>` : ''}
-        ${list ? `<h3>${instead ? 'What to do instead' : 'Where it shows'}</h3>${list}` : ''}${contrast}
-        <h3>Drill</h3><div class="drill"><p>${esc(r.drill)}</p></div>
-        <p class="recheck"><b>Next match:</b> ${esc(r.recheck)}</p>
-        <div class="actions" id="actions">${decisionHtml(match)}</div>`;
+    // what checked it: the record and the video (a check of the video that agreed with a planted false claim doesn't count)
+    const trust = !r.verified ? '' : r.verified.unreliable ? '<p class="trust warn">Checked against the record. The check against the video didn\'t hold up this time.</p>' : '<p class="trust"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.2 4.2L19 7" /></svg>Checked against the record and the video</p>';
+    // one structure for every verdict: what it is, where it shows, what to practice
+    const label = r.found ? 'The habit to fix' : r.reason ? 'What cost you this match' : r.stopped ? 'Review stopped' : 'The verdict';
+    const headline = r.found ? r.habit : r.reason || (r.stopped ? 'No verdict yet' : r.fewLosses ? 'Nothing cost you here' : 'No single habit stood out');
+    const habit = r.found ? run.game?.habits?.find((h) => h.id === r.habitId) : null;
+    const metric = r.found && r.aim && (habit ? habit.measuredBy === 'aim' : /crosshair/.test(r.habitId))
+      ? `<p class="metric"><b>${Math.abs(r.aim.heads).toFixed(1)}</b><span>heads ${r.aim.heads >= 0 ? 'below' : 'above'} the head when enemies appeared, median of ${r.aim.n} measured</span></p>` : '';
+    const contrast = r.contrast?.length ? `<h4>Where you got it right</h4><ul class="contrast">${r.contrast.map((e) => `<li><button class="t-btn" type="button" data-t="${e.t}">${C.mmss(e.t)}</button><span>${esc(e.what)}</span></li>`).join('')}</ul>` : '';
+    const practice = r.drill || r.recheck ? `<section class="v-sec"><h3>What to practice</h3>${r.drill ? `<div class="drill"><p>${esc(r.drill)}</p></div>` : ''}${r.recheck ? `<p class="recheck"><b>Next match</b> ${esc(r.recheck)}</p>` : ''}</section>` : '';
+    const kind = r.found ? `A habit · it shows at ${moments.length} moment${moments.length === 1 ? '' : 's'}` : r.reason ? 'What cost you this match · once, not a habit' : '';
+    v.innerHTML = `<header class="v-head"><h2 aria-label="${esc(label)}: ${esc(headline)}"><span class="pen">${esc(headline)}</span></h2>${kind ? `<p class="kind">${kind}</p>` : ''}${checked}${working}${metric}${r.why ? `<p class="why">${esc(r.why)}</p>` : ''}${trust}</header>
+      ${list ? `<section class="v-sec"><h3>${instead ? 'Where it shows, and what to do instead' : 'Where it shows'}</h3>${list}${contrast}</section>` : ''}
+      ${practice}
+      <div class="actions" id="actions">${r.found ? decisionHtml(match) : ''}${again}</div>`;
+    if (r.found) {
       $('acceptBtn')?.addEventListener('click', () => decide('accepted', match));
       $('rejectBtn')?.addEventListener('click', () => decide('rejected', match));
     }
@@ -971,6 +1010,255 @@
     });
   }
   function hideVideoMarks() { $('vmarks').hidden = true; $('vmarks').innerHTML = ''; markedAt = null; }
+
+  // ---------- the critique, narrated ----------
+  // The finding played back as a critique video: each moment's run-up plays, the video holds on the moment with its marks
+  // drawn, and a voice reads what happened there and what to do instead, captioned over the picture. It's the review's
+  // own words and marks, read aloud by the browser's own voice, so it costs no model call.
+  const LEAD_IN = 4; // s of play before each moment
+  const cq = { token: 0, on: false, paused: false };
+  const VOICES = ['Samantha', 'Ava', 'Allison', 'Daniel', 'Karen', 'Moira', 'Google US English', 'Google UK English Male', 'Alex'];
+  // The most natural English voice there is: Microsoft's neural "Natural" voices (in Edge), the Premium and Enhanced
+  // ones macOS can download, then the plain ones by name, else the system's default (macOS also lists novelty voices).
+  // The player can pick another; it's kept.
+  const VOICE = 'thirdeye.voice';
+  const rankVoice = (v) => (/natural/i.test(v.name) ? 0 : /premium/i.test(v.name) ? 1 : /enhanced/i.test(v.name) ? 2 : VOICES.some((n) => v.name.startsWith(n)) ? 3 : 9);
+  const englishVoices = () => ('speechSynthesis' in window ? speechSynthesis.getVoices() : []).filter((v) => /^en/i.test(v.lang)).sort((a, b) => rankVoice(a) - rankVoice(b) || VOICES.findIndex((n) => a.name.startsWith(n)) - VOICES.findIndex((n) => b.name.startsWith(n)));
+  // Kokoro, the neural voice the local server runs (scripts/voice.mjs), when it's there: Michael unless they picked another
+  let kokoro = null;
+  fetch('/voice').then((r) => (r.ok ? r.json() : null)).then((j) => { kokoro = j?.voices || null; if (run?.cq) fillVoices(); }).catch(() => {});
+  const pickedVoice = () => { const v = read(VOICE, ''); return v.startsWith('kokoro:') ? (kokoro && kokoro[v.slice(7)] ? v : '') : v || (kokoro ? 'kokoro:am_michael' : ''); };
+  const kokoroOf = () => (pickedVoice().startsWith('kokoro:') ? pickedVoice().slice(7) : null);
+  // a line in Kokoro's voice, made once a review (the server keeps it too): a blob URL to play
+  const said = new Map();
+  function lineAudio(text) {
+    const voice = kokoroOf(), key = `${voice}|${text}`;
+    if (!voice) return Promise.resolve(null);
+    if (!said.has(key)) said.set(key, fetch('/voice', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text, voice }) }).then((r) => (r.ok ? r.blob() : null)).then((b) => (b ? URL.createObjectURL(b) : null)).catch(() => null));
+    return said.get(key);
+  }
+  const voiceOf = () => {
+    const en = englishVoices(), picked = pickedVoice();
+    const choice = picked && en.find((v) => v.name === picked);
+    if (choice) return choice;
+    const best = en.find((v) => rankVoice(v) < 9);
+    const all = 'speechSynthesis' in window ? speechSynthesis.getVoices() : [];
+    return best || all.find((v) => v.default && /^en/i.test(v.lang)) || all.find((v) => v.default) || null;
+  };
+  function fillVoices() {
+    const sel = $('cqVoice'), en = englishVoices().filter((v) => rankVoice(v) < 9), ko = Object.entries(kokoro || {});
+    sel.hidden = !en.length && !ko.length;
+    if (sel.hidden) return;
+    const now = pickedVoice() || voiceOf()?.name;
+    const opt = (value, label) => `<option value="${esc(value)}"${value === now ? ' selected' : ''}>${esc(label)}</option>`;
+    sel.innerHTML = (ko.length ? `<optgroup label="Natural, made on this computer">${ko.map(([id, name]) => opt(`kokoro:${id}`, name)).join('')}</optgroup>` : '')
+      + (en.length ? `<optgroup label="System voices">${en.map((v) => opt(v.name, v.name.replace(/^Microsoft /, '').replace(/ - English.*$/, '').replace(/ Online \(Natural\)/, ' (natural)'))).join('')}</optgroup>` : '');
+  }
+  if ('speechSynthesis' in window) speechSynthesis.addEventListener('voiceschanged', fillVoices);
+  // the browser lists its voices a moment after the page loads
+  const voicesReady = new Promise((r) => {
+    if (!('speechSynthesis' in window) || speechSynthesis.getVoices().length) return r();
+    speechSynthesis.addEventListener('voiceschanged', () => r(), { once: true });
+    setTimeout(r, 1500);
+  });
+  const words = (text) => String(text).split(/\s+/).filter(Boolean).length;
+  const firstLine = (text) => String(text || '').split(/(?<=[.!?])\s/)[0];
+  // said as a voice reads a time best: "46 seconds in", "2 16"
+  const sayTime = (t) => (t < 60 ? `${Math.round(t)} seconds in` : C.mmss(t).replace(':', ' '));
+  // The critique walks the whole match: every moment they lost, in time order, each said from what the record knows
+  // about it (the clip read of the fight, who killed them and whether anyone traded, the HP number, the score), and the
+  // finding's own moments flagged as the habit, with what to do instead. Nothing in it is new: a moment no read covered
+  // is said as the record has it, with no advice made up for it.
+  // a record line as the voice says it: no team tags, no outcome word ahead of the clip read's story
+  const spoken = (text) => {
+    const t = String(text || '').replace(/, (enemy|teammate)\)/g, ')').replace(/ \((enemy|teammate)\)/g, '').replace(/; not traded/, ', and nobody traded').replace(/^(won|lost|none)(;\s*(the enemy|they|you|the player) engaged first)?;?\s*/i, '').replace(/^fired in \d+ bursts;\s*/i, '').replace(/\bThe player\b/g, 'You').replace(/\bthe player\b/g, 'you').trim();
+    return t ? t.replace(/\.?$/, '.') : '';
+  };
+  function critiqueChapters(r) {
+    const events = run.events || [], deadFor = C.deadForOf(run.game, events), habit = run.moments || [];
+    // losses, one per moment: a lost fight holds on the death in it
+    const losses = [];
+    for (const e of events) {
+      if (e.kind === 'death') { const fight = events.find((f) => f.kind === 'engagement' && f.outcome === 'lost' && e.t >= f.from - 1 && e.t <= f.to + 3); losses.push({ t: e.t, text: [fight && spoken(fight.text), spoken(e.text) || 'You died.'].filter(Boolean).join(' ') }); }
+      else if (e.kind === 'near_death') losses.push({ t: e.t, text: `Your health fell to ${e.hp} of ${e.of}.` });
+      else if (e.kind === 'point_lost') losses.push({ t: e.t, text: spoken(e.text) });
+      else if (e.kind === 'engagement' && e.outcome === 'lost' && !events.some((d) => d.kind === 'death' && d.t >= e.from - 1 && d.t <= e.to + 3)) losses.push({ t: e.to, text: `A fight you lost.${spoken(e.text) ? ` ${spoken(e.text)}` : ''}` });
+      else if (e.kind === 'ally_death' && e.near === true && !e.tradedBy && !C.deathAt(events, e.t, deadFor)) losses.push({ t: e.t, text: `${spoken(e.text)} They were near you.` });
+    }
+    const chapters = habit.map((e, i) => ({ t: e.t, habit: true, key: i, what: e.what, text: `${String(e.what || '').replace(/\.?$/, '.')}${e.better ? ` Instead: ${e.better.replace(/\.?$/, '.')}` : ''}` }));
+    // a loss the finding's own moment leads up to is told with it
+    for (const l of losses) if (!chapters.some((c) => c.habit && l.t >= c.t - 2 && l.t <= c.t + 8)) chapters.push({ t: l.t, habit: false, what: l.text, text: l.text });
+    return chapters.sort((a, b) => a.t - b.t);
+  }
+  // what the voice says, in order: the verdict, each chapter, the one costing them most, what to practice
+  function critiqueLines(r) {
+    const chapters = run.cq || critiqueChapters(r), lines = [], n = chapters.filter((c) => c.habit).length;
+    const name = r.found ? r.habit : r.reason || '';
+    const head = r.found ? `The habit costing you fights: ${r.habit}.` : r.reason ? `What cost you this match: ${r.reason}.` : '';
+    if (head || r.why) lines.push({ i: null, text: `${head} ${firstLine(r.why)}${chapters.length > n ? ' Here is every moment you lost, and where it shows.' : ''}`.trim() });
+    chapters.forEach((c, i) => {
+      const lead = c.habit ? (name ? 'This is it' : 'Here') : 'You lost this one';
+      lines.push({ i, t: c.t, text: `${C.mmss(c.t)}. ${lead}. ${c.text}`, said: `At ${sayTime(c.t)}. ${lead}. ${c.text}` });
+    });
+    if (name && chapters.length > n) lines.push({ i: null, text: `The one costing you the most: ${name}. It showed at ${n} of the ${chapters.length} moments you lost.` });
+    if (r.drill) lines.push({ i: null, text: `The drill: ${firstLine(r.drill)}` });
+    return lines;
+  }
+  // about how long it runs: each moment's run-up and the time to say each line
+  const critiqueSeconds = (lines) => lines.reduce((n, l) => n + (l.t != null ? LEAD_IN + 1 : 0) + words(l.text) / 2.6 + 0.6, 0);
+  // resolves when the line has been said; with no voice, or one that never says it's done, after the time to read it
+  async function speak(text, token) {
+    const url = await lineAudio(text);
+    if (token !== cq.token) return;
+    if (url) return playLine(url, text, token);
+    return sayLine(text, token);
+  }
+  // a line made by Kokoro: done when it ends (or, if it never says so, after it should have, not counting a pause)
+  function playLine(url, text, token) {
+    return new Promise((resolve) => {
+      const a = new Audio(url);
+      let over = false, left = Math.max(1800, (words(text) / 2.6) * 1000) * 1.8 + 2500;
+      const done = () => { if (over) return; over = true; clearInterval(guard); if (cq.audio === a) cq.audio = null; resolve(); };
+      const guard = setInterval(() => { if (token !== cq.token) { a.pause(); return done(); } if (!cq.paused && (left -= 250) <= 0) done(); }, 250);
+      a.onended = a.onerror = done;
+      cq.audio = a;
+      a.play().catch(done);
+    });
+  }
+  function sayLine(text, token) {
+    return new Promise((resolve) => {
+      const reading = Math.max(1800, (words(text) / 2.6) * 1000), voice = 'speechSynthesis' in window ? voiceOf() : null;
+      // the time it may take, counted only while not paused
+      let over = false, left = voice ? reading * 1.8 + 2500 : reading;
+      const done = () => { if (over) return; over = true; clearInterval(guard); resolve(); };
+      const guard = setInterval(() => { if (token !== cq.token) return done(); if (!cq.paused && (left -= 250) <= 0) done(); }, 250);
+      if (!voice) return;
+      const u = new SpeechSynthesisUtterance(text);
+      u.voice = voice;
+      u.rate = 1.02;
+      u.onend = u.onerror = done;
+      if (token === cq.token) speechSynthesis.speak(u); else done();
+    });
+  }
+  const pauseFor = (ms) => new Promise((r) => setTimeout(r, ms));
+  function showCaption(line) {
+    const c = $('caption');
+    if (!line) { c.hidden = true; c.innerHTML = ''; return; }
+    c.innerHTML = `${line.i != null ? `<span class="cap-n">${line.i + 1}</span>` : ''}<span class="cap-text">${esc(line.text)}</span>`;
+    c.hidden = false;
+    move(c, { opacity: [0, 1], y: [8, 0] }, { duration: 0.3, ease: [0.2, 0.7, 0.2, 1] });
+  }
+  function markChapter(i) {
+    const c = run.cq?.[i], key = c?.habit ? c.key : -1;
+    $('cqChapters').querySelectorAll('.cq-ch').forEach((b) => b.classList.toggle('on', +b.dataset.i === i));
+    timeline.querySelectorAll('.pin').forEach((p) => p.classList.toggle('on', +p.dataset.key === key));
+    $('rail').querySelectorAll('.key').forEach((li, k) => li.classList.toggle('playing', k === key));
+  }
+  // plays up to a moment, then holds on it with its marks; resolves when it's held (or the critique was stopped)
+  function holdAt(i, token) {
+    return new Promise((done) => {
+      const c = run.cq[i];
+      hideVideoMarks();
+      playClip(Math.max(0, c.t - LEAD_IN), c.t, () => {
+        if (token !== cq.token) return done();
+        markedAt = c.t;
+        vid.currentTime = c.t;
+        const k = c.habit ? run.keys?.[c.key] : run.cqKeys?.[i];
+        if (k && (k.problem || k.fix || k.fact || k.moves?.length)) { const v = $('vmarks'); v.innerHTML = marksHtml(k); v.hidden = false; placeVideoMarks(); }
+        done();
+      });
+    });
+  }
+  async function playCritique(from = 0) {
+    if (!run?.result || !run.cq?.length) return;
+    if (!hasVideo()) return nudge();
+    stopCritique();
+    const token = ++cq.token, lines = critiqueLines(run.result);
+    // the marks for the losses the finding doesn't cite: the same code-read marks as the report's (no model call)
+    if (!run.cqKeys) run.cqKeys = (await K.prepare({ video: run.video, profile: run.game, moments: run.cq.map((c) => ({ t: c.t })), measures: run.result.measures || [], events: run.events || [] }).catch(() => ({ keys: [] }))).keys;
+    await voicesReady;
+    if (token !== cq.token) return;
+    cq.on = true; cq.paused = false; cq.muted = vid.muted;
+    vid.muted = true; // the voice over the game's sound would be noise
+    $('critique').classList.add('playing');
+    $('cqPlayText').textContent = 'Pause';
+    $('cqStop').hidden = false;
+    $('stage').scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    // from a chapter: start at that moment
+    const start = from > 0 ? lines.findIndex((l) => l.i === from) : 0;
+    const todo = lines.slice(Math.max(0, start));
+    for (const [k, line] of todo.entries()) {
+      // the next line is made while this one plays, so the voice doesn't wait
+      if (todo[k + 1]) lineAudio(todo[k + 1].said || todo[k + 1].text);
+      while (cq.paused && token === cq.token) await pauseFor(200);
+      if (token !== cq.token) return;
+      markChapter(line.i);
+      if (line.t != null) await holdAt(line.i, token);
+      while (cq.paused && token === cq.token) await pauseFor(200);
+      if (token !== cq.token) return;
+      showCaption(line);
+      await speak(line.said || line.text, token);
+      if (token !== cq.token) return;
+      await pauseFor(600);
+    }
+    if (token === cq.token) stopCritique();
+  }
+  function stopCritique() {
+    cq.token++;
+    if ('speechSynthesis' in window) speechSynthesis.cancel();
+    if (cq.audio) { cq.audio.pause(); cq.audio = null; }
+    if (!cq.on) return;
+    cq.on = cq.paused = false;
+    clipEnd = clipThen = null;
+    vid.pause();
+    vid.muted = !!cq.muted;
+    showCaption(null);
+    hideVideoMarks();
+    markChapter(-1);
+    $('critique').classList.remove('playing', 'paused');
+    $('cqPlayText').textContent = 'Watch the critique';
+    $('cqStop').hidden = true;
+  }
+  function toggleCritique() {
+    if (!cq.on) return playCritique(0);
+    cq.paused = !cq.paused;
+    $('critique').classList.toggle('paused', cq.paused);
+    $('cqPlayText').textContent = cq.paused ? 'Resume' : 'Pause';
+    if ('speechSynthesis' in window) { if (cq.paused) speechSynthesis.pause(); else speechSynthesis.resume(); }
+    if (cq.audio) { if (cq.paused) cq.audio.pause(); else cq.audio.play().catch(() => {}); }
+    if (cq.paused) vid.pause(); else if (clipEnd != null) vid.play().catch(() => {});
+  }
+  $('cqPlay').addEventListener('click', toggleCritique);
+  // a new voice says one line, so the player hears it before the critique
+  $('cqVoice').addEventListener('change', (e) => {
+    write(VOICE, e.target.value);
+    if (cq.on) return;
+    if ('speechSynthesis' in window) speechSynthesis.cancel();
+    const sample = 'This is how the critique will sound.';
+    if (kokoroOf()) { lineAudio(sample).then((url) => { if (url && !cq.on) new Audio(url).play().catch(() => {}); }); return; }
+    if (!('speechSynthesis' in window)) return;
+    const u = new SpeechSynthesisUtterance(sample);
+    u.voice = voiceOf();
+    speechSynthesis.speak(u);
+  });
+  $('cqStop').addEventListener('click', stopCritique);
+  $('cqChapters').addEventListener('click', (e) => { const b = e.target.closest('.cq-ch'); if (b) playCritique(+b.dataset.i); });
+  // the player taking over the video ends the critique
+  ['pointerdown', 'keydown'].forEach((ev) => vid.addEventListener(ev, () => { if (cq.on) stopCritique(); }));
+  timeline.addEventListener('pointerdown', () => { if (cq.on) stopCritique(); });
+  function renderCritique(r) {
+    const box = $('critique');
+    run.cq = critiqueChapters(r);
+    run.cqKeys = null;
+    if (!run.cq.length) { box.hidden = true; return; }
+    const lines = critiqueLines(r), secs = Math.round(critiqueSeconds(lines)), n = run.cq.filter((c) => c.habit).length;
+    $('cqMeta').textContent = `Narrated · ${run.cq.length} moment${run.cq.length === 1 ? '' : 's'}${n && n < run.cq.length ? `, ${n} where it shows` : ''} · about ${C.mmss(secs)}`;
+    fillVoices();
+    // the opening lines, made while the player reads the report
+    lines.slice(0, 2).forEach((l) => lineAudio(l.said || l.text));
+    $('cqChapters').innerHTML = run.cq.map((c, i) => `<li><button class="cq-ch${c.habit ? ' habit' : ''}" type="button" data-i="${i}"><span class="cq-n">${c.habit ? c.key + 1 : ''}</span><span class="cq-t">${C.mmss(c.t, true)}</span><span class="cq-w">${c.habit ? '<b>Where it shows</b> ' : ''}${esc(c.what)}</span></button></li>`).join('');
+    box.hidden = false;
+  }
   // over the picture itself, not the black bars around it
   function placeVideoMarks() {
     const el = $('vmarks');
@@ -994,7 +1282,8 @@
     history = { ...history, matches: history.matches.map((m) => (m.id === match.id ? { ...m, status } : m)) };
     if (status === 'accepted') history = C.acceptHabit(history, match);
     write(STORE, history);
-    $('actions').innerHTML = decisionHtml(match);
+    $('actions').innerHTML = `${decisionHtml(match)}<button class="pill" type="button" id="againBtn">Review again</button>`;
+    $('againBtn').addEventListener('click', reviewAgain);
     renderStart();
   }
 
@@ -1159,11 +1448,11 @@
     box.hidden = !latest.length;
     if (!latest.length) return;
     const thumbs = await R.thumbs().catch(() => ({}));
-    box.innerHTML = `<h2>Latest</h2><ol>${latest.map((m) => `<li><a href="#review/${esc(m.id)}"><span class="sr-shot">${thumbs[m.id] ? `<img src="${thumbs[m.id]}" alt="" />` : ''}</span><span class="sr-text"><span class="sr-habit">${esc(m.found ? m.habit : 'No single habit')}</span><span class="sr-meta">${esc(gameName(m.game))} · ${niceDate(m.date)}</span></span></a></li>`).join('')}</ol>`;
+    box.innerHTML = `<h2>Latest</h2><ol>${latest.map((m) => `<li><a href="#review/${esc(m.id)}"><span class="sr-shot">${thumbs[m.id] ? `<img src="${thumbs[m.id]}" alt="" />` : ''}</span><span class="sr-text"><span class="sr-habit">${esc(m.found ? m.habit : m.reason || 'Nothing named')}</span><span class="sr-meta">${esc(gameName(m.game))} · ${niceDate(m.date)}</span></span></a></li>`).join('')}</ol>`;
   }
 
   const TAGS = { better: 'Better', same: 'Same', worse: 'Worse' };
-  const tagOf = (m) => (history.habit?.matchId === m.id ? { text: 'Working on', on: true } : TAGS[m.progress] ? { text: TAGS[m.progress] } : m.status === 'rejected' ? { text: 'Not this' } : null);
+  const tagOf = (m) => (history.habit?.matchId === m.id ? { text: 'Working on', on: true } : TAGS[m.progress] ? { text: TAGS[m.progress] } : m.status === 'rejected' ? { text: 'Not this' } : !m.found && m.reason ? { text: 'Once, not a habit' } : null);
 
   // a game's name as it was learned; reviews saved before learning kept a lowercase id ("valorant")
   const gameName = (g) => (!g ? 'Other games' : g === g.toLowerCase() ? g.replace(/\b\w/g, (c) => c.toUpperCase()) : g);
@@ -1183,7 +1472,7 @@
       const tag = tagOf(m);
       return `<li><a class="card" href="#review/${esc(m.id)}">
         <span class="c-shot">${thumbs[m.id] ? `<img src="${thumbs[m.id]}" alt="" />` : '<svg aria-hidden="true"><use href="#eye" /></svg>'}${tag ? `<span class="c-tag${tag.on ? ' on' : ''}">${esc(tag.text)}</span>` : ''}</span>
-        <span class="c-habit${m.found ? '' : ' none'}">${esc(m.found ? m.habit : 'No single habit')}</span>
+        <span class="c-habit${m.found ? '' : ' none'}">${esc(m.found ? m.habit : m.reason || 'Nothing named')}</span>
         <span class="c-meta">${niceDate(m.date)}</span>
       </a></li>`;
     };
