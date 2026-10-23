@@ -430,8 +430,14 @@ try {
   check(await page.locator('.tick.death').count() >= 5 && /Your blunder/.test(await page.locator('#legend').innerText()), 'the timeline marks the blunders, and the legend says so');
   await page.click('#historyBtn');
   await page.waitForSelector('#reviews:not([hidden]) .shelf');
-  check(await page.locator('.shelf').count() === 2 && await page.locator('.shelf h2').first().innerText() === 'SYNTHETIC CHESS' && await page.locator('.shelf-nav a').count() === 2, 'past reviews are shelved by game, the game played last first, with a chip for each');
-  check((await page.locator('.shelf .c-meta').allInnerTexts()).every((t) => /^[A-Z][a-z]{2} \d{1,2}, \d{1,2}:\d\d\s?[AP]M$/.test(t)), `each past review says when it was made, the date and the time (${(await page.locator('.shelf .c-meta').allInnerTexts()).slice(0, 2).join(', ')})`);
+  const metas = await page.locator('.shelf .c-meta').allInnerTexts();
+  check(await page.locator('.shelf').count() === 1 && await page.locator('.shelf h2').innerText() === 'ALL REVIEWS' && await page.locator('.shelf-nav button').count() === 3 && await page.locator('.shelf-nav button[aria-pressed="true"]').innerText().then((t) => /^All/.test(t)) && / · Synthetic chess$/.test(metas[0]), `past reviews are one list, newest first, each with its game, and a chip for all and for each game (${metas.join(' | ')})`);
+  await page.click('.shelf-nav button:has-text("Synthetic test match")');
+  await page.waitForFunction(() => document.querySelector('.shelf h2')?.textContent === 'Synthetic test match');
+  check(await page.locator('.shelf h2').innerText() === 'SYNTHETIC TEST MATCH' && (await page.locator('.shelf .c-meta').allInnerTexts()).every((t) => !/·/.test(t)), "a game's chip shows that game's reviews alone");
+  await page.click('.shelf-nav button:has-text("All")');
+  await page.waitForFunction(() => /^All reviews$/i.test(document.querySelector('.shelf h2')?.textContent || ''));
+  check((await page.locator('.shelf .c-meta').allInnerTexts()).every((t) => /^[A-Z][a-z]{2} \d{1,2}, \d{1,2}:\d\d\s?[AP]M( · .+)?$/.test(t)), `each past review says when it was made, the date and the time (${(await page.locator('.shelf .c-meta').allInnerTexts()).slice(0, 2).join(', ')})`);
 
   console.log('footage of a whole match: the player says who they are, and it is read point by point');
   seen.agentBodies.length = 0;

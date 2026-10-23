@@ -1491,26 +1491,30 @@
       if (!shelves.has(k)) shelves.set(k, { name, list: [] });
       shelves.get(k).list.push(m);
     }
-    const card = (m) => {
+    const card = (m, withGame) => {
       const tag = tagOf(m);
       return `<li><a class="card" href="#review/${esc(m.id)}">
         <span class="c-shot">${thumbs[m.id] ? `<img src="${thumbs[m.id]}" alt="" />` : '<svg aria-hidden="true"><use href="#eye" /></svg>'}${tag ? `<span class="c-tag${tag.on ? ' on' : ''}">${esc(tag.text)}</span>` : ''}</span>
         <span class="c-habit${m.found ? '' : ' none'}">${esc(m.found ? m.habit : m.reason || 'Nothing named')}</span>
-        <span class="c-meta">${niceWhen(m)}</span>
+        <span class="c-meta">${niceWhen(m)}${withGame ? ` · ${esc(gameName(m.game))}` : ''}</span>
       </a></li>`;
     };
     const working = history.habit && gameName(history.habit.game).toLowerCase();
-    const list = [...shelves.values()];
+    const list = [...shelves.values()], all = newestFirst(history.matches);
+    if (shelfPick !== 'all' && !shelves.has(shelfPick)) shelfPick = 'all';
+    // every review newest first by default, each with its game; a game's chip shows that game alone
+    const shelf = (g, id) => `<section class="shelf" id="${id}" aria-labelledby="${id}-name">
+          <header><h2 id="${id}-name">${esc(g.name)}</h2><span class="shelf-count">${g.list.length}</span>${working === g.name.toLowerCase() ? `<span class="shelf-working">Working on ${esc(history.habit.name)}</span>` : ''}</header>
+          <ol class="cards">${g.list.map((m) => card(m, g.mixed)).join('')}</ol>
+        </section>`;
+    const one = list.length > 1 && shelfPick === 'all' ? { name: 'All reviews', list: all, mixed: true } : shelves.get(shelfPick) || list[0];
     $('shelves').innerHTML = list.length
-      ? `${list.length > 1 ? `<nav class="shelf-nav" aria-label="Games">${list.map((g, i) => `<a href="#shelf-${i}" data-shelf="${i}">${esc(g.name)}<span>${g.list.length}</span></a>`).join('')}</nav>` : ''}
-        ${list.map((g, i) => `<section class="shelf" id="shelf-${i}" aria-labelledby="shelf-${i}-name">
-          <header><h2 id="shelf-${i}-name">${esc(g.name)}</h2><span class="shelf-count">${g.list.length}</span>${working === g.name.toLowerCase() ? `<span class="shelf-working">Working on ${esc(history.habit.name)}</span>` : ''}</header>
-          <ol class="cards">${g.list.map(card).join('')}</ol>
-        </section>`).join('')}`
+      ? `${list.length > 1 ? `<nav class="shelf-nav" aria-label="Games"><button type="button" data-pick="all" aria-pressed="${shelfPick === 'all'}">All<span>${all.length}</span></button>${list.map((g) => `<button type="button" data-pick="${esc(g.name.toLowerCase())}" aria-pressed="${shelfPick === g.name.toLowerCase()}">${esc(g.name)}<span>${g.list.length}</span></button>`).join('')}</nav>` : ''}
+        ${shelf(one, 'shelf-0')}`
       : `<div class="c-empty"><svg aria-hidden="true"><use href="#eye" /></svg><p class="c-empty-title">No reviews yet</p><p>${D ? 'Reviews from the browser version stay in the browser.' : 'Each review you run lands here.'}</p><a class="pill primary" href="#">Review a match</a></div>`;
-    // the game chips scroll to their shelf without leaving #reviews
-    $('shelves').querySelectorAll('[data-shelf]').forEach((a) => a.addEventListener('click', (e) => { e.preventDefault(); $(`shelf-${a.dataset.shelf}`).scrollIntoView({ behavior: 'smooth', block: 'start' }); }));
+    $('shelves').querySelectorAll('[data-pick]').forEach((b) => b.addEventListener('click', () => { shelfPick = b.dataset.pick; showReviews(); }));
   }
+  let shelfPick = 'all'; // the Past reviews chip picked: every review, or one game's
 
   // A past review is drawn again from its saved log: the same timeline, cards, frames, and report. Reviews saved before
   // logs were kept show their report only.
