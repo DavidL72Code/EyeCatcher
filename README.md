@@ -153,10 +153,10 @@ npm run dist:linux
 npm run web
 ```
 
-The first three build an installer for that system into `dist/` with [electron-builder](https://www.electron.build). Build each on its own system: the voice's native parts are picked for the machine that builds it. A check after packing (`build/check-pack.cjs`) stops the build if anything private got in: the eval footage, test records, voice samples, scene clips, a `.env`, or more than 600 MB. The packed app is about 186 MB, and the Mac `.dmg` about 160 MB. `npm run web` copies the page into `site/` with an empty `env.js` and the dev server's security policy as a meta tag (`scripts/build-web.mjs`); it refuses to finish if a video, a `.env`, or anything shaped like a Google key would ship.
+The first three build an installer for that system into `dist/` with [electron-builder](https://www.electron.build). Build each on its own system: the voice's native parts are picked for the machine that builds it. A check after packing (`build/check-pack.cjs`) stops the build if anything private got in: the eval footage, test records, voice samples, scene clips, a `.env`, or more than 600 MB. Another after the installers are made (`build/check-dmg.cjs`) stops it if a `.dmg` fails `hdiutil verify`, won't open, or holds an app whose signature no longer matches its files. The packed app is about 186 MB, and the Mac `.dmg` about 160 MB. `npm run web` copies the page into `site/` with an empty `env.js` and the dev server's security policy as a meta tag (`scripts/build-web.mjs`); it refuses to finish if a video, a `.env`, or anything shaped like a Google key would ship.
 
 Two GitHub Actions workflows do both on GitHub:
-- **`.github/workflows/release.yml`:** pushing a version tag (`git tag v0.1.0 && git push origin v0.1.0`) runs the unit tests, builds the four installers on macOS (Apple silicon and Intel), Windows, and Linux runners, and puts them on a GitHub release.
+- **`.github/workflows/release.yml`:** pushing a version tag (`git tag v0.1.0 && git push origin v0.1.0`) runs the unit tests, builds the four installers on macOS (Apple silicon and Intel), Windows, and Linux runners, and puts them on a GitHub release with their SHA-256 sums in `SHA256SUMS.txt`. A build that fails its checks gets one more try; the release job checks each file against the sum taken where it was built.
 - **`.github/workflows/pages.yml`:** each push to `main` rebuilds the website and deploys it to GitHub Pages. It needs one setting first, under the repository's Settings › Pages › Source: **GitHub Actions**.
 
 `npm run fixture` makes a 2.5-minute synthetic shooter match and `npm run fixture:chess` two synthetic chess games, one with blunders planted under time pressure and one clean (`tests/fixtures/`, not committed). Once the shooter match exists, the start screen offers it as a test match.
@@ -452,7 +452,7 @@ scripts/dev.mjs                  static dev server; makes env.js from .env, sets
 scripts/vendor.mjs               copies the pinned libraries into vendor/ with their licenses and hashes
 vendor/                          Mediabunny, chess.js, Stockfish, Motion: the only third-party code the page runs
 desktop/                         the Electron app: main.mjs (window, server, remembered recordings, the Eye Catcher folder, the key in the system keychain), preload.cjs (the page's bridge), config.json (where the backend is)
-build/                           the installers' icon, and check-pack.cjs, which fails a build that packed anything private
+build/                           the installers' icon; check-pack.cjs fails a build that packed anything private, check-dmg.cjs one whose .dmg doesn't verify or open
 scripts/build-web.mjs            the website copy in site/, for GitHub Pages
 .github/workflows/               release.yml (installers on a version tag), pages.yml (the website on each push to main)
 server/index.mjs                 the backend: holds the Gemini key and forwards only Eye Catcher's requests, rate-limited
