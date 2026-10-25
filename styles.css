@@ -92,6 +92,8 @@ img { display: block; max-width: 100%; }
 .hero-cta { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 26px; }
 .hero-cta a.pill { display: inline-flex; align-items: center; text-decoration: none; }
 .hero-shot { position: relative; margin: 0; }
+.no-demo .hero-shot, .no-demo .art-proof { display: none; }
+.no-demo .home-hero { grid-template-columns: minmax(0, 1fr); }
 .hs-frame { position: relative; border-radius: var(--r); overflow: hidden; box-shadow: 0 0 0 1px var(--line-2), 0 24px 60px -24px rgb(0 0 0 / 0.8); }
 .hs-frame img { width: 100%; height: auto; }
 .hs-frame .chip { font-size: 15px; line-height: 22px; padding: 3px 10px; }

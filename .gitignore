@@ -6,3 +6,5 @@ tests/fixtures/
 tests/out/
 assets/scenes/
 voice-samples/
+dist/
+site/

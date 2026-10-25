@@ -1,7 +1,8 @@
 {
   "name": "thirdeye",
+  "version": "0.1.0",
   "private": true,
-  "description": "A post-game coach that watches your match recording and finds the one habit losing you games.",
+  "description": "A post-game coach that watches a recording of your match and shows what cost you, checked against the video.",
   "scripts": {
     "dev": "node scripts/dev.mjs",
     "desktop": "electron desktop/main.mjs",
@@ -16,11 +17,17 @@
     "eval": "node eval/run.mjs",
     "fixture:chess": "node tests/make-chess-fixture.mjs",
     "test:chess-video": "node tests/chess-video-check.mjs",
-    "test:desktop": "node tests/desktop.mjs"
+    "test:desktop": "node tests/desktop.mjs",
+    "dist": "electron-builder",
+    "dist:mac": "electron-builder --mac",
+    "dist:win": "electron-builder --win",
+    "dist:linux": "electron-builder --linux",
+    "web": "node scripts/build-web.mjs"
   },
   "devDependencies": {
     "chess.js": "1.4.0",
     "electron": "44.9.0",
+    "electron-builder": "26.17.0",
     "mediabunny": "1.61.0",
     "motion": "13.5.1",
     "playwright": "^1.56.0",
@@ -32,5 +39,92 @@
   },
   "dependencies": {
     "kokoro-js": "1.2.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DavidL72Code/EyeCatcher.git"
+  },
+  "author": "DavidL72Code",
+  "build": {
+    "appId": "io.github.davidl72code.eyecatcher",
+    "productName": "Eye Catcher",
+    "artifactName": "Eye-Catcher-${version}-${os}-${arch}.${ext}",
+    "directories": {
+      "output": "dist",
+      "buildResources": "build"
+    },
+    "files": [
+      "index.html",
+      "*.js",
+      "!env.js",
+      "styles.css",
+      "vendor/**/*",
+      "assets/**/*",
+      "!assets/scenes/**",
+      "desktop/**/*",
+      "scripts/dev.mjs",
+      "scripts/voice.mjs",
+      "package.json",
+      "!node_modules/onnxruntime-web/**",
+      "!node_modules/onnxruntime-node/bin/napi-v3/!(${platform})/**",
+      "!node_modules/@huggingface/transformers/{.cache,src,types}/**",
+      "!node_modules/@huggingface/transformers/dist/!(transformers.node.*)",
+      "!node_modules/**/*.map",
+      "!node_modules/kokoro-js/voices/!(am_michael|af_heart|af_bella).bin"
+    ],
+    "asarUnpack": [
+      "**/*.node",
+      "node_modules/onnxruntime-node/**",
+      "node_modules/sharp/**",
+      "node_modules/@img/**"
+    ],
+    "mac": {
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "arm64",
+            "x64"
+          ]
+        }
+      ],
+      "category": "public.app-category.games",
+      "identity": "-",
+      "hardenedRuntime": false
+    },
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    },
+    "linux": {
+      "target": [
+        {
+          "target": "AppImage",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "category": "Game"
+    },
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "DavidL72Code",
+        "repo": "EyeCatcher",
+        "releaseType": "release"
+      }
+    ],
+    "afterPack": "build/check-pack.cjs"
   }
 }

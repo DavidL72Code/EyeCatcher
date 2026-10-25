@@ -23,7 +23,9 @@
   // A key or model saved in Settings wins over .env.
   const ENV = (typeof window !== 'undefined' && window.__ENV__) || {};
   const read = (k) => { try { return localStorage.getItem(k) || ''; } catch { return ''; } };
-  const storedKey = () => read(KEY_STORE);
+  // the desktop app keeps the key encrypted by the system (keepKey) and hands it back here (holdKey); a browser, in its storage
+  let held = null, keepKey = null;
+  const storedKey = () => held ?? read(KEY_STORE);
   const storedModel = () => read(MODEL_STORE);
   // apps without a key field set Gemini.preferEnv so .env beats a key saved in the browser earlier
   // A second key in .env (GEMINI_API_KEY2) takes over once the main model is out of its daily limit on the first: each
@@ -37,7 +39,9 @@
   const dayOut = [new Map(), new Map()];
   const spare = () => (!backend() && ENV.GEMINI_API_KEY2) || '';
   function getKey() { return (second && spare()) || (api.preferEnv ? ENV.GEMINI_API_KEY || storedKey() : storedKey() || ENV.GEMINI_API_KEY) || ''; }
-  function setKey(k) { try { localStorage.setItem(KEY_STORE, (k || '').trim()); } catch {} }
+  function setKey(k) { const key = (k || '').trim(); if (keepKey) { held = key; keepKey(key); return; } try { localStorage.setItem(KEY_STORE, key); } catch {} }
+  // keep(k): where the desktop app keeps a key set from now on; key: the one it kept
+  function holdKey(key, keep) { keepKey = keep; held = key || null; }
   function getModel() { return storedModel() || ENV.GEMINI_MODEL || FALLBACK_MODELS[0]; }
   function setModel(m) { try { localStorage.setItem(MODEL_STORE, (m || '').trim()); } catch {} }
   // a backend that adds the key on its side (Eye Catcher's server): requests go there, with no key from the page
@@ -449,6 +453,6 @@
   const redact = (text) => String(text ?? '').replace(/[\w.+-]+@[\w-]+\.[\w.-]+/g, '[email hidden]').replace(PHONE, '[number hidden]');
 
   // onUsage({ model, search, usage }): called with each answer's usageMetadata (token counts), when a page sets it
-  const api = root.Gemini = { preferEnv: false, backend: '', onUsage: null, SAFETY, untrusted, guardRequest, redact, timeoutMs: 60000, heavyTimeoutMs: 150000, getKey, setKey, getModel, setModel, hasKey, backendUrl: backend, storedKey, storedModel, keySource, generate, json, grounded, runAgent, parseJSON, textOf, fileToInline, fileToPart, loadImage, GeminiError, FALLBACK_MODELS, SEARCH_MODELS, isLite };
+  const api = root.Gemini = { preferEnv: false, backend: '', onUsage: null, SAFETY, untrusted, guardRequest, redact, timeoutMs: 60000, heavyTimeoutMs: 150000, getKey, setKey, holdKey, getModel, setModel, hasKey, backendUrl: backend, storedKey, storedModel, keySource, generate, json, grounded, runAgent, parseJSON, textOf, fileToInline, fileToPart, loadImage, GeminiError, FALLBACK_MODELS, SEARCH_MODELS, isLite };
   if (typeof module !== 'undefined') module.exports = root.Gemini;
 })(typeof window !== 'undefined' ? window : globalThis);

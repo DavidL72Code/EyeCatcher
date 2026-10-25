@@ -26,6 +26,9 @@ async function model() {
   if (!tts) {
     const req = createRequire(path.join(root, 'package.json'));
     const { KokoroTTS } = await import(req.resolve('kokoro-js'));
+    // an installed app keeps the model with the player's data (desktop/main.mjs sets where)
+    // required, not imported: kokoro-js's CommonJS build requires transformers, so this is the same copy it reads
+    if (process.env.THIRDEYE_MODEL_CACHE) req('@huggingface/transformers').env.cacheDir = process.env.THIRDEYE_MODEL_CACHE;
     tts = KokoroTTS.from_pretrained(MODEL, { dtype: 'q8', device: 'cpu' }).catch((e) => { tts = null; throw e; });
   }
   return tts;

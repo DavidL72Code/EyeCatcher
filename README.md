@@ -8,7 +8,42 @@ It learns each game from the recording itself, so there's no game profile to wri
 
 Eye Catcher is open source and runs on your own computer with your own Gemini API key. There's no hosted server: the app calls Google's Gemini API straight from your machine, and your recordings, reviews, and key stay on it (only the frames and clips each step needs go to Gemini).
 
-### What you need
+There are three ways to run it. All three need a free Gemini key ([below](#get-a-gemini-api-key)).
+
+| | What you do | What you get |
+| --- | --- | --- |
+| **Download the app** | Install it, paste your key | Everything, with the local Kokoro voice. No terminal. |
+| **Use the website** | Open https://davidl72code.github.io/EyeCatcher/, paste your key | The same coach in your browser, with the browser's own voices. Nothing to install. |
+| **Run from source** | `git clone`, `npm install`, `npm run desktop` | Everything, plus the tests and the eval tools. |
+
+### Download the app
+
+Get the installer for your system from the [latest release](https://github.com/DavidL72Code/EyeCatcher/releases/latest):
+
+| System | File |
+| --- | --- |
+| Mac with Apple silicon (M1 or later) | `Eye-Catcher-<version>-mac-arm64.dmg` |
+| Mac with Intel | `Eye-Catcher-<version>-mac-x64.dmg` |
+| Windows 10 or 11 | `Eye-Catcher-<version>-win-x64.exe` |
+| Linux | the `.AppImage` |
+
+The installers aren't signed with a paid Apple or Microsoft certificate yet, so each system warns you the first time:
+- **macOS:** open the `.dmg` and drag Eye Catcher into Applications. The first launch says it can't check the app. Go to System Settings › Privacy & Security, find "Eye Catcher was blocked", and choose **Open Anyway**. Or run `xattr -dr com.apple.quarantine "/Applications/Eye Catcher.app"` once.
+- **Windows:** SmartScreen says it protected your PC. Choose **More info**, then **Run anyway**.
+- **Linux:** make the file runnable with `chmod +x Eye-Catcher-*.AppImage`, then open it.
+
+Then open **Coach**, paste your key, and drop in a recording. The key is kept encrypted by your system's keychain (the macOS Keychain, Windows' DPAPI, or the Linux keyring), not in a plain file; on a Linux desktop with no keyring, the app keeps it as a browser would. An unsigned update looks like a new app to macOS, so after one the Mac may ask once to let Eye Catcher read its key: choose **Always Allow**. The voice model, Kokoro (about 90 MB), downloads on the first critique.
+
+### Use the website
+
+Open https://davidl72code.github.io/EyeCatcher/, go to **Coach**, and paste your key. It's the same page as the app, served as static files with no server behind it: your browser keeps the key and sends it only to Google, and your recordings and reviews stay in the browser. The differences:
+- the critique speaks with your browser's own voices;
+- a past review asks you to allow its recording again (Chrome), or to pick the file, instead of opening it straight from disk;
+- Home's scenario clips aren't included, as with the download.
+
+Use Chrome, Edge, or another Chromium browser for the best video support.
+
+### What you need to run from source
 
 - **Node.js 20 or newer**, and **git**. Check with `node -v`.
 - **A Gemini API key** (free; see below).
@@ -20,7 +55,7 @@ Eye Catcher is open source and runs on your own computer with your own Gemini AP
 
 1. Go to https://aistudio.google.com/apikey and sign in with a Google account. You must be 18 or older, in a region where the Gemini API is available.
 2. Choose **Create API key**. It makes a Google Cloud project for the key if you don't have one.
-3. Copy the key. You put it in `.env` in the next step, and it never leaves your machine except to authenticate with Google.
+3. Copy the key. Paste it into the app's **Coach** screen, or into `.env` when you run from source. It's sent only to Google, to authenticate.
 
 **The free tier:**
 - **Cost:** none.
@@ -28,7 +63,7 @@ Eye Catcher is open source and runs on your own computer with your own Gemini AP
 - **A second key** from another Google Cloud project, as `GEMINI_API_KEY2`, takes over when the first runs out for the day.
 - **Privacy:** on the free tier, Google may use what you send to improve its products, and human reviewers may read it ([Gemini API terms](https://ai.google.dev/gemini-api/terms)). Don't review recordings that show anything private; with billing on, the paid tier's terms apply instead.
 
-### Install and run
+### Install and run from source
 
 ```bash
 git clone https://github.com/DavidL72Code/EyeCatcher.git
@@ -107,7 +142,22 @@ What protects the page itself, in the browser and the desktop app:
 npm run desktop
 ```
 
-The same page in an Electron window (`desktop/`). It runs the dev server inside itself on port 5170, so its saved reviews stay put between launches, and set `THIRDEYE_PORT` if that port is taken. What it adds is memory for where recordings are on disk, the way Medal-style clip apps work: a past review streams the original file, with no copy and no "Allow" prompt, and offers to show it in Finder. If a recording moved, the review asks for it once and remembers the new place. The first time you add a recording, it asks whether to keep your recordings in an Eye Catcher folder (Movies › Eye Catcher). With a yes, each recording is copied there. On the same disk the copy is instant and takes no extra space. Your original stays where it is, and the start screen gets a button that opens the folder. The page can only name recordings the player dropped or picked; the app refuses to stream any other file. Its reviews are separate from the browser version's. There's no packaged `.app` yet.
+The same page in an Electron window (`desktop/`); the [download](#download-the-app) is this app, packaged. It runs the dev server inside itself on port 5170, so its saved reviews stay put between launches, and set `THIRDEYE_PORT` if that port is taken. What it adds is memory for where recordings are on disk, the way Medal-style clip apps work: a past review streams the original file, with no copy and no "Allow" prompt, and offers to show it in Finder. If a recording moved, the review asks for it once and remembers the new place. The first time you add a recording, it asks whether to keep your recordings in an Eye Catcher folder (Movies › Eye Catcher). With a yes, each recording is copied there. On the same disk the copy is instant and takes no extra space. Your original stays where it is, and the start screen gets a button that opens the folder. The page can only name recordings the player dropped or picked; the app refuses to stream any other file. Its reviews are separate from the browser version's.
+
+### Building the installers and the website
+
+```bash
+npm run dist:mac
+npm run dist:win
+npm run dist:linux
+npm run web
+```
+
+The first three build an installer for that system into `dist/` with [electron-builder](https://www.electron.build). Build each on its own system: the voice's native parts are picked for the machine that builds it. A check after packing (`build/check-pack.cjs`) stops the build if anything private got in: the eval footage, test records, voice samples, scene clips, a `.env`, or more than 600 MB. The packed app is about 186 MB, and the Mac `.dmg` about 160 MB. `npm run web` copies the page into `site/` with an empty `env.js` and the dev server's security policy as a meta tag (`scripts/build-web.mjs`); it refuses to finish if a video, a `.env`, or anything shaped like a Google key would ship.
+
+Two GitHub Actions workflows do both on GitHub:
+- **`.github/workflows/release.yml`:** pushing a version tag (`git tag v0.1.0 && git push origin v0.1.0`) runs the unit tests, builds the four installers on macOS (Apple silicon and Intel), Windows, and Linux runners, and puts them on a GitHub release.
+- **`.github/workflows/pages.yml`:** each push to `main` rebuilds the website and deploys it to GitHub Pages. It needs one setting first, under the repository's Settings › Pages › Source: **GitHub Actions**.
 
 `npm run fixture` makes a 2.5-minute synthetic shooter match and `npm run fixture:chess` two synthetic chess games, one with blunders planted under time pressure and one clean (`tests/fixtures/`, not committed). Once the shooter match exists, the start screen offers it as a test match.
 
@@ -401,7 +451,10 @@ gemini.js                        copied from hackathon/shared/gemini.js (REST cl
 scripts/dev.mjs                  static dev server; makes env.js from .env, sets the page's security policy; the desktop app runs it too
 scripts/vendor.mjs               copies the pinned libraries into vendor/ with their licenses and hashes
 vendor/                          Mediabunny, chess.js, Stockfish, Motion: the only third-party code the page runs
-desktop/                         the Electron app: main.mjs (window, server, remembered recordings, the Eye Catcher folder), preload.cjs (the page's bridge), config.json (where the backend is)
+desktop/                         the Electron app: main.mjs (window, server, remembered recordings, the Eye Catcher folder, the key in the system keychain), preload.cjs (the page's bridge), config.json (where the backend is)
+build/                           the installers' icon, and check-pack.cjs, which fails a build that packed anything private
+scripts/build-web.mjs            the website copy in site/, for GitHub Pages
+.github/workflows/               release.yml (installers on a version tag), pages.yml (the website on each push to main)
 server/index.mjs                 the backend: holds the Gemini key and forwards only Eye Catcher's requests, rate-limited
 render.yaml                      deploys the backend on Render
 tests/                           unit tests, the browser test, the live check, and the fixture maker

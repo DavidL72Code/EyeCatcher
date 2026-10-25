@@ -19,4 +19,6 @@ contextBridge.exposeInMainWorld('thirdeyeDesktop', {
   library: () => ipcRenderer.invoke('library:where'),
   /** Opens the Eye Catcher folder. */
   showLibrary: () => ipcRenderer.invoke('library:show'),
+  /** The player's Gemini key, kept encrypted by the system: get() is the key, '' or null (no system encryption); set(k) false when it can't keep it. */
+  key: { get: () => ipcRenderer.invoke('key:get'), set: (k) => ipcRenderer.invoke('key:set', String(k || '')) },
 });

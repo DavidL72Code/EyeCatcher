@@ -6,7 +6,7 @@
 // Gemini is called with the player's own key from .env (config.json's "backend": "direct", the default: there's no
 // hosted backend). A backend of their own (server/index.mjs) can hold the key instead: its address in THIRDEYE_BACKEND
 // or desktop/config.json.
-import { app, BrowserWindow, dialog, ipcMain, shell } from 'electron';
+import { app, BrowserWindow, dialog, ipcMain, safeStorage, shell } from 'electron';
 import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -18,6 +18,8 @@ const here = path.dirname(fileURLToPath(import.meta.url));
 const PORT = +(process.env.THIRDEYE_PORT || 5170);
 const KEEP = 500; // recordings remembered, newest first
 if (process.env.THIRDEYE_USER_DATA) app.setPath('userData', process.env.THIRDEYE_USER_DATA);
+// Installed, the app can't write inside itself: the voice model is kept with the player's data instead (voice.mjs)
+if (app.isPackaged && !process.env.THIRDEYE_MODEL_CACHE) process.env.THIRDEYE_MODEL_CACHE = path.join(app.getPath('userData'), 'models');
 const config = (() => { try { return JSON.parse(fs.readFileSync(path.join(here, 'config.json'), 'utf8')); } catch { return {}; } })();
 const BACKEND = process.env.THIRDEYE_BACKEND || config.backend || '';
 
@@ -122,6 +124,24 @@ ipcMain.handle('recording:open', (_, p) => {
   return { ...about(p, st), url: `${origin}/recording/${token}` };
 });
 ipcMain.handle('recording:reveal', (_, p) => { if (recordings()[p] && stat(p)) shell.showItemInFolder(p); });
+
+// ---------- the player's Gemini key ----------
+// The key they paste in, kept encrypted by the system (the macOS Keychain, Windows DPAPI, the Linux keyring) in a file
+// with their data, not in the page's storage. Where the system can't encrypt (a Linux desktop with no keyring), the page
+// keeps it as a browser would. The system store is only touched when there's a key to read or keep: macOS asks the
+// player before a differently signed build (an unsigned update) reads the Keychain, and a first launch shouldn't ask.
+const keyFile = () => path.join(app.getPath('userData'), 'gemini-key.bin');
+ipcMain.handle('key:get', () => {
+  if (!fs.existsSync(keyFile())) return '';
+  try { return safeStorage.isEncryptionAvailable() ? safeStorage.decryptString(fs.readFileSync(keyFile())) : null; } catch { return ''; }
+});
+ipcMain.handle('key:set', (_, k) => {
+  const key = String(k || '').trim().slice(0, 200);
+  if (!key) { fs.rmSync(keyFile(), { force: true }); return true; }
+  if (!safeStorage.isEncryptionAvailable()) return false;
+  fs.writeFileSync(keyFile(), safeStorage.encryptString(key), { mode: 0o600 });
+  return true;
+});
 
 function openWindow() {
   const win = new BrowserWindow({

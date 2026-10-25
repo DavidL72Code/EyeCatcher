@@ -1443,7 +1443,7 @@
   const englishVoices = () => ('speechSynthesis' in window ? speechSynthesis.getVoices() : []).filter((v) => /^en/i.test(v.lang)).sort((a, b) => rankVoice(a) - rankVoice(b) || VOICES.findIndex((n) => a.name.startsWith(n)) - VOICES.findIndex((n) => b.name.startsWith(n)));
   // Kokoro, the neural voice the local server runs (scripts/voice.mjs), when it's there: Michael unless they picked another
   let kokoro = null;
-  fetch('/voice').then((r) => (r.ok ? r.json() : null)).then((j) => { kokoro = j?.voices || null; if (run?.cq) fillVoices(); }).catch(() => {});
+  fetch('voice').then((r) => (r.ok ? r.json() : null)).then((j) => { kokoro = j?.voices || null; if (run?.cq) fillVoices(); }).catch(() => {});
   const pickedVoice = () => { const v = read(VOICE, ''); return v.startsWith('kokoro:') ? (kokoro && kokoro[v.slice(7)] ? v : '') : v || (kokoro ? 'kokoro:am_michael' : ''); };
   const kokoroOf = () => (pickedVoice().startsWith('kokoro:') ? pickedVoice().slice(7) : null);
   // a line in Kokoro's voice, made once a review (the server keeps it too): a blob URL to play
@@ -1453,7 +1453,7 @@
   function lineAudio(text) {
     const voice = kokoroOf(), key = `${voice}|${text}`;
     if (!voice) return Promise.resolve(null);
-    if (!lineAudios.has(key)) lineAudios.set(key, fetch('/voice', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text, voice }) }).then((r) => (r.ok ? r.blob() : null)).then((b) => (b ? URL.createObjectURL(b) : null)).catch(() => null).then((url) => { lineMade.add(key); return url; }));
+    if (!lineAudios.has(key)) lineAudios.set(key, fetch('voice', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text, voice }) }).then((r) => (r.ok ? r.blob() : null)).then((b) => (b ? URL.createObjectURL(b) : null)).catch(() => null).then((url) => { lineMade.add(key); return url; }));
     return lineAudios.get(key);
   }
   const lineReady = (text) => !kokoroOf() || lineMade.has(`${kokoroOf()}|${text}`);
@@ -2449,6 +2449,7 @@
     new IntersectionObserver(([e]) => { if (e.isIntersecting) { if (!holding) v.play().catch(() => {}); } else v.pause(); }, { threshold: 0.3 }).observe(v);
     play(0);
     // the walkthrough's last step: Apex's knock-down frame, marked
+    $('stepProof').querySelector('img').src = `assets/scenes/${SCENES[0].id}.jpg`;
     $('stepProof').insertAdjacentHTML('beforeend', marksHtml({ aspect: SCENES[0].aspect, fix: { box: [0.39, 0.495, 0.53, 0.57], label: 'Hits landing' } }));
   }
 
@@ -2627,7 +2628,21 @@
   if (G.backendUrl()) fetch(`${G.backendUrl()}/health`).catch(() => {});
 
   penStroke(document.querySelector('.home .pen'));
-  homeDemo();
+  // the clips are third-party footage kept out of the repository: a copy without them (the download, the website) shows
+  // the opening card's words alone, and the walkthrough without its picture
+  fetch(`assets/scenes/${SCENES[0].id}.mp4`, { method: 'HEAD' }).then((r) => r.ok, () => false).then((ok) => { if (ok) homeDemo(); else $('home').classList.add('no-demo'); });
   reveal();
-  route();
+  // In the desktop app the player's key is kept encrypted by the system, not in the page's storage: read it before the
+  // start screen asks for one, and move a key an earlier version kept here over to it
+  (async () => {
+    const kept = D?.key ? await D.key.get().catch(() => null) : null;
+    if (kept !== null) {
+      let key = kept;
+      const old = (() => { try { return localStorage.getItem('gemini_api_key') || ''; } catch { return ''; } })();
+      if (!key && old && (await D.key.set(old))) { key = old; try { localStorage.removeItem('gemini_api_key'); } catch {} }
+      // where the system can't encrypt, the page keeps the key as a browser would
+      G.holdKey(key, (k) => D.key.set(k).then((done) => { try { if (done) localStorage.removeItem('gemini_api_key'); else localStorage.setItem('gemini_api_key', k); } catch {} }, () => {}));
+    }
+    route();
+  })();
 })();
