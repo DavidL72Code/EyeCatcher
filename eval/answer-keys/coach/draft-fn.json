@@ -1,0 +1,115 @@
+{
+  "clip": "fortnite/fn-_SIkdlhwK6A.end8.mp4",
+  "game": "Fortnite",
+  "player": "MhBro0 (the green name in the elimination feed on the player's Arc-Lightning Gun kills: 'MhBro0 (3) zapped GlowBeetle41 (1) with the Arc-Lightning Gun' at 0:48 and 'MhBro0 (3) zapped GoldenOctopus0 (1)' at 3:18, each as the HUD elimination counter rises (2 -> 3 by 0:50, 4 -> 5 by 3:20), then 'GoldenOctopus0 is now spectating you' at 3:20)",
+  "mode": "solo Battle Royale with building (build controls and materials on the HUD: 500 wood, 500 stone, 482 metal from 6:07 on)",
+  "enemies_named_on_screen": [
+    "MISK-82 (the card at 7:44.5: 'ELIMINATED BY MISK-82', 4 eliminations, 'WITH DEADEYE ASSAULT RIFLE (EPIC)', 63 shield and 100 health)"
+  ],
+  "result": "eliminated at 7:43.4 ('YOU PLACED #4'); 4 players left from 6:40 to the end; the HUD counter shows 6 eliminations from 4:50",
+  "habit": "Taking fall damage dropping off high ground with nothing to heal it: 2:43 (health 97 -> 72), 6:09 (75 -> 55), 6:59 (55 -> 45), 55 health lost with no enemy involved, shield 98 each time. Their only heal, one Common Bandage, went on the first fall for +3 (72 -> 75 by 2:52), so they started the final-four fight at 45 health.",
+  "losses": [
+    {
+      "t": "2:43",
+      "kind": "damage (fall: health 97 -> 72, shield 98 untouched)",
+      "decided": "2:42-2:43.5",
+      "happened": "Pickaxe out, they run down a grassy hill onto rocks above a pond (2:40-2:42) and drop down a steep rock face (2:42.5-2:43.5); on landing at 2:43.5 the health bar shows red: 97 (2:42) -> 72 (2:44), shield 98 unchanged, no enemy, tracer or hit marker on screen. They pull out their only heal, a Common Bandage (slot 5, selected 2:46.5-2:51); health 72 -> 75 by 2:52 and slot 5 is empty at 2:51.6. 14 players left; storm shrinking, 1:07 left at 2:40.",
+      "factors": {
+        "position": "on rocks above a pond in the woods, no enemy in view",
+        "resources": "98 shield, 97 health before the drop; one Common Bandage, used right after for +3 (it stops at 75); 201 wood, 240 stone, 339 metal at 2:42",
+        "mechanics": "a drop down the rock face instead of walking around it or building a ramp to land on",
+        "map": "storm shrinking with 1:07 left at 2:40; no storm near them on the minimap at 2:40; 14 players left"
+      },
+      "mistake": "Dropping off a rock face for 25 fall damage with no fight on, which then spent their only bandage for 3 health.",
+      "better": "Take the slope on foot or put a ramp under the drop (they had 201 wood, 240 stone); keep the bandage for damage that comes from a fight.",
+      "unsure": [
+        "how high the drop was (only about 1 s of it, 2:42.5-2:43.5, is seen)"
+      ]
+    },
+    {
+      "t": "6:09",
+      "kind": "damage (fall: health 75 -> 55, shield 98 untouched)",
+      "decided": "6:07.6-6:09.2",
+      "happened": "On a hilltop with the Arc-Lightning Gun out (6:05-6:07; the minimap at 6:05 puts them on the edge of the next circle with the storm behind them, storm shrinking, 0:42 left), they step off the hill's edge at 6:07.6 toward the river below (airborne at 6:07.8), cross the river (6:08.0-6:08.8) and come down onto the sand in a crouched landing at 6:09.2: health 75 (6:09.0) -> 55 (6:09.3), shield 98, no enemy or hit marker on screen. No heal in the hotbar (slot 4 a grey assault rifle, slot 5 empty). 6 players left.",
+      "factors": {
+        "position": "hilltop above a river, at the edge of the next circle",
+        "resources": "98 shield, 75 health, no heals (slot 5 empty since 2:51.6); 500 wood, 500 stone, 482 metal at 6:07",
+        "mechanics": "dropping off the hill to the riverbank instead of running down the slope or building a ramp to land on",
+        "map": "storm shrinking, 0:42 left at 6:05, behind them on the minimap; 6 players left"
+      },
+      "mistake": "Dropping off the hill to the river for 20 fall damage with no heals left to win it back.",
+      "better": "Run down the slope or ramp down with the 500 wood/stone; with no heals, any fall damage stays for the rest of the game.",
+      "unsure": [
+        "which drop did the 20 damage: the step off the hill at 6:07.6 or a last drop onto the sand at 6:09.0-6:09.2 (the frames between show them over the river, and whether they touched the water is not clear)",
+        "how much the moving storm pushed the shortcut (it is behind them on the minimap at 6:05, distance not read)"
+      ]
+    },
+    {
+      "t": "6:59",
+      "kind": "minor damage (fall: health 55 -> 45, shield 98 untouched)",
+      "decided": "6:57.5-6:59",
+      "happened": "Moving into the next circle (minimap at 6:56: their arrow just outside the white circle line; circle timer 0:42, storm not moving; 4 players left), they run along a white rock ridge above a river (6:57.5-6:58) and drop down to the grass below (6:58-6:59); the health bar shows red at 6:59.5: 55 (6:58) -> 45 (7:00), shield 98.",
+      "factors": {
+        "resources": "98 shield, 55 health, no heals",
+        "map": "4 players left; 0:42 before the storm moves (6:56)",
+        "mechanics": "a drop off the ridge instead of walking down it"
+      },
+      "mistake": "A third fall-damage drop, now in the final four, leaving 45 health for the end game.",
+      "better": "Walk the ridge down or ramp it; the storm was not moving (0:42 at 6:56), so there was time to.",
+      "unsure": []
+    },
+    {
+      "t": "7:30",
+      "kind": "heavy damage (shield 98 -> 24 in three hits, 7:29.9-7:33.1), fled",
+      "decided": "7:18-7:29.8 (the walk into the open centre and the chest), then 7:29.9-7:33.1 (running in the open instead of building)",
+      "happened": "4 players left; the circle timer reads 0:22 at 7:16 and 0:10 at 7:28 (storm not moving) and the minimap puts them near the circle's centre at Innoloop Labs, with 98 shield, 45 health and no heals. Pickaxe out, they cross open lawn into the Labs (7:18-7:26; 'Cannot Sprint, Low Energy' at 7:25.5-7:26), climb onto the raised metal platform around the central pit (7:27) and stop at a chest (7:28-7:29.6): a Holo Rush SMG (Uncommon, x28), wood x30 ('CAN'T HOLD MORE OF THIS ITEM!' at 7:29.4) and a grenade; the hotbar is unchanged after. Leaving it, they are hit at 7:29.9 (shield 98 -> 73) and 7:30.5 (-> 49), with tracers and gunshot and shield-hit markers around the crosshair. Pickaxe still out, they run along the platform rim, down a walkway and across the open plaza (7:30.5-7:33), are hit again at 7:33.1 (-> 24), and crouch behind a hedge beside a building at 7:35. No shot fired back, no build placed, no enemy on screen.",
+      "factors": {
+        "position": "on a raised, open platform at the centre of Innoloop Labs, the middle of the circle with 4 left; then an open walkway and plaza; the nearest cover a hedge",
+        "information": "no enemy, gunshot or footstep marker on screen before the first hit (7:22-7:29.8); after it the markers around the crosshair give the direction, but the shooter never appears on screen",
+        "resources": "98 shield, 45 health, no heals (slot 5 empty); 500 wood, 500 stone, 482 metal; pickaxe out from 7:18 to 7:35.5",
+        "numbers": "4 players left",
+        "map": "inside the circle near its centre; storm not moving (0:10 at 7:28)",
+        "mechanics": "no wall or ramp placed during the 3.2 s of hits (7:29.9-7:33.1) with max wood and stone; running in straight lines across open ground"
+      },
+      "mistake": "Walking into the open centre of the final-four circle with the pickaxe out and 45 health to open a chest, then running across open ground for about 4 s under fire instead of building.",
+      "better": "With 45 health and no heals, hold an edge of the circle with cover and a gun out instead of looting the exposed centre; at the first hit, put walls (or a box) between them and the shots, then choose to fight or reset.",
+      "unsure": [
+        "where the shooter was and whether it was MISK-82 (each of the six hits on them, 7:29.9-7:43.4, takes 24-25, as from one weapon, but the shooter is never on screen)",
+        "whether the chest was already open when they got there (a green weapon shows at it from 7:24)"
+      ]
+    },
+    {
+      "t": "7:43",
+      "kind": "death (eliminated by MISK-82 with a Deadeye Assault Rifle; placed #4)",
+      "decided": "7:35-7:42.2",
+      "happened": "Behind the hedge beside a building wall (7:35-7:41) with 24 shield and 45 health, they switch to the Arc-Lightning Gun (46%) at 7:36; the storm starts moving at about 7:37.5 (1:09). No hit from 7:33.1 until 7:42.5 and no gunshot marker on screen 7:35-7:41.7. At 7:41.6 they fire the Arc-Lightning Gun over the hedge: the lightning strikes the hedge in front of them and arcs toward the structure up-right; a gunshot marker shows above the crosshair (ahead) from 7:41.8; by 7:42.2 the hedge is gone in a cloud of debris. Shield breaks at about 7:42.5 (24 -> 0, health 45 -> 44), health 44 -> 20 at about 7:42.9, and 'YOU PLACED' appears at 7:43.4. Their own blue damage numbers, 11 then 22, show beside the crosshair at 7:42.9-7:43.35. The card at 7:44.5: 'ELIMINATED BY MISK-82', 4 eliminations, 'WITH DEADEYE ASSAULT RIFLE (EPIC)', MISK-82 at 63 shield and 100 health.",
+      "factors": {
+        "position": "behind a hedge (a breakable bush) on the open plaza, a building wall beside them; the shots from ahead (gunshot marker above the crosshair 7:41.8-7:43.2)",
+        "information": "the shooter never on screen; no gunshot marker 7:35-7:41.7, and the marker returns (7:41.8) right after they start firing",
+        "resources": "24 shield and 45 health (69 in all), no heals; 500 wood, 500 stone, 482 metal; Arc-Lightning Gun 46% -> 44% (7:42.8); assault rifles in slots 1 and 4 (259 and 528 ammo)",
+        "numbers": "4 players left; MISK-82 at 63 shield and 100 health after the kill",
+        "map": "inside the circle; storm moving from about 7:37.5, 1:04 left at the death",
+        "mechanics": "no wall or box built in the quiet seconds (7:35-7:41.6); their own lightning hit the hedge they hid behind; once it fell, three hits of 24-25 in 0.9 s (7:42.5-7:43.4)"
+      },
+      "mistake": "Re-peeking from behind a hedge at 69 health with no heals and no build, firing the Arc-Lightning Gun into the hedge that was their only cover; once it broke, the Deadeye Assault Rifle finished them in under a second.",
+      "better": "Use the quiet seconds (7:35-7:41.6) to box up with the 500 wood/stone (or get into the building beside them) and re-engage only from built cover; at 69 health against a rifle at full health, let the other two players draw fire rather than peeking a hedge.",
+      "unsure": [
+        "whether the enemy's shots also broke the hedge, or only their own lightning",
+        "what their 11 and 22 shield damage hit (the target is not clear on screen; MISK-82 shows 63 shield after the kill)",
+        "whether the building beside them could be entered",
+        "what the crowned-skull icon on the minimap west of them marks (7:16-7:43)"
+      ]
+    }
+  ],
+  "not_true": [
+    "an enemy did the damage at 2:43, 6:09 or 6:59 (shield stays 98 each time and each drop lands with a jump)",
+    "the storm did any of the damage (health-only drops are the three falls; inside the circle at the death)",
+    "heavy storm damage early ('YOU ARE IN THE STORM' at 0:20, but health only 100 -> 97 by 0:36)",
+    "they took damage in the eliminations that took the counter from 2 to 6 (by 0:50, 2:10, 3:20, 4:50): shield and health don't drop between 0:36 and 2:42 or between 2:52 and 6:09",
+    "they shot back during the first hits (pickaxe out from 7:29.9 to 7:35.5)",
+    "they had heals at the end (slot 5 empty from 2:51.6)",
+    "a Zero Build match (build controls and 500/500/482 materials on the HUD)",
+    "killed by a sniper rifle or shotgun (the card: Deadeye Assault Rifle)",
+    "placed #3 or better ('YOU PLACED #4')"
+  ]
+}

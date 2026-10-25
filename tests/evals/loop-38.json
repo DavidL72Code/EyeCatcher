@@ -1,0 +1,1710 @@
+{
+ "name": "loop-38",
+ "generated": "2026-10-25T12:08:05.181Z",
+ "source": "38",
+ "games": [
+  {
+   "tag": "lol",
+   "game": "League of Legends",
+   "losses": 3,
+   "runs": [
+    {
+     "run": 1,
+     "relearned": true,
+     "verdict": "one-off",
+     "named": "The player consistently overextends into unwarded areas alone, which leads to them being caught out and dying.",
+     "why": "The player's habit of overextending into unwarded areas alone, especially when they lack vision, consistently leads to them being caught out and dying, which costs the team momentum and gold.",
+     "minutes": 3.5,
+     "calls": {
+      "answered": 26,
+      "failed": 3
+     },
+     "models": {
+      "gemini-3.1-flash-lite": 26
+     },
+     "flags": [],
+     "tokens": {
+      "prompt": 445025,
+      "output": 30869,
+      "text": 109500,
+      "image": 166301,
+      "video": 169224
+     },
+     "jobs": {
+      "learn": {
+       "calls": 4,
+       "prompt": 9340,
+       "output": 602
+      },
+      "box check": {
+       "calls": 1,
+       "prompt": 3639,
+       "output": 635
+      },
+      "low-detail pass": {
+       "calls": 1,
+       "prompt": 40034,
+       "output": 1540
+      },
+      "HUD counters": {
+       "calls": 8,
+       "prompt": 9947,
+       "output": 17541
+      },
+      "read_hud/other": {
+       "calls": 2,
+       "prompt": 119118,
+       "output": 1027
+      },
+      "coach": {
+       "calls": 8,
+       "prompt": 106531,
+       "output": 1828
+      },
+      "clips": {
+       "calls": 4,
+       "prompt": 154411,
+       "output": 6834
+      },
+      "claim check": {
+       "calls": 1,
+       "prompt": 2005,
+       "output": 862
+      }
+     },
+     "record": {
+      "kills": 0,
+      "deaths": 2,
+      "deathsFound": 2,
+      "deathsReal": 2,
+      "invented": 0
+     },
+     "player": {
+      "learned": null,
+      "plays": "Miss Fortune"
+     },
+     "losses": [
+      {
+       "t": "1:48",
+       "kind": "death",
+       "baseline": "Staying at the front of the mid wave after four 'enemies missing' and three 'enemy has vision here' pings, with Flash and ult down and 42% health.",
+       "factors": [
+        "position",
+        "information",
+        "resources",
+        "numbers",
+        "cue_missed"
+       ],
+       "cited": true,
+       "said": [
+        "The player is alone in the river area while nearsighted. Because: The player was alone in the river without vision, making them vulnerable to being caught out.",
+        "The player is alone in the river area while nearsighted. Because: The player was alone in the river without vision, making them vulnerable to being caught out."
+       ],
+       "named": [
+        "position",
+        "information"
+       ],
+       "coverage": 0.4,
+       "numbers": []
+      },
+      {
+       "t": "4:30",
+       "kind": "near_death (280 of 1589)",
+       "baseline": "Channeling her ult, which roots her in place, from inside the enemy's reach with no Flash.",
+       "factors": [
+        "position",
+        "resources",
+        "map",
+        "information"
+       ],
+       "cited": false,
+       "said": [],
+       "named": [],
+       "coverage": 0,
+       "numbers": []
+      },
+      {
+       "t": "8:56",
+       "kind": "death",
+       "baseline": "After Flashing out of CalvinCoach's stun, stopping in the river to channel her ult (which holds her in place) while two teammates were dead and the jungler was missing; Fizz's missing ping came two seconds later and the jungler's Nearsight a second after that.",
+       "factors": [
+        "numbers",
+        "information",
+        "resources",
+        "objective"
+       ],
+       "cited": true,
+       "said": [
+        "The player is alone in the river area while nearsighted. Because: The player was alone in the river without vision, making them vulnerable to being caught out.",
+        "The player is alone in the river area while nearsighted. Because: The player was alone in the river without vision, making them vulnerable to being caught out."
+       ],
+       "named": [
+        "position",
+        "information"
+       ],
+       "coverage": 0.25,
+       "numbers": []
+      }
+     ],
+     "cited": 2,
+     "numbered": 0,
+     "coverage": 0.325,
+     "looseCites": [],
+     "sentBack": 2
+    },
+    {
+     "run": 2,
+     "relearned": false,
+     "verdict": "habit",
+     "named": "Overextending into the river alone, especially when nearsighted or outnumbered.",
+     "why": "The player's habit of overextending into the river alone, particularly when nearsighted or outnumbered, directly led to their deaths and lost fights. This lack of positioning and map awareness is a critical error that costs them significant advantages.",
+     "minutes": 4,
+     "calls": {
+      "answered": 21,
+      "failed": 5
+     },
+     "models": {
+      "gemini-3.1-flash-lite": 21
+     },
+     "flags": [],
+     "tokens": {
+      "prompt": 475513,
+      "output": 32367,
+      "text": 74750,
+      "image": 184547,
+      "video": 216216
+     },
+     "jobs": {
+      "low-detail pass": {
+       "calls": 3,
+       "prompt": 40034,
+       "output": 1540
+      },
+      "HUD counters": {
+       "calls": 10,
+       "prompt": 9947,
+       "output": 17541
+      },
+      "read_hud/other": {
+       "calls": 2,
+       "prompt": 135002,
+       "output": 1183
+      },
+      "coach": {
+       "calls": 6,
+       "prompt": 82681,
+       "output": 1694
+      },
+      "clips": {
+       "calls": 4,
+       "prompt": 205522,
+       "output": 9580
+      },
+      "claim check": {
+       "calls": 1,
+       "prompt": 2327,
+       "output": 829
+      }
+     },
+     "record": {
+      "kills": 0,
+      "deaths": 2,
+      "deathsFound": 2,
+      "deathsReal": 2,
+      "invented": 0
+     },
+     "player": {
+      "learned": null,
+      "plays": "Miss Fortune"
+     },
+     "losses": [
+      {
+       "t": "1:48",
+       "kind": "death",
+       "baseline": "Staying at the front of the mid wave after four 'enemies missing' and three 'enemy has vision here' pings, with Flash and ult down and 42% health.",
+       "factors": [
+        "position",
+        "information",
+        "resources",
+        "numbers",
+        "cue_missed"
+       ],
+       "cited": true,
+       "said": [
+        "Player is alone in the river area while nearsighted. Because: The player was alone in the river area while nearsighted, making them an easy target.",
+        "Player is alone in the river area while nearsighted. Because: The player was alone in the river area while nearsighted, making them an easy target."
+       ],
+       "named": [
+        "position",
+        "information"
+       ],
+       "coverage": 0.4,
+       "numbers": []
+      },
+      {
+       "t": "4:30",
+       "kind": "near_death (280 of 1589)",
+       "baseline": "Channeling her ult, which roots her in place, from inside the enemy's reach with no Flash.",
+       "factors": [
+        "position",
+        "resources",
+        "map",
+        "information"
+       ],
+       "cited": false,
+       "said": [],
+       "named": [],
+       "coverage": 0,
+       "numbers": []
+      },
+      {
+       "t": "8:56",
+       "kind": "death",
+       "baseline": "After Flashing out of CalvinCoach's stun, stopping in the river to channel her ult (which holds her in place) while two teammates were dead and the jungler was missing; Fizz's missing ping came two seconds later and the jungler's Nearsight a second after that.",
+       "factors": [
+        "numbers",
+        "information",
+        "resources",
+        "objective"
+       ],
+       "cited": true,
+       "said": [
+        "Player is alone in the river area while nearsighted. Because: The player was alone in the river area while nearsighted, making them an easy target.",
+        "Player is alone in the river area while nearsighted. Because: The player was alone in the river area while nearsighted, making them an easy target."
+       ],
+       "named": [
+        "position",
+        "information"
+       ],
+       "coverage": 0.25,
+       "numbers": []
+      }
+     ],
+     "cited": 2,
+     "numbered": 0,
+     "coverage": 0.325,
+     "looseCites": [
+      "8:05 Player engages in the river while isolated."
+     ],
+     "sentBack": 1
+    },
+    {
+     "run": 3,
+     "relearned": false,
+     "verdict": "one-off",
+     "named": "Overextending in lane and walking into unwarded areas without vision before fights",
+     "why": "Overextending in lane without vision and walking into unwarded river areas repeatedly led to surprise ambushes and deaths, surrendering map control and momentum to the enemy team.",
+     "minutes": 6.8,
+     "calls": {
+      "answered": 19,
+      "failed": 5
+     },
+     "models": {
+      "gemini-3.5-flash-lite": 16,
+      "gemini-3.1-flash-lite": 3
+     },
+     "flags": [],
+     "tokens": {
+      "prompt": 453308,
+      "output": 54376,
+      "text": 80608,
+      "image": 241360,
+      "video": 131340
+     },
+     "jobs": {
+      "HUD counters": {
+       "calls": 9,
+       "prompt": 6272,
+       "output": 11483
+      },
+      "low-detail pass": {
+       "calls": 1,
+       "prompt": 0,
+       "output": 0
+      },
+      "read_hud/other": {
+       "calls": 4,
+       "prompt": 264298,
+       "output": 12639
+      },
+      "coach": {
+       "calls": 5,
+       "prompt": 65580,
+       "output": 4339
+      },
+      "clips": {
+       "calls": 2,
+       "prompt": 110621,
+       "output": 14277
+      },
+      "claim check": {
+       "calls": 3,
+       "prompt": 6537,
+       "output": 11638
+      }
+     },
+     "record": {
+      "kills": 0,
+      "deaths": 2,
+      "deathsFound": 2,
+      "deathsReal": 2,
+      "invented": 0
+     },
+     "player": {
+      "learned": null,
+      "plays": "Miss Fortune"
+     },
+     "losses": [
+      {
+       "t": "1:48",
+       "kind": "death",
+       "baseline": "Staying at the front of the mid wave after four 'enemies missing' and three 'enemy has vision here' pings, with Flash and ult down and 42% health.",
+       "factors": [
+        "position",
+        "information",
+        "resources",
+        "numbers",
+        "cue_missed"
+       ],
+       "cited": true,
+       "said": [
+        "Farming minions pushed up in the bottom lane without vision when enemies were missing. pushed up in the bottom lane while enemies were missing and unrevealed on the map, leading to an ambush by Nocturne from fog of war"
+       ],
+       "named": [
+        "information"
+       ],
+       "coverage": 0.2,
+       "numbers": []
+      },
+      {
+       "t": "4:30",
+       "kind": "near_death (280 of 1589)",
+       "baseline": "Channeling her ult, which roots her in place, from inside the enemy's reach with no Flash.",
+       "factors": [
+        "position",
+        "resources",
+        "map",
+        "information"
+       ],
+       "cited": false,
+       "said": [],
+       "named": [],
+       "coverage": 0,
+       "numbers": []
+      },
+      {
+       "t": "8:56",
+       "kind": "death",
+       "baseline": "After Flashing out of CalvinCoach's stun, stopping in the river to channel her ult (which holds her in place) while two teammates were dead and the jungler was missing; Fizz's missing ping came two seconds later and the jungler's Nearsight a second after that.",
+       "factors": [
+        "numbers",
+        "information",
+        "resources",
+        "objective"
+       ],
+       "cited": true,
+       "said": [
+        "Engaging in a river skirmish against advancing enemies. engaging in close-quarters combat in the river with limited escape routes as enemies advanced"
+       ],
+       "named": [
+        "resources"
+       ],
+       "coverage": 0.25,
+       "numbers": []
+      }
+     ],
+     "cited": 2,
+     "numbered": 0,
+     "coverage": 0.225,
+     "looseCites": [],
+     "sentBack": 2
+    }
+   ],
+   "shots": []
+  },
+  {
+   "tag": "cr",
+   "game": "Clash Royale",
+   "losses": 3,
+   "runs": [
+    {
+     "run": 1,
+     "relearned": true,
+     "verdict": "one-off",
+     "named": "Overcommitting high-cost units",
+     "why": "By placing both the Archer Queen and Sparky in the same lane, the player exhausted their elixir and created a high-value target for the enemy's Fireball, which destroyed the tower.",
+     "minutes": 4.6,
+     "calls": {
+      "answered": 27,
+      "failed": 11
+     },
+     "models": {
+      "gemini-3.5-flash-lite": 2,
+      "gemini-3.1-flash-lite": 24,
+      "gemini-2.5-flash-lite": 1
+     },
+     "flags": [],
+     "tokens": {
+      "prompt": 179020,
+      "output": 24900,
+      "text": 63420,
+      "image": 45088,
+      "video": 70512
+     },
+     "jobs": {
+      "learn": {
+       "calls": 1,
+       "prompt": 9164,
+       "output": 407
+      },
+      "box check": {
+       "calls": 3,
+       "prompt": 6918,
+       "output": 397
+      },
+      "read_hud/other": {
+       "calls": 13,
+       "prompt": 51493,
+       "output": 6855
+      },
+      "HUD counters": {
+       "calls": 3,
+       "prompt": 3638,
+       "output": 2624
+      },
+      "low-detail pass": {
+       "calls": 1,
+       "prompt": 13864,
+       "output": 478
+      },
+      "coach": {
+       "calls": 6,
+       "prompt": 47830,
+       "output": 1592
+      },
+      "clips": {
+       "calls": 2,
+       "prompt": 37902,
+       "output": 3280
+      },
+      "research": {
+       "calls": 6,
+       "prompt": 5439,
+       "output": 5072
+      },
+      "claim check": {
+       "calls": 3,
+       "prompt": 2772,
+       "output": 4195
+      }
+     },
+     "record": {
+      "kills": 0,
+      "deaths": 0,
+      "deathsFound": 0,
+      "deathsReal": 1,
+      "invented": 0
+     },
+     "player": {
+      "learned": "HIHIHA",
+      "plays": null
+     },
+     "losses": [
+      {
+       "t": "1:33",
+       "kind": "tower damage (right tower 3197 to 761)",
+       "baseline": "Answering a Royal Giant at the bridge with the slowest, most expensive card, and only once it became affordable: the Sparky went down at 1:24.5 and first fired at 1:34.2, by which time the tower had taken all six shots (2436).",
+       "factors": [
+        "resources",
+        "position",
+        "information"
+       ],
+       "cited": false,
+       "said": [],
+       "named": [],
+       "coverage": 0,
+       "numbers": []
+      },
+      {
+       "t": "2:36",
+       "kind": "tower damage (right tower 761 to 384), with the player's King Tower hit and activated (5582 bar from 2:24)",
+       "baseline": "Stacking 13 elixir of Sparkys right against the damaged right tower, so the opponent's Fireball hit the tower (and the King Tower) along with the defence.",
+       "factors": [
+        "resources",
+        "position",
+        "information"
+       ],
+       "cited": false,
+       "said": [],
+       "named": [],
+       "coverage": 0,
+       "numbers": []
+      },
+      {
+       "t": "3:27",
+       "kind": "right tower destroyed in sudden-death overtime: the match lost 0-1",
+       "baseline": "With a 384-health tower in sudden death, spending everything on defending in front of it (where the Fireball hit both), with no threat elsewhere, so the opponent's spells could finish the tower at their leisure.",
+       "factors": [
+        "resources",
+        "map",
+        "position"
+       ],
+       "cited": false,
+       "said": [],
+       "named": [],
+       "coverage": 0,
+       "numbers": []
+      }
+     ],
+     "cited": 0,
+     "numbered": 0,
+     "coverage": null,
+     "looseCites": [
+      "0:36 Player deployed Sparky in the right lane.",
+      "0:36 Player deployed Sparky in the right lane."
+     ],
+     "sentBack": 3
+    },
+    {
+     "run": 2,
+     "relearned": false,
+     "verdict": "nothing named",
+     "named": "",
+     "why": "The coach's finding (“The player lost a tower due to a poor placement that allowed a high-value spell ”) didn't hold up after two send-backs. Where you lost: 0:44 a point the other side scored.",
+     "minutes": 3.4,
+     "calls": {
+      "answered": 22,
+      "failed": 3
+     },
+     "models": {
+      "gemini-3.1-flash-lite": 22
+     },
+     "flags": [],
+     "tokens": {
+      "prompt": 219932,
+      "output": 15185,
+      "text": 88058,
+      "image": 43842,
+      "video": 88032
+     },
+     "jobs": {
+      "low-detail pass": {
+       "calls": 4,
+       "prompt": 13864,
+       "output": 478
+      },
+      "HUD counters": {
+       "calls": 3,
+       "prompt": 3638,
+       "output": 2624
+      },
+      "coach": {
+       "calls": 8,
+       "prompt": 77836,
+       "output": 2049
+      },
+      "clips": {
+       "calls": 2,
+       "prompt": 37966,
+       "output": 2548
+      },
+      "claim check": {
+       "calls": 3,
+       "prompt": 2132,
+       "output": 3325
+      },
+      "read_hud/other": {
+       "calls": 5,
+       "prompt": 84496,
+       "output": 4161
+      }
+     },
+     "record": {
+      "kills": 0,
+      "deaths": 0,
+      "deathsFound": 0,
+      "deathsReal": 1,
+      "invented": 0
+     },
+     "player": {
+      "learned": "HIHIHA",
+      "plays": null
+     },
+     "losses": [
+      {
+       "t": "1:33",
+       "kind": "tower damage (right tower 3197 to 761)",
+       "baseline": "Answering a Royal Giant at the bridge with the slowest, most expensive card, and only once it became affordable: the Sparky went down at 1:24.5 and first fired at 1:34.2, by which time the tower had taken all six shots (2436).",
+       "factors": [
+        "resources",
+        "position",
+        "information"
+       ],
+       "cited": false,
+       "said": [],
+       "named": [],
+       "coverage": 0,
+       "numbers": []
+      },
+      {
+       "t": "2:36",
+       "kind": "tower damage (right tower 761 to 384), with the player's King Tower hit and activated (5582 bar from 2:24)",
+       "baseline": "Stacking 13 elixir of Sparkys right against the damaged right tower, so the opponent's Fireball hit the tower (and the King Tower) along with the defence.",
+       "factors": [
+        "resources",
+        "position",
+        "information"
+       ],
+       "cited": false,
+       "said": [],
+       "named": [],
+       "coverage": 0,
+       "numbers": []
+      },
+      {
+       "t": "3:27",
+       "kind": "right tower destroyed in sudden-death overtime: the match lost 0-1",
+       "baseline": "With a 384-health tower in sudden death, spending everything on defending in front of it (where the Fireball hit both), with no threat elsewhere, so the opponent's spells could finish the tower at their leisure.",
+       "factors": [
+        "resources",
+        "map",
+        "position"
+       ],
+       "cited": false,
+       "said": [],
+       "named": [],
+       "coverage": 0,
+       "numbers": []
+      }
+     ],
+     "cited": 0,
+     "numbered": 0,
+     "coverage": null,
+     "looseCites": [],
+     "sentBack": 5
+    },
+    {
+     "run": 3,
+     "relearned": false,
+     "verdict": "nothing named",
+     "named": "",
+     "why": "The coach's finding (“The player lost a tower due to a poor placement that allowed a high-value spell ”) didn't hold up after two send-backs. Where you lost: 0:44 a point the other side scored.",
+     "minutes": 1.8,
+     "calls": {
+      "answered": 22,
+      "failed": 3
+     },
+     "models": {
+      "gemini-3.1-flash-lite": 22
+     },
+     "flags": [],
+     "tokens": {
+      "prompt": 219932,
+      "output": 15185,
+      "text": 88058,
+      "image": 43842,
+      "video": 88032
+     },
+     "jobs": {
+      "low-detail pass": {
+       "calls": 4,
+       "prompt": 13864,
+       "output": 478
+      },
+      "HUD counters": {
+       "calls": 3,
+       "prompt": 3638,
+       "output": 2624
+      },
+      "coach": {
+       "calls": 8,
+       "prompt": 77836,
+       "output": 2049
+      },
+      "clips": {
+       "calls": 2,
+       "prompt": 37966,
+       "output": 2548
+      },
+      "claim check": {
+       "calls": 3,
+       "prompt": 2132,
+       "output": 3325
+      },
+      "read_hud/other": {
+       "calls": 5,
+       "prompt": 84496,
+       "output": 4161
+      }
+     },
+     "record": {
+      "kills": 0,
+      "deaths": 0,
+      "deathsFound": 0,
+      "deathsReal": 1,
+      "invented": 0
+     },
+     "player": {
+      "learned": "HIHIHA",
+      "plays": null
+     },
+     "losses": [
+      {
+       "t": "1:33",
+       "kind": "tower damage (right tower 3197 to 761)",
+       "baseline": "Answering a Royal Giant at the bridge with the slowest, most expensive card, and only once it became affordable: the Sparky went down at 1:24.5 and first fired at 1:34.2, by which time the tower had taken all six shots (2436).",
+       "factors": [
+        "resources",
+        "position",
+        "information"
+       ],
+       "cited": false,
+       "said": [],
+       "named": [],
+       "coverage": 0,
+       "numbers": []
+      },
+      {
+       "t": "2:36",
+       "kind": "tower damage (right tower 761 to 384), with the player's King Tower hit and activated (5582 bar from 2:24)",
+       "baseline": "Stacking 13 elixir of Sparkys right against the damaged right tower, so the opponent's Fireball hit the tower (and the King Tower) along with the defence.",
+       "factors": [
+        "resources",
+        "position",
+        "information"
+       ],
+       "cited": false,
+       "said": [],
+       "named": [],
+       "coverage": 0,
+       "numbers": []
+      },
+      {
+       "t": "3:27",
+       "kind": "right tower destroyed in sudden-death overtime: the match lost 0-1",
+       "baseline": "With a 384-health tower in sudden death, spending everything on defending in front of it (where the Fireball hit both), with no threat elsewhere, so the opponent's spells could finish the tower at their leisure.",
+       "factors": [
+        "resources",
+        "map",
+        "position"
+       ],
+       "cited": false,
+       "said": [],
+       "named": [],
+       "coverage": 0,
+       "numbers": []
+      }
+     ],
+     "cited": 0,
+     "numbered": 0,
+     "coverage": null,
+     "looseCites": [],
+     "sentBack": 5
+    }
+   ],
+   "shots": []
+  },
+  {
+   "tag": "bs",
+   "game": "Brawl Stars",
+   "losses": 3,
+   "runs": [
+    {
+     "run": 1,
+     "relearned": true,
+     "verdict": "nothing named",
+     "named": "",
+     "why": "Code found nothing lost in what it could read: no death, no lost fight, and no teammate down near you without a trade. No kill feed, death counter, or HP number could be read to check the deaths, which come from a low-detail pass alone, so one it missed is not ruled out. No single habit is named.",
+     "minutes": 2.6,
+     "calls": {
+      "answered": 17,
+      "failed": 0
+     },
+     "models": {
+      "gemini-3.5-flash-lite": 12,
+      "gemini-2.5-flash-lite": 5
+     },
+     "flags": [],
+     "tokens": {
+      "prompt": 102128,
+      "output": 15429,
+      "text": 28956,
+      "image": 56012,
+      "video": 17160
+     },
+     "jobs": {
+      "learn": {
+       "calls": 1,
+       "prompt": 9340,
+       "output": 384
+      },
+      "box check": {
+       "calls": 2,
+       "prompt": 7050,
+       "output": 582
+      },
+      "read_hud/other": {
+       "calls": 2,
+       "prompt": 12438,
+       "output": 223
+      },
+      "HUD counters": {
+       "calls": 2,
+       "prompt": 2514,
+       "output": 1138
+      },
+      "low-detail pass": {
+       "calls": 1,
+       "prompt": 17533,
+       "output": 478
+      },
+      "coach": {
+       "calls": 3,
+       "prompt": 48291,
+       "output": 3307
+      },
+      "research": {
+       "calls": 6,
+       "prompt": 4962,
+       "output": 9317
+      }
+     },
+     "record": {
+      "kills": 0,
+      "deaths": 0,
+      "deathsFound": 0,
+      "deathsReal": 2,
+      "invented": 0
+     },
+     "player": {
+      "learned": "PANDA YT™",
+      "plays": null
+     },
+     "losses": [
+      {
+       "t": "0:38",
+       "kind": "near_death (1 of 14300 HP, 0:38.25-0:40.0)",
+       "baseline": "Walking up into the enemy's pink circle as it appeared and staying in it for about 7 s, ahead of his team. His health went 14300 to 4254 to 1 before he backed off.",
+       "factors": [
+        "position",
+        "information",
+        "resources",
+        "numbers",
+        "map",
+        "mechanics"
+       ],
+       "cited": false,
+       "said": [],
+       "named": [],
+       "coverage": 0,
+       "numbers": []
+      },
+      {
+       "t": "1:10",
+       "kind": "death (kill popup 'NPC💀💀Abuser -> PANDA YT' at 1:10.5; 'Following: Automatic' from 1:10.75)",
+       "baseline": "After losing 9000 health alone on the right in 2.5 s, staying put alone on the right as kucennn walked up to him, instead of falling back to his team, and taking on three enemies alone. Then, with super charged from 1:05.75 and three gadgets, he used neither before dying at 1 HP right after the Immune state ended.",
+       "factors": [
+        "position",
+        "information",
+        "resources",
+        "numbers",
+        "map",
+        "mechanics"
+       ],
+       "cited": false,
+       "said": [],
+       "named": [],
+       "coverage": 0,
+       "numbers": []
+      },
+      {
+       "t": "2:58",
+       "kind": "death (kill popup 'SSZtt -> PANDA YT' at 2:58.5; spectating 'Following: ราชาโดดรุม' from 2:58.8)",
+       "baseline": "Walking up alone, ahead of his team, into three enemies, and spending two of his three shots at SSZtt from range for no damage, so he had 1 of 3 left when SSZtt's beam and the circle caught him. Then standing in the enemy's pink circle to hit the object inside it while 1062s stacked on him (13895 to nearly 0 in about 1.5 s). During the Immune state he stayed beside SSZtt instead of falling back.",
+       "factors": [
+        "position",
+        "resources",
+        "numbers",
+        "information",
+        "map",
+        "mechanics"
+       ],
+       "cited": false,
+       "said": [],
+       "named": [],
+       "coverage": 0,
+       "numbers": []
+      }
+     ],
+     "cited": 0,
+     "numbered": 0,
+     "coverage": null,
+     "looseCites": [],
+     "sentBack": 0
+    },
+    {
+     "run": 2,
+     "relearned": false,
+     "verdict": "nothing named",
+     "named": "",
+     "why": "Code found nothing lost in what it could read: no death, no lost fight, and no teammate down near you without a trade. No kill feed, death counter, or HP number could be read to check the deaths, which come from a low-detail pass alone, so one it missed is not ruled out. No single habit is named.",
+     "minutes": 0.6,
+     "calls": {
+      "answered": 7,
+      "failed": 0
+     },
+     "models": {
+      "gemini-3.5-flash-lite": 7
+     },
+     "flags": [],
+     "tokens": {
+      "prompt": 83732,
+      "output": 4184,
+      "text": 24891,
+      "image": 41681,
+      "video": 17160
+     },
+     "jobs": {
+      "low-detail pass": {
+       "calls": 1,
+       "prompt": 17533,
+       "output": 514
+      },
+      "HUD counters": {
+       "calls": 2,
+       "prompt": 2531,
+       "output": 1472
+      },
+      "read_hud/other": {
+       "calls": 1,
+       "prompt": 17730,
+       "output": 190
+      },
+      "coach": {
+       "calls": 3,
+       "prompt": 45938,
+       "output": 2008
+      }
+     },
+     "record": {
+      "kills": 0,
+      "deaths": 0,
+      "deathsFound": 0,
+      "deathsReal": 2,
+      "invented": 0
+     },
+     "player": {
+      "learned": "PANDA YT™",
+      "plays": null
+     },
+     "losses": [
+      {
+       "t": "0:38",
+       "kind": "near_death (1 of 14300 HP, 0:38.25-0:40.0)",
+       "baseline": "Walking up into the enemy's pink circle as it appeared and staying in it for about 7 s, ahead of his team. His health went 14300 to 4254 to 1 before he backed off.",
+       "factors": [
+        "position",
+        "information",
+        "resources",
+        "numbers",
+        "map",
+        "mechanics"
+       ],
+       "cited": false,
+       "said": [],
+       "named": [],
+       "coverage": 0,
+       "numbers": []
+      },
+      {
+       "t": "1:10",
+       "kind": "death (kill popup 'NPC💀💀Abuser -> PANDA YT' at 1:10.5; 'Following: Automatic' from 1:10.75)",
+       "baseline": "After losing 9000 health alone on the right in 2.5 s, staying put alone on the right as kucennn walked up to him, instead of falling back to his team, and taking on three enemies alone. Then, with super charged from 1:05.75 and three gadgets, he used neither before dying at 1 HP right after the Immune state ended.",
+       "factors": [
+        "position",
+        "information",
+        "resources",
+        "numbers",
+        "map",
+        "mechanics"
+       ],
+       "cited": false,
+       "said": [],
+       "named": [],
+       "coverage": 0,
+       "numbers": []
+      },
+      {
+       "t": "2:58",
+       "kind": "death (kill popup 'SSZtt -> PANDA YT' at 2:58.5; spectating 'Following: ราชาโดดรุม' from 2:58.8)",
+       "baseline": "Walking up alone, ahead of his team, into three enemies, and spending two of his three shots at SSZtt from range for no damage, so he had 1 of 3 left when SSZtt's beam and the circle caught him. Then standing in the enemy's pink circle to hit the object inside it while 1062s stacked on him (13895 to nearly 0 in about 1.5 s). During the Immune state he stayed beside SSZtt instead of falling back.",
+       "factors": [
+        "position",
+        "resources",
+        "numbers",
+        "information",
+        "map",
+        "mechanics"
+       ],
+       "cited": false,
+       "said": [],
+       "named": [],
+       "coverage": 0,
+       "numbers": []
+      }
+     ],
+     "cited": 0,
+     "numbered": 0,
+     "coverage": null,
+     "looseCites": [],
+     "sentBack": 0
+    },
+    {
+     "run": 3,
+     "relearned": false,
+     "verdict": "one-off",
+     "named": "Engaging in close-quarters skirmishes without sufficient health buffers or escape routes.",
+     "why": "Although the team won the match, engaging in fights without proper cover or resource management led to critical near-death moments.",
+     "minutes": 5,
+     "calls": {
+      "answered": 21,
+      "failed": 0
+     },
+     "models": {
+      "gemini-3.5-flash-lite": 21
+     },
+     "flags": [],
+     "tokens": {
+      "prompt": 383548,
+      "output": 51457,
+      "text": 114045,
+      "image": 137107,
+      "video": 132396
+     },
+     "jobs": {
+      "low-detail pass": {
+       "calls": 1,
+       "prompt": 17533,
+       "output": 694
+      },
+      "HUD counters": {
+       "calls": 2,
+       "prompt": 2524,
+       "output": 2914
+      },
+      "read_hud/other": {
+       "calls": 4,
+       "prompt": 185398,
+       "output": 9548
+      },
+      "coach": {
+       "calls": 7,
+       "prompt": 99356,
+       "output": 7000
+      },
+      "clips": {
+       "calls": 4,
+       "prompt": 74794,
+       "output": 19507
+      },
+      "claim check": {
+       "calls": 3,
+       "prompt": 3943,
+       "output": 11794
+      }
+     },
+     "record": {
+      "kills": 3,
+      "deaths": 0,
+      "deathsFound": 0,
+      "deathsReal": 2,
+      "invented": 0
+     },
+     "player": {
+      "learned": "PANDA YT™",
+      "plays": null
+     },
+     "losses": [
+      {
+       "t": "0:38",
+       "kind": "near_death (1 of 14300 HP, 0:38.25-0:40.0)",
+       "baseline": "Walking up into the enemy's pink circle as it appeared and staying in it for about 7 s, ahead of his team. His health went 14300 to 4254 to 1 before he backed off.",
+       "factors": [
+        "position",
+        "information",
+        "resources",
+        "numbers",
+        "map",
+        "mechanics"
+       ],
+       "cited": true,
+       "said": [
+        "Player engages enemies in the center lane and reaches near-death health Because: Player engaged enemies in the center lane without maintaining sufficient health buffer or hard cover, dropping to 1743 HP.",
+        "Player engages enemies in the center lane and reaches near-death health Because: Player engaged enemies in the center lane without maintaining sufficient health buffer or hard cover, dropping to 1743 HP."
+       ],
+       "named": [
+        "position",
+        "resources"
+       ],
+       "coverage": 0.3333333333333333,
+       "numbers": []
+      },
+      {
+       "t": "1:10",
+       "kind": "death (kill popup 'NPC💀💀Abuser -> PANDA YT' at 1:10.5; 'Following: Automatic' from 1:10.75)",
+       "baseline": "After losing 9000 health alone on the right in 2.5 s, staying put alone on the right as kucennn walked up to him, instead of falling back to his team, and taking on three enemies alone. Then, with super charged from 1:05.75 and three gadgets, he used neither before dying at 1 HP right after the Immune state ended.",
+       "factors": [
+        "position",
+        "information",
+        "resources",
+        "numbers",
+        "map",
+        "mechanics"
+       ],
+       "cited": true,
+       "said": [
+        "Player drops to 1 HP during a teamfight near water Because: Player leaped into a chaotic teamfight near water and bushes without reserving escape options, causing health to plummet to 1 HP."
+       ],
+       "named": [
+        "resources"
+       ],
+       "coverage": 0.16666666666666666,
+       "numbers": [
+        "1 HP"
+       ]
+      },
+      {
+       "t": "2:58",
+       "kind": "death (kill popup 'SSZtt -> PANDA YT' at 2:58.5; spectating 'Following: ราชาโดดรุม' from 2:58.8)",
+       "baseline": "Walking up alone, ahead of his team, into three enemies, and spending two of his three shots at SSZtt from range for no damage, so he had 1 of 3 left when SSZtt's beam and the circle caught him. Then standing in the enemy's pink circle to hit the object inside it while 1062s stacked on him (13895 to nearly 0 in about 1.5 s). During the Immune state he stayed beside SSZtt instead of falling back.",
+       "factors": [
+        "position",
+        "resources",
+        "numbers",
+        "information",
+        "map",
+        "mechanics"
+       ],
+       "cited": false,
+       "said": [],
+       "named": [],
+       "coverage": 0,
+       "numbers": []
+      }
+     ],
+     "cited": 2,
+     "numbered": 1,
+     "coverage": 0.25,
+     "looseCites": [],
+     "sentBack": 4
+    }
+   ],
+   "shots": []
+  },
+  {
+   "tag": "ch",
+   "game": "Chess",
+   "losses": 7,
+   "runs": [
+    {
+     "run": 1,
+     "relearned": true,
+     "verdict": "habit",
+     "named": "Hanging pieces (leaving pieces unprotected and vulnerable to capture).",
+     "why": "The player consistently hung pieces throughout the game, which led to significant material losses and ultimately cost them the match. By failing to check if their pieces were protected before moving them, they allowed the opponent to capture them for free.",
+     "minutes": 3.7,
+     "calls": {
+      "answered": 17,
+      "failed": 3
+     },
+     "models": {
+      "gemini-3.5-flash-lite": 2,
+      "gemini-3.1-flash-lite": 14,
+      "gemini-2.5-flash-lite": 1
+     },
+     "flags": [],
+     "tokens": {
+      "prompt": 203913,
+      "output": 10242,
+      "text": 76861,
+      "image": 94448,
+      "video": 32604
+     },
+     "jobs": {
+      "learn": {
+       "calls": 1,
+       "prompt": 9340,
+       "output": 343
+      },
+      "box check": {
+       "calls": 2,
+       "prompt": 3526,
+       "output": 303
+      },
+      "read_hud/other": {
+       "calls": 5,
+       "prompt": 51408,
+       "output": 2676
+      },
+      "coach": {
+       "calls": 9,
+       "prompt": 137736,
+       "output": 2915
+      },
+      "research": {
+       "calls": 1,
+       "prompt": 61,
+       "output": 350
+      },
+      "claim check": {
+       "calls": 2,
+       "prompt": 1842,
+       "output": 3655
+      }
+     },
+     "record": {
+      "kills": 0,
+      "deaths": 0,
+      "deathsFound": 0,
+      "deathsReal": 0,
+      "invented": 0
+     },
+     "player": {
+      "learned": "VasuGmR",
+      "plays": null
+     },
+     "losses": [
+      {
+       "t": "0:16",
+       "kind": "blunder 2.f4 (325 at depth 20, 334 at depth 16; best exd5)",
+       "baseline": "Not taking or defending the attacked e4 pawn.",
+       "factors": [
+        "position",
+        "information"
+       ],
+       "cited": false,
+       "said": [],
+       "named": [],
+       "coverage": 0,
+       "numbers": []
+      },
+      {
+       "t": "5:05",
+       "kind": "mistake 15.Bc3 (211 at depth 20, 169 at depth 16; best Nc3)",
+       "baseline": "Moving the bishop, within a couple of seconds, onto a square that sets up a knight fork with the queen.",
+       "factors": [
+        "position",
+        "information"
+       ],
+       "cited": true,
+       "said": [
+        "The player moved the bishop to c3, hanging it to the opponent's bishop. Because: The player moved the bishop to c3, hanging it to the opponent's bishop on d6. The move was a blunder because it allowed the opponent to capture the bishop for free.",
+        "The player moved the bishop to c3, hanging it to the opponent's bishop. Because: The player moved the bishop to c3, hanging it to the opponent's bishop on d6. The move was a blunder because it allowed the opponent to capture the bishop for free."
+       ],
+       "named": [],
+       "coverage": 0,
+       "numbers": []
+      },
+      {
+       "t": "5:14",
+       "kind": "blunder 16.Qd3 (430 at depth 20, 303 at depth 16; best d5)",
+       "baseline": "Putting the queen on d3, in line with the e2 knight on the c4 bishop move's diagonal.",
+       "factors": [
+        "position",
+        "information"
+       ],
+       "cited": true,
+       "said": [
+        "The player moved the bishop to c3, hanging it to the opponent's bishop. Because: The player moved the bishop to c3, hanging it to the opponent's bishop on d6. The move was a blunder because it allowed the opponent to capture the bishop for free.",
+        "The player moved the queen to d3, hanging it to the opponent's queen. Because: The player moved the queen to d3, hanging it to the opponent's queen on c6. The move was a blunder because it allowed the opponent to capture the queen for free."
+       ],
+       "named": [],
+       "coverage": 0,
+       "numbers": []
+      },
+      {
+       "t": "5:41",
+       "kind": "blunder 18.Nf4 (571 at depth 20, 542 at depth 16; best Ng3)",
+       "baseline": "Moving the knight, about a second after the queen trade, to a square the enemy bishop already attacks, with check behind it.",
+       "factors": [
+        "position",
+        "resources"
+       ],
+       "cited": true,
+       "said": [
+        "The player moved the knight to f4, hanging it to the opponent's bishop. Because: The player moved the knight to f4, hanging it to the opponent's bishop. The move was a blunder because it allowed the opponent to capture the knight for free.",
+        "The player moved the knight to f4, hanging it to the opponent's bishop. Because: The player moved the knight to f4, hanging it to the opponent's bishop."
+       ],
+       "named": [],
+       "coverage": 0,
+       "numbers": []
+      },
+      {
+       "t": "6:15",
+       "kind": "inaccuracy at most: 21.Rhf1 (88 at depth 20, 119 at depth 16; best g3 at both)",
+       "baseline": "Attacking the f4 bishop with the rook, which lets it escape with a pawn (...Bxh2), instead of with g3.",
+       "factors": [
+        "position"
+       ],
+       "cited": false,
+       "said": [],
+       "named": [],
+       "coverage": 0,
+       "numbers": []
+      },
+      {
+       "t": "6:28",
+       "kind": "blunder 22.Rxf4 (330 at depth 20, 288 at depth 16; best Bxc4)",
+       "baseline": "Taking the f4 bishop first, which let the c4 bishop take the a6 bishop: an even trade instead of a won piece.",
+       "factors": [
+        "position",
+        "information"
+       ],
+       "cited": false,
+       "said": [],
+       "named": [],
+       "coverage": 0,
+       "numbers": []
+      },
+      {
+       "t": "7:52",
+       "kind": "mistake 26.Rf1 (160 at depth 20, 147 at depth 16; best Re1)",
+       "baseline": "Not challenging the rook on e2.",
+       "factors": [
+        "position"
+       ],
+       "cited": false,
+       "said": [],
+       "named": [],
+       "coverage": 0,
+       "numbers": []
+      }
+     ],
+     "cited": 3,
+     "numbered": 0,
+     "coverage": 0,
+     "looseCites": [],
+     "sentBack": 2
+    },
+    {
+     "run": 2,
+     "relearned": false,
+     "verdict": "one-off",
+     "named": "Hanging pieces (leaving pieces undefended and vulnerable to capture)",
+     "why": "The player consistently lost material by leaving pieces undefended, which allowed the opponent to capture them for free or with a significant advantage. This habit of hanging pieces was the primary reason for the loss of material and ultimately the game.",
+     "minutes": 2.9,
+     "calls": {
+      "answered": 14,
+      "failed": 3
+     },
+     "models": {
+      "gemini-3.5-flash-lite": 1,
+      "gemini-3.1-flash-lite": 13
+     },
+     "flags": [],
+     "tokens": {
+      "prompt": 189462,
+      "output": 10643,
+      "text": 76336,
+      "image": 71348,
+      "video": 41778
+     },
+     "jobs": {
+      "read_hud/other": {
+       "calls": 4,
+       "prompt": 62897,
+       "output": 3056
+      },
+      "coach": {
+       "calls": 11,
+       "prompt": 124513,
+       "output": 2888
+      },
+      "claim check": {
+       "calls": 2,
+       "prompt": 2052,
+       "output": 4699
+      }
+     },
+     "record": {
+      "kills": 0,
+      "deaths": 0,
+      "deathsFound": 0,
+      "deathsReal": 0,
+      "invented": 0
+     },
+     "player": {
+      "learned": "VasuGmR",
+      "plays": null
+     },
+     "losses": [
+      {
+       "t": "0:16",
+       "kind": "blunder 2.f4 (325 at depth 20, 334 at depth 16; best exd5)",
+       "baseline": "Not taking or defending the attacked e4 pawn.",
+       "factors": [
+        "position",
+        "information"
+       ],
+       "cited": false,
+       "said": [],
+       "named": [],
+       "coverage": 0,
+       "numbers": []
+      },
+      {
+       "t": "5:05",
+       "kind": "mistake 15.Bc3 (211 at depth 20, 169 at depth 16; best Nc3)",
+       "baseline": "Moving the bishop, within a couple of seconds, onto a square that sets up a knight fork with the queen.",
+       "factors": [
+        "position",
+        "information"
+       ],
+       "cited": true,
+       "said": [
+        "15. Bc3 (blunder). The player moved the bishop to c3, leaving it undefended and vulnerable to the opponent's pieces."
+       ],
+       "named": [],
+       "coverage": 0,
+       "numbers": []
+      },
+      {
+       "t": "5:14",
+       "kind": "blunder 16.Qd3 (430 at depth 20, 303 at depth 16; best d5)",
+       "baseline": "Putting the queen on d3, in line with the e2 knight on the c4 bishop move's diagonal.",
+       "factors": [
+        "position",
+        "information"
+       ],
+       "cited": false,
+       "said": [],
+       "named": [],
+       "coverage": 0,
+       "numbers": []
+      },
+      {
+       "t": "5:41",
+       "kind": "blunder 18.Nf4 (571 at depth 20, 542 at depth 16; best Ng3)",
+       "baseline": "Moving the knight, about a second after the queen trade, to a square the enemy bishop already attacks, with check behind it.",
+       "factors": [
+        "position",
+        "resources"
+       ],
+       "cited": true,
+       "said": [
+        "18. Nf4 (blunder). The player moved the knight to f4, leaving it undefended and allowing the opponent to capture it with their bishop."
+       ],
+       "named": [],
+       "coverage": 0,
+       "numbers": []
+      },
+      {
+       "t": "6:15",
+       "kind": "inaccuracy at most: 21.Rhf1 (88 at depth 20, 119 at depth 16; best g3 at both)",
+       "baseline": "Attacking the f4 bishop with the rook, which lets it escape with a pawn (...Bxh2), instead of with g3.",
+       "factors": [
+        "position"
+       ],
+       "cited": false,
+       "said": [],
+       "named": [],
+       "coverage": 0,
+       "numbers": []
+      },
+      {
+       "t": "6:28",
+       "kind": "blunder 22.Rxf4 (330 at depth 20, 288 at depth 16; best Bxc4)",
+       "baseline": "Taking the f4 bishop first, which let the c4 bishop take the a6 bishop: an even trade instead of a won piece.",
+       "factors": [
+        "position",
+        "information"
+       ],
+       "cited": false,
+       "said": [],
+       "named": [],
+       "coverage": 0,
+       "numbers": []
+      },
+      {
+       "t": "7:52",
+       "kind": "mistake 26.Rf1 (160 at depth 20, 147 at depth 16; best Re1)",
+       "baseline": "Not challenging the rook on e2.",
+       "factors": [
+        "position"
+       ],
+       "cited": false,
+       "said": [],
+       "named": [],
+       "coverage": 0,
+       "numbers": []
+      }
+     ],
+     "cited": 2,
+     "numbered": 0,
+     "coverage": 0,
+     "looseCites": [],
+     "sentBack": 3
+    },
+    {
+     "run": 3,
+     "relearned": false,
+     "verdict": "one-off",
+     "named": "Hanging pieces (leaving pieces undefended and vulnerable to capture)",
+     "why": "The player consistently lost material by leaving pieces undefended, which allowed the opponent to capture them for free or with a significant advantage. This habit of hanging pieces was the primary reason for the loss of material and ultimately the game.",
+     "minutes": 2.3,
+     "calls": {
+      "answered": 14,
+      "failed": 3
+     },
+     "models": {
+      "gemini-3.1-flash-lite": 14
+     },
+     "flags": [],
+     "tokens": {
+      "prompt": 189462,
+      "output": 10643,
+      "text": 76336,
+      "image": 71348,
+      "video": 41778
+     },
+     "jobs": {
+      "read_hud/other": {
+       "calls": 6,
+       "prompt": 62897,
+       "output": 3056
+      },
+      "coach": {
+       "calls": 9,
+       "prompt": 124513,
+       "output": 2888
+      },
+      "claim check": {
+       "calls": 2,
+       "prompt": 2052,
+       "output": 4699
+      }
+     },
+     "record": {
+      "kills": 0,
+      "deaths": 0,
+      "deathsFound": 0,
+      "deathsReal": 0,
+      "invented": 0
+     },
+     "player": {
+      "learned": "VasuGmR",
+      "plays": null
+     },
+     "losses": [
+      {
+       "t": "0:16",
+       "kind": "blunder 2.f4 (325 at depth 20, 334 at depth 16; best exd5)",
+       "baseline": "Not taking or defending the attacked e4 pawn.",
+       "factors": [
+        "position",
+        "information"
+       ],
+       "cited": false,
+       "said": [],
+       "named": [],
+       "coverage": 0,
+       "numbers": []
+      },
+      {
+       "t": "5:05",
+       "kind": "mistake 15.Bc3 (211 at depth 20, 169 at depth 16; best Nc3)",
+       "baseline": "Moving the bishop, within a couple of seconds, onto a square that sets up a knight fork with the queen.",
+       "factors": [
+        "position",
+        "information"
+       ],
+       "cited": true,
+       "said": [
+        "15. Bc3 (blunder). The player moved the bishop to c3, leaving it undefended and vulnerable to the opponent's pieces."
+       ],
+       "named": [],
+       "coverage": 0,
+       "numbers": []
+      },
+      {
+       "t": "5:14",
+       "kind": "blunder 16.Qd3 (430 at depth 20, 303 at depth 16; best d5)",
+       "baseline": "Putting the queen on d3, in line with the e2 knight on the c4 bishop move's diagonal.",
+       "factors": [
+        "position",
+        "information"
+       ],
+       "cited": false,
+       "said": [],
+       "named": [],
+       "coverage": 0,
+       "numbers": []
+      },
+      {
+       "t": "5:41",
+       "kind": "blunder 18.Nf4 (571 at depth 20, 542 at depth 16; best Ng3)",
+       "baseline": "Moving the knight, about a second after the queen trade, to a square the enemy bishop already attacks, with check behind it.",
+       "factors": [
+        "position",
+        "resources"
+       ],
+       "cited": true,
+       "said": [
+        "18. Nf4 (blunder). The player moved the knight to f4, leaving it undefended and allowing the opponent to capture it with their bishop."
+       ],
+       "named": [],
+       "coverage": 0,
+       "numbers": []
+      },
+      {
+       "t": "6:15",
+       "kind": "inaccuracy at most: 21.Rhf1 (88 at depth 20, 119 at depth 16; best g3 at both)",
+       "baseline": "Attacking the f4 bishop with the rook, which lets it escape with a pawn (...Bxh2), instead of with g3.",
+       "factors": [
+        "position"
+       ],
+       "cited": false,
+       "said": [],
+       "named": [],
+       "coverage": 0,
+       "numbers": []
+      },
+      {
+       "t": "6:28",
+       "kind": "blunder 22.Rxf4 (330 at depth 20, 288 at depth 16; best Bxc4)",
+       "baseline": "Taking the f4 bishop first, which let the c4 bishop take the a6 bishop: an even trade instead of a won piece.",
+       "factors": [
+        "position",
+        "information"
+       ],
+       "cited": false,
+       "said": [],
+       "named": [],
+       "coverage": 0,
+       "numbers": []
+      },
+      {
+       "t": "7:52",
+       "kind": "mistake 26.Rf1 (160 at depth 20, 147 at depth 16; best Re1)",
+       "baseline": "Not challenging the rook on e2.",
+       "factors": [
+        "position"
+       ],
+       "cited": false,
+       "said": [],
+       "named": [],
+       "coverage": 0,
+       "numbers": []
+      }
+     ],
+     "cited": 2,
+     "numbered": 0,
+     "coverage": 0,
+     "looseCites": [],
+     "sentBack": 3
+    }
+   ],
+   "shots": []
+  }
+ ]
+}

@@ -1,4 +1,4 @@
-/* Thirdeye reads a chess game from video in code, with no model calls: it finds the board's 64 squares on screen,
+/* Eye Catcher reads a chess game from video in code, with no model calls: it finds the board's 64 squares on screen,
  * reads each square as empty, a white piece, or a black piece, and takes each move as the legal move (chess.js) whose
  * resulting board best explains the squares that changed. Stockfish scores every position, which gives each of the
  * player's moves an exact centipawn loss: the ground truth a chess coach is checked against. Loaded in the browser
@@ -40,6 +40,20 @@
     return { mean, std: Math.sqrt(Math.max(0, sum2 / Math.max(1, n) - mean * mean)), dark: dark / Math.max(1, n), bright: bright / Math.max(1, n) };
   }
 
+  /**
+   * The dark share that tells this board's black pieces from its white ones, from a board near the start: one side's
+   * pieces on the two rows at the bottom of the screen, the other's on the two at the top. Halfway between the paler
+   * side's darkest square and the darker side's palest, when the two don't overlap; else null. A set's own: chess.com's
+   * black pawns on a phone recording had 0.08 to 0.11 against the white pieces' 0.005 at most, under the fixed 0.12
+   * (Oct 24). squares: as boardSquares gives them, unflipped.
+   */
+  function darkSplit(img, squares, { spread = 18 } = {}) {
+    const share = (rows) => squares.filter((q) => rows.includes(+q.sq[1])).map((q) => squareLook(img, q)).filter((l) => l.std >= spread).map((l) => l.dark);
+    const bottom = share([1, 2]), top = share([7, 8]);
+    if (bottom.length < 8 || top.length < 8) return null;
+    const [pale, dark] = Math.max(...bottom) < Math.min(...top) ? [bottom, top] : Math.max(...top) < Math.min(...bottom) ? [top, bottom] : [null, null];
+    return pale ? (Math.max(...pale) + Math.min(...dark)) / 2 : null;
+  }
   /** Each square read as '.' (empty), 'w' (a white piece), or 'b' (a black piece): { e4: 'w', ... }. */
   function readBoard(img, squares, { spread = 18, darkShare = 0.12 } = {}) {
     const out = {};
@@ -128,7 +142,7 @@
     };
     search(box.x, box.y, side, side * 0.15, side / 48);
     search(best.x, best.y, best.size, side / 48, side / 256);
-    return { x: Math.round(best.x), y: Math.round(best.y), size: Math.round(best.size) };
+    return { x: Math.round(best.x), y: Math.round(best.y), size: Math.round(best.size), score: best.v };
   }
 
   const STANDARD = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
@@ -136,8 +150,8 @@
   /**
    * Follows a game on screen: the board region sampled `fps` times a second, each square read (readBoard), and each
    * board that held for two samples matched to the legal move that explains it (matchMove). White is at the bottom
-   * unless more white pieces sit in the top half of the first frame. The recording has to show the starting position
-   * first. Returns { moves: [{ t, san, from, to, color, fen }], flipped, start, unmatched } or { error }.
+   * unless more white pieces sit in the top half of the first frame. The first board in view has to be the starting
+   * position or a move or two into it. Returns { moves: [{ t, san, from, to, color, fen }], flipped, start, unmatched } or { error }.
    */
   async function readMoves({ video, rect, Chess, fps = 4, from = 0, to = video.duration, signal, onProgress }) {
     const V = root.ThirdeyeVideo, pad = Math.round(rect.size * 0.02);
@@ -145,22 +159,29 @@
     const local = { x: rect.x - crop.x, y: rect.y - crop.y, size: rect.size };
     const times = [];
     for (let t = from; t <= Math.min(to, video.duration - 0.05); t += 1 / fps) times.push(+t.toFixed(3));
-    let squares = null, flipped = false, fen = STANDARD, stable = null, pending = null, unmatched = 0, error = null, k = 0;
+    let squares = null, flipped = false, fen = STANDARD, stable = null, pending = null, unmatched = 0, error = null, k = 0, tuned = {};
     const moves = [];
     await V.each(video, times, { crop, maxDim: 4096, signal }, ({ t, canvas, w, h }) => {
       onProgress?.(++k / times.length);
       if (error) return;
       const img = canvas.getContext('2d', { willReadFrequently: true }).getImageData(0, 0, w, h);
       if (!squares) {
-        const up = boardSquares(local), first = readBoard(img, up);
+        // the board's dark-square split, measured once a frame: it was measured three times
+        const up = boardSquares(local), split = darkSplit(img, up), look = split != null ? { darkShare: split } : {}, first = readBoard(img, up, look);
         const top = Object.keys(first).filter((sq) => +sq[1] >= 5 && first[sq] === 'w').length, bottom = Object.keys(first).filter((sq) => +sq[1] <= 4 && first[sq] === 'w').length;
-        flipped = top > bottom;
-        squares = boardSquares(local, { flipped });
-        stable = readBoard(img, squares);
-        if (!same(stable, boardOf(new Chess(STANDARD)))) error = "the recording doesn't start from the starting position";
+        const flip = top > bottom, sq = boardSquares(local, { flipped: flip }), read = readBoard(img, sq, look), start = boardOf(new Chess(STANDARD));
+        // The first board in view: the starting position, or a move or two into it (the first moves came before the
+        // board was in view). Anything else isn't a board yet, until a third of the recording has gone by: chess.com
+        // was still searching for a game in the first frames, and no move was read (Oct 24).
+        const opening = same(read, start) ? { moves: [] } : matchMove(Chess, STANDARD, start, read);
+        if (opening && (!opening.moves.length || opening.fit >= 0.85)) {
+          squares = sq; flipped = flip; stable = read; tuned = look;
+          for (const mv of opening.moves) moves.push({ t, ...mv });
+          if (opening.moves.length) fen = opening.moves.at(-1).fen;
+        } else if (t > from + Math.max(20, (to - from) / 3)) error = "the recording doesn't start from the starting position";
         return;
       }
-      const now = readBoard(img, squares);
+      const now = readBoard(img, squares, tuned);
       if (same(now, stable)) { pending = null; return; }
       if (!pending || !same(now, pending.board)) { pending = { board: now, t }; return; }
       const m = matchMove(Chess, fen, stable, now);
@@ -198,6 +219,9 @@
             const m = /score (cp|mate) (-?\d+)/.exec(line);
             // mate 0: the side to move is already mated
             if (m && / depth \d+/.test(line)) last = m[1] === 'cp' ? { cp: (white ? 1 : -1) * +m[2] } : +m[2] === 0 ? { cp: white ? -MATE : MATE } : { mate: (white ? 1 : -1) * +m[2] };
+            // and the line it expects, so code can say what that line wins (lineGain) instead of the coach guessing
+            const pv = / pv ((?:[a-h][1-8][a-h][1-8][qrbn]? ?)+)/.exec(line);
+            if (m && pv) last.pv = pv[1].trim().split(' ').slice(0, 8);
             const b = /^bestmove (\S+)/.exec(line);
             if (b) resolve({ ...last, best: b[1] === '(none)' ? null : b[1] });
           };
@@ -232,10 +256,77 @@
       scores.push(await engine.evaluate(fens[k], { depth }).then((s) => (s.cp == null && s.mate == null ? { cp: 0, best: s.best } : s)));
       onProgress?.((k + 1) / fens.length);
     }
-    return plies.map((p, k) => { const loss = cpLoss(scores[k], scores[k + 1], p.color); return { ...p, before: scores[k], after: scores[k + 1], best: scores[k].best, loss, grade: grade(loss) }; });
+    // the engine's own move loses nothing: what it scores as lost there is the next search seeing further, at a shallow
+    // depth (13.Qe3 graded a mistake at depth 10 while being the engine's best, Oct 25)
+    return plies.map((p, k) => { const own = !!p.from && !!p.to && scores[k].best?.slice(0, 4) === p.from + p.to, loss = own ? 0 : cpLoss(scores[k], scores[k + 1], p.color); return { ...p, before: scores[k], after: scores[k + 1], best: scores[k].best, loss, grade: grade(loss) }; });
   }
 
-  const api = { FILES, MATE, STANDARD, boardSquares, squareLook, readBoard, boardOf, matchMove, findBoard, readMoves, asCp, cpLoss, grade, uciEngine, createEngine, createNodeEngine, loadChess, scoreGame, CHESS_URL, ENGINE_URL };
+  /**
+   * What a move does, in code: the move uci (the engine's best reply, say) played from fen, as { san, captured, check,
+   * attacks }: the piece it takes, and the pieces (no pawns) the moved piece attacks from its new square. The coach read
+   * the frames for why a blunder lost and guessed: "hanging the queen to the queen on c6", where the engine's answer
+   * pinned it to the knight behind it (Oct 25). Null when the move can't be played there.
+   */
+  const PIECES = { p: 'pawn', n: 'knight', b: 'bishop', r: 'rook', q: 'queen', k: 'king' };
+  // for a bishop, rook, or queen, the other side's piece on the same line past the one it attacks (a pin or a skewer):
+  // " with the knight on e2 behind it", or ''
+  const behind = (g, m, at) => {
+    if (!'brq'.includes(m.piece)) return '';
+    const file = (sq) => sq.charCodeAt(0) - 97, rank = (sq) => +sq[1];
+    const df = Math.sign(file(at) - file(m.to)), dr = Math.sign(rank(at) - rank(m.to));
+    for (let f = file(at) + df, r = rank(at) + dr; f >= 0 && f < 8 && r >= 1 && r <= 8; f += df, r += dr) {
+      const sq = String.fromCharCode(97 + f) + r, p = g.get(sq);
+      if (!p) continue;
+      return p.color !== m.color && p.type !== 'p' ? ` with the ${PIECES[p.type]} on ${sq} behind it` : '';
+    }
+    return '';
+  };
+  function moveThreat(Chess, fen, uci) {
+    if (!uci) return null;
+    try {
+      const g = new Chess(fen), m = g.move({ from: uci.slice(0, 2), to: uci.slice(2, 4), promotion: uci[4] || 'q' });
+      if (!m) return null;
+      // the same side to move again, so chess.js lists what the moved piece can take from where it landed
+      const f = g.fen().split(' ');
+      f[1] = f[1] === 'w' ? 'b' : 'w'; f[3] = '-';
+      let attacks = [];
+      try { attacks = new Chess(f.join(' ')).moves({ square: m.to, verbose: true }).filter((x) => x.captured && !'pk'.includes(x.captured)).map((x) => `${PIECES[x.captured]} on ${x.to}${behind(g, m, x.to)}`); } catch {}
+      return { san: m.san, captured: m.captured ? PIECES[m.captured] : null, check: /[+#]/.test(m.san), attacks: [...new Set(attacks)] };
+    } catch { return null; }
+  }
+
+  /**
+   * What the engine's line wins, in code: the line pv (uci moves) played from fen, and the material each side has
+   * gained when it settles, as { line: SAN with move numbers, side, gain: { piece: n }, pawns, text }. side is the side to
+   * move at fen (the one whose reply the line starts with). The coach called 16.Qd3 "losing the queen" where the
+   * engine's line wins a pawn and the attack (Oct 25). Stops after `plies`, or earlier at a check-free quiet position.
+   */
+  const VALUE = { p: 1, n: 3, b: 3, r: 5, q: 9 };
+  function lineGain(Chess, fen, pv, { plies = 6 } = {}) {
+    if (!Array.isArray(pv) || !pv.length) return null;
+    let g;
+    try { g = new Chess(fen); } catch { return null; }
+    const side = g.turn(), won = { [side]: {}, [side === 'w' ? 'b' : 'w']: {} }, san = [];
+    for (const uci of pv.slice(0, plies)) {
+      let m;
+      try { m = g.move({ from: uci.slice(0, 2), to: uci.slice(2, 4), promotion: uci[4] || 'q' }); } catch { break; }
+      if (!m) break;
+      // White's moves carry their number (chess.js has moved it on by Black's)
+      san.push(m.color === 'w' ? `${g.moveNumber()}. ${m.san}` : m.san);
+      if (m.captured) won[m.color][m.captured] = (won[m.color][m.captured] || 0) + 1;
+    }
+    const worth = (c) => Object.entries(won[c]).reduce((x, [p, k]) => x + VALUE[p] * k, 0);
+    const other = side === 'w' ? 'b' : 'w', pawns = worth(side) - worth(other);
+    const net = {};
+    for (const p of Object.keys(VALUE)) { const d = (won[side][p] || 0) - (won[other][p] || 0); if (d) net[p] = d; }
+    const name = { p: 'pawn', n: 'knight', b: 'bishop', r: 'rook', q: 'queen' }, who = side === 'w' ? 'White' : 'Black';
+    const gained = Object.entries(net).filter(([, d]) => d > 0).map(([p, d]) => `${d > 1 ? `${d} ` : 'a '}${name[p]}${d > 1 ? 's' : ''}`);
+    const lost = Object.entries(net).filter(([, d]) => d < 0).map(([p, d]) => `${-d > 1 ? `${-d} ` : 'a '}${name[p]}${-d > 1 ? 's' : ''}`);
+    const text = pawns > 0 ? `${who} comes out ${pawns} pawn${pawns === 1 ? '' : 's'} of material up${gained.length ? ` (${gained.join(' and ')}${lost.length ? ` for ${lost.join(' and ')}` : ''})` : ''}` : pawns < 0 ? `${who} comes out ${-pawns} pawn${pawns === -1 ? '' : 's'} of material down` : 'no material changes hands: what it gains is position';
+    return { line: san.join(' '), side, net, pawns, text };
+  }
+
+  const api = { FILES, MATE, STANDARD, moveThreat, lineGain, boardSquares, squareLook, darkSplit, readBoard, boardOf, matchMove, findBoard, readMoves, asCp, cpLoss, grade, uciEngine, createEngine, createNodeEngine, loadChess, scoreGame, CHESS_URL, ENGINE_URL };
   root.ThirdeyeChess = api;
   if (typeof module !== 'undefined') module.exports = api;
 })(typeof window !== 'undefined' ? window : globalThis);

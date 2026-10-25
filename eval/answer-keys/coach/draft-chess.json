@@ -1,0 +1,92 @@
+{
+  "clip": "chess/chess-k8MN5xMyfdg.mp4",
+  "game": "Chess (chess.com, 10 min, phone)",
+  "player": "VasuGmR (755), White, at the bottom",
+  "opponent": "Fearless_Bishop2024 (777), Black",
+  "moves": "1. e4 d5 2. f4 dxe4 3. Nc3 e6 4. Nxe4 Nf6 5. Nxf6+ Qxf6 6. Ne2 e5 7. fxe5 Qxe5 8. d4 Qe6 9. Qd3 Qg6 10. Qb5+ Qc6 11. Qe5+ Be6 12. Bd2 Nd7 13. Qe3 O-O-O 14. O-O-O Bd6 15. Bc3 Rde8 16. Qd3 Qa6 17. Qxa6 bxa6 18. Nf4 Bxf4+ 19. Kb1 Nb6 20. Bxa6+ Kb8 21. Rhf1 Bc4 22. Rxf4 Bxa6 23. Rxf7 Bc4 24. Rxg7 Re2 25. b3 Bg8 26. Rf1 Be6 (the recording ends here, the game unfinished, about 6:00 on each clock)",
+  "how": "Moves read off the chess.com move list in the frames; every move graded by Stockfish 10 (chess-reader.js scoreGame) at depth 16, and the large losses again at depth 20 on one engine. At this depth Stockfish 10's scores vary by about 50 cp between reads of one position, so only losses of 250+ (blunders) are firm; 100-250 (mistakes) are listed as such.",
+  "habit": "Moving a piece to a square the opponent's pieces already attack or line up on, without checking their captures and checks first: the queen to d3 in line with the e2 knight, the knight to f4 into the bishop's diagonal, and taking back on f4 instead of the free bishop on c4.",
+  "losses": [
+    {
+      "t": "0:15",
+      "kind": "blunder 2.f4 (-280 at depth 20; best exd5)",
+      "decided": "0:05-0:20",
+      "happened": "After 1.e4 d5 White plays 2.f4, leaving the e4 pawn attacked by d5 and undefended; 2...dxe4 wins it.",
+      "factors": {
+        "position": "the e4 pawn attacked by d5 and defended by nothing",
+        "information": "the opponent's capture dxe4 was the threat"
+      },
+      "mistake": "Not taking or defending the attacked e4 pawn.",
+      "better": "2.exd5 (or 2.Nc3 / 2.d3 to defend it).",
+      "unsure": [
+        "the exact second of the move"
+      ]
+    },
+    {
+      "t": "5:12",
+      "kind": "blunder 16.Qd3 (-500; best d5)",
+      "decided": "5:00-5:12",
+      "happened": "With Black's rook on e8 and bishop on e6, White moves the queen from e3 to d3; 16...Bc4 (Stockfish's best for Black) would attack the queen with the e2 knight behind it on the same diagonal, a skewer that wins the knight. Black misses it with 16...Qa6.",
+      "factors": {
+        "position": "the queen on d3 and the knight on e2 on one diagonal, open to Bc4; the queen had stood on the e-file in front of the knight",
+        "information": "the opponent's Bc4"
+      },
+      "mistake": "Putting the queen on d3, in line with the e2 knight on the c4 bishop move's diagonal.",
+      "better": "16.d5, gaining space with tempo and keeping the e-file covered.",
+      "unsure": []
+    },
+    {
+      "t": "5:42",
+      "kind": "blunder 18.Nf4 (-597; best Ng3)",
+      "decided": "5:35-5:42",
+      "happened": "After the queens come off (17.Qxa6 bxa6), White plays 18.Nf4, onto a square the d6 bishop covers; 18...Bxf4+ wins the knight with check.",
+      "factors": {
+        "position": "f4 is on the d6 bishop's diagonal to c1, and nothing of White's defends f4",
+        "resources": "material: a knight lost for nothing (about -5 by the engine)"
+      },
+      "mistake": "Moving the knight to a square the enemy bishop already attacks, with check behind it.",
+      "better": "18.Ng3, or check every square the knight lands on for the opponent's captures.",
+      "unsure": []
+    },
+    {
+      "t": "6:13",
+      "kind": "mistake 21.Rhf1 (-123; best Bb5)",
+      "decided": "6:05-6:13",
+      "happened": "Down a piece, White attacks the f4 bishop with the rook while the a6 bishop is loose.",
+      "factors": {
+        "position": "the a6 bishop undefended"
+      },
+      "mistake": "Leaving the a6 bishop loose.",
+      "better": "21.Bb5, keeping the bishop safe.",
+      "unsure": []
+    },
+    {
+      "t": "6:28",
+      "kind": "blunder 22.Rxf4 (-316; best Bxc4)",
+      "decided": "6:20-6:28",
+      "happened": "Black's 21...Bc4 hangs the bishop to White's a6 bishop; White takes back on f4 instead, and 22...Bxa6 trades off the bishop White could have won.",
+      "factors": {
+        "position": "Black's c4 bishop attacked by White's a6 bishop and defended by nothing",
+        "information": "a free piece on the board"
+      },
+      "mistake": "Recapturing on f4 instead of taking the free bishop.",
+      "better": "22.Bxc4, winning the bishop (then Rxf4 next).",
+      "unsure": []
+    },
+    {
+      "t": "8:13",
+      "kind": "mistake 26.Rf1 (-114; best Re1)",
+      "decided": "8:05-8:13",
+      "happened": "With Black's rook on e2, White plays 26.Rf1 rather than challenging the e-file.",
+      "factors": {
+        "position": "Black's rook on White's second rank"
+      },
+      "mistake": "Not challenging the rook on e2.",
+      "better": "26.Re1.",
+      "unsure": [
+        "the end of the game: the recording stops at 26...Be6"
+      ]
+    }
+  ],
+  "not_true": []
+}

@@ -1,0 +1,129 @@
+{
+ "clip": "rainbow-six/r6-fhx2tfA57ug.r2-4.mp4",
+ "game": "Rainbow Six Siege",
+ "player": "YOU (the screen's only name for the player: kill feed, scoreboard, operator select)",
+ "character": "Mute in rounds 2-3 on defense (replay card 'MUTE M590A1 WATCHING YOU' at 2:36; operator select 'MUTE / YOU' at 2:47); Ash in round 4 on attack (operator select 'ASH / YOU' at 7:00)",
+ "allies": [
+  "TAVUKSEVEN (Fenrir in round 3, Lion in round 4, by the operator select at 2:47 and 7:00)",
+  "ItsMxniYT (Vigil in round 3, Twitch in round 4)",
+  "lemOnekxD (Valkyrie in round 3, Zero in round 4)",
+  "PopSmoke1337 (Doc in round 3, Nøkk in round 4)"
+ ],
+ "enemies_named_on_screen": [
+  "francomix (killed-by card at 8:58.3: THUNDERBIRD, SPEAR .308, 'ELIMINATED BY francomix')",
+  "Capzi.",
+  "MrMightyPatato",
+  "rewera_fresh",
+  "Etrio45"
+ ],
+ "validated": "Oct 24: the whole recording sheeted at 2 s, round 4's 8:24-9:02 saved at 0.25 s, and both losses read at 0.1 s from full-resolution crops (health, ammo, kill feed, top bar, the doorway and the Piano Room entry) before reading the entries; header facts checked on the operator-select screens (2:47, 7:00), the replay cards (2:36, 6:43), the killed-by card (8:58.5) and the end screen (9:12).",
+ "habit": "Moving into the next room before resetting after contact, twice in round 4: at 8:36-8:38 he walked through the doorway he had just emptied his rifle at, on his pistol, instead of reloading behind the counter (this cost 81 HP); at 8:56 he walked into the Piano Room on 19 HP with his rifle lowered (this cost his life). Both times he still got the kill (Capzi. at 8:38.8, francomix at 8:58.8).",
+ "losses": [
+  {
+   "t": "8:38.9",
+   "kind": "near_death (19 of 100)",
+   "decided": "8:33.8-8:38.0",
+   "happened": "Round 4, attack, MATCH POINT with his team up 3-0; 4 v 4 by the top bar; timer 1:38 at 8:33. Back on his body after droning (8:23-8:32), he is behind a blue counter in 2F Covered Terrace with the rifle at 26/89. From 8:33.8 to 8:35.7 he holds the trigger at the doorway on the far side of the room, where an enemy shows in his sight at times (8:33.9-8:35.2): 26 -> 0 in about 2 s, with a RELOAD prompt from 8:35.0 and no kill in the feed. He drops behind the counter (8:35.7-8:36.2) without reloading (0/89), comes out past it, has his pistol out at 8:36.8 (21/100), and walks across the room and through that doorway (8:37.7-8:38.0, the orange pipe on its right both times) into 2F Mezzanine. An enemy is already in the room ahead of him at 8:38.1. He fires from 8:38.2 (21 -> 20 at 8:38.2, 15 at 8:38.9), and his health goes 100 (8:38.5), 73 (8:38.6), 46 (8:38.8), 19 (8:38.9): three hits of 27, with the damage arc at the top of the screen (in front of him). '+110' shows over the enemy at 8:38.8 and the feed reads 'YOU [pistol] Capzi.' In the same seconds francomix kills lemOnekxD (row on screen at 8:38.75) and ItsMxniYT (row on screen by 8:40); '2 VS 3' at 8:39.8-8:42. He reloads the pistol (1/114 at 8:39.5) and the rifle only by 8:47 (25/64).",
+   "factors": {
+    "position": "walked through a single doorway into a room where the enemy was already set, a few metres ahead of him under a window; seconds before he had been in cover behind the counter",
+    "information": "he had seen an enemy in that same doorway 3-4 s earlier (8:33.9-8:35.2), so contact there was known; the kill feed was empty from 8:33 to 8:38 (the last kills were TAVUKSEVEN -> Etrio45 at 7:38 and Capzi. -> PopSmoke1337 at 7:43); no enemy marker on his drone run at 8:23-8:32",
+    "resources": "100 HP going in; the rifle emptied (0/89 from 8:35.7) and not reloaded although a RELOAD prompt showed from 8:35.0 and he was behind cover at 8:35.7-8:36.2; he took the fight on the pistol (21/100)",
+    "numbers": "4 v 4 on the top bar from 8:33 to 8:38; 2 v 3 by 8:39.8 after francomix's two kills",
+    "map": "attack, match point (3-0), 1:38-1:32 left; the defuser with TAVUKSEVEN (yellow icon on his Lion in the top bar), not planted",
+    "mechanics": "a 2-second full-auto spray of all 26 rounds at a target showing only now and then in a far doorway; in the close duel he fired within 0.1 s of the enemy appearing (8:38.1 -> 8:38.2) and shot first by about 0.4 s (his health held at 100 to 8:38.55), but needed six pistol rounds (21 -> 15) and took 81"
+   },
+   "mistake": "Emptying the whole rifle magazine at a doorway target, then walking through that same doorway on his pistol, without reloading, into an enemy who was already set inside.",
+   "better": "Shoot short bursts at the doorway instead of the whole magazine, reload behind the counter (he was there at 8:35.7-8:36.2 with the RELOAD prompt up), then hold the doorway with a full rifle, or clear the next room with his drone or a teammate before walking in.",
+   "unsure": [
+    "whether the enemy in the doorway at 8:33.9-8:35.2 was Capzi., and whether any of the 26 rounds hit (no kill in the feed; hit markers not read)",
+    "whether he was still walking while he fired the pistol",
+    "where his teammates were (only the top bar and the kill feed were read)"
+   ]
+  },
+  {
+   "t": "8:58.3",
+   "kind": "death (ELIMINATED BY francomix: THUNDERBIRD, SPEAR .308; headshot icon in the feed row)",
+   "decided": "8:55.6-8:57.4",
+   "happened": "2 v 3: he and TAVUKSEVEN (who carries the defuser) against francomix and two enemies still shown as '?'; timer 1:16 at 8:55.5. He is on 19/100 with the rifle at 25/64. He drones the Piano Room twice (8:48 and 8:55, the same hallway view both times, no enemy marked), looks into the room from the 2F Covered Terrace doorway at 8:52, backs off, then at 8:56.3-8:56.5 walks through that doorway into 2F Piano Room with his rifle lowered out of view (8:56.5-8:56.7) and his view on a teal piano. An enemy is at the far end of the room from his first frame inside, beside the 'A 14 M' marker at 8:56.5-8:56.7, and walks right across it (A 13 M) at 8:56.8-8:57.0; he turns onto it at 8:56.9, just left of his crosshair, but the rifle is only coming up (sight in view 8:57.2, aimed 8:57.3); by 8:57.1 the enemy is behind a dark machine. His first shot is at 8:57.4, and he fires into the machine's right edge, 25 -> 12 (8:57.4-8:58.2). He is dead at 8:58.3, and the feed shows 'francomix [rifle] (headshot icon) YOU' at 8:58.4. At 8:58.8 the feed adds 'YOU [rifle] francomix', so his spray killed francomix as he died. TAVUKSEVEN then kills rewera_fresh and MrMightyPatato: WON ROUND 4 at 9:01, then 'FLAWLESS VICTORY', RANKED 4-0 (9:12).",
+   "factors": {
+    "position": "stepped into the open near side of a large room through a doorway, with the enemy on the far side behind cover (the dark machine), about 13 m away",
+    "information": "francomix had just killed two of his teammates (feed at 8:38.75 and 8:40); his drone sat in the same spot both times (8:48, 8:55) looking down a hallway, with no enemy marked; TAVUKSEVEN's marker (with the defuser icon) was ahead of him, at the far side of the room behind the black cases and just right of where the enemy walked (8:56.5-8:57.3), on the line he was aiming along; whether TAVUKSEVEN was on that floor can't be told",
+    "resources": "19 of 100 HP since 8:38.9 (one hit was enough: a single headshot killed him); rifle at 25/64 (reloaded by 8:47), pistol 20/94",
+    "numbers": "2 v 3 on the top bar from 8:39.5 to 8:57; his death made it 1 v 3, and his trade on francomix made it 1 v 2",
+    "map": "attack, match point (3-0), 1:16-1:13 left, defuser with TAVUKSEVEN, not planted",
+    "mechanics": "rifle lowered on entry (8:56.5-8:56.7); the enemy was beside his crosshair at 8:56.9-8:57.0 while the rifle was still coming up; first shot 0.9 s after the enemy was first in view (8:56.5 -> 8:57.4), when it was already behind the machine; then 13 rounds into the machine's edge"
+   },
+   "mistake": "Walking into an open room on 19 HP with the rifle lowered, so that when the enemy crossed his crosshair at 13 m (8:56.9) he couldn't shoot until the enemy was in cover, and lost the following exchange to one headshot.",
+   "better": "On 19 HP in a 2 v 3 with the defuser alive, play off TAVUKSEVEN: let him go in first and trade, or cover his plant instead of taking the first duel. If he goes in himself, have the rifle up and aimed at the far cover (the dark machine) as he crosses the doorway, and drone that corner first: his drone was watching a hallway.",
+   "unsure": [
+    "where exactly the killing shot came from (in the death view at 8:58.3 the tracers come from the far side of the room)",
+    "whether the enemy seen at 8:56.8-8:57.0 was francomix (likely: it is where he was shooting, and the feed shows his kill on francomix at 8:58.8)",
+    "whether a second shape left of the machine, by the A marker, at 8:57.1-8:57.3 was an enemy",
+    "whether his drone could see the corner the enemy came from",
+    "whether he was sprinting on entry (the rifle is out of view at 8:56.5-8:56.7, which fits a sprint)"
+   ]
+  }
+ ],
+ "not_true": [
+  "a lost round: rounds 2, 3 and 4 were all won ('YOUR TEAM WON ROUND 2/3/4', ENEMIES ELIMINATED at 2:34, 6:41, 9:02); the match ended 'FLAWLESS VICTORY', RANKED 4-0 (9:12)",
+  "a death or low health in round 3: his only hit was 125 -> 86 between 6:29 and 6:30, with 4.7 s left, after which he killed Etrio45 (headshot, 6:36) and francomix (about 6:40) to win; the 'MUTE SMG-11 WATCHING YOU' card at 6:43 is the round replay, not a killed-by card",
+  "killed by Mute (Mute is the player, in rounds 2-3)",
+  "damage in round 2 (125/125 whenever the health readout is on screen, 0:00-2:32)",
+  "that he lost the 8:38 duel: he killed Capzi. (+110 at 8:38.8) and lived on 19",
+  "that francomix survived him: 'YOU [rifle] francomix' shows in the feed at 8:58.8, right after francomix's headshot on him",
+  "defending in round 4 (he attacked: 'PLANT THE DEFUSER AT ANY BOMB SITE' at 7:13)"
+ ],
+ "changes": [
+  {
+   "t": "8:38.9",
+   "field": "happened",
+   "was": "Round 4, attack, MATCH POINT with his team up 3-0; 4 v 4 by the top bar; timer 1:38 at 8:33. Back on his body after droning (8:23-8:32), he is behind a blue counter in 2F Covered Terrace with the rifle at 26/89. From 8:33.8 to 8:35.7 he holds the trigger at the doorway on the far side of the room, where an enemy shows in his sight at times (8:33.9-8:35.2): 26 -> 0 in about 2 s, with a RELOAD prompt from 8:35.0 and no kill in the feed. He drops behind the counter (8:35.7-8:36.2) without reloading (0/89), comes out past it, has his pistol out at 8:36.8 (21/100), and walks across the room and through that doorway (8:37.7-8:38.0, the orange pipe on its right both times) into 2F Mezzanine. An enemy is already in the room ahead of him at 8:38.1. He fires from 8:38.3 (21 -> 15 by 8:38.8), and his health goes 100 (8:38.5), 73 (8:38.6), 46 (8:38.8), 19 (8:38.9): three hits of 27, with the damage arc at the top of the screen (in front of him). '+110' shows over the enemy at 8:38.8 and the feed reads 'YOU [pistol] Capzi.' In the same seconds francomix kills lemOnekxD (row on screen at 8:38.75) and ItsMxniYT (row on screen by 8:40); '2 VS 3' at 8:39.8-8:42. He reloads the pistol (1/114 at 8:39.5) and the rifle only by 8:47 (25/64).",
+   "now": "Round 4, attack, MATCH POINT with his team up 3-0; 4 v 4 by the top bar; timer 1:38 at 8:33. Back on his body after droning (8:23-8:32), he is behind a blue counter in 2F Covered Terrace with the rifle at 26/89. From 8:33.8 to 8:35.7 he holds the trigger at the doorway on the far side of the room, where an enemy shows in his sight at times (8:33.9-8:35.2): 26 -> 0 in about 2 s, with a RELOAD prompt from 8:35.0 and no kill in the feed. He drops behind the counter (8:35.7-8:36.2) without reloading (0/89), comes out past it, has his pistol out at 8:36.8 (21/100), and walks across the room and through that doorway (8:37.7-8:38.0, the orange pipe on its right both times) into 2F Mezzanine. An enemy is already in the room ahead of him at 8:38.1. He fires from 8:38.2 (21 -> 20 at 8:38.2, 15 at 8:38.9), and his health goes 100 (8:38.5), 73 (8:38.6), 46 (8:38.8), 19 (8:38.9): three hits of 27, with the damage arc at the top of the screen (in front of him). '+110' shows over the enemy at 8:38.8 and the feed reads 'YOU [pistol] Capzi.' In the same seconds francomix kills lemOnekxD (row on screen at 8:38.75) and ItsMxniYT (row on screen by 8:40); '2 VS 3' at 8:39.8-8:42. He reloads the pistol (1/114 at 8:39.5) and the rifle only by 8:47 (25/64).",
+   "evidence": "Pistol ammo crops at 0.1 s: 21 (8:38.0-8:38.1), 20 (8:38.2), 19 (8:38.3), 18 (8:38.4), 16 (8:38.6-8:38.7), 15 (8:38.9). Everything else in the entry checked and confirmed: 26/89 at 8:33; a figure in the far doorway at 8:33.8-8:34.0; 0/89 with RELOAD from 8:35.0-8:35.5; behind the counter at 8:36.0; pistol out by 8:37 (21/100); the doorway with the orange pipe on its right at 8:34.5 and 8:37.0-8:37.5; enemy crouched under the window at 8:38.1; health 100 (8:38.55), 73 (8:38.6-8:38.7), 46 (8:38.8), 19 (8:38.85); +110 at 8:38.9; feed 'YOU [pistol] Capzi.' with francomix->lemOnekxD above it (8:39.2-8:39.5) and francomix->ItsMxniYT (8:40); '2 VS 3' 8:40-8:42; pistol 1/114 at 8:39.5, rifle 25/64 at 8:46.5."
+  },
+  {
+   "t": "8:38.9",
+   "field": "factors.mechanics",
+   "was": "a 2-second full-auto spray of all 26 rounds at a target showing only now and then in a far doorway; in the close duel he fired within 0.2 s of the enemy appearing (8:38.1 -> 8:38.3) and won it, but with the pistol, and took 81",
+   "now": "a 2-second full-auto spray of all 26 rounds at a target showing only now and then in a far doorway; in the close duel he fired within 0.1 s of the enemy appearing (8:38.1 -> 8:38.2) and shot first by about 0.4 s (his health held at 100 to 8:38.55), but needed six pistol rounds (21 -> 15) and took 81",
+   "evidence": "Ammo 20 at 8:38.2; health 100 at 8:38.55, 73 at 8:38.6; pistol 15 when '+110' shows (8:38.9)."
+  },
+  {
+   "t": "8:38.9",
+   "field": "unsure",
+   "was": [
+    "whether the enemy in the doorway at 8:33.9-8:35.2 was Capzi., and whether any of the 26 rounds hit (no kill in the feed; hit markers not read)",
+    "whether all 81 damage came from Capzi. (the damage arc was in front of him, where Capzi. was, and no other enemy was seen)",
+    "whether he was still walking while he fired the pistol",
+    "where his teammates were (only the top bar and the kill feed were read)"
+   ],
+   "now": [
+    "whether the enemy in the doorway at 8:33.9-8:35.2 was Capzi., and whether any of the 26 rounds hit (no kill in the feed; hit markers not read)",
+    "whether he was still walking while he fired the pistol",
+    "where his teammates were (only the top bar and the kill feed were read)"
+   ],
+   "evidence": "Settled: the 81 came from in front of him, where Capzi. was crouched (damage arc top-centre at 8:38.7-8:39.0), the three hits are equal (100 -> 73 -> 46 -> 19, 27 each, 8:38.6-8:38.85), as from one weapon, while francomix was killing lemOnekxD and ItsMxniYT elsewhere in the same second; no other enemy is on screen 8:38.1-8:38.9."
+  },
+  {
+   "t": "8:58.3",
+   "field": "happened",
+   "was": "2 v 3: he and TAVUKSEVEN (who carries the defuser) against francomix and two enemies still shown as '?'; timer 1:16 at 8:55.5. He is on 19/100 with the rifle at 25/64. He drones the Piano Room twice (8:48 and 8:55, the same hallway view both times, no enemy marked), looks into the room from the 2F Covered Terrace doorway at 8:52, backs off, then at 8:56.3-8:56.5 walks through that doorway into 2F Piano Room with his rifle lowered out of view (8:56.5-8:56.7) and his view on a teal piano. An enemy crosses the far end of the room, about 13 m away by the 'A 13 M' marker, at 8:56.8-8:57.0. He turns onto the enemy at 8:56.9, just left of his crosshair, but the rifle is only coming up (ADS at 8:57.3); by 8:57.1 the enemy is behind a dark machine. His first shot is at 8:57.4, and he fires into the machine's right edge, 25 -> 12 (8:57.4-8:58.2). He is dead at 8:58.3, and the feed shows 'francomix [rifle] (headshot icon) YOU' at 8:58.4. At 8:58.8 the feed adds 'YOU [rifle] francomix', so his spray killed francomix as he died. TAVUKSEVEN then kills rewera_fresh and MrMightyPatato: WON ROUND 4 at 9:01, then 'FLAWLESS VICTORY', RANKED 4-0 (9:12).",
+   "now": "2 v 3: he and TAVUKSEVEN (who carries the defuser) against francomix and two enemies still shown as '?'; timer 1:16 at 8:55.5. He is on 19/100 with the rifle at 25/64. He drones the Piano Room twice (8:48 and 8:55, the same hallway view both times, no enemy marked), looks into the room from the 2F Covered Terrace doorway at 8:52, backs off, then at 8:56.3-8:56.5 walks through that doorway into 2F Piano Room with his rifle lowered out of view (8:56.5-8:56.7) and his view on a teal piano. An enemy is at the far end of the room from his first frame inside, beside the 'A 14 M' marker at 8:56.5-8:56.7, and walks right across it (A 13 M) at 8:56.8-8:57.0; he turns onto it at 8:56.9, just left of his crosshair, but the rifle is only coming up (sight in view 8:57.2, aimed 8:57.3); by 8:57.1 the enemy is behind a dark machine. His first shot is at 8:57.4, and he fires into the machine's right edge, 25 -> 12 (8:57.4-8:58.2). He is dead at 8:58.3, and the feed shows 'francomix [rifle] (headshot icon) YOU' at 8:58.4. At 8:58.8 the feed adds 'YOU [rifle] francomix', so his spray killed francomix as he died. TAVUKSEVEN then kills rewera_fresh and MrMightyPatato: WON ROUND 4 at 9:01, then 'FLAWLESS VICTORY', RANKED 4-0 (9:12).",
+   "evidence": "0.1 s crops 8:56.3-8:57.3 and a close crop of the far end at 8:56.5-8:56.9: a dark-clad operator by the A marker at 8:56.5 and 8:56.7, walking right at 8:56.8-8:56.9, half behind the machine at 8:57.0, gone at 8:57.1. Rifle out of view 8:56.5-8:56.8, rising 8:56.9-8:57.1, sight up 8:57.2. Rest confirmed: 19/100 and 25/64 at 8:55-8:57; drone views 8:48 and 8:55 the same hallway; at the Covered Terrace doorway 8:52-8:53; first shot 8:57.4 (25 -> 24), 14 at 8:58.1, 12 at 8:58.25; health 19 at 8:58.2, 0 at 8:58.25; 'francomix [rifle][headshot] YOU' sliding in at 8:58.4 (full 8:58.6), 'YOU [rifle] francomix' from 8:58.8; TAVUKSEVEN kills rewera_fresh (9:00.5) and MrMightyPatato (9:01); WON ROUND 4 9:01; FLAWLESS VICTORY RANKED 4-0 9:12."
+  },
+  {
+   "t": "8:58.3",
+   "field": "factors.information",
+   "was": "francomix had just killed two of his teammates (feed at 8:38.75 and 8:40); his drone sat in the same spot both times (8:48, 8:55) looking down a hallway, with no enemy marked; TAVUKSEVEN shows through the wall to his right (8:56.5-8:58.2), not in the room with him",
+   "now": "francomix had just killed two of his teammates (feed at 8:38.75 and 8:40); his drone sat in the same spot both times (8:48, 8:55) looking down a hallway, with no enemy marked; TAVUKSEVEN's marker (with the defuser icon) was ahead of him, at the far side of the room behind the black cases and just right of where the enemy walked (8:56.5-8:57.3), on the line he was aiming along; whether TAVUKSEVEN was on that floor can't be told",
+   "evidence": "The 'TAVUKSEVEN' name and briefcase icon sit below and right of the enemy figure in every frame 8:56.5-8:57.0 and right of his green reticle at 8:57.3, with an outlined (occluded) silhouette under the name: ahead of him, not to his right."
+  },
+  {
+   "t": "8:58.3",
+   "field": "factors.mechanics",
+   "was": "rifle lowered on entry (8:56.5-8:56.7); the enemy was beside his crosshair at 8:56.9-8:57.0 while the rifle was still coming up; first shot 0.5 s after the enemy showed (8:57.4), when he was already behind the machine; then 13 rounds into the machine's edge",
+   "now": "rifle lowered on entry (8:56.5-8:56.7); the enemy was beside his crosshair at 8:56.9-8:57.0 while the rifle was still coming up; first shot 0.9 s after the enemy was first in view (8:56.5 -> 8:57.4), when it was already behind the machine; then 13 rounds into the machine's edge",
+   "evidence": "Enemy by the A marker at 8:56.5 (close crop); first shot 8:57.4."
+  }
+ ]
+}

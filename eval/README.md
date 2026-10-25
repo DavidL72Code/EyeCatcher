@@ -4,7 +4,7 @@
 
 | System | What it is |
 |---|---|
-| `agent` | Thirdeye's agent (`agent.js`) with 24 looks and 12 turns, as in the app. Questions to the player are skipped, since no one is there to answer. |
+| `agent` | Eye Catcher's agent (`agent.js`) with 24 looks and 12 turns, as in the app. Questions to the player are skipped, since no one is there to answer. |
 | `pipeline` | A fixed pipeline with the same pieces and the same 30 looks (`pipeline.js`). It scans the whole match, and for every death it checks four frames 1 to 2.5 s before the kill-feed line (one call) and measures the aim in the latest one that still shows the player's own live view. A frame from the death recap, a kill cam, a teammate's view, or with the scoreboard over the middle doesn't count. It reports `crosshair_low` when the median of 3 or more measurements is 0.75 heads or more below the head. Otherwise it reports no habit. |
 | `gemini-agentic` | One prompt on the same scan copy, using Gemini's agentic video mode on `gemini-3.5-flash-lite` (Interactions API, `gemini-agentic.js`). It gets the same game background as the agent and none of the tools or checks. When the API refuses, the result records the refusal. |
 

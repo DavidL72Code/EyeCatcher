@@ -1,23 +1,23 @@
 /* Gemini REST client used by both apps.
  * Talks to the real Gemini Developer API from the browser with the user's own free key
  * (from Settings, stored only in this browser's localStorage, or from the app's .env via `npm run dev`). No SDK, no build step.
- * Thirdeye's copy can also go through a backend that holds the key (THIRDEYE_BACKEND, server/index.mjs): then the page
+ * Eye Catcher's copy can also go through a backend that holds the key (THIRDEYE_BACKEND, server/index.mjs): then the page
  * has no key at all.
  */
 (function (root) {
   const API = 'https://generativelanguage.googleapis.com/v1beta/models/';
   const KEY_STORE = 'gemini_api_key';
   const MODEL_STORE = 'gemini_model';
-  // Tried in order when a model is busy, out of quota, or missing. Every Flash-Lite model comes before regular Flash:
-  // Flash-Lite's free daily allowance is far larger, and gemini-3.5-flash was overloaded (503) most of the time in testing.
-  // Regular Flash is only a last resort. Only fixed versions: an alias (gemini-flash-latest) moves to whatever Google
-  // releases next, so a review could run on a model nobody chose and spend that model's small daily allowance (Oct 22:
-  // the key showed 3.6 and 3.8 Flash requests that no code names).
-  const FALLBACK_MODELS = ['gemini-3.5-flash-lite', 'gemini-3.1-flash-lite', 'gemini-3.5-flash'];
+  // Tried in order when a model is busy, out of quota, or missing: Flash-Lite only. Regular Flash's free daily allowance
+  // is a few dozen requests, about one review, and gemini-3.5-flash was overloaded (503) most of the time in testing (the
+  // user, Oct 24: "don't use non-Flash-Lite models"). Only fixed versions: an alias (gemini-flash-latest) moves to
+  // whatever Google releases next, so a review could run on a model nobody chose and spend that model's small daily
+  // allowance (Oct 22: the key showed 3.6 and 3.8 Flash requests that no code names).
+  const FALLBACK_MODELS = ['gemini-3.5-flash-lite', 'gemini-3.1-flash-lite'];
   // Google Search grounding is free only on Gemini 2.5 Flash and Flash-Lite (500 grounded prompts a day, shared, counted
   // per prompt, so one prompt with several searches counts once). Gemini 3 and newer have none on the free tier, so
-  // search calls use only these; with a paid key, GEMINI_SEARCH_ALL=1 in .env lets them fall back to the others.
-  const SEARCH_MODELS = ['gemini-2.5-flash-lite', 'gemini-2.5-flash'];
+  // search calls use only Flash-Lite's; with a paid key, GEMINI_SEARCH_ALL=1 in .env lets them fall back to the others.
+  const SEARCH_MODELS = ['gemini-2.5-flash-lite'];
 
   // Values from the app's .env, served by `npm run dev` as env.js (absent on other static servers).
   // A key or model saved in Settings wins over .env.
@@ -26,15 +26,21 @@
   const storedKey = () => read(KEY_STORE);
   const storedModel = () => read(MODEL_STORE);
   // apps without a key field set Gemini.preferEnv so .env beats a key saved in the browser earlier
-  // A second key in .env (GEMINI_API_KEY2) takes over once every model is out of its daily limit on the first: each key
-  // has its own free daily allowance. It stays on for the rest of the page's life; the next page starts on the first.
+  // A second key in .env (GEMINI_API_KEY2) takes over once the main model is out of its daily limit on the first: each
+  // key has its own free daily allowance, and the same model there beats the next one here (Oct 23: 3.5 Flash-Lite ran
+  // out on the first key, nearly every call fell to 3.1 Flash-Lite, and its high thinking ran to 63k tokens and minutes
+  // on a call, while the second key's 3.5 Flash-Lite answered the same calls in seconds). It stays on until it's out of
+  // every model for the day too, and the first key still has one: then the first takes over again (Oct 24: the second
+  // key ran out of 3.1 Flash-Lite, the first still had it, and three reviews ended "used up on every model").
   let second = false;
+  // each key's models (search lanes apart) out of a limit that won't refill soon, until when: [the first key's, the second's]
+  const dayOut = [new Map(), new Map()];
   const spare = () => (!backend() && ENV.GEMINI_API_KEY2) || '';
   function getKey() { return (second && spare()) || (api.preferEnv ? ENV.GEMINI_API_KEY || storedKey() : storedKey() || ENV.GEMINI_API_KEY) || ''; }
   function setKey(k) { try { localStorage.setItem(KEY_STORE, (k || '').trim()); } catch {} }
   function getModel() { return storedModel() || ENV.GEMINI_MODEL || FALLBACK_MODELS[0]; }
   function setModel(m) { try { localStorage.setItem(MODEL_STORE, (m || '').trim()); } catch {} }
-  // a backend that adds the key on its side (Thirdeye's server): requests go there, with no key from the page
+  // a backend that adds the key on its side (Eye Catcher's server): requests go there, with no key from the page
   function backend() { return String(api.backend || ENV.THIRDEYE_BACKEND || '').replace(/\/+$/, ''); }
   function hasKey() { return !!backend() || !!getKey(); }
   function keySource() { if (api.preferEnv && ENV.GEMINI_API_KEY) return 'env'; return storedKey() ? 'settings' : ENV.GEMINI_API_KEY ? 'env' : ''; }
@@ -54,8 +60,24 @@
   }
 
   // A request that hangs would stall an agent run forever, so each call gets a time limit; a timeout counts as busy.
+  // A call that sends video or thinks gets longer (heavyTimeoutMs): at 60 s, League's checks were cut off and sent
+  // again four times, 394 s of a review (Oct 23), each one throwing away an answer that was nearly done.
+  const heavy = (body) => !!body?.generationConfig?.thinkingConfig || (body?.contents || []).some((c) => (c.parts || []).some((p) => p.fileData || /^video\//.test(p.inlineData?.mimeType || '')));
+  // The most thinking a model gets, whatever the call asks for. At high, 3.1 Flash-Lite sometimes thinks until its
+  // output limit: 62,911 thinking tokens and 250 to 352 s on one claim check, the same on the claim check as it was
+  // before Oct 23, while 3.5 Flash-Lite took 8 s. On the cases with known answers (Oct 24), medium and low both kept it
+  // under 1,200, and medium flagged the player's own champion named as their killer, which low let through.
+  const MOST_THINKING = { 'gemini-3.1-flash-lite': 'medium' };
+  const LEVELS = ['minimal', 'low', 'medium', 'high'];
+  const capThinking = (model, body) => {
+    const cap = MOST_THINKING[model], level = body?.generationConfig?.thinkingConfig?.thinkingLevel;
+    if (!cap || !level || LEVELS.indexOf(level) <= LEVELS.indexOf(cap)) return body;
+    return { ...body, generationConfig: { ...body.generationConfig, thinkingConfig: { ...body.generationConfig.thinkingConfig, thinkingLevel: cap } } };
+  };
   async function callModel(model, body, signal) {
-    const ctrl = new AbortController(), timer = setTimeout(() => ctrl.abort(), api.timeoutMs);
+    body = capThinking(model, body);
+    const limit = heavy(body) ? api.heavyTimeoutMs : api.timeoutMs;
+    const ctrl = new AbortController(), timer = setTimeout(() => ctrl.abort(), limit);
     const stop = () => ctrl.abort(); signal?.addEventListener('abort', stop, { once: true });
     let res, text;
     try {
@@ -68,9 +90,9 @@
       });
       text = await res.text();
     } catch (e) {
-      if (e.name === 'AbortError' && !signal?.aborted) throw new GeminiError(`${model} took over ${Math.round(api.timeoutMs / 1000)} s to answer.`, 504);
+      if (e.name === 'AbortError' && !signal?.aborted) throw new GeminiError(`${model} took over ${Math.round(limit / 1000)} s to answer.`, 504);
       // a dropped connection or a failed DNS lookup has no status: retry it like a busy model
-      if (e.name === 'TypeError') throw Object.assign(new GeminiError(backend() ? "Couldn't reach Thirdeye's server. Check the connection, or try again in a minute while it wakes up." : `Couldn't reach Gemini (${e.message}).`, 0), { network: true });
+      if (e.name === 'TypeError') throw Object.assign(new GeminiError(backend() ? "Couldn't reach Eye Catcher's server. Check the connection, or try again in a minute while it wakes up." : `Couldn't reach Gemini (${e.message}).`, 0), { network: true });
       throw e;
     } finally { clearTimeout(timer); signal?.removeEventListener('abort', stop); }
     let json = null;
@@ -99,21 +121,22 @@
   // video, sheets of kill-feed lines), so the whole list is tried again after a minute, twice, before giving up. So is a
   // model that was only busy while the rest were out: on Oct 22 the main model's daily limit ran out and its fallback
   // answered 503 for a minute, and whole reviews ended. A used-up daily limit on every model, the free web searches, and
-  // Thirdeye's backend's own limits end at once.
+  // Eye Catcher's backend's own limits end at once.
   const MINUTE_ROUNDS = 2;
   async function generate(body, opts = {}) {
     for (let round = 0; ; round++) {
       try {
         return await generateOnce(body, opts);
       } catch (e) {
-        const minute = !usesSearch(body) && (e?.busy || (e?.status === 429 && !/PerDay|Thirdeye/i.test(JSON.stringify(e.details || ''))));
+        const minute = !usesSearch(body) && (e?.busy || (e?.status === 429 && !/PerDay|Eye Catcher/i.test(JSON.stringify(e.details || ''))));
         if (!minute || round >= MINUTE_ROUNDS || opts.signal?.aborted) throw e;
         opts.onNotice?.(e?.busy ? (e.status === 429 ? 'Gemini is at its per-minute limit. Waiting a minute…' : 'Gemini is busy on every model it can use. Waiting a minute…') : 'Gemini is at its per-minute limit on every model. Waiting a minute…');
         await sleep(60000);
       }
     }
   }
-  async function generateOnce(body, { signal, onNotice, prefer = [] } = {}) {
+  // hops: the keys switched to so far in this call, at most two, so two keys that are both out can't hand it back and forth
+  async function generateOnce(body, { signal, onNotice, prefer = [], hops = 0 } = {}) {
     if (!hasKey()) throw new GeminiError('Add a Gemini API key to use the AI features.', 401);
     const preferred = getModel(), search = usesSearch(body);
     const general = [...new Set([...prefer, preferred, ...FALLBACK_MODELS])];
@@ -125,11 +148,25 @@
     let lastErr, dropped = false; // dropped: an earlier model is missing for this key (not just out of today's quota)
     let outForDay = models.length > 0; // every model tried was out of its daily limit (or missing) on this key
     let sawQuota = null, sawBusy = null, sawMinute = null; // the reason worth reporting if every model fails
+    // the key switched to gets the whole list again, with its own limits, so the other key's waits don't apply
+    const toKey = (k, why) => {
+      second = k === 1;
+      coolUntil.clear(); minuteCool.clear();
+      for (const [m, t] of [...Object.entries(retired), ...dayOut[k]]) if (t > now()) coolUntil.set(m, t); // a search lane's key is its lane
+      onNotice?.(`${why} Switching to the ${k ? 'second' : 'first'} key…`);
+      return generateOnce(body, { signal, onNotice, prefer, hops: hops + 1 });
+    };
+    // the other key, when it has a model left today
+    const other = () => (second ? 0 : spare() ? 1 : -1), canSwitch = () => hops < 2 && other() >= 0 && all.some((m) => !(dayOut[other()].get(lane(m)) > now()));
+    const toSecond = (why) => toKey(1, why);
     for (let mi = 0; mi < models.length; mi++) {
       const model = models[mi], next = models[mi + 1];
       for (let attempt = 0; attempt < 2; attempt++) {
         try {
           const json = await callModel(model, body, signal);
+          // what each answer cost, for a page that shows it (Eye Catcher's count line): an optional hook that never gets in
+          // the way of the call. Every answer counts, retries and searches included.
+          try { api.onUsage?.({ model, search, usage: json?.usageMetadata || null }); } catch {}
           // remember a Flash-Lite model that replaced a missing one; a regular Flash fallback is never saved, so the next
           // call still starts on Flash-Lite. One that stood in for a used-up daily quota isn't saved either: the main
           // model is back the next day, and saved, the fallback would have run every review after (Oct 22)
@@ -151,6 +188,9 @@
             try { localStorage.setItem(RETIRED, JSON.stringify(retired)); } catch {}
           }
           if (dailyQuota) coolUntil.set(model, now() + 30 * 60000);
+          if (dailyQuota || (e.status === 429 && retryDelayMs(e.details) == null)) dayOut[second ? 1 : 0].set(lane(model), now() + (dailyQuota ? 30 : 15) * 60000);
+          // the main model out for the day: the same model on the second key, before a weaker one on this key
+          if (dailyQuota && model === all[0] && !search && !second && canSwitch() && !(dayOut[1].get(lane(model)) > now())) return toSecond(`${model}'s daily limit is used up on the first key.`);
           if (modelProblem || dailyQuota) break; // this model won't work today: next one
           // a 429 without a retry time is a quota that won't refill in seconds (search grounding does this): don't wait on it
           if (e.status === 429 && retryDelayMs(e.details) == null) { coolUntil.set(lane(model), now() + 15 * 60000); break; }
@@ -170,17 +210,11 @@
     }
     // every model failed: say what happened in plain words; the raw message stays on .details. A used-up quota or a
     // busy model explains the failure better than the last model in the list being retired.
-    // Thirdeye's backend speaks for itself: its own limits, or that it can't be reached
-    if (sawQuota && /Thirdeye/.test(JSON.stringify(sawQuota.details || ''))) throw new GeminiError(sawQuota.message, 429, sawQuota.details);
+    // Eye Catcher's backend speaks for itself: its own limits, or that it can't be reached
+    if (sawQuota && /Eye Catcher/.test(JSON.stringify(sawQuota.details || ''))) throw new GeminiError(sawQuota.message, 429, sawQuota.details);
     // every model out for the day on this key: the second key, when there is one, gets the whole list again (its own
     // limits, so the first key's waits don't apply)
-    if (outForDay && spare() && !second) {
-      second = true;
-      coolUntil.clear(); minuteCool.clear();
-      for (const [m, t] of Object.entries(retired)) if (t > now()) coolUntil.set(m, t);
-      onNotice?.("Gemini's daily limit is used up on the first key. Switching to the second key…");
-      return generateOnce(body, { signal, onNotice, prefer });
-    }
+    if (outForDay && canSwitch()) return toKey(other(), `Gemini's daily limit is used up on the ${second ? 'second' : 'first'} key.`);
     if (sawBusy?.network && backend()) throw new GeminiError(sawBusy.message, 0, sawBusy.details);
     // a model left out only while it sits out a per-minute limit may answer in a minute too, the others being out for the
     // day: on Oct 23 Vyse's review ended on "used up on every model" while 3.1 Flash-Lite sat out its 20 s
@@ -286,7 +320,14 @@
       }, { signal, onNotice, prefer });
       const content = resp?.candidates?.[0]?.content;
       if (!content) throw new GeminiError('The model returned no content (it may have been blocked).', 500, resp);
-      contents.push(content);
+      // a summary of its thinking, when asked for (includeThoughts): shown to the player, never sent back, since the
+      // model keeps its own reasoning in the thought signatures on its other parts
+      const thought = (content.parts || []).filter((p) => p.thought && p.text).map((p) => p.text).join('\n').trim();
+      if (thought) onStep?.({ type: 'thought', text: thought });
+      // a thought part that carries a signature keeps it, without its text: the model needs the signature back, and an
+      // empty text with a signature is the shape Gemini itself sends for one
+      const kept = (content.parts || []).flatMap((p) => (!(p.thought && p.text) ? [p] : p.thoughtSignature ? [{ text: '', thoughtSignature: p.thoughtSignature }] : []));
+      contents.push(kept.length ? { ...content, parts: kept } : content);
       const calls = (content.parts || []).filter((p) => p.functionCall);
       if (!calls.length) {
         const text = textOf(resp);
@@ -407,6 +448,7 @@
   const PHONE = /(?<![\w+-])(?:\+\d{1,3}[\s.-]?\(?\d{1,4}\)?(?:[\s.-]?\d{2,4}){2,4}|\(?\d{3}\)?[\s.-]\d{3}[\s.-]\d{4})(?![\w-])/g;
   const redact = (text) => String(text ?? '').replace(/[\w.+-]+@[\w-]+\.[\w.-]+/g, '[email hidden]').replace(PHONE, '[number hidden]');
 
-  const api = root.Gemini = { preferEnv: false, backend: '', SAFETY, untrusted, guardRequest, redact, timeoutMs: 60000, getKey, setKey, getModel, setModel, hasKey, backendUrl: backend, storedKey, storedModel, keySource, generate, json, grounded, runAgent, parseJSON, textOf, fileToInline, fileToPart, loadImage, GeminiError, FALLBACK_MODELS, SEARCH_MODELS, isLite };
+  // onUsage({ model, search, usage }): called with each answer's usageMetadata (token counts), when a page sets it
+  const api = root.Gemini = { preferEnv: false, backend: '', onUsage: null, SAFETY, untrusted, guardRequest, redact, timeoutMs: 60000, heavyTimeoutMs: 150000, getKey, setKey, getModel, setModel, hasKey, backendUrl: backend, storedKey, storedModel, keySource, generate, json, grounded, runAgent, parseJSON, textOf, fileToInline, fileToPart, loadImage, GeminiError, FALLBACK_MODELS, SEARCH_MODELS, isLite };
   if (typeof module !== 'undefined') module.exports = root.Gemini;
 })(typeof window !== 'undefined' ? window : globalThis);

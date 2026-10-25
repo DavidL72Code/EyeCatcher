@@ -1,0 +1,175 @@
+{
+  "what": "A coach's read of every loss in the four eval clips, made from the frames (run-up contact sheets at 1-2 s, full-size HUD, minimap and chat crops), to grade Thirdeye's reviews against: is each cited moment right, and does it reach the factors that decided it (positions, information, resources, numbers, the map's state, mechanics) or only describe what happened. Times are the recording's own (M:SS from its start). 'unsure' lists what the frames don't settle; the validator's pass is in 'validated'.",
+  "made_by": "Claude, Oct 24, from eval/recordings frames",
+  "validated": null,
+  "clips": [
+    {
+      "clip": "league-of-legends/lol-hacklet-mf.14-24.mp4",
+      "game": "League of Legends",
+      "player": "xHACKLETx",
+      "character": "Miss Fortune",
+      "allies": ["Gragas (Gragas)", "rillerking (Evelynn)", "Tutti XD (Fizz)", "Blitzcrank (Blitzcrank)"],
+      "enemies_named_on_screen": ["Tiktah (Nocturne), the jungler, named in chat at 4:20 (game 18:20)", "CalvinCoach (a name over a red health bar)", "Geraam (a name over a red health bar)"],
+      "habit": "Staying forward, or committing Flash and ult, while the enemy jungler is unaccounted for: twice after 'enemies missing' pings, both times caught by the jungler's ult (Nearsighted) with no escape left.",
+      "losses": [
+        {
+          "t": "1:48", "kind": "death", "decided": "1:36-1:44",
+          "happened": "She pushes the mid wave alone, ahead of her minions toward the enemy side (1:32-1:42). Chat 15:16-15:20 (game time): Blitzcrank pings 'enemies are missing' three times, and she pings it herself. At 1:43 the minimap shows an enemy icon beside her. At 1:44 she is NEARSIGHTED, with a danger ping on her. At 1:45.5 a level-11 enemy marked UNSTOPPABLE dashes onto her out of the fog (the Nearsight is the enemy jungler's ult). She takes 73 + 277 + more and dies at about 1:47.",
+          "factors": {
+            "position": "alone, past her own minion wave in mid, toward the enemy side",
+            "information": "'enemies are missing' pinged 4 times 20-25 s before, her own ping among them; an enemy on the minimap beside her at 1:43; no ward between her and the enemy jungle",
+            "resources": "health 651 then 620 of 1479 (42%); Flash on cooldown (3:55 left at 1:40); ult on cooldown (1:30 left); E on 14 s; 1,197 gold unspent",
+            "numbers": "her level 9 against the attacker's 11",
+            "cue_missed": "Nearsighted at 1:44 is the jungler's ult starting: a second to walk back before the dash"
+          },
+          "mistake": "Staying forward past the wave after the missing pings, with Flash and ult down and 42% health.",
+          "better": "With Flash down and the jungler missing, stay behind her wave or near her tower, or recall to spend 1,197 gold; when Nearsighted, walk back toward her tower at once.",
+          "unsure": ["which enemy champion dashed (the scoreboard hides champions; chat names an enemy Nocturne, and Nearsight then an Unstoppable dash is his ult; the user named Warwick)"]
+        },
+        {
+          "t": "4:30", "kind": "near_death (280 of 1589)", "decided": "4:21-4:27",
+          "happened": "She walks from base into mid after 'Ally turret destroyed' (4:21). Chat 18:14: she pings 'retreat', then 'on my way' twice (18:18). 18:20: the enemy Nocturne takes the Eye of the Herald, and at 4:25 'Enemy team has summoned the Rift Herald'. At 4:25-4:27 she channels Bullet Time (her ult) inside the enemy's reach. Health 1589 at 4:18, 1124 at 4:26, 280 at 4:30. Evelynn arrives ('rillerking is unstoppable', 4:29) and she lives.",
+          "factors": {
+            "position": "in mid, inside the enemy's reach while channeling",
+            "resources": "Flash on cooldown (1:17 left at 4:18, 1:05 at 4:30); ult used at about 4:24; E 12-16 s",
+            "map": "their outer tower just fell; the enemy had the Herald",
+            "information": "she pinged retreat herself, then walked in"
+          },
+          "mistake": "Channeling her ult, which roots her in place, from inside the enemy's reach with no Flash.",
+          "better": "Channel from the edge of her range behind Evelynn, or after the enemy's engage is spent; wait for Evelynn before walking in on a Herald push.",
+          "unsure": ["who dealt the 840 damage", "whether her ult won the fight or Evelynn did"]
+        },
+        {
+          "t": "8:56", "kind": "death", "decided": "8:44-8:53",
+          "happened": "Evelynn and Fizz are dead (back in 14 and 34 s at 8:40, 4 and 20 s at 8:50); Gragas has just respawned in base; only Blitzcrank is with her. Chat 22:34-22:36: Blitzcrank pings 'Mountain Drake - Alive' three times and 'on the way'; 22:49: Fizz pings 'enemies are missing'. At 8:46-8:52 Blitzcrank catches CalvinCoach in the river and she commits: Flash gone by 8:50 (4:15 left), ult by 8:53 (1:38 left). At 8:53-8:54 both are NEARSIGHTED again (the jungler's ult); she pings '?', loses 1,115 health in about 2 s, and dies at 8:55.",
+          "factors": {
+            "numbers": "two teammates dead, one in base: a 2-v-5 map near the drake",
+            "information": "'enemies are missing' pinged seconds before; the enemy jungler unseen",
+            "resources": "1723 of 1820 health with Flash and ult up at 8:44; both spent on the 2-v-1 before the jungler came",
+            "objective": "the drake was up, which draws the enemy to the river"
+          },
+          "mistake": "Spending Flash and ult on a river skirmish by the drake while two teammates were dead and the jungler was missing.",
+          "better": "Give up the drake and back off toward the team; if Blitzcrank hooks someone, hit with autos but keep Flash for the jungler's follow-up; ward the river before walking in (Blitzcrank bought a Control Ward at 22:31).",
+          "unsure": ["whether CalvinCoach died", "where her Flash went (toward the fight or away)"]
+        }
+      ],
+      "not_true": ["Miss Fortune killed her (she is Miss Fortune)", "a turret at 1:48", "an enemy Gragas (Gragas is her teammate)", "bot lane at 1:48 (mid, by the minimap)"]
+    },
+    {
+      "clip": "rocket-league/rl-somey-gc2.match1.mp4",
+      "game": "Rocket League",
+      "player": "THESOMEY (orange)",
+      "teammates": ["FORKY JR."],
+      "opponents": ["NYAL", "K2-"],
+      "habit": null,
+      "losses": [
+        {
+          "t": "4:15", "kind": "point_lost (NYAL scores; 2-1, 1:09 left)", "decided": "4:07-4:10",
+          "happened": "Up 2-0 with 1:18 left. At 4:07.5 both orange players are in the opponents' end: FORKY JR. in the corner by their goal, the player driving up the side wall at 65 boost. At 4:09 he shoots from the corner at a tight angle (SHOT ON GOAL +10), down to 42. The shot is saved and cleared; NYAL takes it up field. He lands at 35 and chases from behind (14 at 4:12, 7 at 4:13.5) and is never goal-side; NYAL scores at 4:15, with him at 1 boost.",
+          "factors": {
+            "position": "both orange players forward at once (a double commit); nobody back for the clear",
+            "resources": "boost 65 to 42 on the shot, 35 to 1 chasing; no pads picked up on the way back",
+            "score_and_time": "2-0 up with 1:18 left: a low-percentage shot isn't worth leaving the net for"
+          },
+          "mistake": "A tight-angle shot from the corner while his teammate was also forward, which left the net empty when it was cleared.",
+          "better": "With FORKY JR. already in the corner, rotate back to the back post as the last man; protecting a 2-0 lead late, take only shots his teammate is covering; on the way back, take small pads and cut to the back post instead of chasing on empty boost.",
+          "unsure": ["whether FORKY JR. was moving back at 4:09"]
+        }
+      ],
+      "not_true": ["collecting boost after kickoff at 4:04 cost the goal", "challenging in midfield at 4:12", "he stayed static in his goal"]
+    },
+    {
+      "clip": "marvel-rivals/mr-punk-magik.attack.mp4",
+      "game": "Marvel Rivals",
+      "player": "PunK10",
+      "character": "Magik",
+      "teammates_named": ["Alejos2001 (Rocket, revives her at 4:29-4:31)"],
+      "enemies_named": ["VEN", "MR.ELK", "Sir Lewis", "lukes292", "GameGuyBenn", "StarBoii"],
+      "habit": "Diving deep on bonus health and staying after it's gone, with dash and portal on cooldown and no ult, away from her healer.",
+      "losses": [
+        {
+          "t": "1:19", "kind": "near_death (50 of 250)", "decided": "1:14-1:17",
+          "happened": "At 1:14 she has 268 of 331 (bonus health) with her abilities on 1 and 3 s and ult at 24%; she goes in and is at 80 by 1:17; at 1:19 (50) she is falling back behind cover toward a teammate's shield, and heals.",
+          "factors": { "resources": "bonus health spent in 3 s; abilities on cooldown; ult 24-26%", "position": "she did get out to cover" },
+          "mistake": "Staying in until her bonus health was gone, with nothing up to get out.",
+          "better": "Leave when the bonus health breaks, while the dash is up.",
+          "unsure": ["who dealt the damage"]
+        },
+        {
+          "t": "4:18", "kind": "near_death (70, then 54 of 250)", "decided": "4:15-4:18",
+          "happened": "Inside a red bubble in the fight (VEN's name above it, a 3 s timer), 181 at 4:15.5, 157 at 4:17, 70 at 4:18.5; at 4:20 she has 179 of 334 (healed and shielded) and fights on.",
+          "factors": { "resources": "health falling inside the enemy's zone" },
+          "mistake": "Staying in the enemy's zone as her health fell.",
+          "better": "Step out of the bubble as soon as it lands.",
+          "unsure": ["what the red bubble is, and whose"]
+        },
+        {
+          "t": "4:27", "kind": "death (killed by VEN)", "decided": "4:24-4:26",
+          "happened": "After the heal (324 of 337 at 4:23), the bonus health is gone: 201 of 250 at 4:24.5, 121 at 4:26. She pushes on alone into MR.ELK, VEN and Sir Lewis with no teammate in view, and dies at 4:27.3; Rocket's beacon revives her at about 4:30.8.",
+          "factors": { "numbers": "alone against three", "resources": "121 of 250; ult about 30%", "position": "ahead of her team, past cover" },
+          "mistake": "Pushing into three enemies at half health with no one beside her.",
+          "better": "At 121, fall back to Rocket and re-engage with the team; keep the dash or portal to leave.",
+          "unsure": ["her cooldowns at 4:26"]
+        },
+        {
+          "t": "5:10", "kind": "near_death (30 of 250)", "decided": "5:05-5:08",
+          "happened": "At 5:05 she enters through her portal at 235 of 287 into Sir Lewis and others; 122 at 5:08; 30 at 5:10 with abilities on 3 s and ult at 32%. She survives.",
+          "factors": { "position": "through her own portal into the enemy", "resources": "bonus health gone; abilities on cooldown" },
+          "mistake": "The same dive, past the point her health allowed.",
+          "better": "Portal in with the team, and back out when the bonus health is gone.",
+          "unsure": []
+        }
+      ],
+      "not_true": []
+    },
+    {
+      "clip": "Screen Recording 2026-10-17 at 6.13.34 PM.mov (TenZ, Valorant)",
+      "game": "VALORANT",
+      "player": "Me",
+      "character": "Yoru",
+      "losses": [
+        {
+          "t": "0:41", "kind": "death (killed by Fade)", "decided": "0:38-0:40",
+          "happened": "Pistol round. He clears the crate corner with his crosshair on the crate; the enemy shows in the far doorway to the left of it at 0:39-0:40; he fires once at 0:40 and dies at 0:41, with no teammate in view to trade.",
+          "factors": { "aim": "crosshair on the near corner, not the far doorway the enemy came from", "numbers": "alone" },
+          "mistake": "Clearing one angle with the crosshair while the open doorway behind it was unchecked.",
+          "better": "Clear the far doorway first, or with a teammate, before stepping past the crate.",
+          "unsure": ["whether he was moving when he fired"]
+        },
+        {
+          "t": "2:17", "kind": "death (killed by Fade)", "decided": "2:13-2:16",
+          "happened": "He throws an ability (blue, Yoru's) at 2:13; at 2:14 a purple orb flies by; his screen is white at 2:15-2:16 (flashed); he dies at 2:17 while blind.",
+          "factors": { "utility": "the flash that blinded him", "information": "Fade (an initiator) on the other side" },
+          "mistake": "Staying in the angle while blind.",
+          "better": "When flashed, back out of the angle until he can see.",
+          "unsure": ["whose flash it was (his own Blindside bouncing back, or an enemy's)"]
+        },
+        {
+          "t": "4:15", "kind": "death (killed by zeytazin, Reyna)", "decided": "4:11-4:14",
+          "happened": "Rifle. He walks through the archway into the open while moving; the enemy shows in the far doorway at 4:14; he dies at 4:15 having dealt 0 damage (the combat report's outgoing).",
+          "factors": { "mechanics": "entering on the move", "utility": "none before entering the open (a Gatecrash at 4:06)" },
+          "mistake": "Walking into an open courtyard with no utility and no stop to shoot.",
+          "better": "Flash or clear it before entering, or jiggle-peek the doorway and stop to shoot.",
+          "unsure": ["whether he stopped before firing"]
+        },
+        {
+          "t": "4:57", "kind": "death (killed by uliquorra)", "decided": "4:52-4:56",
+          "happened": "After the buy phase (2,450 credits, ult READY) he runs down the alley alone with a pistol and dies to the first enemy he sees at 4:57; the ult is never used.",
+          "factors": { "economy": "2,450 credits", "resources": "ult ready, unused", "numbers": "alone in the alley" },
+          "mistake": "Taking the first fight alone and early on a light buy, with his ult ready.",
+          "better": "Play with a teammate on a light buy, or use the ult to take the fight.",
+          "unsure": ["what he bought"]
+        },
+        {
+          "t": "6:15", "kind": "death (killed by Reyna)", "decided": "6:12-6:15",
+          "happened": "Full buy, rifle; with teammates near (Chamber), he pushes past the edge of a teammate's smoke and dies at 6:15 after dealing 137 damage; Reyna's Leer shows right after.",
+          "factors": { "position": "on the edge of the smoke", "trade": "a teammate near" },
+          "mistake": "Pushing past the smoke's edge into Reyna's angle.",
+          "better": "Hold the smoke's edge and let the enemy come through, or peek with the teammate together.",
+          "unsure": ["the 6:13 knife switch", "whether a teammate traded"]
+        }
+      ],
+      "not_true": []
+    }
+  ]
+}

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Thirdeye</title>
+  <title>Eye Catcher</title>
   <meta name="description" content="A post-game coach that watches your match and finds the habit losing you games." />
   <meta name="theme-color" content="#0c0d0f" />
   <meta name="color-scheme" content="dark" />
@@ -70,8 +70,8 @@ Millennium eye in raised gold. Big Shoulders Display for the verdict and big num
   <a class="skip" href="#main">Skip to content</a>
   <div class="app">
   <!-- the app's frame: a sidebar with the three places and the latest reviews; a tab bar instead on phones -->
-  <aside class="side" aria-label="Thirdeye">
-    <a class="mark" href="#" aria-label="Thirdeye home"><svg aria-hidden="true"><use href="#eye-gold" /></svg><span>thirdeye</span></a>
+  <aside class="side" aria-label="Eye Catcher">
+    <a class="mark" href="#" aria-label="Eye Catcher home"><svg aria-hidden="true"><use href="#eye-gold" /></svg><span>catcher</span></a>
     <nav class="side-nav" id="tabs" aria-label="Places">
       <a href="#" data-tab="home"><svg aria-hidden="true"><use href="#i-home" /></svg><span>Home</span></a>
       <a href="#coach" data-tab="coach"><svg aria-hidden="true"><use href="#i-coach" /></svg><span>Coach</span></a>
@@ -92,11 +92,11 @@ Millennium eye in raised gold. Big Shoulders Display for the verdict and big num
       <div class="hero">
         <button class="announce" type="button" data-scroll="how"><svg aria-hidden="true"><use href="#eye" /></svg>A post-game coach for any game<span>How it works</span></button>
         <h1 id="homeTitle">Find the habit that's<br /><span class="pen">losing you games.</span></h1>
-        <p class="hero-sub">Drop in a match. Thirdeye watches it like a coach, finds the one habit that costs you, and shows you the moments.</p>
+        <p class="hero-sub">Drop in a match. Eye Catcher watches it like a coach, finds the one habit that costs you, and shows you the moments.</p>
         <div class="hero-cta"><a class="pill primary" href="#coach">Review a match</a><button class="pill" type="button" data-scroll="how">See how it works</button></div>
       </div>
 
-      <!-- real matches: what Thirdeye read in each, played over the footage it was read from (SCENES in app.js) -->
+      <!-- real matches: what Eye Catcher read in each, played over the footage it was read from (SCENES in app.js) -->
       <figure class="hero-shot">
         <div class="hs-frame demo" id="demo">
           <video id="demoVideo" muted playsinline preload="auto"></video>
@@ -179,6 +179,9 @@ Millennium eye in raised gold. Big Shoulders Display for the verdict and big num
           <video id="video" playsinline controls preload="metadata"></video>
           <div class="vmarks" id="vmarks" hidden></div>
           <div class="now" id="now" aria-live="polite" hidden></div>
+          <!-- the critique over the picture: its title card, the moment it's on, and captions of what's said -->
+          <div class="cq-card" id="cqCard" hidden></div>
+          <p class="cq-tag" id="cqTag" hidden></p>
           <p class="caption" id="caption" aria-live="polite" hidden></p>
           <button class="follow" id="followBtn" type="button" hidden>Follow the coach</button>
           <div class="reattach" id="reattach" hidden></div>
@@ -202,23 +205,32 @@ Millennium eye in raised gold. Big Shoulders Display for the verdict and big num
             <button class="cq-play" id="cqPlay" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z" /></svg><span id="cqPlayText">Watch the critique</span></button>
             <p class="cq-meta" id="cqMeta"></p>
             <label class="cq-voice"><span class="sr-only">Voice</span><select id="cqVoice" aria-label="Voice" hidden></select></label>
+            <button class="pill cq-save" id="cqSave" type="button" title="Plays the critique and saves it, with its marks, captions, and voice, as a WebM video" hidden><i aria-hidden="true"></i>Save as video</button>
             <button class="quiet cq-stop" id="cqStop" type="button" hidden>Stop</button>
           </div>
+          <p class="cq-note" id="cqNote" role="status" hidden></p>
           <ol class="cq-chapters" id="cqChapters"></ol>
         </section>
       </div>
 
       <aside class="rail" id="rail">
-        <div class="status" id="status" role="status" aria-live="polite">
-          <span class="ring" aria-hidden="true"></span>
-          <span class="status-text" id="statusText">Opening the recording</span>
-          <span class="secs" id="statusSecs"></span>
-          <button class="quiet stop" id="stopBtn" type="button">Stop</button>
+        <!-- what it's doing and what it has spent, held at the top of the rail while a review runs -->
+        <div class="live-head">
+          <div class="status" id="status" role="status" aria-live="polite">
+            <span class="ring" aria-hidden="true"></span>
+            <span class="status-text" id="statusText">Opening the recording</span>
+            <span class="secs" id="statusSecs"></span>
+            <button class="quiet stop" id="stopBtn" type="button">Stop</button>
+          </div>
+          <p class="counts" id="counts" hidden></p>
         </div>
         <div class="meter" id="meter" hidden><div class="ticks" id="meterTicks"></div><span id="meterText"></span></div>
         <div class="question" id="question" hidden></div>
         <section class="checkin" id="checkin" aria-label="Check the finding" hidden></section>
         <article class="verdict" id="verdict" hidden></article>
+        <section class="trace" id="trace" aria-label="How it worked" hidden>
+          <details id="traceBox" open><summary id="traceSummary">How it worked</summary><div class="trace-body" id="traceBody"></div></details>
+        </section>
         <div class="board" id="board" hidden></div>
         <section class="breakdown" id="breakdown" aria-label="What the coach did, step by step" hidden><h3>The breakdown</h3><ol class="beats" id="beats" aria-live="polite"></ol></section>
         <section class="log" id="log" hidden>

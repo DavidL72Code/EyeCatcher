@@ -9,14 +9,14 @@ contextBridge.exposeInMainWorld('thirdeyeDesktop', {
     try { p = webUtils.getPathForFile(file); } catch {}
     return p ? ipcRenderer.invoke('recording:remember', p) : Promise.resolve(null);
   },
-  /** Saves a remembered recording in the Thirdeye folder if the player agrees (asked once): its new place, or null. */
+  /** Saves a remembered recording in the Eye Catcher folder if the player agrees (asked once): its new place, or null. */
   keep: (p) => ipcRenderer.invoke('recording:keep', String(p)),
   /** A remembered recording, streamed from where it is now: { url, path, name, size, lastModified }, or { missing }. */
   open: (p) => ipcRenderer.invoke('recording:open', String(p)),
   /** Shows a remembered recording in Finder or Explorer. */
   reveal: (p) => ipcRenderer.invoke('recording:reveal', String(p)),
-  /** Where the Thirdeye folder is ('~/Movies/Thirdeye'), when the player chose to keep recordings there; else null. */
+  /** Where the Eye Catcher folder is ('~/Movies/Eye Catcher'), when the player chose to keep recordings there; else null. */
   library: () => ipcRenderer.invoke('library:where'),
-  /** Opens the Thirdeye folder. */
+  /** Opens the Eye Catcher folder. */
   showLibrary: () => ipcRenderer.invoke('library:show'),
 });

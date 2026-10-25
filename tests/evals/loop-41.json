@@ -1,0 +1,3016 @@
+{
+ "name": "loop-41",
+ "generated": "2026-10-25T15:38:22.196Z",
+ "source": "41",
+ "games": [
+  {
+   "tag": "lol",
+   "game": "League of Legends",
+   "losses": 3,
+   "runs": [
+    {
+     "run": 1,
+     "relearned": true,
+     "verdict": "one-off",
+     "named": "Overextending without vision or escape tools",
+     "why": "You consistently pushed lanes and contested areas while low on health and with key abilities on cooldown, leaving you vulnerable to enemy ambushes.",
+     "minutes": 8.1,
+     "calls": {
+      "answered": 32,
+      "failed": 1
+     },
+     "models": {
+      "gemini-3.5-flash-lite": 32
+     },
+     "flags": [
+      "near_loss",
+      "state_facts",
+      "spectate_deaths",
+      "far_downs_low",
+      "objectives",
+      "cover_losses",
+      "factor_refs",
+      "long_runup",
+      "hud_zoom",
+      "game_profile",
+      "par_counters",
+      "hp_bar"
+     ],
+     "tokens": {
+      "prompt": 475098,
+      "output": 81981,
+      "text": 123939,
+      "image": 129927,
+      "video": 221232
+     },
+     "jobs": {
+      "learn": {
+       "calls": 3,
+       "prompt": 18826,
+       "output": 1173
+      },
+      "box check": {
+       "calls": 2,
+       "prompt": 11577,
+       "output": 1519
+      },
+      "read_hud/other": {
+       "calls": 5,
+       "prompt": 124201,
+       "output": 20435
+      },
+      "HUD counters": {
+       "calls": 9,
+       "prompt": 11506,
+       "output": 17937
+      },
+      "kill feed": {
+       "calls": 1,
+       "prompt": 1251,
+       "output": 2177
+      },
+      "low-detail pass": {
+       "calls": 1,
+       "prompt": 40083,
+       "output": 1780
+      },
+      "coach": {
+       "calls": 6,
+       "prompt": 95526,
+       "output": 6701
+      },
+      "clips": {
+       "calls": 3,
+       "prompt": 163813,
+       "output": 16494
+      },
+      "claim check": {
+       "calls": 3,
+       "prompt": 8315,
+       "output": 13765
+      }
+     },
+     "record": {
+      "kills": 0,
+      "deaths": 2,
+      "deathsFound": 2,
+      "deathsReal": 2,
+      "invented": 0
+     },
+     "player": {
+      "learned": "xHACKLETx",
+      "plays": "Miss Fortune"
+     },
+     "losses": [
+      {
+       "t": "1:48",
+       "kind": "death",
+       "baseline": "Staying at the front of the mid wave after four 'enemies missing' and three 'enemy has vision here' pings, with Flash and ult down and 42% health.",
+       "factors": [
+        "position",
+        "information",
+        "resources",
+        "numbers",
+        "cue_missed"
+       ],
+       "cited": true,
+       "filledCited": false,
+       "said": [
+        "Committing to channel an ability and clear minions instead of retreating upon retreat pings. Because: Health was low at 271 of 1479, ultimate was on cooldown, 2 teammates faced 2 visible enemies in the immediate fight, and scoreboard clock read 3:49 with match score 13 to 16.",
+        "Committing to channel an ability and clear minions instead of retreating upon retreat pings. Because: Health was low at 271 of 1479, ultimate was on cooldown, 2 teammates faced 2 visible enemies in the immediate fight, and scoreboard clock read 3:49 with match score 13 to 16."
+       ],
+       "named": [
+        "information",
+        "resources",
+        "map",
+        "mechanics"
+       ],
+       "coverage": 0.4,
+       "numbers": [],
+       "codeNumbers": []
+      },
+      {
+       "t": "4:30",
+       "kind": "near_death (280 of 1589)",
+       "baseline": "Channeling her ult, which roots her in place, from inside the enemy's reach with no Flash.",
+       "factors": [
+        "position",
+        "resources",
+        "map",
+        "information"
+       ],
+       "cited": true,
+       "filledCited": false,
+       "said": [
+        "Advancing into lane to farm minions while enemies were grouping. Because: Health was dropping, scoreboard clock read 1:05, team score was 15 to 20, 2 teammates were against multiple incoming enemies, and enemies were advancing.",
+        "Advancing into lane to farm minions while enemies were grouping. Because: Health was dropping, scoreboard clock read 1:05, team score was 15 to 20, 2 teammates were against multiple incoming enemies, and enemies were advancing."
+       ],
+       "named": [
+        "resources",
+        "map"
+       ],
+       "coverage": 0.5,
+       "numbers": [],
+       "codeNumbers": []
+      },
+      {
+       "t": "8:56",
+       "kind": "death",
+       "baseline": "After Flashing out of CalvinCoach's stun, stopping in the river to channel her ult (which holds her in place) while two teammates were dead and the jungler was missing; Fizz's missing ping came two seconds later and the jungler's Nearsight a second after that.",
+       "factors": [
+        "numbers",
+        "information",
+        "resources",
+        "objective"
+       ],
+       "cited": true,
+       "filledCited": false,
+       "said": [
+        "Contesting the river area without ultimate ready and with low health. Because: Player health was 392 of 693, ultimate was on a 1:37 cooldown, two allies were present against multiple enemies, score was 21 to 27, and missing enemy pings were active.",
+        "Contesting the river area without ultimate ready and with low health. Because: Player health was 392 of 693, ultimate was on a 1:37 cooldown, two allies were present against multiple enemies, score was 21 to 27, and missing enemy pings were active."
+       ],
+       "named": [
+        "information",
+        "resources",
+        "map"
+       ],
+       "coverage": 0.5,
+       "numbers": [
+        "two allies"
+       ],
+       "codeNumbers": []
+      }
+     ],
+     "cited": 3,
+     "numbered": 1,
+     "filled": 0,
+     "codeNumbered": 0,
+     "coverage": 0.4666666666666666,
+     "looseCites": [
+      "5:05 Stepping forward into the lane and path without ultimate or escape utility ready while enemies were missing.",
+      "5:05 Stepping forward into the lane and path without ultimate or escape utility ready while enemies were missing."
+     ],
+     "sentBack": 2
+    },
+    {
+     "run": 2,
+     "relearned": false,
+     "verdict": "one-off",
+     "named": "Overextending or taking unnecessary risks by pushing or engaging without vision or teammate support.",
+     "why": "The player consistently overextended into dangerous, unwarded areas without teammate support, which led to multiple deaths and lost objectives. This habit of taking unnecessary risks when the team was at a disadvantage or lacked information directly cost the team control of the map and key objectives.",
+     "minutes": 5.7,
+     "calls": {
+      "answered": 31,
+      "failed": 2
+     },
+     "models": {
+      "gemini-3.5-flash-lite": 1,
+      "gemini-3.1-flash-lite": 30
+     },
+     "flags": [
+      "near_loss",
+      "state_facts",
+      "spectate_deaths",
+      "far_downs_low",
+      "objectives",
+      "cover_losses",
+      "factor_refs",
+      "long_runup",
+      "hud_zoom",
+      "game_profile",
+      "par_counters",
+      "hp_bar"
+     ],
+     "tokens": {
+      "prompt": 553552,
+      "output": 50065,
+      "text": 177595,
+      "image": 107271,
+      "video": 268686
+     },
+     "jobs": {
+      "HUD counters": {
+       "calls": 11,
+       "prompt": 11468,
+       "output": 22731
+      },
+      "kill feed": {
+       "calls": 1,
+       "prompt": 1251,
+       "output": 2562
+      },
+      "low-detail pass": {
+       "calls": 1,
+       "prompt": 40083,
+       "output": 1855
+      },
+      "read_hud/other": {
+       "calls": 4,
+       "prompt": 158780,
+       "output": 6018
+      },
+      "coach": {
+       "calls": 9,
+       "prompt": 150038,
+       "output": 6235
+      },
+      "clips": {
+       "calls": 4,
+       "prompt": 179914,
+       "output": 5612
+      },
+      "claim check": {
+       "calls": 3,
+       "prompt": 12018,
+       "output": 5052
+      }
+     },
+     "record": {
+      "kills": 0,
+      "deaths": 1,
+      "deathsFound": 1,
+      "deathsReal": 2,
+      "invented": 0
+     },
+     "player": {
+      "learned": "xHACKLETx",
+      "plays": "Miss Fortune"
+     },
+     "losses": [
+      {
+       "t": "1:48",
+       "kind": "death",
+       "baseline": "Staying at the front of the mid wave after four 'enemies missing' and three 'enemy has vision here' pings, with Flash and ult down and 42% health.",
+       "factors": [
+        "position",
+        "information",
+        "resources",
+        "numbers",
+        "cue_missed"
+       ],
+       "cited": true,
+       "filledCited": false,
+       "said": [
+        "The player engaged an enemy champion in the bottom lane. Because: The player engaged an enemy in the bottom lane while exposed and without sufficient teammate support, leading to a disadvantageous fight. [W1.position], [W1.information], [W1.numbers]",
+        "From the clip read: The player committed to using Bullet Time in the open river Because: it left them without It left the player without an escape ability and in a vulnerable position; position The player was in the open river without cover, ahead of teammates, as shown by the minimap; information The player was aware of missing enemies via pings, but moved into an area without vision; resources The player had 343 health and Bullet Time was on cooldown, as shown by the HUD; numbers The player was outnumbered in the immediate fight, as shown by the minimap; map The score was 13 to 16, and the player was fighting in the river; mechanics The player was moving while being charmed, which prevented escape"
+       ],
+       "named": [
+        "numbers",
+        "position",
+        "information",
+        "resources",
+        "map",
+        "mechanics"
+       ],
+       "coverage": 0.8,
+       "numbers": [],
+       "codeNumbers": []
+      },
+      {
+       "t": "4:30",
+       "kind": "near_death (280 of 1589)",
+       "baseline": "Channeling her ult, which roots her in place, from inside the enemy's reach with no Flash.",
+       "factors": [
+        "position",
+        "resources",
+        "map",
+        "information"
+       ],
+       "cited": true,
+       "filledCited": false,
+       "said": [
+        "From the clip read: The player chose to recall while a teammate was being engaged Because: it left them without The player lost the opportunity to assist the teammate, resulting in the teammate's death; position The player was in the bottom lane near their turret, but moved away from the fight toward the fountain; information The player was nearsighted, limiting their vision of the engagement; resources The player had 1589 health and all abilities available; numbers One teammate was fighting one enemy; map The score was 14 to 18; mechanics The player chose to recall and shop while a teammate was being engaged"
+       ],
+       "named": [
+        "position",
+        "information",
+        "resources",
+        "numbers",
+        "map"
+       ],
+       "coverage": 1,
+       "numbers": [],
+       "codeNumbers": []
+      },
+      {
+       "t": "8:56",
+       "kind": "death",
+       "baseline": "After Flashing out of CalvinCoach's stun, stopping in the river to channel her ult (which holds her in place) while two teammates were dead and the jungler was missing; Fizz's missing ping came two seconds later and the jungler's Nearsight a second after that.",
+       "factors": [
+        "numbers",
+        "information",
+        "resources",
+        "objective"
+       ],
+       "cited": false,
+       "filledCited": false,
+       "said": [],
+       "named": [],
+       "coverage": 0,
+       "numbers": [],
+       "codeNumbers": []
+      }
+     ],
+     "cited": 2,
+     "numbered": 0,
+     "filled": 0,
+     "codeNumbered": 0,
+     "coverage": 0.9,
+     "looseCites": [
+      "9:29 The player chose to push the mid lane wave alone after the enemy team secured the dragon.",
+      "9:17 From the clip read: The player entered the river area while the enemy team was contesting the dragon"
+     ],
+     "sentBack": 5
+    }
+   ],
+   "shots": [
+    "loop-41/lol/live-01.png",
+    "loop-41/lol/live-02.png",
+    "loop-41/lol/live-03.png",
+    "loop-41/lol/live-04.png",
+    "loop-41/lol/live-05.png",
+    "loop-41/lol/live-06.png",
+    "loop-41/lol/after-top.png"
+   ]
+  },
+  {
+   "tag": "rl",
+   "game": "Rocket League",
+   "losses": 1,
+   "runs": [
+    {
+     "run": 1,
+     "relearned": true,
+     "verdict": "nothing named",
+     "named": "",
+     "why": "",
+     "minutes": 6.7,
+     "calls": {
+      "answered": 11,
+      "failed": 14
+     },
+     "models": {
+      "gemini-3.5-flash-lite": 11
+     },
+     "flags": [
+      "near_loss",
+      "state_facts",
+      "spectate_deaths",
+      "far_downs_low",
+      "objectives",
+      "cover_losses",
+      "factor_refs",
+      "long_runup",
+      "hud_zoom",
+      "game_profile",
+      "par_counters",
+      "hp_bar"
+     ],
+     "tokens": {
+      "prompt": 123701,
+      "output": 17440,
+      "text": 13081,
+      "image": 38086,
+      "video": 72534
+     },
+     "jobs": {
+      "learn": {
+       "calls": 9,
+       "prompt": 9413,
+       "output": 288
+      },
+      "box check": {
+       "calls": 1,
+       "prompt": 5787,
+       "output": 190
+      },
+      "read_hud/other": {
+       "calls": 2,
+       "prompt": 18574,
+       "output": 376
+      },
+      "low-detail pass": {
+       "calls": 1,
+       "prompt": 22768,
+       "output": 1117
+      },
+      "HUD counters": {
+       "calls": 4,
+       "prompt": 4860,
+       "output": 9453
+      },
+      "coach": {
+       "calls": 7,
+       "prompt": 9522,
+       "output": 673
+      },
+      "clips": {
+       "calls": 1,
+       "prompt": 52777,
+       "output": 5343
+      }
+     },
+     "record": {
+      "kills": 0,
+      "deaths": 0,
+      "deathsFound": 0,
+      "deathsReal": 0,
+      "invented": 0
+     },
+     "player": {
+      "learned": null,
+      "plays": null
+     },
+     "losses": [
+      {
+       "t": "4:15",
+       "kind": "point_lost (NYAL scores; 2-1, 1:09 left)",
+       "baseline": "A tight-angle shot from the corner while his teammate was also forward, which left the net empty when it was cleared.",
+       "factors": [
+        "position",
+        "resources",
+        "score_and_time"
+       ],
+       "cited": false,
+       "filledCited": false,
+       "said": [],
+       "named": [],
+       "coverage": 0,
+       "numbers": [],
+       "codeNumbers": []
+      }
+     ],
+     "cited": 0,
+     "numbered": 0,
+     "filled": 0,
+     "codeNumbered": 0,
+     "coverage": null,
+     "looseCites": [],
+     "sentBack": 0
+    },
+    {
+     "run": 2,
+     "relearned": false,
+     "verdict": "nothing named",
+     "named": "",
+     "why": "",
+     "minutes": 8.3,
+     "calls": {
+      "answered": 0,
+      "failed": 32
+     },
+     "models": {},
+     "flags": [
+      "near_loss",
+      "state_facts",
+      "spectate_deaths",
+      "far_downs_low",
+      "objectives",
+      "cover_losses",
+      "factor_refs",
+      "long_runup",
+      "hud_zoom",
+      "game_profile",
+      "par_counters",
+      "hp_bar"
+     ],
+     "tokens": {
+      "prompt": 0,
+      "output": 0,
+      "text": 0,
+      "image": 0,
+      "video": 0
+     },
+     "jobs": {
+      "low-detail pass": {
+       "calls": 8,
+       "prompt": 0,
+       "output": 0
+      },
+      "HUD counters": {
+       "calls": 16,
+       "prompt": 0,
+       "output": 0
+      },
+      "coach": {
+       "calls": 7,
+       "prompt": 0,
+       "output": 0
+      }
+     },
+     "record": {
+      "kills": 0,
+      "deaths": 0,
+      "deathsFound": 0,
+      "deathsReal": 0,
+      "invented": 0
+     },
+     "player": {
+      "learned": null,
+      "plays": null
+     },
+     "losses": [
+      {
+       "t": "4:15",
+       "kind": "point_lost (NYAL scores; 2-1, 1:09 left)",
+       "baseline": "A tight-angle shot from the corner while his teammate was also forward, which left the net empty when it was cleared.",
+       "factors": [
+        "position",
+        "resources",
+        "score_and_time"
+       ],
+       "cited": false,
+       "filledCited": false,
+       "said": [],
+       "named": [],
+       "coverage": 0,
+       "numbers": [],
+       "codeNumbers": []
+      }
+     ],
+     "cited": 0,
+     "numbered": 0,
+     "filled": 0,
+     "codeNumbered": 0,
+     "coverage": null,
+     "looseCites": [],
+     "sentBack": 0
+    }
+   ],
+   "shots": [
+    "loop-41/rl/live-01.png",
+    "loop-41/rl/live-02.png",
+    "loop-41/rl/live-03.png",
+    "loop-41/rl/after-top.png"
+   ]
+  },
+  {
+   "tag": "mr",
+   "game": "Marvel Rivals",
+   "losses": 4,
+   "runs": [
+    {
+     "run": 1,
+     "relearned": true,
+     "verdict": "nothing named",
+     "named": "",
+     "why": "",
+     "minutes": 2.6,
+     "calls": {
+      "answered": 0,
+      "failed": 8
+     },
+     "models": {},
+     "flags": [
+      "near_loss",
+      "state_facts",
+      "spectate_deaths",
+      "far_downs_low",
+      "objectives",
+      "cover_losses",
+      "factor_refs",
+      "long_runup",
+      "hud_zoom",
+      "game_profile",
+      "par_counters",
+      "hp_bar"
+     ],
+     "tokens": {
+      "prompt": 0,
+      "output": 0,
+      "text": 0,
+      "image": 0,
+      "video": 0
+     },
+     "jobs": {
+      "learn": {
+       "calls": 8,
+       "prompt": 0,
+       "output": 0
+      }
+     },
+     "record": {
+      "kills": 0,
+      "deaths": 0,
+      "deathsFound": 0,
+      "deathsReal": 1,
+      "invented": 0
+     },
+     "player": {
+      "learned": null,
+      "plays": null
+     },
+     "losses": [
+      {
+       "t": "1:19",
+       "kind": "near_death (16 of 250 at 1:16.5; 50 at 1:18.5-1:19)",
+       "baseline": "Staying in after her bonus health broke and VEN was revived, until she was at 16; with abilities ready she left only after a health pack saved her.",
+       "factors": [
+        "resources",
+        "position"
+       ],
+       "cited": false,
+       "filledCited": false,
+       "said": [],
+       "named": [],
+       "coverage": 0,
+       "numbers": [],
+       "codeNumbers": []
+      },
+      {
+       "t": "4:18",
+       "kind": "near_death (54 of 253 at 4:18, then 70 at 4:18.5)",
+       "baseline": "Trading head-on through her ult as her health fell from 250 to 54 in 3 s, with two abilities ready to step out and come back.",
+       "factors": [
+        "resources",
+        "outcome"
+       ],
+       "cited": false,
+       "filledCited": false,
+       "said": [],
+       "named": [],
+       "coverage": 0,
+       "numbers": [],
+       "codeNumbers": []
+      },
+      {
+       "t": "4:27",
+       "kind": "death (killed by VEN)",
+       "baseline": "Staying forward at half health after her ult ran out, into four enemies, with her teammates behind her.",
+       "factors": [
+        "numbers",
+        "resources",
+        "position"
+       ],
+       "cited": false,
+       "filledCited": false,
+       "said": [],
+       "named": [],
+       "coverage": 0,
+       "numbers": [],
+       "codeNumbers": []
+      },
+      {
+       "t": "5:10",
+       "kind": "near_death (30 of 250)",
+       "baseline": "Taking the portal dive in at 235 and trading down to 30 before stepping back, with an ability still ready.",
+       "factors": [
+        "position",
+        "resources",
+        "teammates"
+       ],
+       "cited": false,
+       "filledCited": false,
+       "said": [],
+       "named": [],
+       "coverage": 0,
+       "numbers": [],
+       "codeNumbers": []
+      }
+     ],
+     "cited": 0,
+     "numbered": 0,
+     "filled": 0,
+     "codeNumbered": 0,
+     "coverage": null,
+     "looseCites": [],
+     "sentBack": 0
+    },
+    {
+     "run": 2,
+     "relearned": false,
+     "verdict": "nothing named",
+     "named": "",
+     "why": "",
+     "minutes": 10,
+     "calls": {
+      "answered": 3,
+      "failed": 41
+     },
+     "models": {
+      "gemini-3.5-flash-lite": 2,
+      "gemini-3.1-flash-lite": 1
+     },
+     "flags": [
+      "near_loss",
+      "state_facts",
+      "spectate_deaths",
+      "far_downs_low",
+      "objectives",
+      "cover_losses",
+      "factor_refs",
+      "long_runup",
+      "hud_zoom",
+      "game_profile",
+      "par_counters",
+      "hp_bar"
+     ],
+     "tokens": {
+      "prompt": 11787,
+      "output": 3921,
+      "text": 849,
+      "image": 10938,
+      "video": 0
+     },
+     "jobs": {
+      "learn": {
+       "calls": 9,
+       "prompt": 9413,
+       "output": 351
+      },
+      "box check": {
+       "calls": 7,
+       "prompt": 0,
+       "output": 0
+      },
+      "low-detail pass": {
+       "calls": 8,
+       "prompt": 0,
+       "output": 0
+      },
+      "HUD counters": {
+       "calls": 12,
+       "prompt": 2374,
+       "output": 3570
+      },
+      "coach": {
+       "calls": 8,
+       "prompt": 0,
+       "output": 0
+      }
+     },
+     "record": {
+      "kills": 0,
+      "deaths": 0,
+      "deathsFound": 0,
+      "deathsReal": 1,
+      "invented": 0
+     },
+     "player": {
+      "learned": null,
+      "plays": null
+     },
+     "losses": [
+      {
+       "t": "1:19",
+       "kind": "near_death (16 of 250 at 1:16.5; 50 at 1:18.5-1:19)",
+       "baseline": "Staying in after her bonus health broke and VEN was revived, until she was at 16; with abilities ready she left only after a health pack saved her.",
+       "factors": [
+        "resources",
+        "position"
+       ],
+       "cited": false,
+       "filledCited": false,
+       "said": [],
+       "named": [],
+       "coverage": 0,
+       "numbers": [],
+       "codeNumbers": []
+      },
+      {
+       "t": "4:18",
+       "kind": "near_death (54 of 253 at 4:18, then 70 at 4:18.5)",
+       "baseline": "Trading head-on through her ult as her health fell from 250 to 54 in 3 s, with two abilities ready to step out and come back.",
+       "factors": [
+        "resources",
+        "outcome"
+       ],
+       "cited": false,
+       "filledCited": false,
+       "said": [],
+       "named": [],
+       "coverage": 0,
+       "numbers": [],
+       "codeNumbers": []
+      },
+      {
+       "t": "4:27",
+       "kind": "death (killed by VEN)",
+       "baseline": "Staying forward at half health after her ult ran out, into four enemies, with her teammates behind her.",
+       "factors": [
+        "numbers",
+        "resources",
+        "position"
+       ],
+       "cited": false,
+       "filledCited": false,
+       "said": [],
+       "named": [],
+       "coverage": 0,
+       "numbers": [],
+       "codeNumbers": []
+      },
+      {
+       "t": "5:10",
+       "kind": "near_death (30 of 250)",
+       "baseline": "Taking the portal dive in at 235 and trading down to 30 before stepping back, with an ability still ready.",
+       "factors": [
+        "position",
+        "resources",
+        "teammates"
+       ],
+       "cited": false,
+       "filledCited": false,
+       "said": [],
+       "named": [],
+       "coverage": 0,
+       "numbers": [],
+       "codeNumbers": []
+      }
+     ],
+     "cited": 0,
+     "numbered": 0,
+     "filled": 0,
+     "codeNumbered": 0,
+     "coverage": null,
+     "looseCites": [],
+     "sentBack": 0
+    }
+   ],
+   "shots": [
+    "loop-41/mr/live-01.png",
+    "loop-41/mr/after-top.png"
+   ]
+  },
+  {
+   "tag": "val",
+   "game": "Valorant",
+   "losses": 5,
+   "runs": [
+    {
+     "run": 1,
+     "relearned": true,
+     "verdict": "nothing named",
+     "named": "",
+     "why": "",
+     "minutes": 18.8,
+     "calls": {
+      "answered": 6,
+      "failed": 54
+     },
+     "models": {
+      "gemini-3.1-flash-lite": 2,
+      "gemini-3.5-flash-lite": 4
+     },
+     "flags": [
+      "near_loss",
+      "state_facts",
+      "spectate_deaths",
+      "far_downs_low",
+      "objectives",
+      "cover_losses",
+      "factor_refs",
+      "long_runup",
+      "hud_zoom",
+      "game_profile",
+      "par_counters",
+      "hp_bar"
+     ],
+     "tokens": {
+      "prompt": 15193,
+      "output": 7059,
+      "text": 1198,
+      "image": 13995,
+      "video": 0
+     },
+     "jobs": {
+      "learn": {
+       "calls": 9,
+       "prompt": 9253,
+       "output": 686
+      },
+      "box check": {
+       "calls": 6,
+       "prompt": 0,
+       "output": 0
+      },
+      "read_hud/other": {
+       "calls": 4,
+       "prompt": 0,
+       "output": 0
+      },
+      "HUD counters": {
+       "calls": 23,
+       "prompt": 2451,
+       "output": 1727
+      },
+      "kill feed": {
+       "calls": 9,
+       "prompt": 3489,
+       "output": 4646
+      },
+      "coach": {
+       "calls": 7,
+       "prompt": 0,
+       "output": 0
+      }
+     },
+     "record": {
+      "kills": 0,
+      "deaths": 0,
+      "deathsFound": 0,
+      "deathsReal": 5,
+      "invented": 0
+     },
+     "player": {
+      "learned": null,
+      "plays": null
+     },
+     "losses": [
+      {
+       "t": "0:41",
+       "kind": "death (killed by Fade)",
+       "baseline": "Shooting while still walking into a doorway two enemies held: the first Classic shot went to the body for 39 and Fade's headshot answered.",
+       "factors": [
+        "aim",
+        "mechanics",
+        "numbers"
+       ],
+       "cited": false,
+       "filledCited": false,
+       "said": [],
+       "named": [],
+       "coverage": 0,
+       "numbers": [],
+       "codeNumbers": []
+      },
+      {
+       "t": "2:17",
+       "kind": "death (killed by Fade)",
+       "baseline": "Throwing his flash where it popped in his own view and swapping to the Outlaw mid-fight, in a 2 v 1 he could have played with CLV|bam.",
+       "factors": [
+        "utility",
+        "mechanics",
+        "numbers"
+       ],
+       "cited": false,
+       "filledCited": false,
+       "said": [],
+       "named": [],
+       "coverage": 0,
+       "numbers": [],
+       "codeNumbers": []
+      },
+      {
+       "t": "4:15",
+       "kind": "death (killed by zeytazin, 'KILLED BY CLOVE')",
+       "baseline": "Swinging the open courtyard on the move in a 1 v 2 with his ult ready, and not firing when zeytazin ran across his crosshair.",
+       "factors": [
+        "mechanics",
+        "utility",
+        "numbers"
+       ],
+       "cited": false,
+       "filledCited": false,
+       "said": [],
+       "named": [],
+       "coverage": 0,
+       "numbers": [],
+       "codeNumbers": []
+      },
+      {
+       "t": "4:57",
+       "kind": "death (killed by ulquiorra, 'KILLED BY NEON')",
+       "baseline": "Taking the first duel alone on a Sheriff with no armor and his ult ready, and firing a beat late on a pre-aimed angle.",
+       "factors": [
+        "economy",
+        "resources",
+        "aim",
+        "numbers"
+       ],
+       "cited": false,
+       "filledCited": false,
+       "said": [],
+       "named": [],
+       "coverage": 0,
+       "numbers": [],
+       "codeNumbers": []
+      },
+      {
+       "t": "6:15",
+       "kind": "death (killed by Reyna)",
+       "baseline": "Running onto site with the knife out and the rifle not ready, so the duel with Reyna started 0.35 s late.",
+       "factors": [
+        "position",
+        "mechanics",
+        "resources",
+        "trade"
+       ],
+       "cited": false,
+       "filledCited": false,
+       "said": [],
+       "named": [],
+       "coverage": 0,
+       "numbers": [],
+       "codeNumbers": []
+      }
+     ],
+     "cited": 0,
+     "numbered": 0,
+     "filled": 0,
+     "codeNumbered": 0,
+     "coverage": null,
+     "looseCites": [],
+     "sentBack": 0
+    },
+    {
+     "run": 2,
+     "relearned": false,
+     "verdict": "nothing named",
+     "named": "",
+     "why": "",
+     "minutes": 25.1,
+     "calls": {
+      "answered": 15,
+      "failed": 66
+     },
+     "models": {
+      "gemini-3.1-flash-lite": 15
+     },
+     "flags": [
+      "near_loss",
+      "state_facts",
+      "spectate_deaths",
+      "far_downs_low",
+      "objectives",
+      "cover_losses",
+      "factor_refs",
+      "long_runup",
+      "hud_zoom",
+      "game_profile",
+      "par_counters",
+      "hp_bar"
+     ],
+     "tokens": {
+      "prompt": 283791,
+      "output": 24314,
+      "text": 92073,
+      "image": 45462,
+      "video": 146256
+     },
+     "jobs": {
+      "HUD counters": {
+       "calls": 31,
+       "prompt": 5015,
+       "output": 8462
+      },
+      "kill feed": {
+       "calls": 11,
+       "prompt": 3489,
+       "output": 4613
+      },
+      "coach": {
+       "calls": 10,
+       "prompt": 83835,
+       "output": 5972
+      },
+      "clips": {
+       "calls": 12,
+       "prompt": 191452,
+       "output": 5267
+      },
+      "read_hud/other": {
+       "calls": 9,
+       "prompt": 0,
+       "output": 0
+      },
+      "claim check": {
+       "calls": 7,
+       "prompt": 0,
+       "output": 0
+      }
+     },
+     "record": {
+      "kills": 0,
+      "deaths": 0,
+      "deathsFound": 0,
+      "deathsReal": 5,
+      "invented": 0
+     },
+     "player": {
+      "learned": null,
+      "plays": null
+     },
+     "losses": [
+      {
+       "t": "0:41",
+       "kind": "death (killed by Fade)",
+       "baseline": "Shooting while still walking into a doorway two enemies held: the first Classic shot went to the body for 39 and Fade's headshot answered.",
+       "factors": [
+        "aim",
+        "mechanics",
+        "numbers"
+       ],
+       "cited": false,
+       "filledCited": false,
+       "said": [],
+       "named": [],
+       "coverage": 0,
+       "numbers": [],
+       "codeNumbers": []
+      },
+      {
+       "t": "2:17",
+       "kind": "death (killed by Fade)",
+       "baseline": "Throwing his flash where it popped in his own view and swapping to the Outlaw mid-fight, in a 2 v 1 he could have played with CLV|bam.",
+       "factors": [
+        "utility",
+        "mechanics",
+        "numbers"
+       ],
+       "cited": false,
+       "filledCited": false,
+       "said": [],
+       "named": [],
+       "coverage": 0,
+       "numbers": [],
+       "codeNumbers": []
+      },
+      {
+       "t": "4:15",
+       "kind": "death (killed by zeytazin, 'KILLED BY CLOVE')",
+       "baseline": "Swinging the open courtyard on the move in a 1 v 2 with his ult ready, and not firing when zeytazin ran across his crosshair.",
+       "factors": [
+        "mechanics",
+        "utility",
+        "numbers"
+       ],
+       "cited": false,
+       "filledCited": false,
+       "said": [],
+       "named": [],
+       "coverage": 0,
+       "numbers": [],
+       "codeNumbers": []
+      },
+      {
+       "t": "4:57",
+       "kind": "death (killed by ulquiorra, 'KILLED BY NEON')",
+       "baseline": "Taking the first duel alone on a Sheriff with no armor and his ult ready, and firing a beat late on a pre-aimed angle.",
+       "factors": [
+        "economy",
+        "resources",
+        "aim",
+        "numbers"
+       ],
+       "cited": false,
+       "filledCited": false,
+       "said": [],
+       "named": [],
+       "coverage": 0,
+       "numbers": [],
+       "codeNumbers": []
+      },
+      {
+       "t": "6:15",
+       "kind": "death (killed by Reyna)",
+       "baseline": "Running onto site with the knife out and the rifle not ready, so the duel with Reyna started 0.35 s late.",
+       "factors": [
+        "position",
+        "mechanics",
+        "resources",
+        "trade"
+       ],
+       "cited": false,
+       "filledCited": false,
+       "said": [],
+       "named": [],
+       "coverage": 0,
+       "numbers": [],
+       "codeNumbers": []
+      }
+     ],
+     "cited": 0,
+     "numbered": 0,
+     "filled": 0,
+     "codeNumbered": 0,
+     "coverage": null,
+     "looseCites": [],
+     "sentBack": 0
+    }
+   ],
+   "shots": [
+    "loop-41/val/live-01.png",
+    "loop-41/val/live-02.png",
+    "loop-41/val/after-top.png"
+   ]
+  },
+  {
+   "tag": "cr",
+   "game": "Clash Royale",
+   "losses": 3,
+   "runs": [
+    {
+     "run": 1,
+     "relearned": true,
+     "verdict": "one-off",
+     "named": "Occasional overcommitting of elixir during mid-match skirmishes.",
+     "why": "Managing elixir carefully and executing decisive pushes, such as the final tower-destroying Fireball, enabled the player to secure victory despite early pressure.",
+     "minutes": 5.6,
+     "calls": {
+      "answered": 27,
+      "failed": 1
+     },
+     "models": {
+      "gemini-3.5-flash-lite": 27
+     },
+     "flags": [
+      "near_loss",
+      "state_facts",
+      "spectate_deaths",
+      "far_downs_low",
+      "objectives",
+      "cover_losses",
+      "factor_refs",
+      "long_runup",
+      "hud_zoom",
+      "game_profile",
+      "par_counters",
+      "hp_bar"
+     ],
+     "tokens": {
+      "prompt": 352702,
+      "output": 57763,
+      "text": 108070,
+      "image": 57132,
+      "video": 187500
+     },
+     "jobs": {
+      "learn": {
+       "calls": 3,
+       "prompt": 18474,
+       "output": 932
+      },
+      "box check": {
+       "calls": 1,
+       "prompt": 5677,
+       "output": 665
+      },
+      "read_hud/other": {
+       "calls": 4,
+       "prompt": 58688,
+       "output": 5610
+      },
+      "HUD counters": {
+       "calls": 3,
+       "prompt": 3622,
+       "output": 1965
+      },
+      "low-detail pass": {
+       "calls": 1,
+       "prompt": 13921,
+       "output": 619
+      },
+      "coach": {
+       "calls": 7,
+       "prompt": 94783,
+       "output": 6259
+      },
+      "clips": {
+       "calls": 6,
+       "prompt": 154303,
+       "output": 29586
+      },
+      "claim check": {
+       "calls": 3,
+       "prompt": 3234,
+       "output": 12127
+      }
+     },
+     "record": {
+      "kills": 0,
+      "deaths": 0,
+      "deathsFound": 0,
+      "deathsReal": 1,
+      "invented": 0
+     },
+     "player": {
+      "learned": null,
+      "plays": "Battle Healer"
+     },
+     "losses": [
+      {
+       "t": "1:33",
+       "kind": "tower damage (right tower 3197 to 761)",
+       "baseline": "Answering a Royal Giant at the bridge with the slowest, most expensive card, and only once it became affordable: the Sparky went down at 1:24.5 and first fired at 1:34.2, by which time the tower had taken all six shots (2436).",
+       "factors": [
+        "resources",
+        "position",
+        "information"
+       ],
+       "cited": false,
+       "filledCited": false,
+       "said": [],
+       "named": [],
+       "coverage": 0,
+       "numbers": [],
+       "codeNumbers": []
+      },
+      {
+       "t": "2:36",
+       "kind": "tower damage (right tower 761 to 384), with the player's King Tower hit and activated (5582 bar from 2:24)",
+       "baseline": "Stacking 13 elixir of Sparkys right against the damaged right tower, so the opponent's Fireball hit the tower (and the King Tower) along with the defence.",
+       "factors": [
+        "resources",
+        "position",
+        "information"
+       ],
+       "cited": false,
+       "filledCited": false,
+       "said": [],
+       "named": [],
+       "coverage": 0,
+       "numbers": [],
+       "codeNumbers": []
+      },
+      {
+       "t": "3:27",
+       "kind": "right tower destroyed in sudden-death overtime: the match lost 0-1",
+       "baseline": "With a 384-health tower in sudden death, spending everything on defending in front of it (where the Fireball hit both), with no threat elsewhere, so the opponent's spells could finish the tower at their leisure.",
+       "factors": [
+        "resources",
+        "map",
+        "position"
+       ],
+       "cited": false,
+       "filledCited": false,
+       "said": [],
+       "named": [],
+       "coverage": 0,
+       "numbers": [],
+       "codeNumbers": []
+      }
+     ],
+     "cited": 0,
+     "numbered": 0,
+     "filled": 0,
+     "codeNumbered": 0,
+     "coverage": null,
+     "looseCites": [
+      "0:20 Player engages an enemy push with Battle Healer, Zap, and Golden Knight.",
+      "0:20 Player engages an enemy push with Battle Healer, Zap, and Golden Knight."
+     ],
+     "sentBack": 3
+    },
+    {
+     "run": 2,
+     "relearned": false,
+     "verdict": "nothing named",
+     "named": "",
+     "why": "Code found nothing lost in what it could read: no death, no lost fight, and no teammate down near you without a trade. No kill feed, death counter, or HP number could be read to check the deaths, which come from a low-detail pass alone, so one it missed is not ruled out. No single habit is named.",
+     "minutes": 3.5,
+     "calls": {
+      "answered": 14,
+      "failed": 2
+     },
+     "models": {
+      "gemini-3.5-flash-lite": 14
+     },
+     "flags": [
+      "near_loss",
+      "state_facts",
+      "spectate_deaths",
+      "far_downs_low",
+      "objectives",
+      "cover_losses",
+      "factor_refs",
+      "long_runup",
+      "hud_zoom",
+      "game_profile",
+      "par_counters",
+      "hp_bar"
+     ],
+     "tokens": {
+      "prompt": 276388,
+      "output": 28027,
+      "text": 55625,
+      "image": 39899,
+      "video": 180864
+     },
+     "jobs": {
+      "low-detail pass": {
+       "calls": 3,
+       "prompt": 13921,
+       "output": 605
+      },
+      "HUD counters": {
+       "calls": 3,
+       "prompt": 3622,
+       "output": 1629
+      },
+      "read_hud/other": {
+       "calls": 1,
+       "prompt": 15461,
+       "output": 274
+      },
+      "coach": {
+       "calls": 4,
+       "prompt": 69703,
+       "output": 3039
+      },
+      "clips": {
+       "calls": 5,
+       "prompt": 173681,
+       "output": 22480
+      }
+     },
+     "record": {
+      "kills": 0,
+      "deaths": 0,
+      "deathsFound": 0,
+      "deathsReal": 1,
+      "invented": 0
+     },
+     "player": {
+      "learned": null,
+      "plays": null
+     },
+     "losses": [
+      {
+       "t": "1:33",
+       "kind": "tower damage (right tower 3197 to 761)",
+       "baseline": "Answering a Royal Giant at the bridge with the slowest, most expensive card, and only once it became affordable: the Sparky went down at 1:24.5 and first fired at 1:34.2, by which time the tower had taken all six shots (2436).",
+       "factors": [
+        "resources",
+        "position",
+        "information"
+       ],
+       "cited": false,
+       "filledCited": false,
+       "said": [],
+       "named": [],
+       "coverage": 0,
+       "numbers": [],
+       "codeNumbers": []
+      },
+      {
+       "t": "2:36",
+       "kind": "tower damage (right tower 761 to 384), with the player's King Tower hit and activated (5582 bar from 2:24)",
+       "baseline": "Stacking 13 elixir of Sparkys right against the damaged right tower, so the opponent's Fireball hit the tower (and the King Tower) along with the defence.",
+       "factors": [
+        "resources",
+        "position",
+        "information"
+       ],
+       "cited": false,
+       "filledCited": false,
+       "said": [],
+       "named": [],
+       "coverage": 0,
+       "numbers": [],
+       "codeNumbers": []
+      },
+      {
+       "t": "3:27",
+       "kind": "right tower destroyed in sudden-death overtime: the match lost 0-1",
+       "baseline": "With a 384-health tower in sudden death, spending everything on defending in front of it (where the Fireball hit both), with no threat elsewhere, so the opponent's spells could finish the tower at their leisure.",
+       "factors": [
+        "resources",
+        "map",
+        "position"
+       ],
+       "cited": false,
+       "filledCited": false,
+       "said": [],
+       "named": [],
+       "coverage": 0,
+       "numbers": [],
+       "codeNumbers": []
+      }
+     ],
+     "cited": 0,
+     "numbered": 0,
+     "filled": 0,
+     "codeNumbered": 0,
+     "coverage": null,
+     "looseCites": [],
+     "sentBack": 0
+    }
+   ],
+   "shots": [
+    "loop-41/cr/live-01.png",
+    "loop-41/cr/live-02.png",
+    "loop-41/cr/live-03.png",
+    "loop-41/cr/live-04.png",
+    "loop-41/cr/live-05.png",
+    "loop-41/cr/live-06.png",
+    "loop-41/cr/after-top.png"
+   ]
+  },
+  {
+   "tag": "fn",
+   "game": "Fortnite",
+   "losses": 5,
+   "runs": [
+    {
+     "run": 1,
+     "relearned": true,
+     "verdict": "one-off",
+     "named": "Engaged an enemy in the open at low health during the final endgame fight.",
+     "why": "Taking fights out in the open without full health or proper cover leaves you vulnerable to being eliminated by opponents with high-tier weapons in endgame scenarios.",
+     "minutes": 6,
+     "calls": {
+      "answered": 20,
+      "failed": 1
+     },
+     "models": {
+      "gemini-3.5-flash-lite": 20
+     },
+     "flags": [
+      "near_loss",
+      "state_facts",
+      "spectate_deaths",
+      "far_downs_low",
+      "objectives",
+      "cover_losses",
+      "factor_refs",
+      "long_runup",
+      "hud_zoom",
+      "game_profile",
+      "par_counters",
+      "hp_bar"
+     ],
+     "tokens": {
+      "prompt": 219861,
+      "output": 31671,
+      "text": 54468,
+      "image": 71145,
+      "video": 94248
+     },
+     "jobs": {
+      "learn": {
+       "calls": 3,
+       "prompt": 18826,
+       "output": 868
+      },
+      "box check": {
+       "calls": 2,
+       "prompt": 11629,
+       "output": 1042
+      },
+      "read_hud/other": {
+       "calls": 3,
+       "prompt": 30120,
+       "output": 2957
+      },
+      "HUD counters": {
+       "calls": 3,
+       "prompt": 3713,
+       "output": 7323
+      },
+      "kill feed": {
+       "calls": 2,
+       "prompt": 2562,
+       "output": 3969
+      },
+      "low-detail pass": {
+       "calls": 1,
+       "prompt": 32270,
+       "output": 500
+      },
+      "coach": {
+       "calls": 4,
+       "prompt": 56354,
+       "output": 2529
+      },
+      "clips": {
+       "calls": 2,
+       "prompt": 63356,
+       "output": 10207
+      },
+      "claim check": {
+       "calls": 1,
+       "prompt": 1031,
+       "output": 2276
+      }
+     },
+     "record": {
+      "kills": 4,
+      "deaths": 1,
+      "deathsFound": 1,
+      "deathsReal": 1,
+      "invented": 0
+     },
+     "player": {
+      "learned": null,
+      "plays": null
+     },
+     "losses": [
+      {
+       "t": "2:43",
+       "kind": "damage (fall: health 97 -> 72, shield 98 untouched)",
+       "baseline": "Dropping off a rock face for 25 fall damage with no fight on, which then spent their only bandage for 3 health.",
+       "factors": [
+        "position",
+        "resources",
+        "mechanics",
+        "map",
+        "information"
+       ],
+       "cited": false,
+       "filledCited": false,
+       "said": [],
+       "named": [],
+       "coverage": 0,
+       "numbers": [],
+       "codeNumbers": []
+      },
+      {
+       "t": "6:09",
+       "kind": "damage (fall: health 75 -> 55, shield 98 untouched)",
+       "baseline": "Dropping off the hill to the river for 20 fall damage with no heals left to win it back.",
+       "factors": [
+        "position",
+        "resources",
+        "mechanics",
+        "map"
+       ],
+       "cited": false,
+       "filledCited": false,
+       "said": [],
+       "named": [],
+       "coverage": 0,
+       "numbers": [],
+       "codeNumbers": []
+      },
+      {
+       "t": "6:59",
+       "kind": "minor damage (fall: health 55 -> 45, shield 98 untouched)",
+       "baseline": "A third fall-damage drop, now in the final four, leaving 45 health for the end game.",
+       "factors": [
+        "resources",
+        "map",
+        "mechanics"
+       ],
+       "cited": false,
+       "filledCited": false,
+       "said": [],
+       "named": [],
+       "coverage": 0,
+       "numbers": [],
+       "codeNumbers": []
+      },
+      {
+       "t": "7:30",
+       "kind": "heavy damage (shield 98 -> 24 in three hits, 7:29.9-7:33.1), fled",
+       "baseline": "Walking into the open centre of the final-four circle with the pickaxe out and 45 health to loot a chest someone had already opened, and taking nothing from it, then running across open ground for about 4 s under fire instead of building.",
+       "factors": [
+        "position",
+        "information",
+        "resources",
+        "numbers",
+        "map",
+        "mechanics"
+       ],
+       "cited": false,
+       "filledCited": false,
+       "said": [],
+       "named": [],
+       "coverage": 0,
+       "numbers": [],
+       "codeNumbers": []
+      },
+      {
+       "t": "7:43",
+       "kind": "death (eliminated by MISK-82 with a Deadeye Assault Rifle; placed #4)",
+       "baseline": "Re-peeking from behind a hedge at 69 health with no heals and no build, firing the Arc-Lightning Gun into the hedge that was their only cover; once it broke, the Deadeye Assault Rifle finished them in under a second.",
+       "factors": [
+        "position",
+        "information",
+        "resources",
+        "numbers",
+        "map",
+        "mechanics"
+       ],
+       "cited": true,
+       "filledCited": false,
+       "said": [
+        "Player positioned behind a low hedge with low health at InnoLoop Labs instead of healing, leading to elimination in the 1v1 fight. Because: Positioned behind a low hedge in the open with low health (45 HP) and initiated an engagement with the Arc-Lightning Gun instead of healing or taking solid building cover."
+       ],
+       "named": [
+        "position",
+        "resources",
+        "numbers",
+        "mechanics"
+       ],
+       "coverage": 0.6666666666666666,
+       "numbers": [
+        "45 HP"
+       ],
+       "codeNumbers": []
+      }
+     ],
+     "cited": 1,
+     "numbered": 1,
+     "filled": 0,
+     "codeNumbered": 0,
+     "coverage": 0.6666666666666666,
+     "looseCites": [],
+     "sentBack": 1
+    },
+    {
+     "run": 2,
+     "relearned": false,
+     "verdict": "one-off",
+     "named": "The player was eliminated because they engaged an enemy while low on health and in a vulnerable, open position without attempting to heal or find better cover.",
+     "why": "The player's decision to engage while low on health and in an exposed position directly led to their elimination. They failed to prioritize survival by healing or seeking better cover before committing to the fight.",
+     "minutes": 20.5,
+     "calls": {
+      "answered": 17,
+      "failed": 16
+     },
+     "models": {
+      "gemini-3.5-flash-lite": 2,
+      "gemini-3.1-flash-lite": 15
+     },
+     "flags": [
+      "near_loss",
+      "state_facts",
+      "spectate_deaths",
+      "far_downs_low",
+      "objectives",
+      "cover_losses",
+      "factor_refs",
+      "long_runup",
+      "hud_zoom",
+      "game_profile",
+      "par_counters",
+      "hp_bar"
+     ],
+     "tokens": {
+      "prompt": 187188,
+      "output": 21591,
+      "text": 60372,
+      "image": 28212,
+      "video": 98604
+     },
+     "jobs": {
+      "HUD counters": {
+       "calls": 7,
+       "prompt": 3688,
+       "output": 9745
+      },
+      "kill feed": {
+       "calls": 2,
+       "prompt": 2562,
+       "output": 1777
+      },
+      "low-detail pass": {
+       "calls": 1,
+       "prompt": 32270,
+       "output": 490
+      },
+      "read_hud/other": {
+       "calls": 2,
+       "prompt": 31277,
+       "output": 1125
+      },
+      "coach": {
+       "calls": 7,
+       "prompt": 51392,
+       "output": 1050
+      },
+      "clips": {
+       "calls": 11,
+       "prompt": 64436,
+       "output": 5884
+      },
+      "claim check": {
+       "calls": 1,
+       "prompt": 1563,
+       "output": 1520
+      }
+     },
+     "record": {
+      "kills": 4,
+      "deaths": 1,
+      "deathsFound": 1,
+      "deathsReal": 1,
+      "invented": 0
+     },
+     "player": {
+      "learned": null,
+      "plays": null
+     },
+     "losses": [
+      {
+       "t": "2:43",
+       "kind": "damage (fall: health 97 -> 72, shield 98 untouched)",
+       "baseline": "Dropping off a rock face for 25 fall damage with no fight on, which then spent their only bandage for 3 health.",
+       "factors": [
+        "position",
+        "resources",
+        "mechanics",
+        "map",
+        "information"
+       ],
+       "cited": false,
+       "filledCited": false,
+       "said": [],
+       "named": [],
+       "coverage": 0,
+       "numbers": [],
+       "codeNumbers": []
+      },
+      {
+       "t": "6:09",
+       "kind": "damage (fall: health 75 -> 55, shield 98 untouched)",
+       "baseline": "Dropping off the hill to the river for 20 fall damage with no heals left to win it back.",
+       "factors": [
+        "position",
+        "resources",
+        "mechanics",
+        "map"
+       ],
+       "cited": false,
+       "filledCited": false,
+       "said": [],
+       "named": [],
+       "coverage": 0,
+       "numbers": [],
+       "codeNumbers": []
+      },
+      {
+       "t": "6:59",
+       "kind": "minor damage (fall: health 55 -> 45, shield 98 untouched)",
+       "baseline": "A third fall-damage drop, now in the final four, leaving 45 health for the end game.",
+       "factors": [
+        "resources",
+        "map",
+        "mechanics"
+       ],
+       "cited": false,
+       "filledCited": false,
+       "said": [],
+       "named": [],
+       "coverage": 0,
+       "numbers": [],
+       "codeNumbers": []
+      },
+      {
+       "t": "7:30",
+       "kind": "heavy damage (shield 98 -> 24 in three hits, 7:29.9-7:33.1), fled",
+       "baseline": "Walking into the open centre of the final-four circle with the pickaxe out and 45 health to loot a chest someone had already opened, and taking nothing from it, then running across open ground for about 4 s under fire instead of building.",
+       "factors": [
+        "position",
+        "information",
+        "resources",
+        "numbers",
+        "map",
+        "mechanics"
+       ],
+       "cited": false,
+       "filledCited": false,
+       "said": [],
+       "named": [],
+       "coverage": 0,
+       "numbers": [],
+       "codeNumbers": []
+      },
+      {
+       "t": "7:43",
+       "kind": "death (eliminated by MISK-82 with a Deadeye Assault Rifle; placed #4)",
+       "baseline": "Re-peeking from behind a hedge at 69 health with no heals and no build, firing the Arc-Lightning Gun into the hedge that was their only cover; once it broke, the Deadeye Assault Rifle finished them in under a second.",
+       "factors": [
+        "position",
+        "information",
+        "resources",
+        "numbers",
+        "map",
+        "mechanics"
+       ],
+       "cited": true,
+       "filledCited": false,
+       "said": [
+        "The player engaged an enemy while standing still behind a hedge in an open area while low on health. Because: The player was stationary behind a hedge in an open area, making them an easy target for the enemy. They were also low on health (24/45) and engaged without attempting to heal or reposition to better cover.",
+        "The player engaged an enemy while standing still behind a hedge in an open area while low on health. Because: The player was stationary behind a hedge in an open area, making them an easy target for the enemy. They were also low on health (24/45) and engaged without attempting to heal or reposition to better cover."
+       ],
+       "named": [
+        "position",
+        "resources"
+       ],
+       "coverage": 0.3333333333333333,
+       "numbers": [
+        "24/45"
+       ],
+       "codeNumbers": []
+      }
+     ],
+     "cited": 1,
+     "numbered": 1,
+     "filled": 0,
+     "codeNumbered": 0,
+     "coverage": 0.3333333333333333,
+     "looseCites": [],
+     "sentBack": 1
+    }
+   ],
+   "shots": [
+    "loop-41/fn/live-01.png",
+    "loop-41/fn/live-02.png",
+    "loop-41/fn/live-03.png",
+    "loop-41/fn/live-04.png",
+    "loop-41/fn/live-05.png",
+    "loop-41/fn/live-06.png",
+    "loop-41/fn/after-top.png"
+   ]
+  },
+  {
+   "tag": "bs",
+   "game": "Brawl Stars",
+   "losses": 3,
+   "runs": [
+    {
+     "run": 1,
+     "relearned": true,
+     "verdict": "one-off",
+     "named": "Overextending in the open lane while low on health",
+     "why": "Advancing into open fire without defensive cover while critically injured resulted in elimination, losing the fight.",
+     "minutes": 5.8,
+     "calls": {
+      "answered": 29,
+      "failed": 1
+     },
+     "models": {
+      "gemini-3.5-flash-lite": 29
+     },
+     "flags": [
+      "near_loss",
+      "state_facts",
+      "spectate_deaths",
+      "far_downs_low",
+      "objectives",
+      "cover_losses",
+      "factor_refs",
+      "long_runup",
+      "hud_zoom",
+      "game_profile",
+      "par_counters",
+      "hp_bar"
+     ],
+     "tokens": {
+      "prompt": 382297,
+      "output": 55948,
+      "text": 140511,
+      "image": 125230,
+      "video": 116556
+     },
+     "jobs": {
+      "learn": {
+       "calls": 3,
+       "prompt": 18826,
+       "output": 942
+      },
+      "box check": {
+       "calls": 2,
+       "prompt": 11518,
+       "output": 668
+      },
+      "read_hud/other": {
+       "calls": 6,
+       "prompt": 84901,
+       "output": 13596
+      },
+      "low-detail pass": {
+       "calls": 1,
+       "prompt": 17632,
+       "output": 823
+      },
+      "HUD counters": {
+       "calls": 2,
+       "prompt": 2514,
+       "output": 2372
+      },
+      "coach": {
+       "calls": 9,
+       "prompt": 162927,
+       "output": 7510
+      },
+      "clips": {
+       "calls": 3,
+       "prompt": 79173,
+       "output": 16464
+      },
+      "claim check": {
+       "calls": 4,
+       "prompt": 4806,
+       "output": 13573
+      }
+     },
+     "record": {
+      "kills": 7,
+      "deaths": 1,
+      "deathsFound": 0,
+      "deathsReal": 2,
+      "invented": 1
+     },
+     "player": {
+      "learned": null,
+      "plays": null
+     },
+     "losses": [
+      {
+       "t": "0:38",
+       "kind": "near_death (1 of 14300 HP, 0:38.25-0:40.0)",
+       "baseline": "Walking up into the enemy's pink circle as it appeared and staying in it for about 7 s, ahead of his team. His health went 14300 to 4254 to 1 before he backed off.",
+       "factors": [
+        "position",
+        "information",
+        "resources",
+        "numbers",
+        "map",
+        "mechanics"
+       ],
+       "cited": false,
+       "filledCited": false,
+       "said": [],
+       "named": [],
+       "coverage": 0,
+       "numbers": [],
+       "codeNumbers": []
+      },
+      {
+       "t": "1:10",
+       "kind": "death (kill popup 'NPC💀💀Abuser -> PANDA YT' at 1:10.5; 'Following: Automatic' from 1:10.75)",
+       "baseline": "After losing 9000 health alone on the right in 2.5 s, staying put alone on the right as kucennn walked up to him, instead of falling back to his team, and taking on three enemies alone. Then, with super charged from 1:05.75 and three gadgets, he used neither before dying at 1 HP right after the Immune state ended.",
+       "factors": [
+        "position",
+        "information",
+        "resources",
+        "numbers",
+        "map",
+        "mechanics"
+       ],
+       "cited": false,
+       "filledCited": false,
+       "said": [],
+       "named": [],
+       "coverage": 0,
+       "numbers": [],
+       "codeNumbers": []
+      },
+      {
+       "t": "2:58",
+       "kind": "death (kill popup 'SSZtt -> PANDA YT' at 2:58.5; spectating 'Following: ราชาโดดรุม' from 2:58.8)",
+       "baseline": "Walking up alone, ahead of his team, into three enemies, and spending two of his three shots at SSZtt from range for no damage, so he had 1 of 3 left when SSZtt's beam and the circle caught him. Then standing in the enemy's pink circle to hit the object inside it while 1062s stacked on him (13895 to nearly 0 in about 1.5 s). During the Immune state he stayed beside SSZtt instead of falling back.",
+       "factors": [
+        "position",
+        "resources",
+        "numbers",
+        "information",
+        "map",
+        "mechanics"
+       ],
+       "cited": false,
+       "filledCited": false,
+       "said": [],
+       "named": [],
+       "coverage": 0,
+       "numbers": [],
+       "codeNumbers": []
+      }
+     ],
+     "cited": 0,
+     "numbered": 0,
+     "filled": 0,
+     "codeNumbered": 0,
+     "coverage": null,
+     "looseCites": [
+      "1:32 Advancing into the open lane to challenge enemies while vulnerable.",
+      "1:32 Advancing into the open lane to challenge enemies while vulnerable."
+     ],
+     "sentBack": 3
+    },
+    {
+     "run": 2,
+     "relearned": false,
+     "verdict": "nothing named",
+     "named": "",
+     "why": "Code found nothing lost in what it could read: no death, no lost fight, and no teammate down near you without a trade. No kill feed, death counter, or HP number could be read to check the deaths, which come from a low-detail pass alone, so one it missed is not ruled out. No single habit is named.",
+     "minutes": 3.2,
+     "calls": {
+      "answered": 11,
+      "failed": 1
+     },
+     "models": {
+      "gemini-3.5-flash-lite": 11
+     },
+     "flags": [
+      "near_loss",
+      "state_facts",
+      "spectate_deaths",
+      "far_downs_low",
+      "objectives",
+      "cover_losses",
+      "factor_refs",
+      "long_runup",
+      "hud_zoom",
+      "game_profile",
+      "par_counters",
+      "hp_bar"
+     ],
+     "tokens": {
+      "prompt": 226232,
+      "output": 30999,
+      "text": 27825,
+      "image": 24959,
+      "video": 173448
+     },
+     "jobs": {
+      "low-detail pass": {
+       "calls": 1,
+       "prompt": 17632,
+       "output": 574
+      },
+      "HUD counters": {
+       "calls": 4,
+       "prompt": 3794,
+       "output": 2606
+      },
+      "read_hud/other": {
+       "calls": 1,
+       "prompt": 4553,
+       "output": 85
+      },
+      "coach": {
+       "calls": 2,
+       "prompt": 21517,
+       "output": 4268
+      },
+      "clips": {
+       "calls": 4,
+       "prompt": 178736,
+       "output": 23466
+      }
+     },
+     "record": {
+      "kills": 0,
+      "deaths": 0,
+      "deathsFound": 0,
+      "deathsReal": 2,
+      "invented": 0
+     },
+     "player": {
+      "learned": null,
+      "plays": null
+     },
+     "losses": [
+      {
+       "t": "0:38",
+       "kind": "near_death (1 of 14300 HP, 0:38.25-0:40.0)",
+       "baseline": "Walking up into the enemy's pink circle as it appeared and staying in it for about 7 s, ahead of his team. His health went 14300 to 4254 to 1 before he backed off.",
+       "factors": [
+        "position",
+        "information",
+        "resources",
+        "numbers",
+        "map",
+        "mechanics"
+       ],
+       "cited": false,
+       "filledCited": false,
+       "said": [],
+       "named": [],
+       "coverage": 0,
+       "numbers": [],
+       "codeNumbers": []
+      },
+      {
+       "t": "1:10",
+       "kind": "death (kill popup 'NPC💀💀Abuser -> PANDA YT' at 1:10.5; 'Following: Automatic' from 1:10.75)",
+       "baseline": "After losing 9000 health alone on the right in 2.5 s, staying put alone on the right as kucennn walked up to him, instead of falling back to his team, and taking on three enemies alone. Then, with super charged from 1:05.75 and three gadgets, he used neither before dying at 1 HP right after the Immune state ended.",
+       "factors": [
+        "position",
+        "information",
+        "resources",
+        "numbers",
+        "map",
+        "mechanics"
+       ],
+       "cited": false,
+       "filledCited": false,
+       "said": [],
+       "named": [],
+       "coverage": 0,
+       "numbers": [],
+       "codeNumbers": []
+      },
+      {
+       "t": "2:58",
+       "kind": "death (kill popup 'SSZtt -> PANDA YT' at 2:58.5; spectating 'Following: ราชาโดดรุม' from 2:58.8)",
+       "baseline": "Walking up alone, ahead of his team, into three enemies, and spending two of his three shots at SSZtt from range for no damage, so he had 1 of 3 left when SSZtt's beam and the circle caught him. Then standing in the enemy's pink circle to hit the object inside it while 1062s stacked on him (13895 to nearly 0 in about 1.5 s). During the Immune state he stayed beside SSZtt instead of falling back.",
+       "factors": [
+        "position",
+        "resources",
+        "numbers",
+        "information",
+        "map",
+        "mechanics"
+       ],
+       "cited": false,
+       "filledCited": false,
+       "said": [],
+       "named": [],
+       "coverage": 0,
+       "numbers": [],
+       "codeNumbers": []
+      }
+     ],
+     "cited": 0,
+     "numbered": 0,
+     "filled": 0,
+     "codeNumbered": 0,
+     "coverage": null,
+     "looseCites": [],
+     "sentBack": 0
+    }
+   ],
+   "shots": [
+    "loop-41/bs/live-01.png",
+    "loop-41/bs/live-02.png",
+    "loop-41/bs/live-03.png",
+    "loop-41/bs/live-04.png",
+    "loop-41/bs/live-05.png",
+    "loop-41/bs/live-06.png",
+    "loop-41/bs/after-top.png"
+   ]
+  },
+  {
+   "tag": "ch",
+   "game": "Chess",
+   "losses": 7,
+   "runs": [
+    {
+     "run": 1,
+     "relearned": true,
+     "verdict": "habit",
+     "named": "Autopiloting and Not Calculating",
+     "why": "Making rapid moves without calculating opponent checks, captures, and threats led to multiple major blunders and lost material throughout the game.",
+     "minutes": 3.7,
+     "calls": {
+      "answered": 14,
+      "failed": 1
+     },
+     "models": {
+      "gemini-3.5-flash-lite": 10,
+      "gemini-2.5-flash-lite": 4
+     },
+     "flags": [
+      "near_loss",
+      "state_facts",
+      "spectate_deaths",
+      "far_downs_low",
+      "objectives",
+      "cover_losses",
+      "factor_refs",
+      "long_runup",
+      "hud_zoom",
+      "game_profile",
+      "par_counters",
+      "hp_bar",
+      "chess_seen"
+     ],
+     "tokens": {
+      "prompt": 135050,
+      "output": 24823,
+      "text": 35366,
+      "image": 67608,
+      "video": 32076
+     },
+     "jobs": {
+      "learn": {
+       "calls": 3,
+       "prompt": 18826,
+       "output": 612
+      },
+      "box check": {
+       "calls": 1,
+       "prompt": 5734,
+       "output": 498
+      },
+      "read_hud/other": {
+       "calls": 2,
+       "prompt": 52403,
+       "output": 5271
+      },
+      "coach": {
+       "calls": 3,
+       "prompt": 52077,
+       "output": 4761
+      },
+      "research": {
+       "calls": 5,
+       "prompt": 4193,
+       "output": 5450
+      },
+      "claim check": {
+       "calls": 1,
+       "prompt": 1817,
+       "output": 8231
+      }
+     },
+     "record": {
+      "kills": 0,
+      "deaths": 0,
+      "deathsFound": 0,
+      "deathsReal": 0,
+      "invented": 0
+     },
+     "player": {
+      "learned": "VasuGmR",
+      "plays": null
+     },
+     "losses": [
+      {
+       "t": "0:16",
+       "kind": "blunder 2.f4 (325 at depth 20, 334 at depth 16; best exd5)",
+       "baseline": "Not taking or defending the attacked e4 pawn.",
+       "factors": [
+        "position",
+        "information"
+       ],
+       "cited": true,
+       "filledCited": false,
+       "said": [
+        "Played 2. f4, giving away a pawn and weakening the center without calculating Black's response Because: Played 2. f4 at 0:15 with center control and pawn structure compromised, ignoring that dxe4 wins material and opens lines",
+        "Played f4 Because: Played f4 ignoring dxe4"
+       ],
+       "named": [],
+       "coverage": 0,
+       "numbers": [],
+       "codeNumbers": []
+      },
+      {
+       "t": "5:05",
+       "kind": "mistake 15.Bc3 (211 at depth 20, 169 at depth 16; best Nc3)",
+       "baseline": "Moving the bishop, within a couple of seconds, onto a square that sets up a knight fork with the queen.",
+       "factors": [
+        "position",
+        "information"
+       ],
+       "cited": false,
+       "filledCited": false,
+       "said": [],
+       "named": [],
+       "coverage": 0,
+       "numbers": [],
+       "codeNumbers": []
+      },
+      {
+       "t": "5:14",
+       "kind": "blunder 16.Qd3 (430 at depth 20, 303 at depth 16; best d5)",
+       "baseline": "Putting the queen on d3, in line with the e2 knight on the c4 bishop move's diagonal.",
+       "factors": [
+        "position",
+        "information"
+       ],
+       "cited": true,
+       "filledCited": false,
+       "said": [
+        "Played 16. Qd3, walking into a discovered attack and losing the queen/material Because: Played Qd3 at 5:13 with the knight on e2 undefended and Black's bishop ready to play Bc4 with a discovered attack on the queen"
+       ],
+       "named": [
+        "position"
+       ],
+       "coverage": 0.5,
+       "numbers": [],
+       "codeNumbers": []
+      },
+      {
+       "t": "5:41",
+       "kind": "blunder 18.Nf4 (571 at depth 20, 542 at depth 16; best Ng3)",
+       "baseline": "Moving the knight, about a second after the queen trade, to a square the enemy bishop already attacks, with check behind it.",
+       "factors": [
+        "position",
+        "resources"
+       ],
+       "cited": false,
+       "filledCited": false,
+       "said": [],
+       "named": [],
+       "coverage": 0,
+       "numbers": [],
+       "codeNumbers": []
+      },
+      {
+       "t": "6:15",
+       "kind": "inaccuracy at most: 21.Rhf1 (88 at depth 20, 119 at depth 16; best g3 at both)",
+       "baseline": "Attacking the f4 bishop with the rook, which lets it escape with a pawn (...Bxh2), instead of with g3.",
+       "factors": [
+        "position"
+       ],
+       "cited": false,
+       "filledCited": false,
+       "said": [],
+       "named": [],
+       "coverage": 0,
+       "numbers": [],
+       "codeNumbers": []
+      },
+      {
+       "t": "6:28",
+       "kind": "blunder 22.Rxf4 (330 at depth 20, 288 at depth 16; best Bxc4)",
+       "baseline": "Taking the f4 bishop first, which let the c4 bishop take the a6 bishop: an even trade instead of a won piece.",
+       "factors": [
+        "position",
+        "information"
+       ],
+       "cited": true,
+       "filledCited": false,
+       "said": [
+        "Played 22. Rxf4, allowing Bxa6 and losing material Because: Played Rxf4 at 6:27 without calculating that the bishop on a6 is undefended after the capture"
+       ],
+       "named": [],
+       "coverage": 0,
+       "numbers": [],
+       "codeNumbers": []
+      },
+      {
+       "t": "7:52",
+       "kind": "mistake 26.Rf1 (160 at depth 20, 147 at depth 16; best Re1)",
+       "baseline": "Not challenging the rook on e2.",
+       "factors": [
+        "position"
+       ],
+       "cited": false,
+       "filledCited": false,
+       "said": [],
+       "named": [],
+       "coverage": 0,
+       "numbers": [],
+       "codeNumbers": []
+      }
+     ],
+     "cited": 3,
+     "numbered": 0,
+     "filled": 0,
+     "codeNumbered": 0,
+     "coverage": 0.16666666666666666,
+     "looseCites": [
+      "0:57 Played Ne2",
+      "1:02 Played fxe5",
+      "2:03 Played Qb5+",
+      "2:16 Played Qe5+",
+      "3:23 Played Bd2"
+     ],
+     "sentBack": 0
+    },
+    {
+     "run": 2,
+     "relearned": false,
+     "verdict": "habit",
+     "named": "Ignoring opponent's threats and tactical replies",
+     "why": "Making moves without calculating opponent threats, pins, and tactical replies repeatedly lost material and converted winning or playable positions into lost games.",
+     "minutes": 4.2,
+     "calls": {
+      "answered": 13,
+      "failed": 1
+     },
+     "models": {
+      "gemini-3.5-flash-lite": 13
+     },
+     "flags": [
+      "near_loss",
+      "state_facts",
+      "spectate_deaths",
+      "far_downs_low",
+      "objectives",
+      "cover_losses",
+      "factor_refs",
+      "long_runup",
+      "hud_zoom",
+      "game_profile",
+      "par_counters",
+      "hp_bar",
+      "chess_seen"
+     ],
+     "tokens": {
+      "prompt": 213695,
+      "output": 47701,
+      "text": 92025,
+      "image": 39368,
+      "video": 82302
+     },
+     "jobs": {
+      "read_hud/other": {
+       "calls": 4,
+       "prompt": 115071,
+       "output": 16308
+      },
+      "coach": {
+       "calls": 7,
+       "prompt": 94536,
+       "output": 9679
+      },
+      "claim check": {
+       "calls": 3,
+       "prompt": 4088,
+       "output": 21714
+      }
+     },
+     "record": {
+      "kills": 0,
+      "deaths": 0,
+      "deathsFound": 0,
+      "deathsReal": 0,
+      "invented": 0
+     },
+     "player": {
+      "learned": "VasuGmR",
+      "plays": null
+     },
+     "losses": [
+      {
+       "t": "0:16",
+       "kind": "blunder 2.f4 (325 at depth 20, 334 at depth 16; best exd5)",
+       "baseline": "Not taking or defending the attacked e4 pawn.",
+       "factors": [
+        "position",
+        "information"
+       ],
+       "cited": true,
+       "filledCited": false,
+       "said": [
+        "Played 2. f4 allowing dxe4 Because: Played 2. f4 prematurely weakening central control and allowing dxe4."
+       ],
+       "named": [],
+       "coverage": 0,
+       "numbers": [],
+       "codeNumbers": []
+      },
+      {
+       "t": "5:05",
+       "kind": "mistake 15.Bc3 (211 at depth 20, 169 at depth 16; best Nc3)",
+       "baseline": "Moving the bishop, within a couple of seconds, onto a square that sets up a knight fork with the queen.",
+       "factors": [
+        "position",
+        "information"
+       ],
+       "cited": false,
+       "filledCited": false,
+       "said": [],
+       "named": [],
+       "coverage": 0,
+       "numbers": [],
+       "codeNumbers": []
+      },
+      {
+       "t": "5:14",
+       "kind": "blunder 16.Qd3 (430 at depth 20, 303 at depth 16; best d5)",
+       "baseline": "Putting the queen on d3, in line with the e2 knight on the c4 bishop move's diagonal.",
+       "factors": [
+        "position",
+        "information"
+       ],
+       "cited": false,
+       "filledCited": false,
+       "said": [],
+       "named": [],
+       "coverage": 0,
+       "numbers": [],
+       "codeNumbers": []
+      },
+      {
+       "t": "5:41",
+       "kind": "blunder 18.Nf4 (571 at depth 20, 542 at depth 16; best Ng3)",
+       "baseline": "Moving the knight, about a second after the queen trade, to a square the enemy bishop already attacks, with check behind it.",
+       "factors": [
+        "position",
+        "resources"
+       ],
+       "cited": true,
+       "filledCited": false,
+       "said": [
+        "Played 18. Nf4 allowing Bxf4+ Because: Played 18. Nf4 without calculating Black's tactical response of Bxf4+ with check, losing the knight and conceding significant material."
+       ],
+       "named": [],
+       "coverage": 0,
+       "numbers": [],
+       "codeNumbers": []
+      },
+      {
+       "t": "6:15",
+       "kind": "inaccuracy at most: 21.Rhf1 (88 at depth 20, 119 at depth 16; best g3 at both)",
+       "baseline": "Attacking the f4 bishop with the rook, which lets it escape with a pawn (...Bxh2), instead of with g3.",
+       "factors": [
+        "position"
+       ],
+       "cited": false,
+       "filledCited": false,
+       "said": [],
+       "named": [],
+       "coverage": 0,
+       "numbers": [],
+       "codeNumbers": []
+      },
+      {
+       "t": "6:28",
+       "kind": "blunder 22.Rxf4 (330 at depth 20, 288 at depth 16; best Bxc4)",
+       "baseline": "Taking the f4 bishop first, which let the c4 bishop take the a6 bishop: an even trade instead of a won piece.",
+       "factors": [
+        "position",
+        "information"
+       ],
+       "cited": true,
+       "filledCited": false,
+       "said": [
+        "Played 22. Rxf4 allowing Bxa6 Because: Played 22. Rxf4 overlooking Black's bishop capturing the piece, losing material."
+       ],
+       "named": [],
+       "coverage": 0,
+       "numbers": [],
+       "codeNumbers": []
+      },
+      {
+       "t": "7:52",
+       "kind": "mistake 26.Rf1 (160 at depth 20, 147 at depth 16; best Re1)",
+       "baseline": "Not challenging the rook on e2.",
+       "factors": [
+        "position"
+       ],
+       "cited": false,
+       "filledCited": false,
+       "said": [],
+       "named": [],
+       "coverage": 0,
+       "numbers": [],
+       "codeNumbers": []
+      }
+     ],
+     "cited": 3,
+     "numbered": 0,
+     "filled": 0,
+     "codeNumbered": 0,
+     "coverage": 0,
+     "looseCites": [
+      "2:03 Played 10. Qb5+ allowing Nc6",
+      "1:02 Played 7. fxe5 allowing Qxe5",
+      "2:16 Played 11. Qe5+ allowing Be6",
+      "3:23 Played 12. Bd2 allowing Nd7"
+     ],
+     "sentBack": 4
+    }
+   ],
+   "shots": [
+    "loop-41/ch/live-01.png",
+    "loop-41/ch/live-02.png",
+    "loop-41/ch/live-03.png",
+    "loop-41/ch/live-04.png",
+    "loop-41/ch/live-05.png",
+    "loop-41/ch/live-06.png",
+    "loop-41/ch/after-top.png"
+   ]
+  },
+  {
+   "tag": "r6",
+   "game": "Rainbow Six Siege",
+   "losses": 2,
+   "runs": [
+    {
+     "run": 1,
+     "relearned": true,
+     "verdict": "one-off",
+     "named": "Engaging in gunfights at critical low health (19 of 100) without healing or retreating to cover.",
+     "why": "Though the player performed exceptionally well overall (winning 5 of 6 fights and securing the match victory), the sole death and lost fight occurred when engaging enemies at critical low health (19/100) instead of retreating to heal.",
+     "minutes": 6.3,
+     "calls": {
+      "answered": 29,
+      "failed": 1
+     },
+     "models": {
+      "gemini-3.5-flash-lite": 29
+     },
+     "flags": [
+      "near_loss",
+      "state_facts",
+      "spectate_deaths",
+      "far_downs_low",
+      "objectives",
+      "cover_losses",
+      "factor_refs",
+      "long_runup",
+      "hud_zoom",
+      "game_profile",
+      "par_counters",
+      "hp_bar"
+     ],
+     "tokens": {
+      "prompt": 353533,
+      "output": 58397,
+      "text": 122386,
+      "image": 99675,
+      "video": 131472
+     },
+     "jobs": {
+      "learn": {
+       "calls": 3,
+       "prompt": 18826,
+       "output": 2390
+      },
+      "box check": {
+       "calls": 2,
+       "prompt": 11576,
+       "output": 1048
+      },
+      "read_hud/other": {
+       "calls": 5,
+       "prompt": 77056,
+       "output": 12475
+      },
+      "HUD counters": {
+       "calls": 5,
+       "prompt": 6329,
+       "output": 7909
+      },
+      "kill feed": {
+       "calls": 2,
+       "prompt": 2542,
+       "output": 3491
+      },
+      "coach": {
+       "calls": 7,
+       "prompt": 130333,
+       "output": 5975
+      },
+      "clips": {
+       "calls": 2,
+       "prompt": 96399,
+       "output": 11836
+      },
+      "aim": {
+       "calls": 1,
+       "prompt": 3469,
+       "output": 292
+      },
+      "claim check": {
+       "calls": 3,
+       "prompt": 7003,
+       "output": 12981
+      }
+     },
+     "record": {
+      "kills": 8,
+      "deaths": 1,
+      "deathsFound": 1,
+      "deathsReal": 1,
+      "invented": 0
+     },
+     "player": {
+      "learned": "TAVUKSEVEN",
+      "plays": "Mute"
+     },
+     "losses": [
+      {
+       "t": "8:38.9",
+       "kind": "near_death (19 of 100)",
+       "baseline": "Emptying the whole rifle magazine at a doorway target, then walking through that same doorway on his pistol, without reloading, into an enemy who was already set inside.",
+       "factors": [
+        "position",
+        "information",
+        "resources",
+        "numbers",
+        "map",
+        "mechanics"
+       ],
+       "cited": false,
+       "filledCited": false,
+       "said": [],
+       "named": [],
+       "coverage": 0,
+       "numbers": [],
+       "codeNumbers": []
+      },
+      {
+       "t": "8:58.3",
+       "kind": "death (ELIMINATED BY francomix: THUNDERBIRD, SPEAR .308; headshot icon in the feed row)",
+       "baseline": "Walking into an open room on 19 HP with the rifle lowered, so that when the enemy crossed his crosshair at 13 m (8:56.9) he couldn't shoot until the enemy was in cover, and lost the following exchange to one headshot.",
+       "factors": [
+        "position",
+        "information",
+        "resources",
+        "numbers",
+        "map",
+        "mechanics"
+       ],
+       "cited": true,
+       "filledCited": false,
+       "said": [
+        "Moving through upper floor rooms at 19 of 100 health prior to the lost engagement Because: Pressing forward into engagement areas at 19 of 100 health without resetting health or securing support.",
+        "Engaging an enemy directly at 19 of 100 health resulting in being eliminated Because: Challenging an enemy in a direct gunfight while at 19 of 100 health, with 25 rounds in magazine, scoreboard showing match point (blue 3, orange 0) with clock at 1:17, resulting in death."
+       ],
+       "named": [
+        "position",
+        "resources"
+       ],
+       "coverage": 0.3333333333333333,
+       "numbers": [
+        "19 of 100"
+       ],
+       "codeNumbers": []
+      }
+     ],
+     "cited": 1,
+     "numbered": 1,
+     "filled": 0,
+     "codeNumbered": 0,
+     "coverage": 0.3333333333333333,
+     "looseCites": [],
+     "sentBack": 3
+    },
+    {
+     "run": 2,
+     "relearned": false,
+     "verdict": "one-off",
+     "named": "Engaging enemies at low health without cover or healing",
+     "why": "The player played exceptionally well overall, winning 5 out of 6 fights and taking the match 4-0. However, in the final round at match point, the player took unnecessary risks by challenging doorways at low health (19/100) without cover or healing utility, leading to a near-death state and their only death of the match.",
+     "minutes": 4.2,
+     "calls": {
+      "answered": 15,
+      "failed": 1
+     },
+     "models": {
+      "gemini-3.5-flash-lite": 15
+     },
+     "flags": [
+      "near_loss",
+      "state_facts",
+      "spectate_deaths",
+      "far_downs_low",
+      "objectives",
+      "cover_losses",
+      "factor_refs",
+      "long_runup",
+      "hud_zoom",
+      "game_profile",
+      "par_counters",
+      "hp_bar"
+     ],
+     "tokens": {
+      "prompt": 195812,
+      "output": 37115,
+      "text": 45702,
+      "image": 44906,
+      "video": 105204
+     },
+     "jobs": {
+      "HUD counters": {
+       "calls": 6,
+       "prompt": 6329,
+       "output": 8426
+      },
+      "kill feed": {
+       "calls": 2,
+       "prompt": 2542,
+       "output": 4292
+      },
+      "read_hud/other": {
+       "calls": 2,
+       "prompt": 29468,
+       "output": 4983
+      },
+      "coach": {
+       "calls": 3,
+       "prompt": 59002,
+       "output": 3902
+      },
+      "clips": {
+       "calls": 2,
+       "prompt": 96399,
+       "output": 11827
+      },
+      "claim check": {
+       "calls": 1,
+       "prompt": 2072,
+       "output": 3685
+      }
+     },
+     "record": {
+      "kills": 8,
+      "deaths": 1,
+      "deathsFound": 1,
+      "deathsReal": 1,
+      "invented": 0
+     },
+     "player": {
+      "learned": "TAVUKSEVEN",
+      "plays": "Mute"
+     },
+     "losses": [
+      {
+       "t": "8:38.9",
+       "kind": "near_death (19 of 100)",
+       "baseline": "Emptying the whole rifle magazine at a doorway target, then walking through that same doorway on his pistol, without reloading, into an enemy who was already set inside.",
+       "factors": [
+        "position",
+        "information",
+        "resources",
+        "numbers",
+        "map",
+        "mechanics"
+       ],
+       "cited": true,
+       "filledCited": false,
+       "said": [
+        "The player engages an enemy in the doorway between Covered Terrace and Mezzanine while exposed, dropping to near-death. Because: The player challenged a direct doorway angle while exposed in 2F Mezzanine at match point with 1:35 on the clock and 3 vs 3 numbers, taking heavy unshielded damage; as read: position 8:39 The player stood in the doorway between 2F Covered Terrace and Mezzanine, fully exposed without cover, as shown by the minimap and room layout; resources 8:39 Health dropped to near-death red overlay, ammo counter at 10/89, and ability icons ready as shown on the HUD; numbers 8:39 3 vs 3 in the round, shown by the team bar and scoreboard"
+       ],
+       "named": [
+        "position",
+        "numbers"
+       ],
+       "coverage": 0.3333333333333333,
+       "numbers": [],
+       "codeNumbers": []
+      },
+      {
+       "t": "8:58.3",
+       "kind": "death (ELIMINATED BY francomix: THUNDERBIRD, SPEAR .308; headshot icon in the feed row)",
+       "baseline": "Walking into an open room on 19 HP with the rifle lowered, so that when the enemy crossed his crosshair at 13 m (8:56.9) he couldn't shoot until the enemy was in cover, and lost the following exchange to one headshot.",
+       "factors": [
+        "position",
+        "information",
+        "resources",
+        "numbers",
+        "map",
+        "mechanics"
+       ],
+       "cited": true,
+       "filledCited": false,
+       "said": [
+        "The player pushes into 2F Piano Room at 19 HP and engages in a gunfight, resulting in death. Because: The player pushed into an enemy room at critically low health (19/100) in a 2 vs 3 situation without healing or secure cover; as read: position 8:59 The player stood in the 2F Piano Room doorway exposed to enemy angles, as shown on the minimap and HUD; resources 8:59 Health was critically low at 19/100, ammo counter at 12/64, with ability icons ready as shown in the HUD; numbers 8:59 2 vs 3 team situation, shown by the team bar and onscreen banner"
+       ],
+       "named": [
+        "position",
+        "resources"
+       ],
+       "coverage": 0.3333333333333333,
+       "numbers": [
+        "19/100",
+        "19 HP",
+        "2 vs 3"
+       ],
+       "codeNumbers": [
+        "19/100,"
+       ]
+      }
+     ],
+     "cited": 2,
+     "numbered": 1,
+     "filled": 0,
+     "codeNumbered": 1,
+     "coverage": 0.3333333333333333,
+     "looseCites": [],
+     "sentBack": 0
+    }
+   ],
+   "shots": [
+    "loop-41/r6/live-01.png",
+    "loop-41/r6/live-02.png",
+    "loop-41/r6/live-03.png",
+    "loop-41/r6/live-04.png",
+    "loop-41/r6/live-05.png",
+    "loop-41/r6/live-06.png",
+    "loop-41/r6/after-top.png"
+   ]
+  }
+ ]
+}

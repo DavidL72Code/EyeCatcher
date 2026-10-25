@@ -1,4 +1,4 @@
-/* Thirdeye learns each game from the recording, so no one writes a profile. One Gemini call on frames spread over the
+/* Eye Catcher learns each game from the recording, so no one writes a profile. One Gemini call on frames spread over the
  * match names the game and genre, boxes what's on screen, and lists cues and habits; toProfile turns that into the
  * profile the rest reads. Pixel facts are measured, not asked: the kill feed's rows, team colors, and which way new
  * rows join come from the video (learnLayout). Loaded in the browser as window.ThirdeyeLearn and in Node tests
@@ -8,12 +8,16 @@
   const SAMPLES = 8; // frames the learn call sees
   const LAYOUT_SAMPLES = 120; // frames the kill-feed layout is measured from: a feed is empty most of the time
   const GENRES = ['shooter', 'moba', 'chess', 'fighting', 'racing', 'sports', 'strategy', 'other'];
+  const NAME_WHERE = ['own_hud', 'highlighted', 'over_own_character', 'far_side', 'intro_or_result', 'none'];
+  const OWN_HUD = ['abilities', 'ammo']; // the player's own controls: a broadcast's gold and K/D/A can be both teams'
+  // one name or two for the same player (core's rule: case, spacing, one letter off), plain where core isn't loaded
+  const sameName = (a, b) => (C?.sameName ? C.sameName(a, b) : String(a || '').trim().toLowerCase() === String(b || '').trim().toLowerCase());
   // own_screen: the player's own screen, everything in it theirs. spectator: footage of the whole match (a broadcast,
   // coaching film, a match filmed from the stands) where the player is one of many, so they say which one they are.
   const VIEWS = ['own_screen', 'spectator'];
-  const ELEMENTS = ['kill_feed', 'minimap', 'ammo', 'health', 'scoreboard', 'damage', 'kill_count', 'board', 'player_clock', 'opponent_clock', 'gold', 'abilities'];
+  const ELEMENTS = ['kill_feed', 'minimap', 'ammo', 'health', 'scoreboard', 'damage', 'kill_count', 'board', 'player_clock', 'opponent_clock', 'gold', 'abilities', 'team'];
   // what each element is, for the learn call and for checking its boxes
-  const WHAT = { kill_feed: 'the list of recent kills', minimap: 'the small map', ammo: 'the magazine count', health: "the player's own health or shield bar", scoreboard: "each side's score, or the teams or players left", damage: 'the counter of damage the player has dealt', kill_count: "the counter of the player's own kills, or of their kills, deaths, and assists", board: 'the playing board', player_clock: "the player's clock", opponent_clock: "the opponent's clock", gold: 'the gold or money count', abilities: 'ability or ultimate icons' };
+  const WHAT = { kill_feed: 'the list of recent kills', minimap: 'the small map', ammo: 'the magazine count', health: "the player's own health or shield bar", scoreboard: "each side's score, or the teams or players left", damage: 'the counter of damage the player has dealt', kill_count: "the counter of the player's own kills, or of their kills, deaths, and assists", board: 'the playing board', player_clock: "the player's clock", opponent_clock: "the opponent's clock", gold: 'the gold or money count', abilities: 'ability or ultimate icons', team: "the teammates' portraits or health bars, with who is dead or respawning" };
   const AIM_TARGETS = ['head', 'body', 'tracking', 'none'];
   const RESEARCH_STORE = 'thirdeye.research.v2', RESEARCH_DAYS = 7; // v2: searched by facet, with the meta, the wiki's lists, and the character's kit; a week, since the meta moves with patches
   // what code can check a habit with, and what the learn call is told about each
@@ -28,10 +32,16 @@
   const MIN_FEED_H = 0.12; // of the screen: about five lines of a kill feed
   const MAX_ROWS_PER_MINUTE = 25; // new kill-feed rows a minute at a match's busiest: more means the layout is wrong
   const DEAD_FOR_ROUNDS = 30; // s: without a detected round start, a death in a round mode is over after this
+  // The experiments a review runs with, read as agent.js flag() reads them (THIRDEYE_FLAGS, served in env.js)
+  const flag = (name) => String(root.__ENV__?.FLAGS || '').split(',').map((x) => x.trim()).includes(name);
 
   const str = (description) => ({ type: 'string', description });
   const BOX = { type: 'array', items: { type: 'number' }, minItems: 4, maxItems: 4 };
-  function schema() {
+  // structures (objectives): every structure whose health the screen writes as a number, with whose it is
+  // Required when asked: optional, the call left it out, and Clash Royale learned no structures with its tower numbers on
+  // screen in every frame, so objectives never ran (loop 41)
+  const STRUCTURES = { type: 'array', maxItems: 8, description: "every structure whose health the screen writes as a number over or on it (a tower, a turret, a base), the player's own and the other side's, each on its own; empty only when the screen writes no structure's health", items: { type: 'object', properties: { label: str('which one, in a few words, like left tower or king tower'), side: { type: 'string', enum: ['player', 'opponent'], description: "whose it is: player for the player's own (on the player's own screen in a one-on-one game, the near side, at the bottom by their own cards or units), opponent for the other side's (the far side, at the top)" }, frame: { type: 'integer' }, box: { ...BOX, description: 'a tight box around its health number, [ymin, xmin, ymax, xmax] in 0-1000' } }, required: ['label', 'side', 'frame', 'box'] } };
+  function schema({ structures = false } = {}) {
     return {
       type: 'object',
       properties: {
@@ -47,18 +57,25 @@
         rounds: { type: 'boolean', description: 'play resets in rounds' },
         respawn_seconds: { type: 'number', description: 'seconds until a dead player plays again mid-round, 0 if they wait for the next round' },
         elements: { type: 'array', items: { type: 'object', properties: { name: { type: 'string', enum: ELEMENTS }, frame: { type: 'integer' }, box: BOX }, required: ['name', 'frame', 'box'] } },
+        ...(structures ? { structures: STRUCTURES } : {}),
         ally_color: str("one word: the kill feed's color for the player's team, if it colors teams"),
         enemy_color: str("one word: the kill feed's color for the other team"),
         ally_rgb: { type: 'array', items: { type: 'integer' }, description: "the RGB of the kill feed's bar or text color for the player's team, 0-255" },
         enemy_rgb: { type: 'array', items: { type: 'integer' }, description: "the same for the other team" },
         own_rows: str("how the kill feed marks the player's own kills and deaths, if it does"),
-        player_name: str("the player's own name, exactly, only where the screen marks it as theirs (highlighted in a team list or scoreboard, or over the character the camera follows); empty when it doesn't, since names over other characters are other players'"),
+        // a clan tag under the opponent's name, the only names a one-on-one game may show during play, was taken for the
+        // player's (Clash Royale, Oct 24)
+        player_name: str("the player's own name, exactly, only where the screen marks it as theirs (highlighted in a team list or scoreboard, 'YOU' beside it, or over the character the camera follows); empty when it doesn't, since names over other characters are other players', and a name over the far side, opposite the player's own cards, units, or pieces, is the opponent's. A clan, team, or guild tag printed under or beside a name belongs to that same player and is no one's name"),
+        // where the name was read, said apart from it: told in words that a name over the far side is the opponent's,
+        // the learn call still named Clash Royale's opponent's clan, over the far towers, the player (Oct 24, twice)
+        player_name_where: { type: 'string', enum: [...NAME_WHERE], description: "where on screen player_name is written: own_hud (the player's own HUD or near side, by their own cards, units, or pieces), highlighted (marked as theirs in a list or scoreboard, or 'YOU' beside it), over_own_character (over the character the camera follows), far_side (the other side's bar or half of the screen, by the opponent's name, cards, units, towers, or pieces), intro_or_result (a match intro or result screen), or none when player_name is empty" },
+        opponent_name: str("in a one-on-one game, the opponent's name as the screen shows it, often over the far side or the top, opposite the player's own cards, units, or pieces; empty otherwise"),
         player_side: str("the player's own team or side as the HUD shows it: its color (the color of their own car, name, or bar) or its name; empty in a game without sides"),
         character: str("the character the player plays (an agent, hero, legend, champion, or fighter), by its in-game name, from the portrait or the ability icons; empty when the game has none or it doesn't show"),
         cues: { type: 'array', items: { type: 'string' } },
         key_moments: str('one sentence: the moments where the player wins or loses something'),
       },
-      required: ['game', 'genre', 'view', 'first_person', 'crosshair_center', 'team_game', 'rounds', 'elements', 'cues', 'key_moments'],
+      required: ['game', 'genre', 'view', 'first_person', 'crosshair_center', 'team_game', 'rounds', 'elements', ...(structures ? ['structures'] : []), 'cues', 'key_moments', 'player_name_where'],
     };
   }
 
@@ -115,6 +132,33 @@
   /** The research as the profile keeps it: what the coach and the report read. */
   const researchBrief = (research) => (research ? { rewards: research.rewards, systems: research.systems, priorities: research.priorities, engagements: research.engagements, meta: research.meta || null, reference: research.reference || null, sources: research.sources, facets: research.facets || null, researched: research.researched, character: research.character || null, role: research.role || null } : null);
 
+  /**
+   * objectives: the structures whose health the learn call boxed (structures), as [{ id, label, side: own | other, box:
+   * [x, y, w, h] }], for agent.js readCounters. Whose each is comes from the learn, and on the player's own screen in a
+   * one-on-one game from where it stands: the near side, the bottom half, is theirs whatever the call says, as their own
+   * cards and units are (the call took Clash Royale's opponent's clan, over the far towers, for the player, Oct 24). Two
+   * boxes on one number are one structure. The label keeps letters, digits, and spaces only: it goes into prompts. Only in
+   * a one-on-one or strategy game, where a structure down is the score; in a team game a turret is no loss of the
+   * player's own (League's "ally turret destroyed", Oct 24).
+   */
+  const cleanLabel = (x) => String(x || '').replace(/[^\p{L}\p{N} ]/gu, ' ').replace(/\s+/g, ' ').trim().slice(0, 30) || 'structure';
+  function structuresOf(raw, { duel = false, view = 'own_screen' } = {}) {
+    const out = [];
+    if (!duel) return out;
+    for (const x of Array.isArray(raw?.structures) ? raw.structures : []) {
+      const b = x?.box;
+      if (!Array.isArray(b) || b.length !== 4 || b.some((v) => !Number.isFinite(+v))) continue;
+      const [y0, x0, y1, x1] = b.map((v) => clamp(+v, 0, 1000) / 1000);
+      if (y1 - y0 < 0.003 || x1 - x0 < 0.003) continue;
+      const px = (x1 - x0) * 0.15, py = (y1 - y0) * 0.15, bx = clamp(x0 - px, 0, 1), by = clamp(y0 - py, 0, 1);
+      const box = [bx, by, clamp(x1 + px, 0, 1) - bx, clamp(y1 + py, 0, 1) - by].map((v) => Math.round(v * 1000) / 1000);
+      const side = duel && view === 'own_screen' ? ((y0 + y1) / 2 > 0.5 ? 'own' : 'other') : x.side === 'player' ? 'own' : x.side === 'opponent' ? 'other' : null;
+      if (!side || out.some((o) => overlap(o.box, box))) continue;
+      out.push({ id: `S${out.length + 1}`, label: cleanLabel(x.label), side, box });
+    }
+    return out;
+  }
+
   function toProfile(raw, checks = Object.keys(CHECKS), research = null) {
     const regions = mergeBoxes(raw?.elements);
     // a kill feed runs from a screen edge, and a box drawn short of it cuts its names off (Marvel Rivals, Oct 22): one
@@ -128,14 +172,24 @@
       if (h < MIN_FEED_H) { if (y + h / 2 < 0.5) h = MIN_FEED_H; else { y = Math.max(0, y + h - MIN_FEED_H); h = MIN_FEED_H; } }
       regions.killfeed = [x, y, w, Math.min(h, 1 - y)].map((v) => Math.round(v * 1000) / 1000);
     }
-    const view = raw?.view === 'spectator' ? 'spectator' : 'own_screen';
+    // a board game is read off its board, the player's side at the bottom, however it was filmed: chess.com on a
+    // phone, two names over the board, was called spectator footage and read as units of play, of which it found none
+    // (Oct 24)
+    // In a one-on-one or strategy game, a HUD of the player's own controls (their ability or card buttons, their ammo, an
+    // elixir or gold count) is their own screen, whatever the call says: Clash Royale's elixir bar and hand of cards were
+    // learned as spectator footage, and the review read it play by play with no side for the player (Oct 25). Not in a
+    // team game: a broadcast shows the observed player's ammo and abilities, and is still footage of the whole match.
+    const duel = !!String(raw?.opponent_name || '').trim() || raw?.genre === 'strategy';
+    const own = duel && (Array.isArray(raw?.elements) ? raw.elements : []).some((e) => OWN_HUD.includes(e?.name) || e?.name === 'gold');
+    const view = raw?.view === 'spectator' && raw?.genre !== 'chess' && !own ? 'spectator' : 'own_screen';
     // footage of the whole match has no crosshair of the player's: its center is wherever the camera points
     const firstPerson = view === 'own_screen' && !!raw?.first_person, center = raw?.crosshair_center !== false;
     if (firstPerson && center) regions.aim = AIM;
     const sides = view === 'spectator' ? (Array.isArray(raw?.sides) ? raw.sides : []).filter((x) => String(x?.name || '').trim()).slice(0, 4).map((x) => ({ name: String(x.name).trim().slice(0, 40), look: String(x.look || '').trim().slice(0, 120) })) : [];
     const aimTarget = AIM_TARGETS.includes(research?.aimTarget) ? research.aimTarget : 'none';
     const habits = habitsFor(research, { regions }, checks);
-    const respawn = +raw?.respawn_seconds;
+    const respawn = raw?.respawn_seconds == null ? NaN : +raw.respawn_seconds;
+    const objectives = structuresOf(raw, { duel, view });
     return {
       learned: true,
       name: String(raw?.game || 'this game').trim().slice(0, 60),
@@ -152,14 +206,22 @@
       colorHues: { ally: rgbHue(raw?.ally_rgb), enemy: rgbHue(raw?.enemy_rgb) },
       killfeedMine: String(raw?.own_rows || '').trim().slice(0, 200) || null,
       deadFor: { rounds: DEAD_FOR_ROUNDS, respawn: respawn > 0 && respawn < 30 ? respawn : 5 },
+      // whether a dead player plays again mid-round (the call's respawn_seconds above 0), else null when it didn't say:
+      // 0 was stored as a 5 s respawn, and a round game that respawns lost its real second deaths to C.roundDeath
+      respawns: Number.isFinite(respawn) ? respawn > 0 : null,
       cues: (Array.isArray(raw?.cues) ? raw.cues : []).map((c) => String(c).trim()).filter(Boolean).slice(0, 8),
       keyMoments: String(raw?.key_moments || '').trim().slice(0, 300),
       aimTarget,
       character: research?.character?.name || String(raw?.character || '').trim().slice(0, 40) || null,
-      playerName: String(raw?.player_name || '').trim().slice(0, 40) || null,
+      // the opponent's name read as the player's (Clash Royale, Oct 24: the name over the far towers), and the scan
+      // called the player's lost tower a kill and the loss a victory
+      // and a name read on the far side is never theirs, whatever the call says it is
+      playerName: (String(raw?.player_name || '').trim() && raw?.player_name_where !== 'far_side' && !(String(raw?.opponent_name || '').trim() && sameName(raw.player_name, raw.opponent_name)) ? String(raw.player_name).trim().slice(0, 40) : null),
+      opponentName: String(raw?.opponent_name || '').trim().slice(0, 40) || null,
       playerSide: String(raw?.player_side || '').trim().toLowerCase().slice(0, 40) || null,
       research: researchBrief(research),
       habits,
+      ...(objectives.length ? { objectives } : {}),
     };
   }
 
@@ -273,6 +335,8 @@
    * One web search, answered in prose: asked once more, to search first, when it cites fewer than MIN_SOURCES pages.
    * Returns { text, sources }, or null when search isn't available. opts is shared across one research's searches.
    */
+  // opts.tally: { calls }, counted up as each call is made, for the report (agent.js research)
+  const tick = (opts) => { if (opts?.tally) opts.tally.calls = (opts.tally.calls || 0) + 1; };
   async function search(ask, facet, opts) {
     // once a search has failed (no search model, a used-up quota, each failure after a minute's waits), the rest of
     // this research doesn't try: it would wait out the same quota again for every question
@@ -280,6 +344,7 @@
     let found = null;
     try {
       for (let k = 0; k < 2 && (!found || found.sources.length < MIN_SOURCES); k++) {
+        tick(opts);
         const r = await root.Gemini.grounded(k ? `${ask}\nSearch the web for this first, and answer from the pages you find.` : ask, { signal: opts.signal, onNotice: opts.onNotice });
         if (r.text && (!found || r.sources.length > found.sources.length)) found = r;
       }
@@ -299,8 +364,9 @@
     for (let k = 0; k < asks.length; k += 2) found.push(...(await Promise.all(asks.slice(k, k + 2).map((a) => search(a.ask, a.facet, opts))))); // two at a time
     const web = found.some(Boolean);
     // a search that failed (no search model, a used-up quota) is answered from the model's own knowledge, and marked so
-    const prose = await Promise.all(asks.map(async (a, i) => found[i]?.text || Gm.textOf(await Gm.generate({ contents: [{ role: 'user', parts: [{ text: a.ask }] }], generationConfig: { temperature: 0.2 } }, opts))));
+    const prose = await Promise.all(asks.map(async (a, i) => found[i]?.text || (tick(opts), Gm.textOf(await Gm.generate({ contents: [{ role: 'user', parts: [{ text: a.ask }] }], generationConfig: { temperature: 0.2 } }, opts)))));
     const text = asks.map((a, i) => (prose[i] ? `## ${a.facet}${found[i] ? '' : " (the model's own knowledge, not the web)"}\n${prose[i]}` : '')).filter(Boolean).join('\n\n');
+    tick(opts);
     const resp = await Gm.generate({ contents: [{ role: 'user', parts: [{ text: `${shape}\n\n${text}` }] }], generationConfig: { temperature: 0, responseMimeType: 'application/json', responseSchema: schema } }, opts);
     // a few pages from each search before more from any one, so the meta's and the wiki's show beside the guides'
     const seen = new Set(), sources = [];
@@ -328,8 +394,9 @@
     const listed = research.reference?.characters?.find((c) => gameKey(c.name) === gameKey(character) || gameKey(c.name).replace(/ /g, '') === gameKey(character).replace(/ /g, ''));
     return !!cached(`${key}|${gameKey(listed?.name || String(character).trim())}`);
   }
-  async function researchGame({ name, genre, character = '', role = '', unit = 'play', checks = Object.keys(CHECKS), signal, onNotice }) {
-    const key = gameKey(name), opts = { signal, onNotice }; // shared by every search in this research, so a failure is learned once
+  // tally: { calls }, counted up with each call this research makes (none when it's saved)
+  async function researchGame({ name, genre, character = '', role = '', unit = 'play', checks = Object.keys(CHECKS), tally = null, signal, onNotice }) {
+    const key = gameKey(name), opts = { signal, onNotice, tally }; // shared by every search in this research, so a failure is learned once
     const tagging = `checked_by, for each mistake, is what can check it in code: ${checks.map((c) => `${c} (${CHECKS[c]})`).join('; ')}; or none.`;
     let research = cached(key);
     if (!research) {
@@ -385,13 +452,13 @@
    * than MIN_SOURCES pages), or answered from the model's own knowledge when search fails, and marked so. Kept for
    * RESEARCH_DAYS per game and question. Returns { answer, sources, researched }.
    */
-  async function researchQuestion({ name, genre, question, signal, onNotice }) {
+  async function researchQuestion({ name, genre, question, tally = null, signal, onNotice }) {
     const q = String(question || '').trim().slice(0, 300), key = `${gameKey(name)}?${gameKey(q)}`;
     const hit = cached(key);
     if (hit) return hit;
     const ask = `${q}\nThis is about ${name} (${genre}). Answer from what coaches, top players, the community, and the game's own pages say, in the game's own terms, in a short paragraph or a few points.`;
-    const found = await search(ask, 'question', { signal, onNotice });
-    const answer = found?.text || root.Gemini.textOf(await root.Gemini.generate({ contents: [{ role: 'user', parts: [{ text: ask }] }], generationConfig: { temperature: 0.2 } }, { signal, onNotice }));
+    const found = await search(ask, 'question', { signal, onNotice, tally });
+    const answer = found?.text || (tick({ tally }), root.Gemini.textOf(await root.Gemini.generate({ contents: [{ role: 'user', parts: [{ text: ask }] }], generationConfig: { temperature: 0.2 } }, { signal, onNotice })));
     const out = { answer: String(answer || '').trim().slice(0, 2400), sources: cleanSources(found?.sources), researched: (found?.sources?.length || 0) >= MIN_SOURCES };
     if (out.answer) writeCache(key, out);
     return out;
@@ -763,40 +830,71 @@
    * thick, either way. An icon is about square (Apex's ultimate, 1:1); Valorant's "100" with its shield is 2.5:1.
    */
   const barShaped = ([, , bw, bh], frame) => { const a = bw * frame.w, b = bh * frame.h; return Math.max(a, b) >= Math.min(a, b) * 2; };
+  // whether two regions [x, y, w, h] share a fifth or more of the smaller one
+  const overlap = ([ax, ay, aw, ah], [bx, by, bw, bh]) => {
+    const w = Math.min(ax + aw, bx + bw) - Math.max(ax, bx), h = Math.min(ay + ah, by + bh) - Math.max(ay, by);
+    return w > 0 && h > 0 && w * h >= 0.2 * Math.min(aw * ah, bw * bh);
+  };
   /**
    * Which boxes stay, from the check call's answers (said: [{ box, outlines }], box numbered from 1 in names' order) and
    * the frames where each one's digits read (digits: Map name to count, of pictures). Returns { kept, dropped, regions }.
    */
   // strict: kept only when the check call agrees it outlines that element (for boxes asked for again: digits alone kept
   // a Marvel Rivals ability count as its kill count)
-  function judgeBoxes({ names, said, digits, pictures, regions: before, frame, strict = false }) {
+  // kdaBox: the box the check's own K/D/A answer says holds the player's K/D/A (0 for none). It keeps the kill_count box
+  // its picture-by-picture answers called the scoreboard beside it: League's K/D/A sits in one bar with the team score
+  // (Oct 24), and without it the record took the low-detail pass's kills
+  function judgeBoxes({ names, said, digits, pictures, regions: before, frame, strict = false, kdaBox = 0 }) {
     const kept = [], dropped = [], regions = { ...before };
     names.forEach((name, i) => {
       const answers = said.filter((x) => x.box === i + 1).map((x) => x.outlines);
       const own = answers.filter((a) => a === name).length, others = answers.filter((a) => a !== name && a !== 'nothing');
-      const reads = (digits.get(name) || 0) * 2 > pictures;
+      const reads = (digits.get(name) || 0) * 2 > pictures, kda = name === 'kill_count' && kdaBox === i + 1;
       const shaped = !BARS.includes(name) || barShaped(before[name], frame) || reads;
-      if (((own >= others.length && own > 0) || (!strict && NUMBERS.includes(name) && reads)) && shaped) kept.push(name);
+      if (((own >= others.length && own > 0) || (!strict && NUMBERS.includes(name) && reads) || kda) && shaped) kept.push(name);
       else { dropped.push({ name, shows: mostCommonOf(others) || (shaped ? 'nothing' : 'other'), box: before[name] }); delete regions[name]; }
     });
-    // two boxes that each show the other's element were only named the wrong way round: they swap
+    // two boxes that each show the other's element were only named the wrong way round: they swap. Unless they overlap:
+    // then one's number sits inside the other, and the check's answers are about the wrong box. League's health bar and
+    // ability row, and its minimap and team bar, swapped that way, both wrongly, and the record lost its HP (Oct 24).
     for (const d of [...dropped]) {
       const o = dropped.find((x) => x !== d && x.shows === d.name && d.shows === x.name);
       if (!o || !dropped.includes(d)) continue;
-      regions[d.shows] = d.box; regions[o.shows] = o.box;
-      kept.push(`${d.shows} (was ${d.name})`, `${o.shows} (was ${o.name})`);
+      const same = overlap(d.box, o.box);
+      regions[same ? d.name : d.shows] = d.box; regions[same ? o.name : o.shows] = o.box;
+      kept.push(...(same ? [d.name, o.name] : [`${d.shows} (was ${d.name})`, `${o.shows} (was ${o.name})`]));
       dropped.splice(dropped.indexOf(d), 1); dropped.splice(dropped.indexOf(o), 1);
     }
-    return { kept, dropped, regions };
+    // a box that shows one of the record's counters no other box holds is that counter: League's K/D/A, boxed as the
+    // scoreboard, went as "shows kill_count", nothing else held it, and the record took the low-detail pass's 8 kills
+    // (Oct 24)
+    // But a scoreboard becomes the K/D/A only where the check's K/D/A answer says that box holds it (kdaBox): League's top
+    // bar holds the team score beside the K/D/A, and renamed on the picture-by-picture answers alone, its counter gave a
+    // death at 5:46 ("shut down") and 5 kills that weren't (loop 40 run 1, Oct 25); it stays the scoreboard
+    const renamed = {};
+    for (const d of [...dropped]) {
+      const to = d.shows;
+      if (!RECORD.includes(to) || regions[to] || dropped.some((x) => x !== d && x.shows === to) || (BARS.includes(to) && !barShaped(d.box, frame))) continue;
+      if (to === 'kill_count' && d.name === 'scoreboard' && kdaBox !== names.indexOf(d.name) + 1) {
+        regions[d.name] = d.box; kept.push(d.name);
+        dropped.splice(dropped.indexOf(d), 1);
+        continue;
+      }
+      regions[to] = d.box; renamed[to] = d.name;
+      kept.push(`${to} (was ${d.name})`);
+      dropped.splice(dropped.indexOf(d), 1);
+    }
+    return { kept, dropped, regions, renamed };
   }
   // character: the learn call's read of who the player plays, read again here from the same whole frames (no call of
-  // its own); the answer comes back as characterSeen
-  async function verifyRegions({ video, profile, signal, onNotice, again = true, strict = false, character = '' }) {
+  // its own); the answer comes back as characterSeen. count: the frames it's checked on (game_profile: 5, once a game);
+  // alsoAsk: elements to ask for again with the missing ones (game_profile: the ones two learn calls boxed apart)
+  async function verifyRegions({ video, profile, signal, onNotice, again = true, strict = false, character = '', count = VERIFY_FRAMES, alsoAsk = [] }) {
     // the kill feed is checked in code where it's read, by its rows or lines, and is empty in most frames: the model
     // once called an empty Valorant feed's box the scoreboard, and the review lost its record
     const names = Object.keys(profile.regions).filter((r) => r !== 'aim' && r !== 'killfeed');
     if (!names.length) return profile;
-    const frame = { w: video.width, h: video.height }, times = Array.from({ length: VERIFY_FRAMES }, (_, k) => +((video.duration * (k + 0.3)) / VERIFY_FRAMES).toFixed(2));
+    const frame = { w: video.width, h: video.height }, times = Array.from({ length: count }, (_, k) => +((video.duration * (k + 0.3)) / count).toFixed(2));
     const pictures = [], clean = [], digits = new Map(names.map((n) => [n, 0]));
     await V.each(video, times, { maxDim: 1280, signal }, ({ canvas, w, h }) => {
       const c = new OffscreenCanvas(w, h), g = c.getContext('2d'), plain = new OffscreenCanvas(w, h);
@@ -830,18 +928,21 @@
     const answer = G.parseJSON(G.textOf(resp));
     const seen = character ? { characterSeen: String(answer.character || '').trim() } : {};
     const said = (answer.boxes || []).map((x) => ({ ...x, outlines: x.outlines === 'kill_feed' ? 'killfeed' : x.outlines }));
-    const { kept, dropped, regions } = judgeBoxes({ names, said, digits, pictures: times.length, regions: profile.regions, frame, strict });
     const kdaReads = (answer.kda?.reads || []).map((r) => String(r || '').trim()).filter((r) => /^\d{1,2}\s*\/\s*\d{1,2}\s*\/\s*\d{1,2}$/.test(r));
     const kdaShown = kdaAsk && kdaReads.length >= Math.ceil(times.length / 2), kdaBox = Number(answer.kda?.box) || 0;
-    const holds = (n) => names.indexOf(n) + 1 === kdaBox && !!regions[n];
-    if (kdaShown && !holds('kill_count') && !holds('scoreboard')) {
+    const { kept, dropped, regions, renamed } = judgeBoxes({ names, said, digits, pictures: times.length, regions: profile.regions, frame, strict, kdaBox: kdaShown ? kdaBox : 0 });
+    // a box goes by the number it was drawn with, under the name it has now
+    const holds = (n) => names.indexOf(renamed[n] || n) + 1 === kdaBox && !!regions[n];
+    // the K/D/A shown but in neither box: moved, unless a box the check says outlines it took its name and the K/D/A
+    // answer named no box (the boxes are judged picture by picture; the K/D/A's box is one answer)
+    if (kdaShown && !holds('kill_count') && !holds('scoreboard') && !(renamed.kill_count && !kdaBox)) {
       if (regions.kill_count) { dropped.push({ name: 'kill_count', shows: 'other', box: regions.kill_count, kda: kdaReads[0] }); delete regions.kill_count; }
       kept.splice(0, kept.length, ...kept.filter((k) => !/^kill_count\b/.test(k)));
     }
     const kdaHint = kdaShown ? kdaReads[0] : '';
     // The counters that make the record, any the learn call didn't box, are asked for once with the boxes that went:
     // it boxed League's K/D/A counter in one call and missed it in the next (Oct 22). One more call per recording.
-    const missing = again && profile.genre !== 'chess' ? RECORD.filter((n) => !regions[n] && !dropped.some((d) => d.name === n)) : [];
+    const missing = again && profile.genre !== 'chess' ? [...new Set([...RECORD, ...alsoAsk])].filter((n) => ELEMENTS.includes(n) && !regions[n] && !dropped.some((d) => d.name === n)) : [];
     if (!again || (!dropped.length && !missing.length)) return { ...profile, ...seen, regions, verified: { kept, dropped, moved: [] } };
     // Each box that went is asked for once more, with what the first one showed, on the same frames without boxes, and
     // the new boxes are checked like the first (with no third try).
@@ -856,7 +957,7 @@
     const found = mergeBoxes((G.parseJSON(G.textOf(ask)).found || []).filter((f) => wanted.has(f.name)));
     if (!Object.keys(found).length) return { ...profile, ...seen, regions, verified: { kept, dropped, moved: [] } };
     // a box for an element the learn call never drew has to be agreed on by the check call, not just hold digits
-    const second = await verifyRegions({ video, profile: { ...profile, regions: found }, signal, onNotice, again: false, strict: Object.keys(found).some((n) => missing.includes(n)) });
+    const second = await verifyRegions({ video, profile: { ...profile, regions: found }, signal, onNotice, again: false, strict: Object.keys(found).some((n) => missing.includes(n)), count });
     const moved = Object.keys(second.regions).filter((name) => dropped.some((d) => d.name === name)).map((name) => ({ name, shows: dropped.find((d) => d.name === name).shows, from: dropped.find((d) => d.name === name).box, to: second.regions[name] }));
     const added = Object.keys(second.regions).filter((name) => missing.includes(name));
     return { ...profile, ...seen, regions: { ...regions, ...second.regions }, verified: { kept, dropped: dropped.filter((d) => !second.regions[d.name]), moved, added } };
@@ -878,36 +979,137 @@
   }
   const sameCharacter = (a, b) => { const x = gameKey(a).replace(/ /g, ''), y = gameKey(b).replace(/ /g, ''); return !!x && !!y && (x === y || x.includes(y) || y.includes(x)); };
 
+  // ---------- a game's profile, learned once (game_profile) ----------
+  // Where learn is the first stage that fails (Clash Royale's identity and towers, Brawl Stars' dropped boxes, Rocket
+  // League's missing boost, loop 38), a layout learned once a game with more effort and kept removes run-to-run box drift
+  // and 2 to 4 learn calls a new recording (tests/evals/ideas-loop-39.md, experiment 10, arm P2). What's kept is learned,
+  // never written by hand; who the player is stays each recording's own.
+  const PROFILE_STORE = 'thirdeye.gameprofile.v1', PROFILE_VERIFY = 5;
+  // the learning code's version, in every key: a layout older code learned is learned again
+  const LAYOUT_VERSION = 2;
+  // A recording's own, never kept: who the player is, the sides of a broadcast, and the team colors with the kill feed's
+  // rows measured from them (a side's color is its own each match, as the player's side is), what one box check said,
+  // and the research
+  const OWN = ['playerName', 'opponentName', 'playerSide', 'character', 'sides', 'colorNames', 'colorHues', 'killfeedColors', 'killfeedGrid', 'layout', 'verified', 'learnCalls', 'gameProfile', 'research', 'habits', 'characterSeen'];
+  /** The layout a profile keeps for its game: everything but what's the recording's own (OWN). */
+  const layoutOf = (profile) => Object.fromEntries(Object.entries(profile || {}).filter(([k]) => !OWN.includes(k)));
+  /** Where a game's profile is kept: its name, its view (own screen or a broadcast), the frame's aspect ratio, and the code's version. */
+  const profileKey = (profile, frame) => `${gameKey(profile?.name)}|${profile?.view || 'own_screen'}|${Math.round((frame.w / frame.h) * 100) / 100}|v${LAYOUT_VERSION}`;
+  // A game the learn call named by its title: told to describe one it doesn't know, it writes "a first person shooter",
+  // and two such games would share one layout
+  const GENERIC = /^(an?|the|this|some|unknown|unidentified|generic)\b|\b(unknown|unidentified|gameplay|footage|recording)\b|^(first|third)[ -]person\b|^(shooter|fps|moba|battle royale|racing|sports|strategy|fighting|platformer|rpg|card)( game)?$/i;
+  const namedGame = (name) => { const n = String(name || '').trim(); return n.length >= 2 && !GENERIC.test(n); };
+  const box01 = (b) => Array.isArray(b) && b.length === 4 && b.every((v) => Number.isFinite(+v) && +v >= 0 && +v <= 1);
+  /**
+   * A layout read back from storage, in the shape toProfile gives, or null: only what a layout has, each of its type,
+   * words cut to the length toProfile allows and structure labels cleaned again, since they reach prompts. A layout with
+   * no regions isn't one.
+   */
+  function cleanLayout(x) {
+    if (!x || typeof x !== 'object' || !x.regions || typeof x.regions !== 'object') return null;
+    const regions = Object.fromEntries(Object.entries(x.regions).filter(([k, b]) => (ELEMENTS.includes(k) || k === 'killfeed' || k === 'aim') && box01(b)).map(([k, b]) => [k, b.map(Number)]));
+    const objectives = (Array.isArray(x.objectives) ? x.objectives : []).filter((o) => box01(o?.box) && (o.side === 'own' || o.side === 'other')).slice(0, 8).map((o, i) => ({ id: `S${i + 1}`, label: cleanLabel(o.label), side: o.side, box: o.box.map(Number) }));
+    const num = (v, lo, hi, d) => (Number.isFinite(+v) && +v >= lo && +v <= hi ? +v : d);
+    return {
+      learned: true, name: String(x.name || '').trim().slice(0, 60), genre: GENRES.includes(x.genre) ? x.genre : 'other', view: VIEWS.includes(x.view) ? x.view : 'own_screen',
+      ...(x.view === 'spectator' ? { unit: String(x.unit || 'play').trim().toLowerCase().slice(0, 30) || 'play' } : {}),
+      firstPerson: x.firstPerson === true, teamGame: x.teamGame === true, rounds: x.rounds === true, fovH: x.fovH == null ? null : num(x.fovH, 30, 180, null),
+      crosshair: [0.5, 0.5], regions, killfeedMine: x.killfeedMine ? String(x.killfeedMine).trim().slice(0, 200) : null,
+      deadFor: { rounds: num(x.deadFor?.rounds, 1, 120, DEAD_FOR_ROUNDS), respawn: num(x.deadFor?.respawn, 1, 60, 5) }, respawns: typeof x.respawns === 'boolean' ? x.respawns : null,
+      cues: (Array.isArray(x.cues) ? x.cues : []).map((c) => String(c ?? '').trim()).filter(Boolean).slice(0, 8).map((c) => c.slice(0, 200)),
+      keyMoments: String(x.keyMoments || '').trim().slice(0, 300), aimTarget: AIM_TARGETS.includes(x.aimTarget) ? x.aimTarget : 'none',
+      ...(objectives.length ? { objectives } : {}),
+    };
+  }
+  const readProfiles = () => { try { const all = JSON.parse(root.localStorage?.getItem(PROFILE_STORE) || '{}'); return all && typeof all === 'object' && !Array.isArray(all) ? all : {}; } catch { return {}; } };
+  const keepProfile = (key, profile) => { const all = readProfiles(); all[key] = { layout: layoutOf(profile), learned: new Date().toISOString().slice(0, 10) }; try { root.localStorage?.setItem(PROFILE_STORE, JSON.stringify(all)); } catch {} };
+  /**
+   * Two learn calls' answers as one (game_profile): an element both boxed where the boxes overlap keeps both boxes
+   * (mergeBoxes takes the middle of their edges); one both boxed apart is left out and asked for again by the box check
+   * (disputed), but for the kill feed, which its layout is searched around anyway (the first call's stays); one only a
+   * call boxed stays, for the box check to judge as it judged one call's. Structures, which no box check sees, stay only
+   * where both calls boxed one, unless one call boxed none. The rest is the first call's, with both calls' cues.
+   * Returns { raw, disputed }: disputed, region names.
+   */
+  function consensus(a, b) {
+    const ra = mergeBoxes(a?.elements, 0), rb = mergeBoxes(b?.elements, 0), elements = [], disputed = [];
+    const of = (r, name) => (Array.isArray(r?.elements) ? r.elements : []).filter((e) => e?.name === name);
+    for (const name of ELEMENTS) {
+      const key = name === 'kill_feed' ? 'killfeed' : name, x = ra[key], y = rb[key];
+      if (x && y && !overlap(x, y)) { if (name === 'kill_feed') elements.push(...of(a, name)); else disputed.push(key); continue; }
+      elements.push(...of(a, name), ...of(b, name));
+    }
+    const sa = Array.isArray(a?.structures) ? a.structures : [], sb = Array.isArray(b?.structures) ? b.structures : [];
+    const zone = (x) => mergeBoxes([{ name: 'gold', box: x.box }], 0).gold;
+    const both = sa.filter((x) => zone(x) && sb.some((y) => zone(y) && overlap(zone(x), zone(y))));
+    const structures = !sa.length || !sb.length ? [...sa, ...sb] : both.map((x) => { const y = sb.find((z) => zone(z) && overlap(zone(x), zone(z))); return { ...x, box: x.box.map((v, k) => (+v + +y.box[k]) / 2) }; });
+    const cues = [...new Set([...(a?.cues || []), ...(b?.cues || [])].map((c) => String(c).trim()).filter(Boolean))];
+    return { raw: { ...a, elements, cues, ...(sa.length || sb.length ? { structures } : {}) }, disputed };
+  }
+
   /**
    * Learns the game from the recording: the learn call on SAMPLES frames, the check of its boxes, then the pixel layout.
    * Returns { profile, frames, raw }: frames are the pictures the learn call saw, for the app to draw the learned boxes on.
    * onPhase(what) is told as each step ends, for timing.
+   * game_profile: a game seen before (by its name, view, and aspect ratio) takes its kept layout, checked against this
+   * recording in one box check, with who the player is from this recording's learn call: 2 calls. A game not seen
+   * before is learned with more effort, once: a second learn call on 8 other frames (16 in all) with the two calls' boxes
+   * in consensus, and the box check on PROFILE_VERIFY frames; its layout is kept (thirdeye.gameprofile.v1).
    */
   // the model calls learning a game takes, for the review's call budget (agent.js): counted where each is made
   let made = 0;
   const counted = (fn) => (...args) => { made++; return fn(...args); };
+  // structures (objectives): also every structure whose health the screen writes, and whose it is
+  async function learnCall(frames, { structures = false, signal, onNotice } = {}) {
+    const parts = frames.flatMap((f, i) => [{ text: `Frame ${i + 1}, at ${C.mmss(f.t)}` }, { inlineData: { mimeType: f.mimeType, data: f.data } }]);
+    const prompt = `These frames are spread over one recording of a game or match: usually the player's own screen, sometimes a broadcast or film of the whole match. Identify the game and describe what's on screen, so a coach can read the match from it.
+view: own_screen or spectator, as defined. In spectator footage: sides, the two sides and how to tell their players apart, and unit, the game's unit of play. On the player's own screen: player_name and player_side, so their own kills, deaths, and points can be told from the other side's, and in a one-on-one game opponent_name; the player's own cards, units, or pieces are usually at the bottom.
+elements: every HUD or board element that shows the state of play, each with a tight box [ymin, xmin, ymax, xmax] scaled 0-1000 in the frame (frame, numbered from 1) where it's clearest. kill_feed: the list of recent kills, all its rows; ammo: the magazine count; health: the player's own health or shield bar, not an ability icon, with its number where one is written on or beside it; where it sits over the character the camera follows (a top-down game), box the bar and its number together, not the name above them; damage: the counter of damage the player has dealt, if the game shows one, boxed on its own; kill_count: the counter of the player's own kills, or their kills, deaths, and assists (a K/D/A like 3/1/4), if the game shows one, boxed on its own; scoreboard: each side's score; abilities: the player's ability and ultimate icons with their charges or cooldowns, if the game has them; team: the row of the player's teammates' portraits or health bars, with who is dead or respawning, if the HUD shows one (not the scoreboard); board: the board of a board game such as chess, never a playing field.${structures ? `
+structures: every structure whose health the screen writes as a number over or on it (a tower, a turret, a base), the player's own and the other side's, each on its own, in the frame where its number is clearest: a tight box around its health number (the number, not the structure), which one it is in a few words (left tower, king tower), and whose it is; in a one-on-one game on the player's own screen, the player's own are on the near side, at the bottom by their cards or units, and the other side's at the top. Leave it empty only when no structure's health is written on screen.` : ''}
+fov_h: the game's default horizontal field of view if you know it, else 0.
+cues: up to 6 short facts about how key moments look on screen, such as a kill, a death, a round start, a capture.`;
+    const resp = await counted(G.generate)({
+      contents: [{ role: 'user', parts: [...parts, { text: prompt }] }],
+      generationConfig: { temperature: 0, responseMimeType: 'application/json', responseSchema: schema({ structures }) },
+    }, { signal, onNotice });
+    return G.parseJSON(G.textOf(resp));
+  }
   async function learnGame({ video, checks = Object.keys(CHECKS), signal, onNotice, onPhase = () => {} }) {
     made = 0;
     const times = Array.from({ length: SAMPLES }, (_, k) => +((video.duration * (k + 0.5)) / SAMPLES).toFixed(2));
     const frames = await V.grab(video, times, { maxDim: 1024, quality: 0.8 });
     onPhase('frames grabbed');
-    const parts = frames.flatMap((f, i) => [{ text: `Frame ${i + 1}, at ${C.mmss(f.t)}` }, { inlineData: { mimeType: f.mimeType, data: f.data } }]);
-    const prompt = `These frames are spread over one recording of a game or match: usually the player's own screen, sometimes a broadcast or film of the whole match. Identify the game and describe what's on screen, so a coach can read the match from it.
-view: own_screen or spectator, as defined. In spectator footage: sides, the two sides and how to tell their players apart, and unit, the game's unit of play. On the player's own screen: player_name and player_side, so their own kills, deaths, and points can be told from the other side's.
-elements: every HUD or board element that shows the state of play, each with a tight box [ymin, xmin, ymax, xmax] scaled 0-1000 in the frame (frame, numbered from 1) where it's clearest. kill_feed: the list of recent kills, all its rows; ammo: the magazine count; health: the player's own health or shield bar, not an ability icon; damage: the counter of damage the player has dealt, if the game shows one, boxed on its own; kill_count: the counter of the player's own kills, or their kills, deaths, and assists (a K/D/A like 3/1/4), if the game shows one, boxed on its own; scoreboard: each side's score; abilities: the player's ability and ultimate icons with their charges or cooldowns, if the game has them; board: the board of a board game such as chess, never a playing field.
-fov_h: the game's default horizontal field of view if you know it, else 0.
-cues: up to 6 short facts about how key moments look on screen, such as a kill, a death, a round start, a capture.`;
-    const resp = await counted(G.generate)({
-      contents: [{ role: 'user', parts: [...parts, { text: prompt }] }],
-      generationConfig: { temperature: 0, responseMimeType: 'application/json', responseSchema: schema() },
-    }, { signal, onNotice });
-    const raw = G.parseJSON(G.textOf(resp));
+    const ask = { structures: flag('objectives'), signal, onNotice };
+    let raw = await learnCall(frames, ask);
     onPhase('learn call');
-    // every box is checked against the screen before anything reads from it; what matters in the game is the coach's to
-    // look up (agent.js research), when and as it chooses
-    const named = String(raw?.character || '').trim();
-    const checked = await verifyRegions({ video, profile: toProfile(raw, checks), character: named, signal, onNotice }).catch((e) => { if (e.name === 'AbortError') throw e; return toProfile(raw, checks); });
-    onPhase('boxes checked');
+    // game_profile: only for a game the learn call named; its kept layout first, else a first learn with more effort
+    const frame = { w: video.width, h: video.height }, first = toProfile(raw, checks), key = flag('game_profile') && namedGame(first.name) ? profileKey(first, frame) : null;
+    const kept = key ? cleanLayout(readProfiles()[key]?.layout) : null;
+    let named = String(raw?.character || '').trim(), checked = null, failed = false, relearned = '', grew = false, disputed = [];
+    if (kept) {
+      // under this recording's own player, checked once with no second ask; its structures from this recording where
+      // the kept layout has none (learned with objectives off). A box that no longer shows its element, or a check that
+      // couldn't run, means the HUD may have changed: the game is learned again and its entry written over.
+      grew = !kept.objectives?.length && !!first.objectives?.length;
+      const start = { ...kept, ...(grew ? { objectives: first.objectives } : {}), ...Object.fromEntries(OWN.filter((k) => k in first).map((k) => [k, first[k]])) };
+      checked = await verifyRegions({ video, profile: start, character: named, again: false, signal, onNotice }).catch((e) => { if (e?.name === 'AbortError') throw e; failed = true; return start; });
+      onPhase('boxes checked');
+      if (failed || checked.verified?.dropped?.length) { relearned = failed ? "the box check on the kept layout couldn't run" : `the kept ${checked.verified.dropped.map((d) => d.name).join(', ')} box no longer showed it`; checked = null; failed = false; }
+    }
+    if (!checked) {
+      if (key) {
+        const more = await V.grab(video, Array.from({ length: SAMPLES }, (_, k) => +((video.duration * (k + 0.15)) / SAMPLES).toFixed(2)), { maxDim: 1024, quality: 0.8 });
+        const second = await learnCall(more, ask).catch((e) => { if (e?.name === 'AbortError') throw e; return null; });
+        if (second) ({ raw, disputed } = consensus(raw, second));
+        onPhase('second learn call');
+      }
+      // every box is checked against the screen before anything reads from it; what matters in the game is the coach's
+      // to look up (agent.js research), when and as it chooses
+      const own = toProfile(raw, checks);
+      named = String(raw?.character || '').trim();
+      checked = await verifyRegions({ video, profile: own, character: named, signal, onNotice, ...(key ? { count: PROFILE_VERIFY, alsoAsk: disputed } : {}) }).catch((e) => { if (e.name === 'AbortError') throw e; failed = true; return own; });
+      onPhase('boxes checked');
+    }
     // the character, read a second time apart from the learn call (by the box check, which sees the whole screen, or on
     // its own when there was no box to check), and kept only when both reads agree: a wrong one brings the wrong kit
     // and its habits (League, Oct 22: Miss Fortune read as Samira, and the review coached Samira's Style ranks)
@@ -916,12 +1118,17 @@ cues: up to 6 short facts about how key moments look on screen, such as a kill, 
       if (again !== null && !sameCharacter(named, again)) { raw.characterUnsure = [named, again || 'unknown']; raw.character = ''; checked.character = null; }
     }
     delete checked.characterSeen;
-    const profile = await learnLayout({ video, profile: checked, signal });
+    // learnCalls: the calls this learning took, on the profile too, so the app's learned event carries it (a profile
+    // kept from an earlier learn keeps that learn's number). The kill feed's rows and colors are this recording's own,
+    // measured from it on a kept layout too. Only a layout its box check passed is kept.
+    const laid = await learnLayout({ video, profile: checked, signal }), reused = !!kept && !relearned;
+    if (key && !failed && (!reused || grew)) keepProfile(key, laid);
+    const profile = { ...laid, learnCalls: made, ...(key ? { gameProfile: { key, reused, learned: reused ? readProfiles()[key]?.learned || '' : new Date().toISOString().slice(0, 10), ...(relearned ? { relearned } : {}), ...(failed ? { kept: false } : {}), ...(disputed.length ? { disputed } : {}) } } : {}) };
     onPhase('layout measured');
     return { profile, frames, raw, calls: made };
   }
 
-  const api = { learnGame, researchGame, researchSaved, researchQuestion, habitsFor, researchBrief, cleanResearch, learnLayout, verifyRegions, toProfile, mergeBoxes, hueHistogram, pixelHues, twoTeamRows, feedRows, feedColors, judgeBoxes, barShaped, cleanCharacter, nameHue, rgbHue, alignedRows, portraitShare, CHECKS, ELEMENTS, GENRES, AIM, AIM_TARGETS };
+  const api = { learnGame, consensus, layoutOf, profileKey, structuresOf, cleanLayout, namedGame, PROFILE_STORE, LAYOUT_VERSION, researchGame, researchSaved, researchQuestion, habitsFor, researchBrief, cleanResearch, learnLayout, verifyRegions, toProfile, mergeBoxes, hueHistogram, pixelHues, twoTeamRows, feedRows, feedColors, judgeBoxes, barShaped, cleanCharacter, nameHue, rgbHue, alignedRows, portraitShare, CHECKS, ELEMENTS, GENRES, AIM, AIM_TARGETS };
   root.ThirdeyeLearn = api;
   if (typeof module !== 'undefined') module.exports = api;
 })(typeof window !== 'undefined' ? window : globalThis);

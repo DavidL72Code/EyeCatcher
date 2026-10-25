@@ -1,6 +1,6 @@
-// Desktop app check (npm run test:desktop): Thirdeye in Electron remembers where a recording is on disk, across a
+// Desktop app check (npm run test:desktop): Eye Catcher in Electron remembers where a recording is on disk, across a
 // restart, streams only recordings the player gave it, and asks again when one moves; it talks to Gemini only through
-// the backend, with no key in the page; and with the player's yes it saves recordings in the Thirdeye folder. Makes no
+// the backend, with no key in the page; and with the player's yes it saves recordings in the Eye Catcher folder. Makes no
 // model calls: it opens past reviews it saves itself. Needs the synthetic match (npm run fixture).
 import { _electron as electron } from 'playwright';
 import fs from 'node:fs';
@@ -32,7 +32,7 @@ try {
   console.log('first launch');
   let page;
   ({ app, page } = await launch());
-  check(await page.title() === 'Thirdeye', 'the window shows Thirdeye');
+  check(await page.title() === 'Eye Catcher', 'the window shows Eye Catcher');
   check(await page.evaluate(() => typeof window.thirdeyeDesktop?.remember === 'function' && typeof window.require === 'undefined' && typeof window.process === 'undefined'), 'the page gets the recording bridge and nothing of Node');
   const gem = await page.evaluate(() => ({ env: { ...window.__ENV__ }, has: window.Gemini.hasKey(), via: window.Gemini.backendUrl(), keyBox: !document.querySelector('#keyBox').hidden }));
   check(gem.via === 'http://127.0.0.1:8799' && !('GEMINI_API_KEY' in gem.env) && gem.has && !gem.keyBox, 'Gemini goes through the backend: the page has its address and no key, and asks for none');
@@ -97,13 +97,13 @@ try {
   check(true, 'and its new place is remembered');
   await app.close();
 
-  console.log('the Thirdeye folder');
+  console.log('the Eye Catcher folder');
   ({ app, page } = await launch({ THIRDEYE_LIBRARY: '' }));
   // the native question, answered yes the way a player would
   await app.evaluate(({ dialog }) => { dialog.showMessageBox = async () => ({ response: 0, checkboxChecked: false }); });
   const given = await remember('c', fixture);
   const kept = await page.evaluate((p) => window.thirdeyeDesktop.keep(p), given.path);
-  check(kept?.path === path.join(library, 'match.mp4') && fs.existsSync(fixture), `with a yes, the recording is saved in the Thirdeye folder, and the original stays (${kept?.path})`);
+  check(kept?.path === path.join(library, 'match.mp4') && fs.existsSync(fixture), `with a yes, the recording is saved in the Eye Catcher folder, and the original stays (${kept?.path})`);
   check(fs.statSync(kept.path).size === fs.statSync(fixture).size && Math.floor(fs.statSync(kept.path).mtimeMs) === Math.floor(fs.statSync(fixture).mtimeMs), 'the copy has the same size and date, so it is known as the same recording');
   check(JSON.parse(fs.readFileSync(path.join(env.THIRDEYE_USER_DATA, 'settings.json'), 'utf8')).library === 'on', 'the answer is remembered');
   check((await page.evaluate((p) => window.thirdeyeDesktop.keep(p), (await remember('d', fixture)).path))?.path === kept.path && fs.readdirSync(library).length === 1, 'adding it again makes no second copy');

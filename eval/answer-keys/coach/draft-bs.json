@@ -1,0 +1,98 @@
+{
+  "clip": "brawl-stars/bs-ubrCY2HR38M.knockout.mp4",
+  "game": "Brawl Stars",
+  "player": "PANDA YT™ (green name over the centred brawler; bottom row of the VS screen at 0:20)",
+  "character": "not named on screen (no brawler name in any frame checked: VS screen 0:20, play, VICTORY screen 3:54)",
+  "teammates": [
+    "☢TITAN☢PC☢ (title 'Where's my head?')",
+    "ราชาโดดรุม (Thai script; title 'CEO of Brawl Stars')",
+    "nahhh (kill popups: Hisordoux at 0:43 and 2:42, chienna at 2:44; 'Most Takedowns' at 3:54)",
+    "Mr.Zemo0"
+  ],
+  "enemies_named": [
+    "Hisordoux",
+    "chienna",
+    "SSZtt (kill popup 'SSZtt -> PANDA YT' at 2:58.5)",
+    "NPC💀💀Abuser (kill popup at 1:10.5; 'STAR PLAYER', 'Most Damage' at 3:54)",
+    "kucennn"
+  ],
+  "result": "Won 2-0, no round lost: 'Round won!' 2:10, 'Round won! Match over' 3:49, 'VICTORY!' 3:54. End screen for PANDA YT: 0 kills, 2 deaths, 29152 next to a heart icon. His max health reads 14300 (teammates 4600-7700).",
+  "habit": "Staying in the fight at the front, alone or ahead of his teammates, until the 1-HP 'Immune' state kicks in (0:37.5, 1:07.6, 2:57). He survived it the one time he used it to walk back to his teammates (0:39-0:40). The other two times he stayed beside enemies and died 1.2 s and 0.2 s after it ended (1:10.4, 2:58.4). Twice the fight was inside the enemy's pink circle (0:30-0:37, 2:55-2:57).",
+  "losses": [
+    {
+      "t": "0:38",
+      "kind": "near_death (1 of 14300 HP, 0:38.25-0:40.0)",
+      "decided": "0:29-0:36.5",
+      "happened": "Round 1, 0-0, all ten alive. At 0:29.25 a large pink-red circle (an enemy area: red-tinted, with D-shaped marks on its rim) appears just in front of him at the top of his screen. He walks up into it (at its lower edge at 0:30, in its middle by 0:32) and stays there to 0:37, with his white aim cone pointed up-left. TITAN PC, nahhh and ราชาโดดรุม stay behind him to the left, and Mr.Zemo0 is off to the right. Red 640s land on him from 0:32 on. Health: 14300 (0:30-0:31), about 12300 (0:32), 11100 (0:34), 8017 (0:35.5-0:36), 4254 (0:36.5). kucennn (7700) is right above him at 0:36.25-0:37, and SSZtt and NPC..Abuser are at the top edge (0:32-0:36). At 0:36.75-0:37.5 a stack of red damage numbers lands (640s and larger, overlapping). From 0:37.25 a red no-entry icon sits on his ammo bar, the ability buttons go grey and the screen edges darken (0:37.5-0:38.5). His health reads 1 at 0:38.25-0:40.0. TITAN PC (6800) and ราชาโดดรุม (4600) are beside him at 0:37. He walks down out of the circle and ends up behind them: at 0:40.5 TITAN PC (5520), ราชาโดดรุม and nahhh are up-left of him, between him and the circle. No enemy plate is on his screen at 0:40.5-0:42.5; the unnamed 2800 and 5000 plates there are blue (allied). Health: 1743 (0:40.25), 3485 (0:41.25), 5227 (0:42.25), 8711 (0:44.25). nahhh kills Hisordoux at 0:43 (popup).",
+      "factors": {
+        "position": "inside the enemy's pink circle for about 7 s (0:30-0:37), ahead of the three teammates on his left, with kucennn adjacent at the end",
+        "information": "the circle was visible from 0:29.25, before he walked into it; three enemies (SSZtt, kucennn, NPC..Abuser) were on screen at its top edge",
+        "resources": "ammo bars full (3 of 3) at every 1-s check from 0:30 to 0:37; super not charged (yellow ring about 0% at 0:30, about 40% at 0:37); green gadget button at 3, unused; health fell from 14300 to 4254 before he left",
+        "numbers": "5 v 5, nobody down yet; two teammates (TITAN PC, ราชาโดดรุม) reached him only at about 0:37",
+        "map": "round 1, about 15 s after the start (the 'Match starts in 1' countdown is at 0:20-0:23); no gas"
+      },
+      "mistake": "Walking up into the enemy's pink circle as it appeared and staying in it for about 7 s, ahead of his team. His health went 14300 to 4254 to 1 before he backed off.",
+      "better": "Step back out of the circle as soon as it appears (0:29.25) and fight from its edge beside nahhh and TITAN PC. At the latest, leave at half health (8017 at 0:35.5) instead of staying for the burst. What saved him was walking back behind his teammates during the 1-HP state (0:39-0:40); he should do that before he gets that low.",
+      "unsure": [
+        "whether the 640s came from the circle itself or from enemy shots, and who landed the burst at 0:36.75-0:37.5 (the numbers overlap; kucennn was beside him)",
+        "whether he was attacking at 0:30-0:37: the aim cone is shown, but the ammo reads 3 of 3 at every check",
+        "what causes the 1-HP state (no text names it here; at 1:07.75 and 2:57.25 the same state shows 'Immune'). The post-match cards mention Angel abilities and the Chaos modifier, but none names this effect.",
+        "what placed the circle (in round 2 an unnamed enemy object with a red health bar sits inside one)"
+      ]
+    },
+    {
+      "t": "1:10",
+      "kind": "death (kill popup 'NPC💀💀Abuser -> PANDA YT' at 1:10.5; 'Following: Automatic' from 1:10.75)",
+      "decided": "1:00.5-1:05.75",
+      "happened": "Round 1, 0-0. He is alone on the right side, by the water, at 14300 (0:59-1:00.5). Mr.Zemo0 (5831) and a teammate at 2800 are at the lower-left edge of his screen (0:59-1:01). An unnamed enemy object (8100, red bar, inside a pink circle) is at the far left. NPC..Abuser (4504) appears at the upper left at 1:00.25. His health goes 9513 (1:01), 6326 (1:01.5), 5102 (1:02.75-1:03), with red 4787, 3187 and 612 over him. kucennn (9040-9310) comes in from the left at 1:02-1:03 and chienna (5711) is lower left. From 1:03 to 1:05 he moves up-left until he is beside kucennn (1:04.5-1:05), at 4430 (1:04.25-1:05.25). No teammate plate is on his screen after 1:01. He trades: white 2320s over kucennn (9310 at 1:05.5, 7035 at 1:05.75) and next to NPC..Abuser (4932 at 1:06.5). His super charges (yellow) at 1:05.75. Health: 2690 (1:06), 1548 (1:06.5), 188 (1:07.25, with 1360 in red). From 1:07.75 to about 1:09.1 'Immune' shows over him, at 1 HP, with a no-entry icon and grey buttons. From 1:09.25 the buttons are back (super charged, gadget at 3), still at 1 HP, with kucennn (7035) beside him. He has moved only a little, toward the bush below. chienna (1150) is on his left and SSZtt (2809) at the lower left (1:10.25). He is dead at about 1:10.4. Spectating at 1:10.75 shows all four teammates together, with SSZtt at the top of their screen. Round 1 is won at 2:10.",
+      "factors": {
+        "position": "alone on the right flank; teammates off his screen to the lower left from 1:01. He moved up-left into kucennn (1:03-1:05) instead of back toward them.",
+        "information": "NPC..Abuser was visible from 1:00.25, kucennn from 1:02, chienna from 1:02.25; he lost 9200 health in about 2.5 s (1:00.5-1:03) before stepping in",
+        "resources": "super charged from 1:05.75 and still charged at 1:10.5 (aiming rings on the button at 1:06.25-1:06.75 and 1:10.25, but it never empties); gadget at 3 all round, never used; ammo 2 full plus 1 reloading at 1:07.25; purple button ring about 40% (1:01) to 70% (1:09.5)",
+        "numbers": "his team 5 v 4 overall (Hisordoux down at 0:43, his own team's portraits all unslashed until 1:11), but locally him against NPC..Abuser, kucennn and chienna, then SSZtt as well",
+        "map": "round 1, about 48 s in, 0-0; no gas on screen (in the 10-s sheet the gas clouds first appear at 1:50)",
+        "mechanics": "landed 2320 hits on kucennn and near NPC..Abuser while at 4430-2690; used the 1:09.25-1:10.25 second at 1 HP with full ammo and super charged, but no super was seen fired"
+      },
+      "mistake": "After losing 9000 health alone on the right in 2.5 s, moving up-left into kucennn instead of falling back to his team, and taking on three enemies alone. Then, with super charged from 1:05.75 and three gadgets, he used neither before dying at 1 HP right after the Immune state ended.",
+      "better": "At 5102 (1:03), back off down-left toward his four teammates; 5 v 4 up, the team should take the next fight together. When the super charged at 1:05.75, fire it (or a gadget) at kucennn or NPC..Abuser at once instead of holding it. During the Immune state (1:07.75-1:09.1), use the time to walk away from kucennn toward the team, not to stay beside him.",
+      "unsure": [
+        "whether the super was aimed and cancelled or simply held (the button shows aiming rings at 1:06.25-1:06.75 and 1:10.25 but stays charged; it is charged again at the start of round 2, 2:14)",
+        "exactly how far away his teammates were (off his screen; only the spectator view at 1:10.75 shows them together)",
+        "which shots dealt the 4787 and 3187 at 1:01-1:02 (NPC..Abuser was the only enemy on screen then)",
+        "who owns the unnamed 8100 object with the pink circle at his far left"
+      ]
+    },
+    {
+      "t": "2:58",
+      "kind": "death (kill popup 'SSZtt -> PANDA YT' at 2:58.5; spectating 'Following: ราชาโดดรุม' from 2:58.8)",
+      "decided": "2:52-2:56.75",
+      "happened": "Round 2, his team 1-0 up (first round marker blue). nahhh has killed Hisordoux (2:42) and chienna (2:44), so it is 5 v 3, with two red slashes on the enemy portraits. At 2:50 he is with nahhh (4744), ราชาโดดรุม (4600) and TITAN PC (6800). From 2:52 he walks up ahead of them, into the gap between SSZtt (11656) on the left and kucennn (11837-12188) and NPC..Abuser (6062) on the right. nahhh stays about a quarter-screen behind on his left. At 2:54 his aim line points at SSZtt, whose bar stays at 11656 from 2:52 to 2:57.25. His health is 13805-13895 (2:54-2:54.75), with 1 of 3 ammo bars at 2:54.75. At 2:55.0 he is at 12833, with a red 1062. At 2:55.25 a large pink circle appears around him, with an unnamed enemy object inside it to his right (9880, red bar). He stays in the circle and hits the object (white 2320, 9880 to 7560 at 2:56.5-2:56.75) while stacked red 1062s land on him. His health is about 7323 at 2:55.5-2:55.75 and the bar is nearly empty by 2:56.25. From 2:57.0 to about 2:58.2 'Immune' shows over him at 1 HP, with grey buttons and dark screen edges. He moves left out of the circle, and SSZtt is right beside him by 2:57.75. SSZtt's health drops (11016 at 2:57.75, 8024 at 2:58.0, 7816 at 2:58.4) while nahhh and ราชาโดดรุม are below. The buttons are back at 2:58.25: super about 85% (not charged), gadget at 2. At 2:58.4 a 1062 lands and he is dead. Round 2 is won at 3:49.",
+      "factors": {
+        "position": "in front of his team, between SSZtt and the kucennn/NPC..Abuser pair, then standing inside the enemy's pink circle (2:55.25-2:56.75); during the Immune state he moved toward SSZtt rather than down to nahhh",
+        "resources": "1 of 3 ammo bars at 2:54.75 as he walked in (2 of 3 at 2:55.75, 1 of 3 at 2:56.25-2:56.75); super about 55% at 2:52 and about 85% at 2:58.25, never charged; gadget at 2 (one used at about 2:28, 3 to 2), unused here; purple button ring 85-92% at 2:53.5-2:56, solid at 2:58.3",
+        "numbers": "5 v 3 and 1-0 up in rounds: his team had no reason to force a fight. Locally he was the front man against three enemies plus the object.",
+        "information": "all three remaining enemies were on his screen from 2:52; the circle appeared on him at 2:55.25, and he stayed in it about 1.5 s",
+        "map": "round 2, about 44 s in; no gas on screen (in the 10-s sheet the gas first shows at 3:30)",
+        "mechanics": "spent his shots on the object in the circle (9880 to 7560) rather than leaving; the aim line at SSZtt at 2:54 did no visible damage (SSZtt stays at 11656)"
+      },
+      "mistake": "Walking up alone, ahead of his team, into three enemies with 1 of 3 ammo. Then standing in the enemy's pink circle to hit the object inside it while 1062s stacked on him (13895 to nearly 0 in about 1.5 s). During the Immune state he stayed beside SSZtt instead of falling back.",
+      "better": "Up 1-0 and 5 v 3, hold beside nahhh and let the team push together instead of walking out front with one ammo bar. When the circle dropped on him (2:55.25, at 12833), step straight back out of it. During the Immune state (2:57-2:58.2), walk down to nahhh and ราชาโดดรุม, away from SSZtt.",
+      "unsure": [
+        "who placed the pink circle and the 9880 object (no name on its plate)",
+        "which enemy landed the 1062s (SSZtt was firing at him from the left; the circle may also deal damage)",
+        "what the purple button is (possibly the hypercharge; its ring was 85-92% at 2:53.5-2:56 and the button is solid purple at 2:58.3)",
+        "whether he pressed the gadget at 2:58.4 (the button flashes pale while still reading 2)"
+      ]
+    }
+  ],
+  "not_true": [
+    "his team lost a round (both rounds won: 'Round won!' 2:10, 'Round won! Match over' 3:49, 'VICTORY!' 3:54)",
+    "he died at 0:38 (his health held at 1 and he walked out; 8711 by 0:44.25)",
+    "kucennn killed him at 1:10 (the popup names NPC💀💀Abuser)",
+    "NPC..Abuser or kucennn killed him at 2:58 (the popup names SSZtt)",
+    "he died in the poison gas (no gas on screen at 0:37, 1:10 or 2:58)",
+    "his team was outnumbered overall when he died (5 v 4 at 1:10, 5 v 3 at 2:58)",
+    "he got kills (the end screen shows 0 for PANDA YT)",
+    "a near-death at 2:29 (his lowest there is 5589 of 14300, 39%)"
+  ]
+}

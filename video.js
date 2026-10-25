@@ -1,4 +1,4 @@
-/* Thirdeye video: reads the match recording in the browser. Mediabunny (on WebCodecs) decodes frames at exact times
+/* Eye Catcher video: reads the match recording in the browser. Mediabunny (on WebCodecs) decodes frames at exact times
  * for close looks, and makes the small silent copy that Gemini scans. Only that copy and the frames the agent looks
  * at ever leave the device; the recording's audio, with any voice chat, never does.
  * Times here are seconds from the start of the recording. */
@@ -16,7 +16,7 @@
     const M = await lib();
     const input = new M.Input({ formats: M.ALL_FORMATS, source: new M.BlobSource(file) });
     const track = await input.getPrimaryVideoTrack().catch(() => null);
-    if (!track) throw new Error("That file isn't a video Thirdeye can read. Try an MP4, MKV, or WebM recording.");
+    if (!track) throw new Error("That file isn't a video Eye Catcher can read. Try an MP4, MKV, or WebM recording.");
     if (!(await track.canDecode())) throw new Error("This browser can't decode that video. Try an MP4 (H.264) recording in Chrome.");
     const start = await track.getFirstTimestamp();
     const duration = (await track.computeDuration()) - start;
@@ -34,7 +34,9 @@
 
   /**
    * Frames at the given times, cropped to crop {x, y, w, h} (frame pixels) and scaled to fit maxDim.
-   * Returns [{ t, mimeType, data, url, w, h, canvas }] in time order; a time past the end gives the last frame.
+   * Returns [{ t, mimeType, data, url, w, h, canvas }] in the order the times were asked (decoded in time order); a time
+   * past the end gives the last frame. In time order, they went to the wrong moments wherever a caller read them by
+   * position: read_hud gave 1:14 the clock of 0:34, asked out of order, and chess's clocks swapped (Oct 25).
    */
   async function grab(v, times, { crop, maxDim = 768, quality = 0.8 } = {}) {
     const M = await lib();
@@ -42,13 +44,13 @@
     const scale = Math.min(1, maxDim / Math.max(c.w, c.h));
     const w = Math.max(2, Math.round(c.w * scale)), h = Math.max(2, Math.round(c.h * scale));
     const sink = new M.CanvasSink(v.track, { crop: { left: c.x, top: c.y, width: c.w, height: c.h }, width: w, height: h, fit: 'fill' });
-    const sorted = [...times].sort((a, b) => a - b), out = [];
+    const order = times.map((_, k) => k).sort((a, b) => times[a] - times[b]), got = new Array(times.length).fill(null);
     let i = 0;
-    for await (const wc of sink.canvasesAtTimestamps(sorted.map((t) => v.start + t))) {
-      const t = sorted[i++];
-      if (wc) out.push({ t, ...(await toJpeg(wc.canvas, quality)), w, h, canvas: wc.canvas });
+    for await (const wc of sink.canvasesAtTimestamps(order.map((k) => v.start + times[k]))) {
+      const k = order[i++];
+      if (wc) got[k] = { t: times[k], ...(await toJpeg(wc.canvas, quality)), w, h, canvas: wc.canvas };
     }
-    return out;
+    return got.filter(Boolean);
   }
 
   /**
@@ -114,8 +116,8 @@
    * Uploads the scan copy to the Gemini Files API (kept 48 hours) and waits until Gemini can read it.
    * Returns { uri, mimeType, name }.
    */
-  async function upload(blob, { name = 'thirdeye-scan', onProgress, signal } = {}) {
-    // through Thirdeye's backend when there is one: it adds the key, so none is sent from here
+  async function upload(blob, { name = 'eye-catcher-scan', onProgress, signal } = {}) {
+    // through Eye Catcher's backend when there is one: it adds the key, so none is sent from here
     const via = root.Gemini.backendUrl(), key = via ? '' : root.Gemini.getKey();
     if (!via && !key) throw new Error('Add a Gemini API key first.');
     const auth = key ? { 'x-goog-api-key': key } : {};

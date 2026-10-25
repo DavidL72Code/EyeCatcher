@@ -1,0 +1,276 @@
+{
+  "clip": "brawl-stars/bs-ubrCY2HR38M.knockout.mp4",
+  "game": "Brawl Stars",
+  "player": "PANDA YT™ (green name over the centred brawler; bottom row of the VS screen at 0:20)",
+  "character": "not named on screen (no brawler name in any frame checked: VS screen 0:20, play, VICTORY screen 3:54)",
+  "teammates": [
+    "☢TITAN☢PC☢ (title 'Where's my head?')",
+    "ราชาโดดรุม (Thai script; title 'CEO of Brawl Stars')",
+    "nahhh (kill popups: Hisordoux at 0:43 and 2:42, chienna at 2:44; 'Most Takedowns' at 3:54)",
+    "Mr.Zemo0"
+  ],
+  "enemies_named": [
+    "Hisordoux",
+    "chienna",
+    "SSZtt (kill popup 'SSZtt -> PANDA YT' at 2:58.5)",
+    "NPC💀💀Abuser (kill popup at 1:10.5; 'STAR PLAYER', 'Most Damage' at 3:54)",
+    "kucennn"
+  ],
+  "result": "Won 2-0, no round lost: 'Round won!' 2:10, 'Round won! Match over' 3:49, 'VICTORY!' 3:54. End screen for PANDA YT: 0 kills, 2 deaths, 29152 next to a heart icon. His max health reads 14300 (teammates 4600-7700).",
+  "habit": "Staying in the fight at the front, alone or ahead of his teammates, until the 1-HP 'Immune' state kicks in (0:37.5, 1:07.6, 2:57). He survived it the one time he used it to walk back to his teammates (0:39-0:40). The other two times he stayed beside enemies and died 1.2 s and 0.2 s after it ended (1:10.4, 2:58.4). Twice the fight was inside the enemy's pink circle (0:30-0:37, 2:55-2:57).",
+  "losses": [
+    {
+      "t": "0:38",
+      "kind": "near_death (1 of 14300 HP, 0:38.25-0:40.0)",
+      "decided": "0:29-0:36.5",
+      "happened": "Round 1, 0-0, all ten alive. By 0:29.0 (not there at 0:28.5) a large pink-red circle (an enemy area: red-tinted, with D-shaped marks on its rim) appears just in front of him at the top of his screen. He walks up into it (at its lower edge at 0:30, in its middle by 0:32) and stays there to 0:37, with his white aim cone pointed up-left. TITAN PC, nahhh and ราชาโดดรุม stay behind him to the left, and Mr.Zemo0 is off to the right. Red 640s land on him from 0:32 on. Health: 14300 (0:30-0:31), about 12300 (0:32), 11100 (0:34), 8017 (0:35.5-0:36), 4254 (0:36.25-0:36.5). The drop from 8017 to 4254 is a single red 3763 at 0:36.25-0:36.5, landing while kucennn (7700) stands directly above him. kucennn (7700) is right above him at 0:36.25-0:37, and SSZtt and NPC..Abuser are at the top edge (0:32-0:36). At 0:36.75-0:37.5 a stack of red damage numbers lands (640s and larger, overlapping). From 0:37.25 a red no-entry icon sits on his ammo bar, the ability buttons go grey and the screen edges darken (0:37.5-0:38.5). His health reads 1 at 0:38.25-0:40.0. TITAN PC (6800) and ราชาโดดรุม (4600) are beside him at 0:37. He walks down out of the circle and ends up behind them: at 0:40.5 TITAN PC (5520), ราชาโดดรุม and nahhh are up-left of him, between him and the circle. No enemy plate is on his screen at 0:40.5-0:42.5; the unnamed 2800 and 5000 plates there are blue (allied). Health: 1743 (0:40.25), 3485 (0:41.25), 5227 (0:42.25), 8711 (0:44.25). nahhh kills Hisordoux at 0:43 (popup).",
+      "factors": {
+        "position": "inside the enemy's pink circle for about 7 s (0:30-0:37), ahead of the three teammates on his left, with kucennn adjacent at the end",
+        "information": "the circle was visible from 0:29.25, before he walked into it; three enemies (SSZtt, kucennn, NPC..Abuser) were on screen at its top edge",
+        "resources": "ammo bars full (3 of 3) at every 1-s check from 0:30 to 0:37; super not charged (yellow ring about 0% at 0:30, about 40% at 0:37); green gadget button at 3, unused; health fell from 14300 to 4254 before he left",
+        "numbers": "5 v 5, nobody down yet; two teammates (TITAN PC, ราชาโดดรุม) reached him only at about 0:37",
+        "map": "round 1, about 15 s after the start (the 'Match starts in 1' countdown is at 0:20-0:23); no gas",
+        "mechanics": "no sign that he fired: his ammo bar reads 3 of 3 in every 0.5-s frame from 0:28 to 0:37, no white damage number appears near an enemy, and kucennn reads 7700 at both 0:31 and 0:36.5. His super ring still rose from about 0% (0:30) to about 45% (0:37)."
+      },
+      "mistake": "Walking up into the enemy's pink circle as it appeared and staying in it for about 7 s, ahead of his team. His health went 14300 to 4254 to 1 before he backed off.",
+      "better": "Step back out of the circle as soon as it appears (0:29.25) and fight from its edge beside nahhh and TITAN PC. At the latest, leave at half health (8017 at 0:35.5) instead of staying for the burst. What saved him was walking back behind his teammates during the 1-HP state (0:39-0:40); he should do that before he gets that low.",
+      "unsure": [
+        "whether the 640s came from the circle itself or from enemy shots, and who landed the burst at 0:36.75-0:37.5 (the numbers overlap; kucennn was beside him)",
+        "why his super ring rose from about 0% to about 45% (0:30-0:37) when no shot of his is seen landing (ammo 3 of 3 in every 0.5-s frame, kucennn unchanged at 7700)",
+        "what causes the 1-HP state (no text names it here; at 1:07.75 and 2:57.25 the same state shows 'Immune'). The post-match cards mention Angel abilities and the Chaos modifier, but none names this effect.",
+        "what placed the circle. A guess from the models, with no name on screen: SSZtt's VS card (0:18.5) and the model under his plate (2:52) are a red arcade-cabinet robot, and the killer portrait at 2:58.6 is a cyan-screen robot. That looks like 8-Bit, whose super is a turret with a damage-boost circle, and it would explain the turret-like object inside the round-2 circle. SSZtt was at this circle's top edge at 0:32 and 0:35."
+      ]
+    },
+    {
+      "t": "1:10",
+      "kind": "death (kill popup 'NPC💀💀Abuser -> PANDA YT' at 1:10.5; 'Following: Automatic' from 1:10.75)",
+      "decided": "1:00.5-1:05.75",
+      "happened": "Round 1, 0-0. He is alone on the right side, by the water, at 14300 (0:59-1:00.5). Mr.Zemo0 (5831) and a teammate at 2800 are at the lower-left edge of his screen (0:59-1:01). An unnamed enemy object (8100, red bar, inside a pink circle) is at the far left, with SSZtt's plate beside it (0:59). NPC..Abuser (4504) appears at the upper left at 1:00.25. His health goes 9513 (1:01), 6326 (1:01.5), 5102 (1:02.75-1:03), with red 4787, 3187 and 612 over him. kucennn (9040-9310) comes in from the left at 1:02-1:03 and chienna (5711) is lower left. From 1:03 to 1:05.5 kucennn closes in from his left until they are side by side (1:05.25-1:05.5). He holds his spot instead of backing off: his position on screen barely changes (the map edge on the right is fixed, so the camera is clamped), while kucennn moves from about 0.27 to 0.33 of the screen width. His health is 4430 (1:04.25-1:05.25). No teammate plate is on his screen after 1:01. He trades: white 2320s over kucennn (9310 at 1:05.5, 7035 at 1:05.75) and next to NPC..Abuser (4932 at 1:06.5). His super charges (yellow) at 1:05.75. Health: 2690 (1:06), 1548 (1:06.5), 188 (1:07.25, with 1360 in red). From 1:07.75 to about 1:09.1 'Immune' shows over him, at 1 HP, with a no-entry icon and grey buttons. From 1:09.25 the buttons are back (super charged, gadget at 3), still at 1 HP, with kucennn (7035) beside him. He has moved only a little, toward the bush below. chienna (1150) is on his left and SSZtt (2809) at the lower left (1:10.25). He is dead at about 1:10.4: a red 3187 at his spot at 1:10.5, the same number as the 3187 that hit him at 1:01.5. Spectating at 1:10.75 shows all four teammates together, with SSZtt at the top of their screen. Round 1 is won at 2:10.",
+      "factors": {
+        "position": "alone on the right flank; teammates off his screen to the lower left from 1:01. He held his spot as kucennn closed in (1:03-1:05.5) instead of falling back toward them.",
+        "information": "NPC..Abuser was visible from 1:00.25, kucennn from 1:02, chienna from 1:02.25; he lost 9200 health in about 2.5 s (1:00.5-1:03) before stepping in",
+        "resources": "super charged from 1:05.75 and still charged at 1:10.5 (aiming rings on the button at 1:06.25-1:06.75 and 1:10.25, but it never empties); gadget at 3 all round, never used (its button is grey, still at 3, at 1:06.5 while the super is charged, and green again by 1:09.5); ammo 2 full plus 1 reloading at 1:07.25; purple button ring about 40% (1:01) to 70% (1:09.5)",
+        "numbers": "his team 5 v 4 overall (Hisordoux down at 0:43, his own team's portraits all unslashed until 1:11), but locally him against NPC..Abuser, kucennn and chienna, then SSZtt as well",
+        "map": "round 1, about 48 s in, 0-0; no gas on screen (gas clouds are first on screen at 1:45.0, none at 1:42.5, at 2.5-s steps)",
+        "mechanics": "landed 2320 hits on kucennn and near NPC..Abuser while at 4430-2690; used the 1:09.25-1:10.25 second at 1 HP with full ammo and super charged, but no super was seen fired"
+      },
+      "mistake": "After losing 9000 health alone on the right in 2.5 s, staying put alone on the right as kucennn walked up to him, instead of falling back to his team, and taking on three enemies alone. Then, with super charged from 1:05.75 and three gadgets, he used neither before dying at 1 HP right after the Immune state ended.",
+      "better": "At 5102 (1:03), back off down-left toward his four teammates; 5 v 4 up, the team should take the next fight together. When the super charged at 1:05.75, fire it (or a gadget) at kucennn or NPC..Abuser at once instead of holding it. During the Immune state (1:07.75-1:09.1), use the time to walk away from kucennn toward the team, not to stay beside him.",
+      "unsure": [
+        "whether the super was aimed and cancelled or simply held (the button shows aiming rings at 1:06.25-1:06.75 and 1:10.25 but stays charged; it is charged again at the start of round 2, 2:14)",
+        "exactly how far away his teammates were (off his screen; only the spectator view at 1:10.75 shows them together)",
+        "which shots dealt the 4787 at 1:01 (NPC..Abuser, in a pink bubble at the upper left, was the only enemy on screen). The 3187 at 1:01.5 is very likely NPC..Abuser's, since his killing hit at 1:10.5 is also 3187.",
+        "who owns the unnamed 8100 object with the pink circle at his far left"
+      ]
+    },
+    {
+      "t": "2:58",
+      "kind": "death (kill popup 'SSZtt -> PANDA YT' at 2:58.5; spectating 'Following: ราชาโดดรุม' from 2:58.8)",
+      "decided": "2:52-2:56.75",
+      "happened": "Round 2, his team 1-0 up (first round marker blue). nahhh has killed Hisordoux (2:42) and chienna (2:44), so it is 5 v 3, with two red slashes on the enemy portraits. At 2:50 he is with nahhh (4744), ราชาโดดรุม (4600) and TITAN PC (6800). From 2:52, with 3 of 3 ammo, he walks up ahead of them, into the gap between SSZtt (11656) on the left and kucennn (11837-12188) and NPC..Abuser (6062) on the right. nahhh stays about a quarter-screen behind on his left. He fires at SSZtt (blue ice-and-lightning shots at 2:52.75 and 2:54.25-2:54.5), but SSZtt's bar stays at 11656 from 2:52 to 2:57.25. His health is 13805-13895 (2:54-2:54.75), with 1 of 3 ammo bars at 2:54.75. At 2:55.0 SSZtt's pink beam reaches him and lands the first red 1062 (12833), before any circle is there. At 2:55.25 a large pink circle appears around him, with an unnamed enemy object inside it to his right (9880, red bar). He stays in the circle and hits the object (white 2320, 9880 to 7560 at 2:56.5-2:56.75) while stacked red 1062s land on him. His health is about 7323 at 2:55.5-2:55.75 and the bar is nearly empty by 2:56.25. From 2:57.0 to about 2:58.2 'Immune' shows over him at 1 HP, with grey buttons and dark screen edges. He moves left out of the circle, and SSZtt is right beside him by 2:57.75. SSZtt's health drops (11016 at 2:57.75, 8024 at 2:58.0, 7816 at 2:58.4) while nahhh and ราชาโดดรุม are below. The buttons are back at 2:58.25: super about 85% (not charged), gadget at 2. At 2:58.4 a 1062 lands and he is dead (SSZtt is at 7816, then 5028 at 2:58.5). Round 2 is won at 3:49.",
+      "factors": {
+        "position": "in front of his team, between SSZtt and the kucennn/NPC..Abuser pair, then standing inside the enemy's pink circle (2:55.25-2:56.75); during the Immune state he moved toward SSZtt rather than down to nahhh",
+        "resources": "3 of 3 ammo at 2:52 as he walked up. His two shots at SSZtt left 1 of 3 at 2:54-2:55.0 (2 of 3 at 2:55.75, 1 of 3 at 2:56.25-2:56.75); super about 55% at 2:52 and about 85% at 2:58.25, never charged; gadget at 2 (one used at about 2:28, 3 to 2), unused here; purple button ring 85-92% at 2:53.5-2:56, solid at 2:58.3",
+        "numbers": "5 v 3 and 1-0 up in rounds: his team had no reason to force a fight. Locally he was the front man against three enemies plus the object.",
+        "information": "all three remaining enemies were on his screen from 2:52; the circle appeared on him at 2:55.25, and he stayed in it about 1.5 s",
+        "map": "round 2, about 44 s in; no gas on screen at 2:52-2:58.75 (gas clouds are on screen by 3:25 at the latest; earlier not checked)",
+        "mechanics": "spent his shots on the object in the circle (9880 to 7560) rather than leaving; his two shots at SSZtt (2:52.75, 2:54.25) did no visible damage (SSZtt stays at 11656), so he spent 2 of his 3 ammo for nothing before the fight started"
+      },
+      "mistake": "Walking up alone, ahead of his team, into three enemies, and spending two of his three shots at SSZtt from range for no damage, so he had 1 of 3 left when SSZtt's beam and the circle caught him. Then standing in the enemy's pink circle to hit the object inside it while 1062s stacked on him (13895 to nearly 0 in about 1.5 s). During the Immune state he stayed beside SSZtt instead of falling back.",
+      "better": "Up 1-0 and 5 v 3, hold beside nahhh and let the team push together instead of walking out front and emptying two shots at SSZtt from range. When the circle dropped on him (2:55.25, at 12833), step straight back out of it. During the Immune state (2:57-2:58.2), walk down to nahhh and ราชาโดดรุม, away from SSZtt.",
+      "unsure": [
+        "who placed the pink circle and the 9880 object (no name on its plate). A guess, as in round 1: SSZtt's model looks like 8-Bit, and a turret inside a damage-boost circle matches 8-Bit's super. If so, standing in the circle meant taking boosted shots.",
+        "what the purple button is (possibly the hypercharge; its ring was 85-92% at 2:53.5-2:56 and the button is solid purple at 2:58.3)",
+        "whether he pressed the gadget at 2:58.4 (the button flashes pale while still reading 2)"
+      ]
+    }
+  ],
+  "not_true": [
+    "his team lost a round (both rounds won: 'Round won!' 2:10, 'Round won! Match over' 3:49, 'VICTORY!' 3:54)",
+    "he died at 0:38 (his health held at 1 and he walked out; 8711 by 0:44.25)",
+    "kucennn killed him at 1:10 (the popup names NPC💀💀Abuser)",
+    "NPC..Abuser or kucennn killed him at 2:58 (the popup names SSZtt)",
+    "he died in the poison gas (no gas on screen at 0:37, 1:10 or 2:58)",
+    "his team was outnumbered overall when he died (5 v 4 at 1:10, 5 v 3 at 2:58)",
+    "he got kills (the end screen shows 0 for PANDA YT)",
+    "a near-death at 2:29 (his lowest in that fight is 5589 of 14300, 39%, at 2:31-2:32)"
+  ],
+  "validated": "Checked against the recording frame by frame: 1-s and 0.25-s grids around each loss, close zooms on his health and ammo bar, the super, gadget and purple buttons, the kill popups, the top portraits, the VS screen (0:18.5-0:20), the end screen (3:54) and the post-match cards (4:11-4:16). Each frame read was written down before the draft entry was read.",
+  "changes": [
+    {
+      "t": "0:29",
+      "field": "losses.0.happened",
+      "was": "At 0:29.25 a large pink-red circle",
+      "now": "By 0:29.0 (not there at 0:28.5) a large pink-red circle",
+      "evidence": "Frames 0:28.5 and 0:29.0 at 0.5-s steps: the background behind his name plate is orange and blue at 0:28.5 and pink at 0:29.0. The 1-s grid shows the full circle at 0:29.0 and none at 0:28.0."
+    },
+    {
+      "t": "0:36.25",
+      "field": "losses.0.happened",
+      "was": "8017 (0:35.5-0:36), 4254 (0:36.5).",
+      "now": "8017 (0:35.5-0:36), 4254 (0:36.25-0:36.5). The drop from 8017 to 4254 is a single red 3763 at 0:36.25-0:36.5, landing while kucennn (7700) stands directly above him.",
+      "evidence": "At 0.25-s steps: 0:36.25 and 0:36.5 both show one large red 3763 over his plate, which reads 4254, with kucennn 7700 just above. The 0.5-s bar strip shows 8017 at 0:36.0 and 4254 at 0:36.5."
+    },
+    {
+      "t": "0:28-0:37",
+      "field": "losses.0.factors.mechanics",
+      "was": null,
+      "now": "no sign that he fired: his ammo bar reads 3 of 3 in every 0.5-s frame from 0:28 to 0:37, no white damage number appears near an enemy, and kucennn reads 7700 at both 0:31 and 0:36.5. His super ring still rose from about 0% (0:30) to about 45% (0:37).",
+      "evidence": "In the 0.5-s strip of his bar (0:28-0:37), all 3 ammo segments are full in every frame. kucennn's plate reads 7700 at 0:31 (1-s grid) and at 0:36.25-0:36.5 (0.25-s grid). The super ring is empty at 0:30 and about 45% at 0:37 (button zoom)."
+    },
+    {
+      "t": "0:30-0:37",
+      "field": "losses.0.unsure.1",
+      "was": "whether he was attacking at 0:30-0:37: the aim cone is shown, but the ammo reads 3 of 3 at every check",
+      "now": "why his super ring rose from about 0% to about 45% (0:30-0:37) when no shot of his is seen landing (ammo 3 of 3 in every 0.5-s frame, kucennn unchanged at 7700)",
+      "evidence": "Mostly settled by the 0.5-s ammo strip and kucennn's unchanged 7700 (now in factors.mechanics). What remains open is only why the super charged."
+    },
+    {
+      "t": "0:29",
+      "field": "losses.0.unsure.3",
+      "was": "what placed the circle (in round 2 an unnamed enemy object with a red health bar sits inside one)",
+      "now": "what placed the circle. A guess from the models, with no name on screen: SSZtt's VS card (0:18.5) and the model under his plate (2:52) are a red arcade-cabinet robot, and the killer portrait at 2:58.6 is a cyan-screen robot. That looks like 8-Bit, whose super is a turret with a damage-boost circle, and it would explain the turret-like object inside the round-2 circle. SSZtt was at this circle's top edge at 0:32 and 0:35.",
+      "evidence": "VS screen 0:18.5 (SSZtt card is a red arcade-cabinet robot). At 2:52 the SSZtt plate sits over that model. The 2:58.6 popup reads SSZtt with a cyan-screen robot portrait. At 2:55.5-2:56.75 there is a turret-like object (9880 to 7560) in the circle. Still an inference, so it stays under unsure."
+    },
+    {
+      "t": "0:59",
+      "field": "losses.1.happened",
+      "was": "An unnamed enemy object (8100, red bar, inside a pink circle) is at the far left.",
+      "now": "An unnamed enemy object (8100, red bar, inside a pink circle) is at the far left, with SSZtt's plate beside it (0:59).",
+      "evidence": "The 0:59 zoom shows the 8100 object in a pink circle at the left edge, with a partly cut \"..Ztt\" plate next to it."
+    },
+    {
+      "t": "1:03-1:05.5",
+      "field": "losses.1.happened",
+      "was": "From 1:03 to 1:05 he moves up-left until he is beside kucennn (1:04.5-1:05), at 4430 (1:04.25-1:05.25).",
+      "now": "From 1:03 to 1:05.5 kucennn closes in from his left until they are side by side (1:05.25-1:05.5). He holds his spot instead of backing off: his position on screen barely changes (the map edge on the right is fixed, so the camera is clamped), while kucennn moves from about 0.27 to 0.33 of the screen width. His health is 4430 (1:04.25-1:05.25).",
+      "evidence": "Wide frames at 0.5-s steps, 1:02.5-1:05.5: PANDA YT stays near x 0.5 and kucennn moves from x 0.27 (1:03) to 0.33 (1:05), adjacent at 1:05.5. The 0.25-s grid shows kucennn 9130-9310 just left of him at 1:05.25-1:05.5. Who did the walking can't be fully told, but nothing shows him moving up-left into kucennn."
+    },
+    {
+      "t": "1:10.5",
+      "field": "losses.1.happened",
+      "was": "He is dead at about 1:10.4.",
+      "now": "He is dead at about 1:10.4: a red 3187 at his spot at 1:10.5, the same number as the 3187 that hit him at 1:01.5.",
+      "evidence": "The 0.25-s grid shows the bar still at 1 HP at 1:10.25 (ammo zoom), then a red 3187 where he stood at 1:10.5. The kill popup at 1:10.6 reads \"NPC💀💀Abuser -> PANDA YT™\"."
+    },
+    {
+      "t": "1:03-1:05.5",
+      "field": "losses.1.factors.position",
+      "was": "He moved up-left into kucennn (1:03-1:05) instead of back toward them.",
+      "now": "He held his spot as kucennn closed in (1:03-1:05.5) instead of falling back toward them.",
+      "evidence": "Same wide frames as the change to happened above."
+    },
+    {
+      "t": "1:06.5",
+      "field": "losses.1.factors.resources",
+      "was": "gadget at 3 all round, never used;",
+      "now": "gadget at 3 all round, never used (its button is grey, still at 3, at 1:06.5 while the super is charged, and green again by 1:09.5);",
+      "evidence": "Button zoom: at 1:06.5 the super is yellow (charged) and the gadget is grey with 3. At 1:09.5 and 1:10.25 the gadget is green with 3."
+    },
+    {
+      "t": "1:45",
+      "field": "losses.1.factors.map",
+      "was": "no gas on screen (in the 10-s sheet the gas clouds first appear at 1:50)",
+      "now": "no gas on screen (gas clouds are first on screen at 1:45.0, none at 1:42.5, at 2.5-s steps)",
+      "evidence": "A grid of 1:40-1:55 at 2.5-s steps: no clouds at 1:40.0 or 1:42.5, green clouds from 1:45.0. There are none in the 1:07.75-1:11.5 frames."
+    },
+    {
+      "t": "1:03-1:05.5",
+      "field": "losses.1.mistake",
+      "was": "moving up-left into kucennn instead of falling back to his team",
+      "now": "staying put alone on the right as kucennn walked up to him, instead of falling back to his team",
+      "evidence": "See happened: the frames show kucennn closing the gap, not him walking up-left."
+    },
+    {
+      "t": "1:01-1:02",
+      "field": "losses.1.unsure.2",
+      "was": "which shots dealt the 4787 and 3187 at 1:01-1:02 (NPC..Abuser was the only enemy on screen then)",
+      "now": "which shots dealt the 4787 at 1:01 (NPC..Abuser, in a pink bubble at the upper left, was the only enemy on screen). The 3187 at 1:01.5 is very likely NPC..Abuser's, since his killing hit at 1:10.5 is also 3187.",
+      "evidence": "At 1:01.5 there is a red 3187 over him (6326). At 1:10.5 a red 3187 lands as the \"NPC💀💀Abuser -> PANDA YT™\" popup appears. At 1:00.5 NPC..Abuser (4504) is upper left and his white shots go toward it."
+    },
+    {
+      "t": "2:52",
+      "field": "losses.2.happened",
+      "was": "From 2:52 he walks up ahead of them,",
+      "now": "From 2:52, with 3 of 3 ammo, he walks up ahead of them,",
+      "evidence": "Close zoom on his bar at 2:52: 13625 health, all three ammo segments full."
+    },
+    {
+      "t": "2:52.75-2:54.5",
+      "field": "losses.2.happened",
+      "was": "At 2:54 his aim line points at SSZtt, whose bar stays at 11656 from 2:52 to 2:57.25.",
+      "now": "He fires at SSZtt (blue ice-and-lightning shots at 2:52.75 and 2:54.25-2:54.5), but SSZtt's bar stays at 11656 from 2:52 to 2:57.25.",
+      "evidence": "At 0.75-s steps, blue spikes come out of him at 2:52.75 and 2:54.25. The 2:54.5 zoom shows lightning from him toward SSZtt, with SSZtt's plate at 11656 at 2:52, 2:53.5, 2:54.5, 2:55 and on to 2:57.25."
+    },
+    {
+      "t": "2:55.0",
+      "field": "losses.2.happened",
+      "was": "At 2:55.0 he is at 12833, with a red 1062.",
+      "now": "At 2:55.0 SSZtt's pink beam reaches him and lands the first red 1062 (12833), before any circle is there.",
+      "evidence": "The 0.25-s grid shows no circle at 2:55.0 and a pink beam from SSZtt (left) touching him. The bar zoom at 2:55.0 shows a red 1062 and 12833. The circle is first seen at 2:55.25."
+    },
+    {
+      "t": "2:58.4",
+      "field": "losses.2.happened",
+      "was": "At 2:58.4 a 1062 lands and he is dead.",
+      "now": "At 2:58.4 a 1062 lands and he is dead (SSZtt is at 7816, then 5028 at 2:58.5).",
+      "evidence": "Zoom at 2:58.4: SSZtt 7816 above, with a red 1062 and fading \"Im..\" at PANDA. The 0.25-s bar strip at 2:58.5 shows SSZtt 5028 and the popup \"SSZtt -> PANDA YT™\"."
+    },
+    {
+      "t": "2:52-2:55",
+      "field": "losses.2.factors.resources",
+      "was": "1 of 3 ammo bars at 2:54.75 as he walked in",
+      "now": "3 of 3 ammo at 2:52 as he walked up. His two shots at SSZtt left 1 of 3 at 2:54-2:55.0",
+      "evidence": "Close zoom on the ammo segments: 3 full at 2:52, 1 full plus 1 reloading at 2:54, 1 full at 2:54.75 and 2:55.0, 2 full at 2:55.75, 1 full plus reloading at 2:56.5."
+    },
+    {
+      "t": "3:25",
+      "field": "losses.2.factors.map",
+      "was": "no gas on screen (in the 10-s sheet the gas first shows at 3:30)",
+      "now": "no gas on screen at 2:52-2:58.75 (gas clouds are on screen by 3:25 at the latest; earlier not checked)",
+      "evidence": "A grid of 3:25-3:42.5 at 2.5-s steps shows green clouds at the right edge at 3:25.0. There are no clouds in the 2:52-2:58.75 frames."
+    },
+    {
+      "t": "2:52.75-2:54.25",
+      "field": "losses.2.factors.mechanics",
+      "was": "the aim line at SSZtt at 2:54 did no visible damage (SSZtt stays at 11656)",
+      "now": "his two shots at SSZtt (2:52.75, 2:54.25) did no visible damage (SSZtt stays at 11656), so he spent 2 of his 3 ammo for nothing before the fight started",
+      "evidence": "Same ammo and SSZtt plate frames as above."
+    },
+    {
+      "t": "2:52-2:55",
+      "field": "losses.2.mistake",
+      "was": "Walking up alone, ahead of his team, into three enemies with 1 of 3 ammo.",
+      "now": "Walking up alone, ahead of his team, into three enemies, and spending two of his three shots at SSZtt from range for no damage, so he had 1 of 3 left when SSZtt's beam and the circle caught him.",
+      "evidence": "He had 3 of 3 ammo at 2:52 and 1 of 3 at 2:54.75. SSZtt stayed at 11656."
+    },
+    {
+      "t": "2:52-2:54.5",
+      "field": "losses.2.better",
+      "was": "instead of walking out front with one ammo bar.",
+      "now": "instead of walking out front and emptying two shots at SSZtt from range.",
+      "evidence": "Follows from the corrected ammo read."
+    },
+    {
+      "t": "2:55-2:58.4",
+      "field": "losses.2.unsure.1",
+      "was": "which enemy landed the 1062s (SSZtt was firing at him from the left; the circle may also deal damage)",
+      "now": "(removed; settled in happened: the 1062s are SSZtt's)",
+      "evidence": "The first 1062 lands at 2:55.0 as SSZtt's pink beam touches him, before the circle appears (2:55.25). His beam is on him again at 2:55.75. Every number in the stack is the same 1062, and the killing 1062 at 2:58.4 is credited to SSZtt by the popup at 2:58.5-2:58.6."
+    },
+    {
+      "t": "2:55.25",
+      "field": "losses.2.unsure.0",
+      "was": "who placed the pink circle and the 9880 object (no name on its plate)",
+      "now": "who placed the pink circle and the 9880 object (no name on its plate). A guess, as in round 1: SSZtt's model looks like 8-Bit, and a turret inside a damage-boost circle matches 8-Bit's super. If so, standing in the circle meant taking boosted shots.",
+      "evidence": "SSZtt's VS card at 0:18.5 and his model at 2:52 are a red arcade-cabinet robot. A turret-like object (9880, red bar) sits inside the circle at 2:55.5-2:56.75. Inference only, so it stays under unsure."
+    },
+    {
+      "t": "2:31",
+      "field": "not_true.7",
+      "was": "a near-death at 2:29 (his lowest there is 5589 of 14300, 39%)",
+      "now": "a near-death at 2:29 (his lowest in that fight is 5589 of 14300, 39%, at 2:31-2:32)",
+      "evidence": "The 1-s bar grid: 11682 at 2:27, 8463 at 2:29, 5589 at 2:31-2:32, then 7331 at 2:33 and 10815 at 2:35."
+    }
+  ]
+}

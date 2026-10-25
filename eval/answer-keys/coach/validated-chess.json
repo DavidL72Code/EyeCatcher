@@ -1,0 +1,439 @@
+{
+ "clip": "chess/chess-k8MN5xMyfdg.mp4",
+ "game": "Chess (chess.com, 10 min, phone)",
+ "player": "VasuGmR (755), White, at the bottom",
+ "opponent": "Fearless_Bishop2024 (777), Black",
+ "validated": "Oct 24: the move list OCR'd from 1 s frames over the whole recording and read by eye at 0.25 s around every graded move and the opponent's move before it; boards checked at 2:16, 5:12 and 6:27; clocks read from crops; every move regraded with chess-grade.mjs at depth 16 and depth 20, and Stockfish lines (depth 18) taken at each graded position.",
+ "moves": "1. e4 d5 2. f4 dxe4 3. Nc3 e6 4. Nxe4 Nf6 5. Nxf6+ Qxf6 6. Ne2 e5 7. fxe5 Qxe5 8. d4 Qe6 9. Qd3 Qg6 10. Qb5+ Qc6 11. Qe5+ Be6 12. Bd2 Nd7 13. Qe3 O-O-O 14. O-O-O Bd6 15. Bc3 Rde8 16. Qd3 Qa6 17. Qxa6 bxa6 18. Nf4 Bxf4+ 19. Kb1 Nb6 20. Bxa6+ Kb8 21. Rhf1 Bc4 22. Rxf4 Bxa6 23. Rxf7 Bc4 24. Rxg7 Re2 25. b3 Bg8 26. Rf1 Be6 (the recording ends at 8:27, three seconds after 26...Be6, game unfinished: White to move on 5:56, Black 6:00)",
+ "how": "Moves read off the chess.com move list in the frames; every move graded by Stockfish 10 (chess-reader.js scoreGame via chess-grade.mjs) at depth 16 and again at depth 20, with Stockfish's line taken at depth 18 for each graded position. The engine's own best move shows losses up to about 100 cp at these depths (1.e4: 101 at depth 16, 59 at depth 20; 8.d4: 62 / 25), so only losses of 250+ (blunders) are firm and 100-250 (mistakes) are soft. White moves graded 100+ at both depths: 6.Ne2 (151 / 121), 10.Qb5+ (168 / 116), 11.Qe5+ (138 / 113), 12.Bd2 (104 / 137), 15.Bc3 (169 / 211), 26.Rf1 (147 / 160); listed below are the blunders, 15.Bc3 (over 200 at depth 20), 26.Rf1, and 21.Rhf1 (119 / 88, kept as a borderline case).",
+ "habit": "Moving quickly without checking what the opponent can capture or fork after the move: 15.Bc3 (one to two seconds' thought) onto the square ...Nd5 forks with the e3 queen; 16.Qd3 onto the c4-e2 line, open to ...Bc4; 18.Nf4 about a second after the queen trade, onto the d6 bishop's diagonal to the king; and at move 22, with two black bishops hanging, taking the wrong one first.",
+ "losses": [
+  {
+   "t": "0:16",
+   "kind": "blunder 2.f4 (325 at depth 20, 334 at depth 16; best exd5)",
+   "decided": "0:10-0:16",
+   "happened": "After 1.e4 d5 (0:10) White plays 2.f4 (in the list at 0:15.8, about 6 s on the clock), leaving the e4 pawn attacked by d5 and defended by nothing; 2...dxe4 (0:20) wins it. Black hands it back with 3...e6 (235 at depth 20; best 3...Nf6, keeping the pawn), and White regains it with 4.Nxe4 (0:32).",
+   "factors": {
+    "position": "the e4 pawn attacked by d5 and defended by nothing",
+    "information": "the opponent's capture dxe4 was the threat"
+   },
+   "mistake": "Not taking or defending the attacked e4 pawn.",
+   "better": "2.exd5 (or 2.Nc3 / 2.d3 to defend it).",
+   "unsure": []
+  },
+  {
+   "t": "5:05",
+   "kind": "mistake 15.Bc3 (211 at depth 20, 169 at depth 16; best Nc3)",
+   "decided": "5:04-5:05",
+   "happened": "One to two seconds after 14...Bd6 (in the list between 5:03 and 5:04.0), White plays 15.Bc3 (in the list at 5:05.25), putting the bishop where it and the e3 queen can be forked from d5: Stockfish's reply 15...Nf6 threatens ...Nd5, and after 16.Bd2 takes the a2 pawn (15...Nf6 16.Bd2 Bxa2, Black about +2). Black misses it with 15...Rde8 (294 at depth 20), and White's next move is the 16.Qd3 blunder.",
+   "factors": {
+    "position": "the bishop on c3 and the queen on e3 both a knight's move from d5, which no white piece covers",
+    "information": "Black's knight on d7 one move from f6, then d5"
+   },
+   "mistake": "Moving the bishop, within a couple of seconds, onto a square that sets up a knight fork with the queen.",
+   "better": "15.Nc3 (Stockfish), covering d5 and developing the knight.",
+   "unsure": [
+    "the exact time spent: 14...Bd6 is in the list by 5:04.0 and 15.Bc3 at 5:05.25"
+   ]
+  },
+  {
+   "t": "5:14",
+   "kind": "blunder 16.Qd3 (430 at depth 20, 303 at depth 16; best d5)",
+   "decided": "5:10-5:14",
+   "happened": "With Black's rook just to e8 and the bishop on e6, White moves the queen from e3 to d3 (5:13.75). Stockfish's 16...Bc4 hits the queen, with the e2 knight and f1 bishop behind it on the c4-f1 diagonal, and by leaving e6 opens the e-file from the e8 rook to the e2 knight (the queen on e3 had blocked that file): after the queen steps aside Black piles on e2 or takes a2 (16...Bc4 17.Qd2 Qa6 18.Ng3 Qxa2, Black about +3.9). Black misses it with 16...Qa6 (459 at depth 20).",
+   "factors": {
+    "position": "the queen on d3 and the knight on e2 on one diagonal, open to Bc4; the queen had stood on the e-file in front of the knight",
+    "information": "the opponent's Bc4"
+   },
+   "mistake": "Putting the queen on d3, in line with the e2 knight on the c4 bishop move's diagonal.",
+   "better": "16.d5 (Stockfish): it hits the e6 bishop and opens the e3-a7 diagonal at the castled king (16.d5 Bxd5 17.Qxa7), while the queen stays on e3 in front of the e2 knight.",
+   "unsure": []
+  },
+  {
+   "t": "5:41",
+   "kind": "blunder 18.Nf4 (571 at depth 20, 542 at depth 16; best Ng3)",
+   "decided": "5:40-5:41",
+   "happened": "After the queens come off (17.Qxa6 bxa6, about 5:40), White plays 18.Nf4 about a second later, onto a square the d6 bishop covers along d6-e5-f4-e3-d2-c1; 18...Bxf4+ (5:45) wins the knight with check on the c1 king.",
+   "factors": {
+    "position": "f4 is on the d6 bishop's diagonal to c1, and nothing of White's defends f4",
+    "resources": "material: a knight lost for nothing (about -5 by the engine)"
+   },
+   "mistake": "Moving the knight, about a second after the queen trade, to a square the enemy bishop already attacks, with check behind it.",
+   "better": "18.Ng3 (Stockfish), and after a trade take a few seconds to check the squares the moved piece lands on: f4 is on the d6 bishop's line to the king on c1.",
+   "unsure": []
+  },
+  {
+   "t": "6:15",
+   "kind": "inaccuracy at most: 21.Rhf1 (88 at depth 20, 119 at depth 16; best g3 at both)",
+   "decided": "6:09.5-6:15",
+   "happened": "Down a piece for a pawn (about -3.6), White attacks the f4 bishop with the h1 rook. Stockfish prefers 21.g3, which attacks the bishop with a pawn and closes the f4-h2 diagonal; after 21.Rhf1 its best reply is 21...Bxh2, the bishop escaping with a pawn. The a6 bishop is undefended but not attacked; Black's 21...Bc4 (6:24.5, a 534 blunder) then attacks it and the f1 rook together.",
+   "factors": {
+    "position": "the f4 bishop attacked by the rook but free to take h2; the a6 bishop undefended"
+   },
+   "mistake": "Attacking the f4 bishop with the rook, which lets it escape with a pawn (...Bxh2), instead of with g3.",
+   "better": "21.g3 (Stockfish at both depths).",
+   "unsure": [
+    "whether this counts as a mistake at all: 88-119 cp is within the engine's noise at these depths"
+   ]
+  },
+  {
+   "t": "6:28",
+   "kind": "blunder 22.Rxf4 (330 at depth 20, 288 at depth 16; best Bxc4)",
+   "decided": "6:24.5-6:28",
+   "happened": "Black's 21...Bc4 attacks White's a6 bishop and, along c4-d3-e2-f1, the f1 rook, while Black's own f4 bishop still hangs to that rook; the c4 bishop is defended by the b6 knight. White takes on f4 (the rook is mid-drag at 6:27), and 22...Bxa6 (6:31) trades the bishops off. 22.Bxc4 first (Stockfish) removes the piece attacking both a6 and f1, and after 22...Nxc4 23.Rxf4 still wins the f4 bishop: a whole piece, about +1 instead of about -2.",
+   "factors": {
+    "position": "two black bishops attacked (c4 by the a6 bishop, f4 by the f1 rook); c4 defended once, by the b6 knight; the c4 bishop also hitting the f1 rook and the a6 bishop",
+    "information": "the order of captures: take the piece that attacks yours first"
+   },
+   "mistake": "Taking the f4 bishop first, which let the c4 bishop take the a6 bishop: an even trade instead of a won piece.",
+   "better": "22.Bxc4 Nxc4 23.Rxf4, removing the attacker first and then winning the f4 bishop.",
+   "unsure": []
+  },
+  {
+   "t": "7:52",
+   "kind": "mistake 26.Rf1 (160 at depth 20, 147 at depth 16; best Re1)",
+   "decided": "7:17.5-7:52",
+   "happened": "With Black's rook on e2 (White's second rank, eyeing c2 and h2), White spends about 34 s and moves the d1 rook to f1 rather than to e1, where it would challenge the e2 rook. Stockfish's reply is 26...Bd5, heading for e4 at c2 (Black about +1.6); Black plays 26...Be6 (8:24), and the recording ends three seconds later.",
+   "factors": {
+    "position": "Black's rook on White's second rank"
+   },
+   "mistake": "Not challenging the rook on e2.",
+   "better": "26.Re1.",
+   "unsure": [
+    "the end of the game: the recording stops at 8:27, after 26...Be6, with White to move"
+   ]
+  }
+ ],
+ "not_true": [
+  "that Black's c4 bishop was free at move 22 (the b6 knight defended it; 22.Bxc4 wins a piece only because the f4 bishop still hangs after 22...Nxc4)",
+  "that 21.Rhf1 hung or lost the a6 bishop (nothing attacked a6 until Black's 21...Bc4; Stockfish's preferred move was g3, not Bb5)",
+  "that 26.Rf1 was played at 8:13 (7:52.25)",
+  "that 16...Bc4 would simply win the e2 knight (after the queen steps to d2, e2 is defended twice; the engine's gain is a pawn and a crushing attack, about +3.9)"
+ ],
+ "changes": [
+  {
+   "t": null,
+   "field": "moves",
+   "was": "1. e4 d5 2. f4 dxe4 3. Nc3 e6 4. Nxe4 Nf6 5. Nxf6+ Qxf6 6. Ne2 e5 7. fxe5 Qxe5 8. d4 Qe6 9. Qd3 Qg6 10. Qb5+ Qc6 11. Qe5+ Be6 12. Bd2 Nd7 13. Qe3 O-O-O 14. O-O-O Bd6 15. Bc3 Rde8 16. Qd3 Qa6 17. Qxa6 bxa6 18. Nf4 Bxf4+ 19. Kb1 Nb6 20. Bxa6+ Kb8 21. Rhf1 Bc4 22. Rxf4 Bxa6 23. Rxf7 Bc4 24. Rxg7 Re2 25. b3 Bg8 26. Rf1 Be6 (the recording ends here, the game unfinished, about 6:00 on each clock)",
+   "now": "1. e4 d5 2. f4 dxe4 3. Nc3 e6 4. Nxe4 Nf6 5. Nxf6+ Qxf6 6. Ne2 e5 7. fxe5 Qxe5 8. d4 Qe6 9. Qd3 Qg6 10. Qb5+ Qc6 11. Qe5+ Be6 12. Bd2 Nd7 13. Qe3 O-O-O 14. O-O-O Bd6 15. Bc3 Rde8 16. Qd3 Qa6 17. Qxa6 bxa6 18. Nf4 Bxf4+ 19. Kb1 Nb6 20. Bxa6+ Kb8 21. Rhf1 Bc4 22. Rxf4 Bxa6 23. Rxf7 Bc4 24. Rxg7 Re2 25. b3 Bg8 26. Rf1 Be6 (the recording ends at 8:27, three seconds after 26...Be6, game unfinished: White to move on 5:56, Black 6:00)",
+   "evidence": "Every move matches the move list (1 s OCR over 0:00-8:27, read by eye at 0.25 s near each graded move; 10...Qc6 confirmed on the board at 2:16). End clocks from the 8:27 frame: White 5:56 running, Black 6:00."
+  },
+  {
+   "t": null,
+   "field": "how",
+   "was": "Moves read off the chess.com move list in the frames; every move graded by Stockfish 10 (chess-reader.js scoreGame) at depth 16, and the large losses again at depth 20 on one engine. At this depth Stockfish 10's scores vary by about 50 cp between reads of one position, so only losses of 250+ (blunders) are firm; 100-250 (mistakes) are listed as such.",
+   "now": "Moves read off the chess.com move list in the frames; every move graded by Stockfish 10 (chess-reader.js scoreGame via chess-grade.mjs) at depth 16 and again at depth 20, with Stockfish's line taken at depth 18 for each graded position. The engine's own best move shows losses up to about 100 cp at these depths (1.e4: 101 at depth 16, 59 at depth 20; 8.d4: 62 / 25), so only losses of 250+ (blunders) are firm and 100-250 (mistakes) are soft. White moves graded 100+ at both depths: 6.Ne2 (151 / 121), 10.Qb5+ (168 / 116), 11.Qe5+ (138 / 113), 12.Bd2 (104 / 137), 15.Bc3 (169 / 211), 26.Rf1 (147 / 160); listed below are the blunders, 15.Bc3 (over 200 at depth 20), 26.Rf1, and 21.Rhf1 (119 / 88, kept as a borderline case).",
+   "evidence": "Depth-16 and depth-20 runs saved in scratchpad/check-new/ch-grade16.txt and ch-grade20.txt. The draft's '-280 at depth 20' (2.f4), '-500' (16.Qd3), '-597' (18.Nf4), '-123' (21.Rhf1), '-316' (22.Rxf4), '-114' (26.Rf1) re-ran as 325 / 430 / 571 / 88 / 330 / 160 at depth 20 and 334 / 303 / 542 / 119 / 288 / 147 at depth 16. The noise is about 100 cp, not 50."
+  },
+  {
+   "t": null,
+   "field": "habit",
+   "was": "Moving a piece to a square the opponent's pieces already attack or line up on, without checking their captures and checks first: the queen to d3 in line with the e2 knight, the knight to f4 into the bishop's diagonal, and taking back on f4 instead of the free bishop on c4.",
+   "now": "Moving quickly without checking what the opponent can capture or fork after the move: 15.Bc3 (one to two seconds' thought) onto the square ...Nd5 forks with the e3 queen; 16.Qd3 onto the c4-e2 line, open to ...Bc4; 18.Nf4 about a second after the queen trade, onto the d6 bishop's diagonal to the king; and at move 22, with two black bishops hanging, taking the wrong one first.",
+   "evidence": "Move timing from the list: 14...Bd6 between 5:03 and 5:04.0, 15.Bc3 5:05.25; 15...Rde8 about 5:10, 16.Qd3 5:13.75 (White's clock 7:11 to 7:08); 17...bxa6 about 5:40.0, 18.Nf4 about 5:41.0 (7:01 to 7:00). The c4 bishop at move 22 was not free (the b6 knight defended it, 6:27 board); the error was the capture order."
+  },
+  {
+   "t": "0:15",
+   "field": "t",
+   "was": "0:15",
+   "now": "0:16",
+   "evidence": "2.f4 enters the move list at 0:15.8 (0.2 s strip grid 0:15.0-0:17.0; still '1. e4 d5' at 0:15.6)."
+  },
+  {
+   "t": "0:15",
+   "field": "kind",
+   "was": "blunder 2.f4 (-280 at depth 20; best exd5)",
+   "now": "blunder 2.f4 (325 at depth 20, 334 at depth 16; best exd5)",
+   "evidence": "chess-grade.mjs depth 20: 325, best exd5; depth 16: 334, best exd5. The draft's 280 at depth 20 did not reproduce; the grade (blunder) holds."
+  },
+  {
+   "t": "0:15",
+   "field": "decided",
+   "was": "0:05-0:20",
+   "now": "0:10-0:16",
+   "evidence": "1...d5 enters the list at 0:10; White's clock 9:56 (0:10) to 9:50 (0:16): about 6 s on 2.f4."
+  },
+  {
+   "t": "0:15",
+   "field": "happened",
+   "was": "After 1.e4 d5 White plays 2.f4, leaving the e4 pawn attacked by d5 and undefended; 2...dxe4 wins it.",
+   "now": "After 1.e4 d5 (0:10) White plays 2.f4 (in the list at 0:15.8, about 6 s on the clock), leaving the e4 pawn attacked by d5 and defended by nothing; 2...dxe4 (0:20) wins it. Black hands it back with 3...e6 (235 at depth 20; best 3...Nf6, keeping the pawn), and White regains it with 4.Nxe4 (0:32).",
+   "evidence": "Move list: dxe4 at 0:20, 3.Nc3 0:22, e6 0:28, 4.Nxe4 0:32-0:34; grader: 3...e6 255 at depth 16 / 235 at depth 20, best Nf6. Stockfish line after 2.f4: 2...dxe4 3.d3 Nf6, Black +1.7."
+  },
+  {
+   "t": "0:15",
+   "field": "unsure",
+   "was": [
+    "the exact second of the move"
+   ],
+   "now": [],
+   "evidence": "Settled: 0:15.8."
+  },
+  {
+   "t": "5:05",
+   "field": "losses[+]",
+   "was": null,
+   "now": {
+    "t": "5:05",
+    "kind": "mistake 15.Bc3 (211 at depth 20, 169 at depth 16; best Nc3)",
+    "decided": "5:04-5:05",
+    "happened": "One to two seconds after 14...Bd6 (in the list between 5:03 and 5:04.0), White plays 15.Bc3 (in the list at 5:05.25), putting the bishop where it and the e3 queen can be forked from d5: Stockfish's reply 15...Nf6 threatens ...Nd5, and after 16.Bd2 takes the a2 pawn (15...Nf6 16.Bd2 Bxa2, Black about +2). Black misses it with 15...Rde8 (294 at depth 20), and White's next move is the 16.Qd3 blunder.",
+    "factors": {
+     "position": "the bishop on c3 and the queen on e3 both a knight's move from d5, which no white piece covers",
+     "information": "Black's knight on d7 one move from f6, then d5"
+    },
+    "mistake": "Moving the bishop, within a couple of seconds, onto a square that sets up a knight fork with the queen.",
+    "better": "15.Nc3 (Stockfish), covering d5 and developing the knight.",
+    "unsure": [
+     "the exact time spent: 14...Bd6 is in the list by 5:04.0 and 15.Bc3 at 5:05.25"
+    ]
+   },
+   "evidence": "Graded 169 (depth 16) and 211 (depth 20), best Nc3 at both: larger than the listed 21.Rhf1 and 26.Rf1 and of the same class the draft says it lists. Strip crops: 'Bd6' last at 5:04.0-5:05.0, '15. Bc3' from 5:05.25. Stockfish depth 18 after 15.Bc3: 15...Nf6 16.Bd2 Bxa2 17.Nc3, Black +2.0."
+  },
+  {
+   "t": "5:12",
+   "field": "t",
+   "was": "5:12",
+   "now": "5:14",
+   "evidence": "The queen is picked up at 5:12 (legal-move dots on the board); 16.Qd3 enters the list at 5:13.75."
+  },
+  {
+   "t": "5:12",
+   "field": "kind",
+   "was": "blunder 16.Qd3 (-500; best d5)",
+   "now": "blunder 16.Qd3 (430 at depth 20, 303 at depth 16; best d5)",
+   "evidence": "chess-grade.mjs: 430 at depth 20, 303 at depth 16, best d5 at both; the draft's -500 did not reproduce."
+  },
+  {
+   "t": "5:12",
+   "field": "decided",
+   "was": "5:00-5:12",
+   "now": "5:10-5:14",
+   "evidence": "15...Rde8 enters the list about 5:10 (still '15. Bc3' last at 5:09.5); 16.Qd3 at 5:13.75; White's clock 7:11 (5:09) to 7:08 (5:14)."
+  },
+  {
+   "t": "5:12",
+   "field": "happened",
+   "was": "With Black's rook on e8 and bishop on e6, White moves the queen from e3 to d3; 16...Bc4 (Stockfish's best for Black) would attack the queen with the e2 knight behind it on the same diagonal, a skewer that wins the knight. Black misses it with 16...Qa6.",
+   "now": "With Black's rook just to e8 and the bishop on e6, White moves the queen from e3 to d3 (5:13.75). Stockfish's 16...Bc4 hits the queen, with the e2 knight and f1 bishop behind it on the c4-f1 diagonal, and by leaving e6 opens the e-file from the e8 rook to the e2 knight (the queen on e3 had blocked that file): after the queen steps aside Black piles on e2 or takes a2 (16...Bc4 17.Qd2 Qa6 18.Ng3 Qxa2, Black about +3.9). Black misses it with 16...Qa6 (459 at depth 20).",
+   "evidence": "Board at 5:12: White Qe3, Ne2, Bf1, Bc3, Rd1, Rh1, Kc1, pawns a2 b2 c2 d4 g2 h2; Black Kc8, Re8, Rh8, Qc6, Be6, Bd6, Nd7. Stockfish depth 18 after 16.Qd3: Bc4 Qd2 Qa6 Ng3 Qxa2, +3.87. 'Wins the knight' is too strong: e2 is defended twice after Qd2; the engine wins a pawn with a crushing attack instead."
+  },
+  {
+   "t": "5:12",
+   "field": "better",
+   "was": "16.d5, gaining space with tempo and keeping the e-file covered.",
+   "now": "16.d5 (Stockfish): it hits the e6 bishop and opens the e3-a7 diagonal at the castled king (16.d5 Bxd5 17.Qxa7), while the queen stays on e3 in front of the e2 knight.",
+   "evidence": "Stockfish depth 18 after 15...Rde8: 16.d5 Bxd5 17.Qxa7 Bc4 18.Qa8+ Nb8, White +1.2. 'Gaining space' is not the point; the opened diagonal to a7 is."
+  },
+  {
+   "t": "5:42",
+   "field": "t",
+   "was": "5:42",
+   "now": "5:41",
+   "evidence": "18.Nf4 enters the list between 5:40.75 and 5:41.0 (0.25 s strip crops)."
+  },
+  {
+   "t": "5:42",
+   "field": "kind",
+   "was": "blunder 18.Nf4 (-597; best Ng3)",
+   "now": "blunder 18.Nf4 (571 at depth 20, 542 at depth 16; best Ng3)",
+   "evidence": "chess-grade.mjs: 571 at depth 20, 542 at depth 16, best Ng3; the draft's 597 is close but did not reproduce exactly."
+  },
+  {
+   "t": "5:42",
+   "field": "decided",
+   "was": "5:35-5:42",
+   "now": "5:40-5:41",
+   "evidence": "17...bxa6 enters the list at about 5:40.0 (5:39.75 shows its first letter), 18.Nf4 about 5:41.0; White's clock 7:01 to 7:00. About a second's thought."
+  },
+  {
+   "t": "5:42",
+   "field": "happened",
+   "was": "After the queens come off (17.Qxa6 bxa6), White plays 18.Nf4, onto a square the d6 bishop covers; 18...Bxf4+ wins the knight with check.",
+   "now": "After the queens come off (17.Qxa6 bxa6, about 5:40), White plays 18.Nf4 about a second later, onto a square the d6 bishop covers along d6-e5-f4-e3-d2-c1; 18...Bxf4+ (5:45) wins the knight with check on the c1 king.",
+   "evidence": "Move list times as above; Bxf4+ in the list at 5:45; e5, e3 and d2 empty on the board (e-pawns traded, queen gone from e3, bishop on c3)."
+  },
+  {
+   "t": "5:42",
+   "field": "mistake",
+   "was": "Moving the knight to a square the enemy bishop already attacks, with check behind it.",
+   "now": "Moving the knight, about a second after the queen trade, to a square the enemy bishop already attacks, with check behind it.",
+   "evidence": "Added the speed of the move (7:01 to 7:00 on White's clock)."
+  },
+  {
+   "t": "5:42",
+   "field": "better",
+   "was": "18.Ng3, or check every square the knight lands on for the opponent's captures.",
+   "now": "18.Ng3 (Stockfish), and after a trade take a few seconds to check the squares the moved piece lands on: f4 is on the d6 bishop's line to the king on c1.",
+   "evidence": "Stockfish depth 18 after 17...bxa6: 18.Ng3, White +1.05."
+  },
+  {
+   "t": "6:13",
+   "field": "t",
+   "was": "6:13",
+   "now": "6:15",
+   "evidence": "21.Rhf1 enters the list at 6:15.0 (6:14.75 still ends 'Kb8')."
+  },
+  {
+   "t": "6:13",
+   "field": "kind",
+   "was": "mistake 21.Rhf1 (-123; best Bb5)",
+   "now": "inaccuracy at most: 21.Rhf1 (88 at depth 20, 119 at depth 16; best g3 at both)",
+   "evidence": "chess-grade.mjs: 119 at depth 16 and 88 at depth 20, best g3 both times; the draft's Bb5 did not appear at either depth. 88-119 is inside the noise of the engine's own best moves (up to about 100)."
+  },
+  {
+   "t": "6:13",
+   "field": "decided",
+   "was": "6:05-6:13",
+   "now": "6:09.5-6:15",
+   "evidence": "20...Kb8 enters the list at 6:09.5; Rhf1 at 6:15.0; White's clock 6:53 (6:10) to 6:49 (6:15)."
+  },
+  {
+   "t": "6:13",
+   "field": "happened",
+   "was": "Down a piece, White attacks the f4 bishop with the rook while the a6 bishop is loose.",
+   "now": "Down a piece for a pawn (about -3.6), White attacks the f4 bishop with the h1 rook. Stockfish prefers 21.g3, which attacks the bishop with a pawn and closes the f4-h2 diagonal; after 21.Rhf1 its best reply is 21...Bxh2, the bishop escaping with a pawn. The a6 bishop is undefended but not attacked; Black's 21...Bc4 (6:24.5, a 534 blunder) then attacks it and the f1 rook together.",
+   "evidence": "Stockfish depth 18 after 21.Rhf1: 21...Bxh2 22.b3 h5, Black +4.6. Board at 6:27: nothing of Black's attacks a6 before ...Bc4 (Kb8, Nb6 and Be6 don't reach it)."
+  },
+  {
+   "t": "6:13",
+   "field": "factors",
+   "was": {
+    "position": "the a6 bishop undefended"
+   },
+   "now": {
+    "position": "the f4 bishop attacked by the rook but free to take h2; the a6 bishop undefended"
+   },
+   "evidence": "As above."
+  },
+  {
+   "t": "6:13",
+   "field": "mistake",
+   "was": "Leaving the a6 bishop loose.",
+   "now": "Attacking the f4 bishop with the rook, which lets it escape with a pawn (...Bxh2), instead of with g3.",
+   "evidence": "The engine's better move is g3, not a bishop retreat; nothing was lost on a6."
+  },
+  {
+   "t": "6:13",
+   "field": "better",
+   "was": "21.Bb5, keeping the bishop safe.",
+   "now": "21.g3 (Stockfish at both depths).",
+   "evidence": "best g3 at depth 16 and depth 20."
+  },
+  {
+   "t": "6:13",
+   "field": "unsure",
+   "was": [],
+   "now": [
+    "whether this counts as a mistake at all: 88-119 cp is within the engine's noise at these depths"
+   ],
+   "evidence": "Depth 20 grades it below the 100 cp mistake line."
+  },
+  {
+   "t": "6:28",
+   "field": "t",
+   "was": "6:28",
+   "now": "6:28",
+   "evidence": "Confirmed: 22.Rxf4 in the list at 6:28.25; the rook is mid-drag at 6:27."
+  },
+  {
+   "t": "6:28",
+   "field": "kind",
+   "was": "blunder 22.Rxf4 (-316; best Bxc4)",
+   "now": "blunder 22.Rxf4 (330 at depth 20, 288 at depth 16; best Bxc4)",
+   "evidence": "chess-grade.mjs: 330 at depth 20, 288 at depth 16, best Bxc4; the draft's 316 is in between."
+  },
+  {
+   "t": "6:28",
+   "field": "decided",
+   "was": "6:20-6:28",
+   "now": "6:24.5-6:28",
+   "evidence": "21...Bc4 enters the list at 6:24.5; 22.Rxf4 at 6:28.25; White's clock 6:48 (6:25) to 6:45 (6:29)."
+  },
+  {
+   "t": "6:28",
+   "field": "happened",
+   "was": "Black's 21...Bc4 hangs the bishop to White's a6 bishop; White takes back on f4 instead, and 22...Bxa6 trades off the bishop White could have won.",
+   "now": "Black's 21...Bc4 attacks White's a6 bishop and, along c4-d3-e2-f1, the f1 rook, while Black's own f4 bishop still hangs to that rook; the c4 bishop is defended by the b6 knight. White takes on f4 (the rook is mid-drag at 6:27), and 22...Bxa6 (6:31) trades the bishops off. 22.Bxc4 first (Stockfish) removes the piece attacking both a6 and f1, and after 22...Nxc4 23.Rxf4 still wins the f4 bishop: a whole piece, about +1 instead of about -2.",
+   "evidence": "Board at 6:27: Black Nb6 (covers c4), Bc4, Bf4, Kb8, Re8, Rh8; White Ba6, Bc3, Rd1, Kb1, rook being dragged from f1. Stockfish depth 18 after 21...Bc4: 22.Bxc4 Nxc4 23.Rxf4, White +0.98; after 22.Rxf4: 22...Bxa6, Black +2.3. The draft's 'defended by nothing' / 'free bishop' is wrong."
+  },
+  {
+   "t": "6:28",
+   "field": "factors",
+   "was": {
+    "position": "Black's c4 bishop attacked by White's a6 bishop and defended by nothing",
+    "information": "a free piece on the board"
+   },
+   "now": {
+    "position": "two black bishops attacked (c4 by the a6 bishop, f4 by the f1 rook); c4 defended once, by the b6 knight; the c4 bishop also hitting the f1 rook and the a6 bishop",
+    "information": "the order of captures: take the piece that attacks yours first"
+   },
+   "evidence": "As above."
+  },
+  {
+   "t": "6:28",
+   "field": "mistake",
+   "was": "Recapturing on f4 instead of taking the free bishop.",
+   "now": "Taking the f4 bishop first, which let the c4 bishop take the a6 bishop: an even trade instead of a won piece.",
+   "evidence": "The c4 bishop was defended, so the gain from 22.Bxc4 comes from the f4 bishop still hanging afterwards."
+  },
+  {
+   "t": "6:28",
+   "field": "better",
+   "was": "22.Bxc4, winning the bishop (then Rxf4 next).",
+   "now": "22.Bxc4 Nxc4 23.Rxf4, removing the attacker first and then winning the f4 bishop.",
+   "evidence": "Stockfish depth 18 line."
+  },
+  {
+   "t": "8:13",
+   "field": "t",
+   "was": "8:13",
+   "now": "7:52",
+   "evidence": "26.Rf1 enters the move list at 7:52.25 (7:52.0 shows '26' with no move); at 8:13 it is already on the board and Black is thinking (Black played 26...Be6 at 8:24)."
+  },
+  {
+   "t": "8:13",
+   "field": "kind",
+   "was": "mistake 26.Rf1 (-114; best Re1)",
+   "now": "mistake 26.Rf1 (160 at depth 20, 147 at depth 16; best Re1)",
+   "evidence": "chess-grade.mjs: 160 at depth 20, 147 at depth 16, best Re1; the draft's 114 did not reproduce."
+  },
+  {
+   "t": "8:13",
+   "field": "decided",
+   "was": "8:05-8:13",
+   "now": "7:17.5-7:52",
+   "evidence": "25...Bg8 enters the list at 7:17.25-7:17.5; 26.Rf1 at 7:52.25; White's clock 6:34 (7:18) to 6:00 (7:52): about 34 s of thought, the longest of the game."
+  },
+  {
+   "t": "8:13",
+   "field": "happened",
+   "was": "With Black's rook on e2, White plays 26.Rf1 rather than challenging the e-file.",
+   "now": "With Black's rook on e2 (White's second rank, eyeing c2 and h2), White spends about 34 s and moves the d1 rook to f1 rather than to e1, where it would challenge the e2 rook. Stockfish's reply is 26...Bd5, heading for e4 at c2 (Black about +1.6); Black plays 26...Be6 (8:24), and the recording ends three seconds later.",
+   "evidence": "Move list and clocks as above; Stockfish depth 18 after 26.Rf1: 26...Bd5 27.Kc1 Be4 28.Bd2 Bg6, +1.6."
+  },
+  {
+   "t": "8:13",
+   "field": "unsure",
+   "was": [
+    "the end of the game: the recording stops at 26...Be6"
+   ],
+   "now": [
+    "the end of the game: the recording stops at 8:27, after 26...Be6, with White to move"
+   ],
+   "evidence": "Last frame 8:27: White's clock running at 5:56."
+  },
+  {
+   "t": null,
+   "field": "not_true",
+   "was": [],
+   "now": [
+    "that Black's c4 bishop was free at move 22 (the b6 knight defended it; 22.Bxc4 wins a piece only because the f4 bishop still hangs after 22...Nxc4)",
+    "that 21.Rhf1 hung or lost the a6 bishop (nothing attacked a6 until Black's 21...Bc4; Stockfish's preferred move was g3, not Bb5)",
+    "that 26.Rf1 was played at 8:13 (7:52.25)",
+    "that 16...Bc4 would simply win the e2 knight (after the queen steps to d2, e2 is defended twice; the engine's gain is a pawn and a crushing attack, about +3.9)"
+   ],
+   "evidence": "See the entries' evidence."
+  }
+ ]
+}

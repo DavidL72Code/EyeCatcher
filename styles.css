@@ -224,6 +224,9 @@ img { display: block; max-width: 100%; }
 .look.measure { width: 8px; min-width: 0; margin-left: -4px; border: 0; background: none; }
 .look.measure::after { content: ''; position: absolute; left: 0; top: calc(50% - 4px); width: 8px; height: 8px; background: var(--pen); transform: rotate(45deg); }
 .look.clip { top: auto; bottom: 0; height: 6px; border: 0; border-radius: 2px; background: rgb(255 210 63 / 0.75); }
+/* the span the critique plays on a loop, the mistake marked in it */
+.cq-span { position: absolute; top: 0; bottom: 0; min-width: 6px; border: 2px solid var(--pen); border-radius: 4px; background: rgb(255 210 63 / 0.22); pointer-events: none; animation: pop 0.35s var(--ease); z-index: 2; }
+.cq-span i { position: absolute; top: -4px; bottom: -4px; width: 3px; margin-left: -1.5px; border-radius: 2px; background: var(--pen); }
 .scanned { position: absolute; bottom: 0; height: 3px; background: rgb(255 210 63 / 0.45); }
 /* fights: a band along the bottom, by how they ended */
 .fight { position: absolute; bottom: 5px; height: 5px; min-width: 3px; border-radius: 3px; background: var(--muted); opacity: 0.8; }
@@ -263,6 +266,11 @@ img { display: block; max-width: 100%; }
 .status.error { background: rgb(255 106 82 / 0.1); }
 .status.error .ring { animation: none; border-color: var(--death); }
 
+/* the status and the count line stay at the top of the rail while a review runs */
+.live-head { position: sticky; top: 0; z-index: 4; display: grid; gap: 6px; padding-bottom: 2px; background: var(--ink); }
+.live-head:not(:has(> :not([hidden]))) { display: none; }
+.counts { margin: 0; padding: 0 6px; font: 500 12px/1.5 var(--mono); color: var(--faint); font-variant-numeric: tabular-nums; }
+.counts b { color: var(--text); font-weight: 600; }
 .meter { display: flex; align-items: center; gap: 12px; padding: 0 4px; }
 .meter .ticks { display: flex; flex-wrap: wrap; gap: 3px; flex: 1; }
 .meter .ticks i { width: 5px; height: 14px; border-radius: 2px; background: var(--line-2); transition: background 0.3s; }
@@ -319,6 +327,43 @@ img { display: block; max-width: 100%; }
 .shot-group.watched video { display: block; width: 100%; max-width: 320px; aspect-ratio: 16 / 9; object-fit: contain; border-radius: 5px; background: #000; }
 .shot-group.watched figcaption { color: var(--muted); font-weight: 500; }
 .beat-out { margin: 0; font-size: 14px; line-height: 1.4; }
+
+/* the coach's own reasoning before a step, as the model summed it up */
+.beat-think { margin: 6px 0 4px; border-radius: var(--r-sm); background: var(--panel-2); }
+.beat-think summary { cursor: pointer; padding: 6px 10px; font: 600 12px var(--mono); color: var(--muted); list-style: none; }
+.beat-think summary::before { content: '▸ '; } .beat-think[open] summary::before { content: '▾ '; }
+.beat-think p { margin: 0; padding: 0 10px 8px; font-size: 13px; line-height: 1.5; color: var(--text); }
+/* the check against the video: each claim, and the false ones planted to test it */
+.checker { margin: 6px 0; }
+.checker-head { margin: 0 0 6px; font-size: 13px; color: var(--muted); }
+.checker ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 4px; }
+.checker li { font-size: 13px; line-height: 1.45; color: var(--text); }
+.checker .cv { display: inline-block; min-width: 76px; margin-right: 6px; padding: 1px 6px; border-radius: 4px; font: 600 11px/16px var(--mono); text-align: center; background: var(--panel); color: var(--muted); }
+.checker .ok .cv, .checker .caught .cv { background: var(--pen-soft); color: var(--pen); }
+.checker .no .cv, .checker .fooled .cv { background: rgb(255 92 92 / 0.16); color: #ff8c8c; }
+.checker .ct { margin-right: 6px; font: 600 12px var(--mono); color: var(--faint); }
+.checker em { display: block; margin-left: 82px; font-style: normal; color: var(--muted); }
+/* the false claims code planted among them: set apart, dashed like a test card, so they read as the test and not the
+   coach's own */
+.ck-planted { margin-top: 10px; padding: 10px 12px; border: 1.5px dashed rgb(255 210 63 / 0.55); border-radius: var(--r-sm); background: rgb(255 210 63 / 0.04); }
+.ck-planted.fooled { border-color: rgb(255 106 82 / 0.7); background: rgb(255 106 82 / 0.05); }
+.ck-planted.none { border-color: var(--line-2); background: none; }
+.ck-plant-head { margin: 0 0 4px; font-size: 13px; font-weight: 650; line-height: 1.45; color: var(--pen); }
+.ck-planted.fooled .ck-plant-head { color: #ff8c8c; }
+.ck-plant-line { margin: 0 0 8px; font-size: 13px; line-height: 1.45; color: var(--muted); }
+.ck-planted.none .ck-plant-line { margin: 0; }
+.checker .ck-why { display: block; margin-left: 82px; font-size: 12px; color: var(--muted); }
+.ck-old { margin: 8px 0 0; font-size: 12px; color: var(--faint); }
+/* each fact a claim was judged by, under it (How it worked) */
+.checker .ck-facts { margin: 4px 0 0 82px; gap: 3px; }
+.checker .ck-facts li { font-size: 12px; line-height: 1.45; color: var(--muted); }
+.checker .ck-facts b { margin-right: 4px; font: 600 11px var(--mono); color: var(--pen); }
+.checker .ck-facts .goes_against b { color: #ff8c8c; }
+.checker .ck-facts .cant_tell b { color: var(--muted); }
+.checker .ck-facts em { margin-left: 0; color: var(--faint); }
+.ck-score { margin: 8px 0 0; font: 600 12px var(--mono); color: var(--pen); }
+.ck-planted.fooled .ck-score { color: #ff8c8c; }
+.ck-proven { margin: 8px 0 0; font-size: 13px; color: var(--muted); }
 .beat-out.muted { color: var(--muted); }
 .beat-out.warn { color: #ffb3a6; }
 .beat-take { margin: 0; padding: 0; list-style: none; display: grid; gap: 4px; }
@@ -596,13 +641,32 @@ img { display: block; max-width: 100%; }
 .cq-w { font-size: 14px; line-height: 1.4; color: var(--muted); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .cq-ch.on { background: var(--pen-soft); }
 .cq-ch.on .cq-n { background: var(--pen); border-color: var(--pen); color: var(--pen-ink); }
-.cq-ch.on .cq-w { color: var(--text); -webkit-line-clamp: unset; } /* the line being said, whole: there's no caption over the video */
+.cq-ch.on .cq-w { color: var(--text); -webkit-line-clamp: unset; } /* the moment being said, whole; its captions are over the video */
 
-/* what the voice is saying, over the picture */
-.caption { position: absolute; left: 0; right: 0; bottom: 58px; z-index: 3; width: min(86%, 820px); margin: 0 auto; display: flex; align-items: flex-start; gap: 12px; padding: 12px 16px; border-radius: 12px; background: rgb(12 13 15 / 0.84); box-shadow: 0 8px 28px rgb(0 0 0 / 0.45); pointer-events: none; }
-.cap-n { flex: none; width: 30px; height: 30px; border-radius: 50%; background: var(--pen); color: var(--pen-ink); font: 800 15px/30px var(--mono); text-align: center; }
-.cap-text { font-size: clamp(15px, 1.35vw, 19px); line-height: 1.4; font-weight: 550; text-wrap: pretty; }
-@media (max-width: 640px) { .cq-meta { flex-basis: 100%; order: 2; } .cq-stop { margin-left: auto; } .caption { bottom: 44px; width: calc(100% - 16px); padding: 8px 10px; gap: 8px; } .cap-n { width: 24px; height: 24px; font-size: 12px; line-height: 24px; } .cap-text { font-size: 14px; } .critique { margin-top: 16px; padding: 12px; } }
+/* what the voice is saying, as subtitles over the picture: one piece at a time, two lines at most */
+.caption { position: absolute; left: 50%; bottom: max(52px, 8%); z-index: 4; width: min(84%, 900px); margin: 0; transform: translateX(-50%); text-align: center; pointer-events: none; text-wrap: balance; }
+.caption span { padding: 3px 12px; border-radius: 6px; background: rgb(12 13 15 / 0.82); -webkit-box-decoration-break: clone; box-decoration-break: clone; color: #fff; font: 600 clamp(15px, 1.65vw, 24px)/1.55 var(--sans); }
+/* the critique's title card over the opening and closing lines, and the moment it's on */
+.cq-card { position: absolute; inset: 0; z-index: 3; display: grid; place-content: center; justify-items: center; gap: 10px; padding: 24px 8% calc(24px + 16%); background: rgb(12 13 15 / 0.74); text-align: center; pointer-events: none; }
+.cq-card p { margin: 0; }
+.cq-card-label { font-size: clamp(13px, 1.3vw, 18px); font-weight: 650; color: var(--pen); }
+.cq-card-title { position: relative; padding-bottom: 0.18em; font: 800 clamp(30px, 4.6vw, 72px)/0.95 var(--display); text-transform: uppercase; text-wrap: balance; background: linear-gradient(var(--pen), var(--pen)) center bottom / 70% 0.07em no-repeat; }
+.cq-card-body { max-width: 40em; margin-top: 6px !important; font-size: clamp(14px, 1.5vw, 20px); line-height: 1.45; color: #c9cbd0; }
+.cq-tag { position: absolute; left: 14px; top: 14px; z-index: 3; margin: 0; padding: 5px 12px; border-radius: 999px; background: rgb(12 13 15 / 0.82); font: 600 12px var(--mono); color: var(--muted); pointer-events: none; }
+.cq-tag b { color: var(--pen); font-weight: 600; }
+/* a cut to the next moment: a quick dip to black */
+.player.cq-cut::before { content: ''; position: absolute; inset: 0; z-index: 2; background: #000; pointer-events: none; animation: dip 0.35s ease-out forwards; }
+@keyframes dip { from { opacity: 0.85; } to { opacity: 0; } }
+/* saving the critique as a video: the button, a red dot while it records, and a line saying how it went */
+.cq-save { display: inline-flex; align-items: center; gap: 8px; height: 38px; padding: 0 16px; font-size: 14px; }
+.cq-save i { width: 9px; height: 9px; border-radius: 50%; background: var(--death); }
+.cq-save:disabled { cursor: default; opacity: 0.7; }
+.critique.recording .cq-save i { animation: blink 1s ease-in-out infinite; }
+.cq-note { margin: 10px 0 0; font: 500 12px var(--mono); color: var(--muted); }
+.critique.recording .cq-note { color: #ffb3a6; }
+/* the canvas a saved critique is drawn on: in the page, so its stream gets every frame, but out of sight */
+.rec-canvas { position: fixed; left: -10000px; top: 0; width: 2px; height: 2px; pointer-events: none; }
+@media (max-width: 640px) { .cq-meta { flex-basis: 100%; order: 2; } .cq-stop { margin-left: auto; } .caption { bottom: 40px; width: calc(100% - 16px); } .caption span { font-size: 14px; } .cq-tag { left: 8px; top: 8px; } .critique { margin-top: 16px; padding: 12px; } }
 
 /* where the review is: five stages, the done ones lit, the current one marked, each with a short note */
 .stages { margin: 22px 0 0; padding: 16px 18px; list-style: none; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; border-radius: var(--r); background: var(--panel); }
@@ -625,3 +689,72 @@ img { display: block; max-width: 100%; }
 .cq-ch .cq-n:empty { width: 8px; height: 8px; margin-left: 8px; border: 0; background: var(--line-2); }
 .cq-w b { color: var(--pen); font-weight: 650; margin-right: 4px; }
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+
+/* How it worked: the whole review in order, by stage, from its log */
+.trace details { border-radius: var(--r); background: var(--panel); }
+.trace summary { cursor: pointer; padding: 14px 16px; font-size: 14px; font-weight: 650; color: var(--text); list-style: none; }
+.trace summary::-webkit-details-marker { display: none; }
+.trace summary::before { content: '+'; display: inline-block; width: 16px; font-family: var(--mono); color: var(--pen); }
+.trace details[open] summary::before { content: '–'; }
+.trace-body { display: grid; gap: 18px; padding: 0 14px 16px; }
+.tr-stage { display: grid; gap: 6px; min-width: 0; overflow-wrap: anywhere; }
+.tr-stage + .tr-stage { padding-top: 16px; border-top: 1px solid var(--line); }
+.tr-stage h4 { display: flex; align-items: center; gap: 10px; margin: 0 0 4px; font-size: 14px; font-weight: 650; }
+.tr-n { width: 22px; height: 22px; flex: none; border-radius: 50%; background: var(--pen); color: var(--pen-ink); font: 700 11px/22px var(--mono); text-align: center; }
+.tr-stage p { margin: 0; font-size: 13px; line-height: 1.5; }
+.tr-stage p.muted, .tr-stage .muted { color: var(--muted); }
+.tr-stage p.warn { color: #ffb3a6; }
+.tr-stage .k { display: inline-block; margin-right: 6px; padding: 1px 6px; border-radius: 4px; background: var(--panel-2); color: var(--muted); font: 600 11px/16px var(--mono); vertical-align: 1px; }
+.tr-stage code { padding: 1px 6px; border-radius: 4px; background: var(--pen-soft); color: var(--pen); font: 600 12px var(--mono); }
+.tr-frame { margin: 2px 0 6px; }
+.tr-frame .el.gone { border-style: dashed; border-color: var(--death); }
+.tr-frame .el.gone span { background: var(--death); color: #1c0603; }
+.trace img[data-ft] { cursor: zoom-in; }
+/* the record: each line with whether code knows it or a model guessed it */
+.tr-record { margin: 4px 0 0; padding: 0; list-style: none; display: grid; gap: 2px; }
+.tr-ev { display: grid; grid-template-columns: 44px minmax(0, 1fr) auto; gap: 0 8px; align-items: baseline; padding: 5px 8px; border-radius: 6px; font-size: 13px; }
+.tr-ev:nth-child(odd) { background: var(--panel-2); }
+.tr-t { font: 600 12px var(--mono); color: var(--faint); }
+.tr-ev.loss .tr-t { color: var(--death); }
+.tr-kind { font-weight: 600; }
+.tr-src { font: 600 10px/16px var(--mono); padding: 0 6px; border-radius: 4px; white-space: nowrap; }
+.tr-ev.known .tr-src { background: rgb(79 199 173 / 0.14); color: var(--ally); }
+.tr-ev.guess .tr-src { background: rgb(255 106 82 / 0.14); color: #ff8c8c; }
+.tr-ev.once .tr-src { background: var(--panel); color: var(--muted); }
+.tr-text { grid-column: 2 / -1; color: var(--muted); line-height: 1.45; }
+.tr-guess { font-style: italic; }
+.tr-more summary { padding: 6px 8px; font: 600 12px var(--mono); color: var(--muted); }
+/* the coach's turns */
+.tr-fold summary { cursor: pointer; padding: 6px 0; font: 600 12px var(--mono); color: var(--pen); list-style: none; }
+.tr-fold summary::-webkit-details-marker { display: none; }
+.tr-fold summary::before { content: '▸ '; } .tr-fold[open] summary::before { content: '▾ '; }
+.tr-turns { margin: 4px 0 0; padding: 0; list-style: none; display: grid; gap: 8px; }
+.tr-turn { display: grid; gap: 6px; padding: 10px 12px; border-radius: var(--r-sm); background: var(--panel-2); min-width: 0; }
+.tr-turn-n { font: 700 11px var(--mono) !important; letter-spacing: 0.04em; text-transform: uppercase; color: var(--pen); }
+.tr-think { border-left: 2px solid var(--line-2); padding-left: 10px; }
+.tr-think summary { cursor: pointer; font-size: 13px; line-height: 1.5; color: var(--text); list-style: none; }
+.tr-think summary::-webkit-details-marker { display: none; }
+.tr-think p { margin-top: 4px; color: var(--muted); }
+.tr-call { display: grid; gap: 3px; }
+.tr-call.back .tr-what code { background: rgb(255 106 82 / 0.14); color: #ff8c8c; }
+.tr-why { color: var(--muted); font-style: italic; }
+.tr-left { margin-left: 6px; font: 500 11px var(--mono); color: var(--faint); white-space: nowrap; }
+.tr-take .k { background: var(--pen-soft); color: var(--pen); }
+.tr-shots { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; }
+.tr-shots img { height: 44px; width: auto; border-radius: 4px; background: #000; }
+.tr-clip { font: 500 11px var(--mono); color: var(--muted); margin-right: 4px; }
+/* what was sent back, and the checks */
+.tr-sent { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; }
+.tr-sent > li { padding: 10px 12px; border-radius: var(--r-sm); background: var(--panel-2); border-left: 3px solid var(--death); }
+.tr-sent-head { font-weight: 650; }
+.tr-sent ul { margin: 4px 0 0; padding-left: 18px; display: grid; gap: 4px; font-size: 13px; line-height: 1.45; color: var(--text); }
+.tr-check { display: grid; gap: 6px; }
+.tr-check + .tr-check { margin-top: 8px; padding-top: 10px; border-top: 1px dashed var(--line-2); }
+.tr-check-n { font: 700 11px var(--mono) !important; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); }
+/* the finding */
+.tr-verdict b { font: 800 22px/1 var(--display); text-transform: uppercase; }
+.tr-moments { margin: 2px 0 0; padding: 0; list-style: none; display: grid; gap: 6px; font-size: 13px; line-height: 1.45; }
+.tr-moments .t-btn { color: var(--pen); font-weight: 600; text-decoration: none; padding: 0; margin-right: 4px; }
+.tr-moments p { margin-top: 2px; color: var(--muted); }
+.tr-total { margin-top: 4px !important; font: 500 12px var(--mono) !important; color: var(--faint); }
+@media (max-width: 640px) { .checker .ck-facts, .checker .ck-why, .checker em { margin-left: 0; } .tr-ev { grid-template-columns: 40px minmax(0, 1fr); } .tr-src { grid-column: 2; justify-self: start; } }

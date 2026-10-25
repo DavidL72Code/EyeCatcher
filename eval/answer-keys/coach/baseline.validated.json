@@ -1,0 +1,1079 @@
+{
+ "what": "A coach's read of every loss in the four eval clips, made from the frames (run-up contact sheets at 1-2 s, full-size HUD, minimap and chat crops), to grade Thirdeye's reviews against: is each cited moment right, and does it reach the factors that decided it (positions, information, resources, numbers, the map's state, mechanics) or only describe what happened. Times are the recording's own (M:SS from its start). 'unsure' lists what the frames don't settle; the validator's pass is in 'validated'.",
+ "made_by": "Claude, Oct 24, from eval/recordings frames",
+ "validated": "Oct 24: every loss re-read from fresh frames before reading its entry: run-up sheets at 1-2 s (League with the minimap), 0.1-0.5 s steps over the last 1-2 s, full-size HUD, chat, kill-feed, scoreboard and combat-report crops; each claim checked against a frame time, with 'can't tell' left in 'unsure'.",
+ "clips": [
+  {
+   "clip": "league-of-legends/lol-hacklet-mf.14-24.mp4",
+   "game": "League of Legends",
+   "player": "xHACKLETx",
+   "character": "Miss Fortune",
+   "allies": [
+    "Gragas (Gragas)",
+    "rillerking (Evelynn)",
+    "Tutti XD (Fizz)",
+    "Blitzcrank (Blitzcrank)"
+   ],
+   "enemies_named_on_screen": [
+    "Tintin (Nocturne), the jungler: named in chat at 4:23 (game 18:20, 'Tintin (Nocturne) has crushed the Eye of the Herald!') and on the level-11 attacker's nameplate at 1:45.3",
+    "CalvinCoach (a name over a red health bar)",
+    "Geraam (a name over a red health bar)",
+    "Sivir: named in rillerking's ping 'Sivir used Flash' (chat 18:29 = 4:32)"
+   ],
+   "habit": "Staying forward, or committing Flash and ult, while the enemy jungler is unaccounted for: twice after 'enemies missing' pings, both times caught by the jungler's ult (Nearsighted) with no escape left.",
+   "losses": [
+    {
+     "t": "1:48",
+     "kind": "death",
+     "decided": "1:36-1:44",
+     "happened": "Mid lane, at the front of her own wave (1:39-1:41: her minions beside her, the enemy wave in front). Chat 15:16-15:20 (game time): Blitzcrank pings 'enemies are missing' three times and she pings it once herself (15:20 = 1:23); at 15:28-15:29 Blitzcrank pings 'enemy has vision here' three times. At 1:42-1:43 an enemy icon sits beside hers on the minimap and CalvinCoach (level 8, full health) is on screen. From 1:43.5 she is NEARSIGHTED (screen dark at 1:44), and Blitzcrank pings 'retreat' (chat 15:41 = 1:44). At 1:45.3 Tintin (level 11; chat names him Nocturne) comes out of the dark, UNSTOPPABLE at 1:45.8. Her health goes 622 (1:45.8), 140 (1:46.1), 0 (1:46.4): dead at 1:46.4.",
+     "factors": {
+      "position": "alone at the front of the mid wave (level with her minions, not clearly past them), in the open with an enemy beside her on the minimap",
+      "information": "'enemies are missing' pinged 4 times 21-25 s before (15:16-15:20), her own among them; Blitzcrank's 'enemy has vision here' x3 at 15:28-15:29 (1:31-1:32); an enemy on the minimap beside her at 1:42-1:43 and CalvinCoach on screen at 1:43.0",
+      "resources": "health 631-651 at 1:40, 617-621 of 1479 (42%) at 1:43-1:45; Flash on cooldown (3:55 left at 1:40); ult on cooldown (1:30 left at 1:40); E on 14 s at 1:40, Q and W up; her D summoner (gold icon) up and never used; 1,171-1,200 gold unspent",
+      "numbers": "her level 9 against the attacker's 11",
+      "cue_missed": "Nearsighted from 1:43.5 is the jungler's ult starting: about 2 s to walk back before he reaches her at 1:45.3-1:45.8"
+     },
+     "mistake": "Staying at the front of the mid wave after four 'enemies missing' and three 'enemy has vision here' pings, with Flash and ult down and 42% health.",
+     "better": "With Flash down and the jungler missing, stand behind her wave toward her own tower, or recall to spend the ~1,200 gold; when Nearsighted (1:43.5), walk back at once (she had about 2 s), and keep the unused D summoner for the dash.",
+     "unsure": [
+      "whether any ward covered the jungle entrance near her (wards not checked on the minimap)",
+      "the exact damage numbers of the dive (only the HUD health 622 -> 140 -> 0 at 1:45.8-1:46.4 was read)"
+     ]
+    },
+    {
+     "t": "4:30",
+     "kind": "near_death (280 of 1589)",
+     "decided": "4:21-4:27",
+     "happened": "She walks from base into mid after 'Ally turret destroyed!' (4:21-4:23). Chat 18:09-18:11: Blitzcrank and Gragas target the enemy's Outer Turret; 18:14 she pings 'retreat', then 'on my way' twice (18:18). 18:20 (4:23): 'Tintin (Nocturne) has crushed the Eye of the Herald!', and at 4:24-4:25 'Enemy team has summoned the Rift Herald!'. She channels Bullet Time (her ult; CHANNELING at 4:25, cast about 4:24.9) inside the enemy's reach; Geraam (level 10), the only enemy champion on screen, goes from full to low during it. Health 1589 at 4:18, 1124 at 4:26, 280 at 4:29.7. rillerking (Evelynn, level 11) arrives at 4:26.5 ('rillerking is unstoppable', 18:26 = 4:29); at 4:30 Evelynn gets a kill with her assist (her KDA 1/5/5 -> 1/5/6). She lives; 'Enemy turret destroyed!' at 4:34.5; Evelynn pings 'Sivir used Flash' at 18:29 (4:32).",
+     "factors": {
+      "position": "in mid, inside the enemy's reach while channeling",
+      "resources": "Flash on cooldown (1:17 left at 4:18, 1:05 at 4:30); ult cast at about 4:24.9 (1:48 left at 4:26); E up at 4:18, 16 s at 4:26",
+      "map": "her team's turret had just fallen ('Ally turret destroyed!', 4:21); the enemy had the Herald; after the fight her team took an enemy turret (4:34.5)",
+      "information": "she pinged retreat herself, then walked in"
+     },
+     "mistake": "Channeling her ult, which roots her in place, from inside the enemy's reach with no Flash.",
+     "better": "Channel from the edge of her range behind Evelynn, or after the enemy's engage is spent; wait for Evelynn before walking in on a Herald push.",
+     "unsure": [
+      "who dealt the 844 damage (1124 -> 280)",
+      "who died to Evelynn at 4:30 (the feed shows portraits, not names; Geraam was the enemy she ulted)"
+     ]
+    },
+    {
+     "t": "8:56",
+     "kind": "death",
+     "decided": "8:44-8:53",
+     "happened": "Evelynn and Fizz are dead (back in 12 and 32 s at 8:42, 4 and 24 s at 8:50); Gragas has just respawned in base (8:42); only Blitzcrank is with her. Chat 22:31: Blitzcrank buys a Control Ward; 22:34: Blitzcrank pings 'Mountain Drake - Alive' three times, 22:36 'on the way'. In the river CalvinCoach (level 11) catches them: Blitzcrank STUNNED at 8:47.5, she AIRBORNE at 8:48.5 (CalvinCoach SILENCED then), both STUNNED at 8:49.3. She Flashes up-left, away from CalvinCoach (8:49.8-8:50.0; 4:14 left at 8:50.3), then stops to channel Bullet Time (8:50.2; 1:40 left at 8:50.3). Chat 22:49 (8:52): Tutti XD (Fizz) pings 'enemies are missing' (the '?' on screen). At 8:53.0 both are NEARSIGHTED again; Tintin (level 15) is beside her at 8:54.6; her health goes 1112 (8:52), 1057 (8:54.3), 131 (8:54.6), 0 (8:54.9). Her team gets a kill at 8:58.",
+     "factors": {
+      "numbers": "two teammates dead, one in base: a 2-v-5 map near the drake",
+      "information": "'enemies are missing' pinged seconds before; the enemy jungler unseen",
+      "resources": "1723 of 1820 health with Flash and ult up at 8:44; Flash used to get out of CalvinCoach's stun (8:49.8-8:50.0) and ult channelled right after (8:50.2), before the jungler came",
+      "objective": "the drake was up, which draws the enemy to the river"
+     },
+     "mistake": "After Flashing out of CalvinCoach's stun, stopping in the river to channel her ult (which holds her in place) while two teammates were dead and the jungler was missing; Fizz's missing ping came two seconds later and the jungler's Nearsight a second after that.",
+     "better": "Give up the drake and back off toward the team; once Flash has got her out of the stun, keep walking out instead of channeling; ward the river before walking in (Blitzcrank bought a Control Ward at 22:31).",
+     "unsure": [
+      "whether CalvinCoach died (her team gets a kill at 8:58, victim not named)",
+      "who landed the killing damage (Tintin is beside her at 8:54.6; the kill feed was not read)",
+      "whether Blitzcrank hooked CalvinCoach before the stuns (no hook seen at 8:46-8:47.5)"
+     ]
+    }
+   ],
+   "not_true": [
+    "Miss Fortune killed her (she is Miss Fortune)",
+    "a turret at 1:48",
+    "an enemy Gragas (Gragas is her teammate)",
+    "bot lane at 1:48 (mid, by the minimap)"
+   ]
+  },
+  {
+   "clip": "rocket-league/rl-somey-gc2.match1.mp4",
+   "game": "Rocket League",
+   "player": "THESOMEY (orange; the name is not written on screen in these frames: the feed calls him 'YOU')",
+   "teammates": [
+    "FORKY JR."
+   ],
+   "opponents": [
+    "NYAL",
+    "K2-"
+   ],
+   "habit": null,
+   "losses": [
+    {
+     "t": "4:15",
+     "kind": "point_lost (NYAL scores; 2-1, 1:09 left)",
+     "decided": "4:07-4:10",
+     "happened": "Up 2-0 with 1:18 left (4:06). At 4:07.5 both orange players are in the opponents' end: FORKY JR. in the corner by their goal, the player driving up the side wall at 65 boost. FORKY JR. shoots first, then at 4:09 he shoots from the corner at a tight angle (SHOT ON GOAL +10), down to 42. The shots are saved and cleared; NYAL takes it up field. He lands at about 35 and chases from behind (14 at 4:12, 5 at 4:13, 7 at 4:13.5 after a small pad, 0 at 4:14, 7 at 4:14.3 after another) and is never goal-side; FORKY JR. is on the left wall by their own corner (4:12.5-4:14.2), not in net; the net is empty when NYAL shoots (4:14.3-4:14.6) and scores at 4:15, with him at 1 boost.",
+     "factors": {
+      "position": "both orange players forward and both shooting (a double commit); nobody back for the clear; FORKY JR. still on the far wall when NYAL shot",
+      "resources": "boost 65 to 42 on the shot, about 35 to 0 chasing; two small pads picked up (+2 at 4:13.5, +7 at 4:14.3), not enough to beat NYAL back",
+      "score_and_time": "2-0 up with 1:18 left: a low-percentage shot isn't worth leaving the net for"
+     },
+     "mistake": "A tight-angle shot from the corner while his teammate was also forward, which left the net empty when it was cleared.",
+     "better": "With FORKY JR. already in the corner and shooting, rotate back to the back post as the last man; protecting a 2-0 lead late, take only shots his teammate is covering; on the way back, cut straight to the back post on the pads in line rather than chasing NYAL from behind.",
+     "unsure": [
+      "whether FORKY JR. was moving back at 4:09 (by 4:12.5 he was on the left wall by orange's corner, not in net)",
+      "the score and clock after the goal (2-1, 1:09) were not re-read"
+     ]
+    }
+   ],
+   "not_true": [
+    "collecting boost after kickoff at 4:04 cost the goal",
+    "challenging in midfield at 4:12",
+    "he stayed static in his goal"
+   ]
+  },
+  {
+   "clip": "marvel-rivals/mr-punk-magik.attack.mp4",
+   "game": "Marvel Rivals",
+   "player": "PunK10",
+   "character": "Magik (from the file name; the hero's name is not written on screen in the frames checked)",
+   "teammates_named": [
+    "Alejos2001 (revives her: feed 'Alejos2001 revive PunK10' at 4:31; the hero is not named on screen)",
+    "Chinagooner (beside her at 4:27.6 and 5:08.5-5:10.6; KO'd StarBoii at 4:26.3)",
+    "NaturalKickZ (behind her at 4:27.6; KO'd lukes292 at 1:15 and VEN at 5:10)",
+    "orochihime",
+    "RomeoMali... (name cut off on the top bar)"
+   ],
+   "enemies_named": [
+    "VEN",
+    "MR.ELK",
+    "Sir Lewis",
+    "lukes292",
+    "GameGuyBenn",
+    "StarBoii"
+   ],
+   "habit": "Staying in the fight until her health is in the last 15-55 HP (16 at 1:16.5, 54 at 4:18, 30 at 5:10) instead of stepping out while an ability is still up; and once (4:27) staying forward after her ult ran out, which killed her.",
+   "losses": [
+    {
+     "t": "1:19",
+     "kind": "near_death (16 of 250 at 1:16.5; 50 at 1:18.5-1:19)",
+     "decided": "1:14-1:17",
+     "happened": "She KOs VEN at 1:11 (feed), and MR.ELK revives VEN at 1:15. At 1:14 she has 268 of 331 (bonus health) with two ability slots on 1 and 3 s and ult at 24%; she stays in: 181 at 1:15, 91 at 1:16, 16 at 1:16.5; a health pack (green +, 1:16-1:16.5) puts her back to 80 at 1:17. She leaves through an orange portal (3 s bracket at 1:17.5, 2 s at 1:18), falls back toward a blue dome at 1:19 (50) and heals: 82 at 1:20, 139 at 1:21.",
+     "factors": {
+      "resources": "bonus health gone in under 2 s (1:14-1:15.5); at 1:16 two ability slots ready and the third on 1 s; ult 24-26%",
+      "position": "in among the enemy as VEN was revived beside them; she got out through her portal (1:17.5) toward a blue dome (whose, can't tell)"
+     },
+     "mistake": "Staying in after her bonus health broke and VEN was revived, until she was at 16; with abilities ready she left only after a health pack saved her.",
+     "better": "Leave when the bonus health breaks (about 1:15), using the ready dash or portal, instead of after dropping to 16.",
+     "unsure": [
+      "who dealt the damage"
+     ]
+    },
+    {
+     "t": "4:18",
+     "kind": "near_death (54 of 253 at 4:18, then 70 at 4:18.5)",
+     "decided": "4:15-4:18",
+     "happened": "She casts her ult at 4:12.5 (ult 100% -> 0, portrait changes, a 12 s skull timer counting down to 4:25.5) and fights in ult form near Sir Lewis (label 4:15.5) and VEN (marker 4:16.5-4:18.5). Health 250 at 4:15, 181 at 4:15.5, 206 of 314 at 4:16, 157 at 4:17, 85 at 4:17.5, 54 of 253 at 4:18, 70 at 4:18.5; then 104 of 295 at 4:19.5, 179 of 334 at 4:20, 346 of 388 at 4:22 (healed and shielded), and she fights on. A red disc with a 3 s bracket and VEN's marker above it shows at 4:16.5 and 4:18.5; a large red sphere with a 2 s bracket at 4:15.5. No kill-feed entries from 4:15 to 4:24.",
+     "factors": {
+      "resources": "in her own ult (12 s, 4:12.5-4:25.5); health 250 -> 54 in 3 s; at 4:18 two ability slots ready and the third on 4 s",
+      "outcome": "the ult got no kills (feed empty 4:15-4:24); heals brought her back to 346 of 388 by 4:22"
+     },
+     "mistake": "Trading head-on through her ult as her health fell from 250 to 54 in 3 s, with two abilities ready to step out and come back.",
+     "better": "Use the 12 s of ult in bursts: at about 85 (4:17.5) dash out to her healers for a second, then go back in before it ends.",
+     "unsure": [
+      "the large red sphere at 4:15.5 (2 s bracket): hers or an enemy's",
+      "the red disc at 4:16.5 and 4:18.5 is most likely her own portal (same 3 s bracket as her portals at 1:17.5 and 5:04.5), not confirmed",
+      "who dealt the damage"
+     ]
+    },
+    {
+     "t": "4:27",
+     "kind": "death (killed by VEN)",
+     "decided": "4:24-4:26",
+     "happened": "After the heal (324 of 337 at 4:23), the bonus health is gone: 290 of 303 at 4:24, 201 of 250 at 4:24.5, 121 at 4:25.5, as her ult's 12 s timer runs out (4:25.5). She stays forward among four labelled enemies (MR.ELK, VEN, lukes292, Sir Lewis at 4:25.5-4:26.3), with Chinagooner and NaturalKickZ behind her (labels at 4:27.6; Chinagooner KOs StarBoii at 4:26.3): 115 at 4:26.3, 50 at 4:26.5, 32 at 4:27, dead at 4:27.3 (feed: VEN -> PunK10 at 4:27.6). Alejos2001 revives her ('Reviving' 4:29-4:30; feed 'Alejos2001 revive PunK10' at 4:31; back at 250/250).",
+     "factors": {
+      "numbers": "ahead of her team against four labelled enemies; two teammates a few metres behind",
+      "resources": "121 of 250; ult 0% (spent at 4:12.5, its timer ended at 4:25.5); at 4:25.5 one ability slot ready, one on 1 s, one on 6 s",
+      "position": "ahead of her team, past cover"
+     },
+     "mistake": "Staying forward at half health after her ult ran out, into four enemies, with her teammates behind her.",
+     "better": "When the ult ends at 121, use the ready ability to fall back to Chinagooner and NaturalKickZ behind her, heal, and re-engage with them.",
+     "unsure": []
+    },
+    {
+     "t": "5:10",
+     "kind": "near_death (30 of 250)",
+     "decided": "5:05-5:08",
+     "happened": "At 5:05 she comes out of her portal at 235 of 287 (orange disc, 3 s bracket) into Sir Lewis and others: 189 of 250 at 5:05.5, 146 at 5:06, 72 at 5:07. She portals again at 5:07.5 (124 of 238), then fights GameGuyBenn (label 5:09.5-5:12) beside Chinagooner (label 5:08.5, 5:10.6): 75 at 5:08.5, 40 of 257 at 5:09, 30 at 5:10 with one ability slot just used, one on 3 s and one ready, ult at 32%. Heals take her to 92 (5:10.3), 185 of 221 (5:11), 278 of 278 (5:12); NaturalKickZ KOs VEN at 5:10. She survives.",
+     "factors": {
+      "position": "through her own portal into the enemy",
+      "resources": "bonus health gone by 5:05.5; at 5:10 one ability on 3 s, one just used, one ready",
+      "teammates": "Chinagooner beside her through the low point; heals arrived at 5:10.3"
+     },
+     "mistake": "Taking the portal dive in at 235 and trading down to 30 before stepping back, with an ability still ready.",
+     "better": "Portal in with the team, and back out when the bonus health is gone.",
+     "unsure": []
+    }
+   ],
+   "not_true": []
+  },
+  {
+   "clip": "Screen Recording 2026-10-17 at 6.13.34 PM.mov (TenZ, Valorant)",
+   "game": "VALORANT",
+   "player": "Me",
+   "character": "Yoru (broadcast 'Me (Yoru) spotted an ENEMY in A', 4:17, 4:58)",
+   "allies": [
+    "lisa (Reyna, per broadcast at 2:06)",
+    "woo",
+    "Chamber",
+    "CLV|bam"
+   ],
+   "enemies_named_on_screen": [
+    "Fade (card 'KILLED BY FADE')",
+    "zeytazin (card 'KILLED BY CLOVE')",
+    "ulquiorra (card 'KILLED BY NEON')",
+    "Reyna (card 'KILLED BY REYNA')",
+    "Veto"
+   ],
+   "habit": "Being a beat late when the enemy appears on his crosshair (0:39.9 one moving body shot; 4:13.9 no shot at all; 4:55.7 one shot 0.25 s late; 6:14.4 rifle still in an animation), and dying with his ult READY three rounds running (4:15, 4:57, 6:15).",
+   "losses": [
+    {
+     "t": "0:41",
+     "kind": "death (killed by Fade)",
+     "decided": "0:38-0:40",
+     "happened": "Pistol round (0-0). He walks up past the crate with his crosshair at head height just left of it, on the far doorway (0:39.5-0:40). Two enemies show in that doorway at 0:39.8-0:39.95, one stepping into his crosshair at 0:39.9. He fires once at 0:40.0 (8 -> 7) while moving (Shooting Error 1.40°, 0.00° before) and hits Fade in the body for 39; return fire from the doorway at 0:40.1-0:40.15 and he is dead at 0:40.25 (Fade, headshot; combat report: 128 from Fade, 26 from zeytazin). Teammate woo's marker is visible beyond the crate (0:39-0:40.2).",
+     "factors": {
+      "aim": "crosshair already on the far doorway at head height; the enemy walked into it, but his one shot was a moving body shot (39)",
+      "mechanics": "firing on the move: the gun model shifts between 0:39 and 0:39.75 and the shot's Shooting Error reads 1.40°",
+      "numbers": "one against two in that doorway (Fade and zeytazin both hit him); woo somewhere beyond the crate"
+     },
+     "mistake": "Shooting while still walking into a doorway two enemies held: the first Classic shot went to the body for 39 and Fade's headshot answered.",
+     "better": "Stop before the first shot (counter-strafe) so the pre-aimed Classic shot lands on the head, and don't walk into a two-man doorway without a teammate or utility.",
+     "unsure": [
+      "whether woo was close enough to trade (only his marker is visible beyond the crate)"
+     ]
+    },
+    {
+     "t": "2:17",
+     "kind": "death (killed by Fade)",
+     "decided": "2:13-2:16",
+     "happened": "0-1, a 2-v-1 (he and CLV|bam alive against Fade, by the top bar at 2:12.5-2:14.9). He casts his blue hand ability at 2:13 and throws a blue orb at 2:13.5; it flies to the doorway (2:14) and pops there in his own view, next to the enemy, at 2:14.4. He switches to his Outlaw at 2:14.3 (HUD 2/6, rifle up at 2:14.6). Fade hits him: 92+32 shield at 2:14.6, 83+15 at 2:14.7; his screen goes to a blue flash starburst at 2:14.8 (46), 20 at 2:14.9, and he is dead at 2:15.0 (combat report: 0 damage to Fade, 156 from Fade). The peach screen at 2:15-2:16 is the death screen, not a flash. Fade later kills CLV|bam (2:30) and the round is lost.",
+     "factors": {
+      "utility": "his own flash popped in his own sightline (2:14.4) and his screen showed the flash starburst at 2:14.8; it also blinded one enemy (ability report: ENEMIES BLINDED 1)",
+      "mechanics": "switching to the Outlaw (2:14.3-2:14.6) in the middle of the fight",
+      "numbers": "2 v 1 against Fade with CLV|bam alive, a fight he could have played together"
+     },
+     "mistake": "Throwing his flash where it popped in his own view and swapping to the Outlaw mid-fight, in a 2 v 1 he could have played with CLV|bam.",
+     "better": "Bounce the flash so it pops out of his own sightline (or turn away as it pops), swing on the pop with the gun already out, and trade off CLV|bam in the 2 v 1.",
+     "unsure": []
+    },
+    {
+     "t": "4:15",
+     "kind": "death (killed by zeytazin, 'KILLED BY CLOVE')",
+     "decided": "4:11-4:14",
+     "happened": "0-2, spike planted (red spike icon; the spike is by Pequeno Cafe at 4:13.6-4:14.2), and he is his team's last player against two (top bar). 51 HP, no armor, rifle 20/50, ult READY. He peeks the courtyard from A Flowers on the move (the view drifts 4:13.6-4:14.1); zeytazin runs out from behind the left wall into his crosshair at 4:13.9 and crosses it until 4:14.2. He never fires (ammo stays 20, Shooting Error 0.00°, 0 damage to zeytazin) and dies to a headshot at 4:14.25; the round is LOST (0-3).",
+     "factors": {
+      "mechanics": "peeking on the move and not shooting when the enemy crossed his crosshair (4:13.9-4:14.2)",
+      "utility": "nothing thrown before the peek, and his ult READY and unused in a 1 v 2 post-plant",
+      "numbers": "1 v 2 after the plant, at 51 HP with no armor"
+     },
+     "mistake": "Swinging the open courtyard on the move in a 1 v 2 with his ult ready, and not firing when zeytazin ran across his crosshair.",
+     "better": "Use the ready ult (or a flash) to find the two before swinging; then peek from a stop with the crosshair where they will cross, and shoot the moment one does.",
+     "unsure": [
+      "what he used at 4:06",
+      "how much spike time was left"
+     ]
+    },
+    {
+     "t": "4:57",
+     "kind": "death (killed by ulquiorra, 'KILLED BY NEON')",
+     "decided": "4:52-4:56",
+     "happened": "0-3. He bought a Sheriff and no armor and kept 2,450 credits (scoreboard 4:50: no shield icon on his row; HUD 100 HP, Sheriff 6/24); ult READY. He goes down A Main alone with an ability out ahead of him (a dark orb rolling on the ground, its slot active, 4:53.5-4:56). His crosshair sits at head height on the wall edge; ulquiorra steps out into it at 4:55.7, he fires once at about 4:55.95 (6 -> 5), by then over her head as she moved; 0 damage, and he dies at 4:56.1 to a rifle headshot (156). The ult is never used.",
+     "factors": {
+      "economy": "a Sheriff, no armor, 2,450 credits kept",
+      "resources": "ult ready, unused",
+      "aim": "pre-aimed at head height, but his one shot came about 0.25 s after she appeared and went over her head",
+      "numbers": "no teammate on screen down A Main (the minimap was not readable)"
+     },
+     "mistake": "Taking the first duel alone on a Sheriff with no armor and his ult ready, and firing a beat late on a pre-aimed angle.",
+     "better": "On a Sheriff, hold a tight angle and fire the instant the head crosses the crosshair, or use the ult or a flash to take the fight; buy light armor with 2,450 left; play with a teammate.",
+     "unsure": [
+      "where his teammates were (the minimap is rotated and too small to read)"
+     ]
+    },
+    {
+     "t": "6:15",
+     "kind": "death (killed by Reyna)",
+     "decided": "6:12-6:15",
+     "happened": "1-3 (DEF 1, ATK 3 at 6:16). Full buy: Vandal 25/50 and 50 shield; ult READY; 4,000 credits unspent (scoreboard 6:16). He runs onto A Site with his knife out (6:12.6-6:13.5), past the box with a purple-white smoke on his left, and has the Vandal back at 6:13.8; from 6:14.0 to 6:14.6 the rifle is in an animation (held upright, off hand on it). Reyna is on his crosshair at the smoke's left edge at 6:14.4; his first shot is at 6:14.75 and he sprays (25 -> 20 by 6:15.5; Shooting Error 0.25° -> 0.77°). He deals 137 to Reyna and dies at about 6:15.7 (170 in, headshot). A red eye-like orb shows above the smoke at 6:15.9, after his death. Teammate Chamber is in view to his right; nobody trades: the next kills are lisa -> Veto (6:19) and CLV|bam -> zeytazin (6:24).",
+     "factors": {
+      "position": "out in the open by the box, with the smoke to his left; Reyna at the smoke's left edge",
+      "mechanics": "knife out on the run in, rifle still in an animation when Reyna appeared (6:14.4); first shot 0.35 s later",
+      "resources": "ult READY and unused",
+      "trade": "Chamber in view to his right, but no trade on Reyna"
+     },
+     "mistake": "Running onto site with the knife out and the rifle not ready, so the duel with Reyna started 0.35 s late.",
+     "better": "Have the rifle out and ready before the smoke's edge comes into view (no knife or inspect on the approach), clear the edge with Chamber, or use the ready ult to take the space.",
+     "unsure": [
+      "whose smoke it was",
+      "whether the 6:14.0-6:14.6 rifle animation was an equip or an inspect"
+     ]
+    }
+   ],
+   "not_true": []
+  }
+ ],
+ "changes": [
+  {
+   "clip": "league-of-legends/lol-hacklet-mf.14-24.mp4",
+   "t": null,
+   "field": "enemies_named_on_screen[0]",
+   "was": "Tiktah (Nocturne), the jungler, named in chat at 4:20 (game 18:20)",
+   "now": "Tintin (Nocturne), the jungler: named in chat at 4:23 (game 18:20, 'Tintin (Nocturne) has crushed the Eye of the Herald!') and on the level-11 attacker's nameplate at 1:45.3",
+   "evidence": "Chat at 4:23 reads 'Tintin (Nocturne) has crushed the Eye of the Herald!' (game 18:20 = recording 4:23; the clip runs 13:57 behind the game clock). Nameplate 'Tintin', level 11, over the attacker at 1:45.3. 'Tiktah' appears nowhere."
+  },
+  {
+   "clip": "league-of-legends/lol-hacklet-mf.14-24.mp4",
+   "t": null,
+   "field": "enemies_named_on_screen",
+   "was": null,
+   "now": "Sivir (chat ping at 4:32)",
+   "evidence": "Chat line '18:29 rillerking (Evelynn): Sivir used Flash', visible at 4:34."
+  },
+  {
+   "clip": "league-of-legends/lol-hacklet-mf.14-24.mp4",
+   "t": "1:48",
+   "field": "happened",
+   "was": "She pushes the mid wave alone, ahead of her minions toward the enemy side (1:32-1:42). Chat 15:16-15:20 (game time): Blitzcrank pings 'enemies are missing' three times, and she pings it herself. At 1:43 the minimap shows an enemy icon beside her. At 1:44 she is NEARSIGHTED, with a danger ping on her. At 1:45.5 a level-11 enemy marked UNSTOPPABLE dashes onto her out of the fog (the Nearsight is the enemy jungler's ult). She takes 73 + 277 + more and dies at about 1:47.",
+   "now": "Mid lane, at the front of her own wave (1:39-1:41: her minions beside her, the enemy wave in front). Chat 15:16-15:20 (game time): Blitzcrank pings 'enemies are missing' three times and she pings it once herself (15:20 = 1:23); at 15:28-15:29 Blitzcrank pings 'enemy has vision here' three times. At 1:42-1:43 an enemy icon sits beside hers on the minimap and CalvinCoach (level 8, full health) is on screen. From 1:43.5 she is NEARSIGHTED (screen dark at 1:44), and Blitzcrank pings 'retreat' (chat 15:41 = 1:44). At 1:45.3 Tintin (level 11; chat names him Nocturne) comes out of the dark, UNSTOPPABLE at 1:45.8. Her health goes 622 (1:45.8), 140 (1:46.1), 0 (1:46.4): dead at 1:46.4.",
+   "evidence": "Play crops 1:39-1:41 (her minions level with her, not behind); chat crop at 1:44 (15:17-15:20 missing pings, 15:28-15:29 'enemy has vision here' x3, 15:41 'Blitzcrank signals to retreat'); nameplate 'Tintin' level 11 at 1:45.3, UNSTOPPABLE 1:45.8; HUD health 622/140/0 at 1:45.8/1:46.1/1:46.4. The '73 + 277' damage numbers were not seen in these frames, and death is 1:46.4, not ~1:47."
+  },
+  {
+   "clip": "league-of-legends/lol-hacklet-mf.14-24.mp4",
+   "t": "1:48",
+   "field": "factors.position",
+   "was": "alone, past her own minion wave in mid, toward the enemy side",
+   "now": "alone at the front of the mid wave (level with her minions, not clearly past them), in the open with an enemy beside her on the minimap",
+   "evidence": "1:39-1:41 play crops: her own minions to her right and level with her, the enemy wave in front; minimap 1:42-1:43 enemy icon beside her."
+  },
+  {
+   "clip": "league-of-legends/lol-hacklet-mf.14-24.mp4",
+   "t": "1:48",
+   "field": "factors.information",
+   "was": "'enemies are missing' pinged 4 times 20-25 s before, her own ping among them; an enemy on the minimap beside her at 1:43; no ward between her and the enemy jungle",
+   "now": "'enemies are missing' pinged 4 times 21-25 s before (15:16-15:20), her own among them; Blitzcrank's 'enemy has vision here' x3 at 15:28-15:29 (1:31-1:32); an enemy on the minimap beside her at 1:42-1:43 and CalvinCoach on screen at 1:43.0",
+   "evidence": "Chat crop at 1:44 shows the three 'enemy has vision here' pings (15:28-15:29) the critique missed. The 'no ward between her and the enemy jungle' claim was not checked on the minimap, so it moves to 'unsure'."
+  },
+  {
+   "clip": "league-of-legends/lol-hacklet-mf.14-24.mp4",
+   "t": "1:48",
+   "field": "factors.resources",
+   "was": "health 651 then 620 of 1479 (42%); Flash on cooldown (3:55 left at 1:40); ult on cooldown (1:30 left); E on 14 s; 1,197 gold unspent",
+   "now": "health 631-651 at 1:40, 617-621 of 1479 (42%) at 1:43-1:45; Flash on cooldown (3:55 left at 1:40); ult on cooldown (1:30 left at 1:40); E on 14 s at 1:40, Q and W up; her D summoner (gold icon) up and never used; 1,171-1,200 gold unspent",
+   "evidence": "HUD 1:40: 6?1/1479, W 5 s, E 14, R 1:30, F 3:55, gold 1171; 1:43: 617/1479, W up, E 11, R 1:27, F 3:52, gold 1194; 1:45.3: 621, gold 1200. The D slot shows no timer throughout. Adds Q/W up and the unused D summoner."
+  },
+  {
+   "clip": "league-of-legends/lol-hacklet-mf.14-24.mp4",
+   "t": "1:48",
+   "field": "factors.cue_missed",
+   "was": "Nearsighted at 1:44 is the jungler's ult starting: a second to walk back before the dash",
+   "now": "Nearsighted from 1:43.5 is the jungler's ult starting: about 2 s to walk back before he reaches her at 1:45.3-1:45.8",
+   "evidence": "NEARSIGHTED label at 1:43.5; Tintin's nameplate at 1:45.3 and UNSTOPPABLE at 1:45.8: about 2 s, not 1."
+  },
+  {
+   "clip": "league-of-legends/lol-hacklet-mf.14-24.mp4",
+   "t": "1:48",
+   "field": "mistake",
+   "was": "Staying forward past the wave after the missing pings, with Flash and ult down and 42% health.",
+   "now": "Staying at the front of the mid wave after four 'enemies missing' and three 'enemy has vision here' pings, with Flash and ult down and 42% health.",
+   "evidence": "Same frames as above: she was at the front of the wave rather than clearly past it; the vision pings add to the warning."
+  },
+  {
+   "clip": "league-of-legends/lol-hacklet-mf.14-24.mp4",
+   "t": "1:48",
+   "field": "better",
+   "was": "With Flash down and the jungler missing, stay behind her wave or near her tower, or recall to spend 1,197 gold; when Nearsighted, walk back toward her tower at once.",
+   "now": "With Flash down and the jungler missing, stand behind her wave toward her own tower, or recall to spend the ~1,200 gold; when Nearsighted (1:43.5), walk back at once (she had about 2 s), and keep the unused D summoner for the dash.",
+   "evidence": "HUD shows the D summoner available 1:40-1:45.3; Nearsight-to-dash gap 1:43.5 to 1:45.3."
+  },
+  {
+   "clip": "league-of-legends/lol-hacklet-mf.14-24.mp4",
+   "t": "1:48",
+   "field": "unsure",
+   "was": [
+    "which enemy champion dashed (the scoreboard hides champions; chat names an enemy Nocturne, and Nearsight then an Unstoppable dash is his ult; the user named Warwick)"
+   ],
+   "now": [
+    "whether any ward covered the jungle entrance near her (wards not checked on the minimap)",
+    "the exact damage numbers of the dive (only the HUD health 622 -> 140 -> 0 at 1:45.8-1:46.4 was read)"
+   ],
+   "evidence": "Settled: the dasher is Tintin (nameplate, level 11, 1:45.3), whom chat names Nocturne at 4:23. The killer's kill-feed portrait matches the level-11 5/2/1 row on the scoreboard. The champion is taken from chat text, not from looks."
+  },
+  {
+   "clip": "league-of-legends/lol-hacklet-mf.14-24.mp4",
+   "t": "4:30",
+   "field": "happened",
+   "was": "She walks from base into mid after 'Ally turret destroyed' (4:21). Chat 18:14: she pings 'retreat', then 'on my way' twice (18:18). 18:20: the enemy Nocturne takes the Eye of the Herald, and at 4:25 'Enemy team has summoned the Rift Herald'. At 4:25-4:27 she channels Bullet Time (her ult) inside the enemy's reach. Health 1589 at 4:18, 1124 at 4:26, 280 at 4:30. Evelynn arrives ('rillerking is unstoppable', 4:29) and she lives.",
+   "now": "She walks from base into mid after 'Ally turret destroyed!' (4:21-4:23). Chat 18:09-18:11: Blitzcrank and Gragas target the enemy's Outer Turret; 18:14 she pings 'retreat', then 'on my way' twice (18:18). 18:20 (4:23): 'Tintin (Nocturne) has crushed the Eye of the Herald!', and at 4:24-4:25 'Enemy team has summoned the Rift Herald!'. She channels Bullet Time (her ult; CHANNELING at 4:25, cast about 4:24.9) inside the enemy's reach; Geraam (level 10), the only enemy champion on screen, goes from full to low during it. Health 1589 at 4:18, 1124 at 4:26, 280 at 4:29.7. rillerking (Evelynn, level 11) arrives at 4:26.5 ('rillerking is unstoppable', 18:26 = 4:29); at 4:30 Evelynn gets a kill with her assist (her KDA 1/5/5 -> 1/5/6). She lives; 'Enemy turret destroyed!' at 4:34.5; Evelynn pings 'Sivir used Flash' at 18:29 (4:32).",
+   "evidence": "All original facts confirmed: banner 'Ally turret destroyed!' 4:21-4:23, chat crops 4:23-4:34 (18:14 retreat, 18:18 on the way x2, 18:20 Eye of the Herald, 18:26 unstoppable), banner 'Enemy team has summoned the Rift Herald!' 4:24-4:25, CHANNELING label 4:25, HUD 1589/1124/280. Added: the targeted enemy turret (18:09-18:11), Geraam full to low during the ult, Evelynn's kill with her assist at 4:30, 'Enemy turret destroyed!' at 4:34.5, the Sivir Flash ping."
+  },
+  {
+   "clip": "league-of-legends/lol-hacklet-mf.14-24.mp4",
+   "t": "4:30",
+   "field": "factors.resources",
+   "was": "Flash on cooldown (1:17 left at 4:18, 1:05 at 4:30); ult used at about 4:24; E 12-16 s",
+   "now": "Flash on cooldown (1:17 left at 4:18, 1:05 at 4:30); ult cast at about 4:24.9 (1:48 left at 4:26); E up at 4:18, 16 s at 4:26",
+   "evidence": "HUD 4:18: F 1:17, E and R with no timers; HUD 4:26: E 16, R 1:48, F 1:09."
+  },
+  {
+   "clip": "league-of-legends/lol-hacklet-mf.14-24.mp4",
+   "t": "4:30",
+   "field": "factors.map",
+   "was": "their outer tower just fell; the enemy had the Herald",
+   "now": "her team's turret had just fallen ('Ally turret destroyed!', 4:21); the enemy had the Herald; after the fight her team took an enemy turret (4:34.5)",
+   "evidence": "Banners at 4:21-4:23 and 4:34.5."
+  },
+  {
+   "clip": "league-of-legends/lol-hacklet-mf.14-24.mp4",
+   "t": "4:30",
+   "field": "unsure",
+   "was": [
+    "who dealt the 840 damage",
+    "whether her ult won the fight or Evelynn did"
+   ],
+   "now": [
+    "who dealt the 844 damage (1124 -> 280)",
+    "who died to Evelynn at 4:30 (the feed shows portraits, not names; Geraam was the enemy she ulted)"
+   ],
+   "evidence": "Partly settled: Evelynn got the kill at 4:30 with her assist, after her ult took Geraam from full to low; so both contributed. The damage source stays unseen."
+  },
+  {
+   "clip": "league-of-legends/lol-hacklet-mf.14-24.mp4",
+   "t": "8:56",
+   "field": "happened",
+   "was": "Evelynn and Fizz are dead (back in 14 and 34 s at 8:40, 4 and 20 s at 8:50); Gragas has just respawned in base; only Blitzcrank is with her. Chat 22:34-22:36: Blitzcrank pings 'Mountain Drake - Alive' three times and 'on the way'; 22:49: Fizz pings 'enemies are missing'. At 8:46-8:52 Blitzcrank catches CalvinCoach in the river and she commits: Flash gone by 8:50 (4:15 left), ult by 8:53 (1:38 left). At 8:53-8:54 both are NEARSIGHTED again (the jungler's ult); she pings '?', loses 1,115 health in about 2 s, and dies at 8:55.",
+   "now": "Evelynn and Fizz are dead (back in 12 and 32 s at 8:42, 4 and 24 s at 8:50); Gragas has just respawned in base (8:42); only Blitzcrank is with her. Chat 22:31: Blitzcrank buys a Control Ward; 22:34: Blitzcrank pings 'Mountain Drake - Alive' three times, 22:36 'on the way'. In the river CalvinCoach (level 11) catches them: Blitzcrank STUNNED at 8:47.5, she AIRBORNE at 8:48.5 (CalvinCoach SILENCED then), both STUNNED at 8:49.3. She Flashes up-left, away from CalvinCoach (8:49.8-8:50.0; 4:14 left at 8:50.3), then stops to channel Bullet Time (8:50.2; 1:40 left at 8:50.3). Chat 22:49 (8:52): Tutti XD (Fizz) pings 'enemies are missing' (the '?' on screen). At 8:53.0 both are NEARSIGHTED again; Tintin (level 15) is beside her at 8:54.6; her health goes 1112 (8:52), 1057 (8:54.3), 131 (8:54.6), 0 (8:54.9). Her team gets a kill at 8:58.",
+   "evidence": "Corrected: Blitzcrank did not catch CalvinCoach: STUNNED over Blitzcrank 8:47.5, AIRBORNE over her and SILENCED over CalvinCoach 8:48.5, STUNNED over both 8:49.3 with CalvinCoach beside them. The '?' is Fizz's 'enemies are missing' ping (chat 22:49 = 8:52), not hers. Timers at 8:50 read 4 and 24 (20 at 8:53.5). Ult cast at 8:50.2, not by 8:53 (R 1:40 at 8:50.3). The health loss is about 1,050 in 0.6 s (8:54.3-8:54.9), not 1,115 in 2 s. Confirmed: chat 22:31, 22:34 x3, 22:36, 22:49; NEARSIGHTED 8:53.0; Tintin nameplate level 15 at 8:54.6."
+  },
+  {
+   "clip": "league-of-legends/lol-hacklet-mf.14-24.mp4",
+   "t": "8:56",
+   "field": "factors.resources",
+   "was": "1723 of 1820 health with Flash and ult up at 8:44; both spent on the 2-v-1 before the jungler came",
+   "now": "1723 of 1820 health with Flash and ult up at 8:44; Flash used to get out of CalvinCoach's stun (8:49.8-8:50.0) and ult channelled right after (8:50.2), before the jungler came",
+   "evidence": "HUD 8:44: 1723/1820, no timers on F or R; HUD 8:50.3: 1170/1820, F 4:14, R 1:40."
+  },
+  {
+   "clip": "league-of-legends/lol-hacklet-mf.14-24.mp4",
+   "t": "8:56",
+   "field": "mistake",
+   "was": "Spending Flash and ult on a river skirmish by the drake while two teammates were dead and the jungler was missing.",
+   "now": "After Flashing out of CalvinCoach's stun, stopping in the river to channel her ult (which holds her in place) while two teammates were dead and the jungler was missing; Fizz's missing ping came two seconds later and the jungler's Nearsight a second after that.",
+   "evidence": "Flash 8:49.8-8:50.0 away from CalvinCoach; Bullet Time 8:50.2; Fizz's ping 8:52; NEARSIGHTED 8:53.0; dead 8:54.9."
+  },
+  {
+   "clip": "league-of-legends/lol-hacklet-mf.14-24.mp4",
+   "t": "8:56",
+   "field": "better",
+   "was": "Give up the drake and back off toward the team; if Blitzcrank hooks someone, hit with autos but keep Flash for the jungler's follow-up; ward the river before walking in (Blitzcrank bought a Control Ward at 22:31).",
+   "now": "Give up the drake and back off toward the team; once Flash has got her out of the stun, keep walking out instead of channeling; ward the river before walking in (Blitzcrank bought a Control Ward at 22:31).",
+   "evidence": "Same frames; the hook-follow-up advice assumed a Blitzcrank hook that the frames don't show."
+  },
+  {
+   "clip": "league-of-legends/lol-hacklet-mf.14-24.mp4",
+   "t": "8:56",
+   "field": "unsure",
+   "was": [
+    "whether CalvinCoach died",
+    "where her Flash went (toward the fight or away)"
+   ],
+   "now": [
+    "whether CalvinCoach died (her team gets a kill at 8:58, victim not named)",
+    "who landed the killing damage (Tintin is beside her at 8:54.6; the kill feed was not read)",
+    "whether Blitzcrank hooked CalvinCoach before the stuns (no hook seen at 8:46-8:47.5)"
+   ],
+   "evidence": "Settled: her Flash went up-left, away from CalvinCoach (8:49.8-8:50.0). CalvinCoach's fate still unseen."
+  },
+  {
+   "clip": "rocket-league/rl-somey-gc2.match1.mp4",
+   "t": null,
+   "field": "player",
+   "was": "THESOMEY (orange)",
+   "now": "THESOMEY (orange; the name is not written on screen in these frames: the feed calls him 'YOU')",
+   "evidence": "Feed at 4:07 and 4:09 reads 'YOU'; join messages show K2-, Forky Jr., nyal; no 'THESOMEY' text seen."
+  },
+  {
+   "clip": "rocket-league/rl-somey-gc2.match1.mp4",
+   "t": "4:15",
+   "field": "happened",
+   "was": "Up 2-0 with 1:18 left. At 4:07.5 both orange players are in the opponents' end: FORKY JR. in the corner by their goal, the player driving up the side wall at 65 boost. At 4:09 he shoots from the corner at a tight angle (SHOT ON GOAL +10), down to 42. The shot is saved and cleared; NYAL takes it up field. He lands at 35 and chases from behind (14 at 4:12, 7 at 4:13.5) and is never goal-side; NYAL scores at 4:15, with him at 1 boost.",
+   "now": "Up 2-0 with 1:18 left (4:06). At 4:07.5 both orange players are in the opponents' end: FORKY JR. in the corner by their goal, the player driving up the side wall at 65 boost. FORKY JR. shoots first, then at 4:09 he shoots from the corner at a tight angle (SHOT ON GOAL +10), down to 42. The shots are saved and cleared; NYAL takes it up field. He lands at about 35 and chases from behind (14 at 4:12, 5 at 4:13, 7 at 4:13.5 after a small pad, 0 at 4:14, 7 at 4:14.3 after another) and is never goal-side; FORKY JR. is on the left wall by their own corner (4:12.5-4:14.2), not in net; the net is empty when NYAL shoots (4:14.3-4:14.6) and scores at 4:15, with him at 1 boost.",
+   "evidence": "Feed at 4:07-4:09 lists a FORKY JR. shot on goal before his (FORKY JR.'s entry fades first, at 4:11). Boost 5 -> 7 (4:13-4:13.5) and 0 -> 7 (4:14-4:14.3): he did take small pads. FORKY JR. on the left wall by orange's corner 4:12.5-4:14.2; empty net 4:14.3-4:14.6; K2- in front of orange's goal. Confirmed: 2-0 1:18 (4:06), 65 (4:07.5), 42 after the shot (4:09), 14 (4:12), 7 (4:13.5), 1 (4:14.6)."
+  },
+  {
+   "clip": "rocket-league/rl-somey-gc2.match1.mp4",
+   "t": "4:15",
+   "field": "factors.position",
+   "was": "both orange players forward at once (a double commit); nobody back for the clear",
+   "now": "both orange players forward and both shooting (a double commit); nobody back for the clear; FORKY JR. still on the far wall when NYAL shot",
+   "evidence": "Feed 4:07-4:09 (two orange shots); FORKY JR. on the left wall 4:12.5-4:14.2."
+  },
+  {
+   "clip": "rocket-league/rl-somey-gc2.match1.mp4",
+   "t": "4:15",
+   "field": "factors.resources",
+   "was": "boost 65 to 42 on the shot, 35 to 1 chasing; no pads picked up on the way back",
+   "now": "boost 65 to 42 on the shot, about 35 to 0 chasing; two small pads picked up (+2 at 4:13.5, +7 at 4:14.3), not enough to beat NYAL back",
+   "evidence": "Boost counter 5 -> 7 at 4:13-4:13.5 and 0 -> 7 at 4:14-4:14.3 contradicts 'no pads picked up'."
+  },
+  {
+   "clip": "rocket-league/rl-somey-gc2.match1.mp4",
+   "t": "4:15",
+   "field": "better",
+   "was": "With FORKY JR. already in the corner, rotate back to the back post as the last man; protecting a 2-0 lead late, take only shots his teammate is covering; on the way back, take small pads and cut to the back post instead of chasing on empty boost.",
+   "now": "With FORKY JR. already in the corner and shooting, rotate back to the back post as the last man; protecting a 2-0 lead late, take only shots his teammate is covering; on the way back, cut straight to the back post on the pads in line rather than chasing NYAL from behind.",
+   "evidence": "Rewritten to match that he did take pads; the problem was the line (behind the ball), not the pads."
+  },
+  {
+   "clip": "rocket-league/rl-somey-gc2.match1.mp4",
+   "t": "4:15",
+   "field": "unsure",
+   "was": [
+    "whether FORKY JR. was moving back at 4:09"
+   ],
+   "now": [
+    "whether FORKY JR. was moving back at 4:09 (by 4:12.5 he was on the left wall by orange's corner, not in net)",
+    "the score and clock after the goal (2-1, 1:09) were not re-read"
+   ],
+   "evidence": "Adds where FORKY JR. was at 4:12.5-4:14.2."
+  },
+  {
+   "clip": "marvel-rivals/mr-punk-magik.attack.mp4",
+   "t": null,
+   "field": "character",
+   "was": "Magik",
+   "now": "Magik (from the file name; the hero's name is not written on screen in the frames checked)",
+   "evidence": "No hero name text seen in the HUD, kill feed or top bar at 1:11-5:12; only 'PunK10'."
+  },
+  {
+   "clip": "marvel-rivals/mr-punk-magik.attack.mp4",
+   "t": null,
+   "field": "teammates_named",
+   "was": [
+    "Alejos2001 (Rocket, revives her at 4:29-4:31)"
+   ],
+   "now": [
+    "Alejos2001 (revives her: feed 'Alejos2001 revive PunK10' at 4:31; the hero is not named on screen)",
+    "Chinagooner (beside her at 4:27.6 and 5:08.5-5:10.6; KO'd StarBoii at 4:26.3)",
+    "NaturalKickZ (behind her at 4:27.6; KO'd lukes292 at 1:15 and VEN at 5:10)",
+    "orochihime",
+    "RomeoMali... (name cut off on the top bar)"
+   ],
+   "evidence": "Top bar at 5:07 lists PunK10, Alejos2001, orochihime, RomeoMali.., Chinagooner, NaturalKickZ. 'Rocket' is not written anywhere on screen (looks only), so it is dropped."
+  },
+  {
+   "clip": "marvel-rivals/mr-punk-magik.attack.mp4",
+   "t": null,
+   "field": "habit",
+   "was": "Diving deep on bonus health and staying after it's gone, with dash and portal on cooldown and no ult, away from her healer.",
+   "now": "Staying in the fight until her health is in the last 15-55 HP (16 at 1:16.5, 54 at 4:18, 30 at 5:10) instead of stepping out while an ability is still up; and once (4:27) staying forward after her ult ran out, which killed her.",
+   "evidence": "At 1:16 two ability slots were ready (third at 1 s); at 4:18 she was in her own ult with two slots ready; at 5:10 one slot was ready and Chinagooner was beside her. 'Dash and portal on cooldown and no ult' holds at none of the four."
+  },
+  {
+   "clip": "marvel-rivals/mr-punk-magik.attack.mp4",
+   "t": "1:19",
+   "field": "kind",
+   "was": "near_death (50 of 250)",
+   "now": "near_death (16 of 250 at 1:16.5; 50 at 1:18.5-1:19)",
+   "evidence": "HUD health 91 at 1:16, 16 at 1:16.5, 80 at 1:17 (green + over a health pack at 1:16-1:16.5), 50 at 1:18.5."
+  },
+  {
+   "clip": "marvel-rivals/mr-punk-magik.attack.mp4",
+   "t": "1:19",
+   "field": "happened",
+   "was": "At 1:14 she has 268 of 331 (bonus health) with her abilities on 1 and 3 s and ult at 24%; she goes in and is at 80 by 1:17; at 1:19 (50) she is falling back behind cover toward a teammate's shield, and heals.",
+   "now": "She KOs VEN at 1:11 (feed), and MR.ELK revives VEN at 1:15. At 1:14 she has 268 of 331 (bonus health) with two ability slots on 1 and 3 s and ult at 24%; she stays in: 181 at 1:15, 91 at 1:16, 16 at 1:16.5; a health pack (green +, 1:16-1:16.5) puts her back to 80 at 1:17. She leaves through an orange portal (3 s bracket at 1:17.5, 2 s at 1:18), falls back toward a blue dome at 1:19 (50) and heals: 82 at 1:20, 139 at 1:21.",
+   "evidence": "Kill feed 1:11 PunK10 -> VEN, 1:15 MR.ELK revives VEN; HUD 1:14-1:21 health; health pack at 1:16-1:16.5; orange portal disc with a 3 s bracket at 1:17.5 (the same UI as her own portal exit at 5:04.5). The low point was 16, not 50."
+  },
+  {
+   "clip": "marvel-rivals/mr-punk-magik.attack.mp4",
+   "t": "1:19",
+   "field": "factors.resources",
+   "was": "bonus health spent in 3 s; abilities on cooldown; ult 24-26%",
+   "now": "bonus health gone in under 2 s (1:14-1:15.5); at 1:16 two ability slots ready and the third on 1 s; ult 24-26%",
+   "evidence": "HUD ability crops at 1:16: two slots with no timer, one at 1. 'Abilities on cooldown' is wrong for 1:16."
+  },
+  {
+   "clip": "marvel-rivals/mr-punk-magik.attack.mp4",
+   "t": "1:19",
+   "field": "factors.position",
+   "was": "she did get out to cover",
+   "now": "in among the enemy as VEN was revived beside them; she got out through her portal (1:17.5) toward a blue dome (whose, can't tell)",
+   "evidence": "Frames 1:17.5-1:19."
+  },
+  {
+   "clip": "marvel-rivals/mr-punk-magik.attack.mp4",
+   "t": "1:19",
+   "field": "mistake",
+   "was": "Staying in until her bonus health was gone, with nothing up to get out.",
+   "now": "Staying in after her bonus health broke and VEN was revived, until she was at 16; with abilities ready she left only after a health pack saved her.",
+   "evidence": "'With nothing up to get out' is contradicted by the 1:16 HUD (two slots ready) and her portal at 1:17.5."
+  },
+  {
+   "clip": "marvel-rivals/mr-punk-magik.attack.mp4",
+   "t": "1:19",
+   "field": "better",
+   "was": "Leave when the bonus health breaks, while the dash is up.",
+   "now": "Leave when the bonus health breaks (about 1:15), using the ready dash or portal, instead of after dropping to 16.",
+   "evidence": "Same frames."
+  },
+  {
+   "clip": "marvel-rivals/mr-punk-magik.attack.mp4",
+   "t": "4:18",
+   "field": "kind",
+   "was": "near_death (70, then 54 of 250)",
+   "now": "near_death (54 of 253 at 4:18, then 70 at 4:18.5)",
+   "evidence": "HUD 54/253 at 4:18 and 70 at 4:18.5: the order was 54 then 70, not 70 then 54."
+  },
+  {
+   "clip": "marvel-rivals/mr-punk-magik.attack.mp4",
+   "t": "4:18",
+   "field": "happened",
+   "was": "Inside a red bubble in the fight (VEN's name above it, a 3 s timer), 181 at 4:15.5, 157 at 4:17, 70 at 4:18.5; at 4:20 she has 179 of 334 (healed and shielded) and fights on.",
+   "now": "She casts her ult at 4:12.5 (ult 100% -> 0, portrait changes, a 12 s skull timer counting down to 4:25.5) and fights in ult form near Sir Lewis (label 4:15.5) and VEN (marker 4:16.5-4:18.5). Health 250 at 4:15, 181 at 4:15.5, 206 of 314 at 4:16, 157 at 4:17, 85 at 4:17.5, 54 of 253 at 4:18, 70 at 4:18.5; then 104 of 295 at 4:19.5, 179 of 334 at 4:20, 346 of 388 at 4:22 (healed and shielded), and she fights on. A red disc with a 3 s bracket and VEN's marker above it shows at 4:16.5 and 4:18.5; a large red sphere with a 2 s bracket at 4:15.5. No kill-feed entries from 4:15 to 4:24.",
+   "evidence": "Missed by the critique: her ult at 4:12.5 (ult bar 100 -> 0, skull timer 12 s at 4:14 down to 1 s at 4:25.5, 10 s at 4:15.5, 9 s at 4:16.5, 7 s at 4:18.5). Confirmed: 181 (4:15.5), 157 (4:17), 70 (4:18.5), 179/334 (4:20). Kill feed empty 4:15-4:24."
+  },
+  {
+   "clip": "marvel-rivals/mr-punk-magik.attack.mp4",
+   "t": "4:18",
+   "field": "factors.resources",
+   "was": "health falling inside the enemy's zone",
+   "now": "in her own ult (12 s, 4:12.5-4:25.5); health 250 -> 54 in 3 s; at 4:18 two ability slots ready and the third on 4 s",
+   "evidence": "HUD at 4:18: two slots without timers, one at 4; ult timer as above."
+  },
+  {
+   "clip": "marvel-rivals/mr-punk-magik.attack.mp4",
+   "t": "4:18",
+   "field": "factors.outcome",
+   "was": null,
+   "now": "the ult got no kills (feed empty 4:15-4:24); heals brought her back to 346 of 388 by 4:22",
+   "evidence": "Kill-feed crops 4:15-4:24 empty; HUD 4:22 346/388."
+  },
+  {
+   "clip": "marvel-rivals/mr-punk-magik.attack.mp4",
+   "t": "4:18",
+   "field": "mistake",
+   "was": "Staying in the enemy's zone as her health fell.",
+   "now": "Trading head-on through her ult as her health fell from 250 to 54 in 3 s, with two abilities ready to step out and come back.",
+   "evidence": "The 'enemy's zone' reading isn't supported: the red disc with a 3 s bracket matches her own portal UI (orange disc + 3 s bracket when she portals at 1:17.5 and 5:04.5)."
+  },
+  {
+   "clip": "marvel-rivals/mr-punk-magik.attack.mp4",
+   "t": "4:18",
+   "field": "better",
+   "was": "Step out of the bubble as soon as it lands.",
+   "now": "Use the 12 s of ult in bursts: at about 85 (4:17.5) dash out to her healers for a second, then go back in before it ends.",
+   "evidence": "HUD 85 at 4:17.5 with abilities ready; ult timer still at about 8 s."
+  },
+  {
+   "clip": "marvel-rivals/mr-punk-magik.attack.mp4",
+   "t": "4:18",
+   "field": "unsure",
+   "was": [
+    "what the red bubble is, and whose"
+   ],
+   "now": [
+    "the large red sphere at 4:15.5 (2 s bracket): hers or an enemy's",
+    "the red disc at 4:16.5 and 4:18.5 is most likely her own portal (same 3 s bracket as her portals at 1:17.5 and 5:04.5), not confirmed",
+    "who dealt the damage"
+   ],
+   "evidence": "Partly settled by comparing the disc's 3 s bracket with her own portal at 1:17.5 and 5:04.5."
+  },
+  {
+   "clip": "marvel-rivals/mr-punk-magik.attack.mp4",
+   "t": "4:27",
+   "field": "happened",
+   "was": "After the heal (324 of 337 at 4:23), the bonus health is gone: 201 of 250 at 4:24.5, 121 at 4:26. She pushes on alone into MR.ELK, VEN and Sir Lewis with no teammate in view, and dies at 4:27.3; Rocket's beacon revives her at about 4:30.8.",
+   "now": "After the heal (324 of 337 at 4:23), the bonus health is gone: 290 of 303 at 4:24, 201 of 250 at 4:24.5, 121 at 4:25.5, as her ult's 12 s timer runs out (4:25.5). She stays forward among four labelled enemies (MR.ELK, VEN, lukes292, Sir Lewis at 4:25.5-4:26.3), with Chinagooner and NaturalKickZ behind her (labels at 4:27.6; Chinagooner KOs StarBoii at 4:26.3): 115 at 4:26.3, 50 at 4:26.5, 32 at 4:27, dead at 4:27.3 (feed: VEN -> PunK10 at 4:27.6). Alejos2001 revives her ('Reviving' 4:29-4:30; feed 'Alejos2001 revive PunK10' at 4:31; back at 250/250).",
+   "evidence": "Labels at 4:25.5-4:26.3 show four enemies, not three; ally labels Chinagooner and NaturalKickZ behind her at 4:27.6 and Chinagooner's KO at 4:26.3, so teammates were in view. The revive is credited to Alejos2001 in the feed; 'Rocket's beacon' names a hero from looks. Confirmed: 324/337 (4:23), 201/250 (4:24.5), death 4:27.3 by VEN."
+  },
+  {
+   "clip": "marvel-rivals/mr-punk-magik.attack.mp4",
+   "t": "4:27",
+   "field": "factors.numbers",
+   "was": "alone against three",
+   "now": "ahead of her team against four labelled enemies; two teammates a few metres behind",
+   "evidence": "Labels at 4:25.5-4:27.6."
+  },
+  {
+   "clip": "marvel-rivals/mr-punk-magik.attack.mp4",
+   "t": "4:27",
+   "field": "factors.resources",
+   "was": "121 of 250; ult about 30%",
+   "now": "121 of 250; ult 0% (spent at 4:12.5, its timer ended at 4:25.5); at 4:25.5 one ability slot ready, one on 1 s, one on 6 s",
+   "evidence": "HUD 4:23-4:27 ult reads 0% throughout (she ulted at 4:12.5), not about 30%; ability crop at 4:25.5."
+  },
+  {
+   "clip": "marvel-rivals/mr-punk-magik.attack.mp4",
+   "t": "4:27",
+   "field": "mistake",
+   "was": "Pushing into three enemies at half health with no one beside her.",
+   "now": "Staying forward at half health after her ult ran out, into four enemies, with her teammates behind her.",
+   "evidence": "Same frames."
+  },
+  {
+   "clip": "marvel-rivals/mr-punk-magik.attack.mp4",
+   "t": "4:27",
+   "field": "better",
+   "was": "At 121, fall back to Rocket and re-engage with the team; keep the dash or portal to leave.",
+   "now": "When the ult ends at 121, use the ready ability to fall back to Chinagooner and NaturalKickZ behind her, heal, and re-engage with them.",
+   "evidence": "Same frames; 'Rocket' replaced with the teammates the screen names."
+  },
+  {
+   "clip": "marvel-rivals/mr-punk-magik.attack.mp4",
+   "t": "4:27",
+   "field": "unsure",
+   "was": [
+    "her cooldowns at 4:26"
+   ],
+   "now": [],
+   "evidence": "Settled: cooldowns at 4:25.5 were one slot ready, one at 1 s, one at 6 s."
+  },
+  {
+   "clip": "marvel-rivals/mr-punk-magik.attack.mp4",
+   "t": "5:10",
+   "field": "happened",
+   "was": "At 5:05 she enters through her portal at 235 of 287 into Sir Lewis and others; 122 at 5:08; 30 at 5:10 with abilities on 3 s and ult at 32%. She survives.",
+   "now": "At 5:05 she comes out of her portal at 235 of 287 (orange disc, 3 s bracket) into Sir Lewis and others: 189 of 250 at 5:05.5, 146 at 5:06, 72 at 5:07. She portals again at 5:07.5 (124 of 238), then fights GameGuyBenn (label 5:09.5-5:12) beside Chinagooner (label 5:08.5, 5:10.6): 75 at 5:08.5, 40 of 257 at 5:09, 30 at 5:10 with one ability slot just used, one on 3 s and one ready, ult at 32%. Heals take her to 92 (5:10.3), 185 of 221 (5:11), 278 of 278 (5:12); NaturalKickZ KOs VEN at 5:10. She survives.",
+   "evidence": "Frames 5:03-5:12: second portal at 5:07.5, labels GameGuyBenn and Chinagooner, HUD health, kill feed 5:10 NaturalKickZ -> VEN. Confirmed: 235/287 at 5:05, 122 at 5:08, 30 at 5:10, ult 32%."
+  },
+  {
+   "clip": "marvel-rivals/mr-punk-magik.attack.mp4",
+   "t": "5:10",
+   "field": "factors.resources",
+   "was": "bonus health gone; abilities on cooldown",
+   "now": "bonus health gone by 5:05.5; at 5:10 one ability on 3 s, one just used, one ready",
+   "evidence": "HUD at 5:09.5-5:10.3: slot timers 1/3 then ready/3, third slot ready."
+  },
+  {
+   "clip": "marvel-rivals/mr-punk-magik.attack.mp4",
+   "t": "5:10",
+   "field": "factors.teammates",
+   "was": null,
+   "now": "Chinagooner beside her through the low point; heals arrived at 5:10.3",
+   "evidence": "Chinagooner label beside her at 5:08.5 and 5:10.6; health 30 -> 92 -> 185 -> 278 over 5:10-5:12."
+  },
+  {
+   "clip": "marvel-rivals/mr-punk-magik.attack.mp4",
+   "t": "5:10",
+   "field": "mistake",
+   "was": "The same dive, past the point her health allowed.",
+   "now": "Taking the portal dive in at 235 and trading down to 30 before stepping back, with an ability still ready.",
+   "evidence": "Not quite 'the same dive': a teammate was beside her and she was healed in time."
+  },
+  {
+   "clip": "Screen Recording 2026-10-17 at 6.13.34 PM.mov (TenZ, Valorant)",
+   "t": null,
+   "field": "character",
+   "was": "Yoru",
+   "now": "Yoru (broadcast 'Me (Yoru) spotted an ENEMY in A', 4:17, 4:58)",
+   "evidence": "Broadcast lines at 4:17, 4:58 and 6:17 read 'Me (Yoru)'."
+  },
+  {
+   "clip": "Screen Recording 2026-10-17 at 6.13.34 PM.mov (TenZ, Valorant)",
+   "t": null,
+   "field": "allies / enemies_named_on_screen",
+   "was": null,
+   "now": {
+    "allies": [
+     "lisa (Reyna, per broadcast at 2:06)",
+     "woo",
+     "Chamber",
+     "CLV|bam"
+    ],
+    "enemies": [
+     "Fade (card 'KILLED BY FADE')",
+     "zeytazin (card 'KILLED BY CLOVE')",
+     "ulquiorra (card 'KILLED BY NEON')",
+     "Reyna (card 'KILLED BY REYNA')",
+     "Veto"
+    ]
+   },
+   "evidence": "Scoreboard at 0:41 and 6:16; kill cards at 0:41, 2:15, 4:14.5, 4:56.5, 6:16; broadcast '(Broadcast) lisa (Reyna) spotted an ENEMY in B' at 2:06."
+  },
+  {
+   "clip": "Screen Recording 2026-10-17 at 6.13.34 PM.mov (TenZ, Valorant)",
+   "t": null,
+   "field": "habit",
+   "was": null,
+   "now": "Being a beat late when the enemy appears on his crosshair (0:39.9 one moving body shot; 4:13.9 no shot at all; 4:55.7 one shot 0.25 s late; 6:14.4 rifle still in an animation), and dying with his ult READY three rounds running (4:15, 4:57, 6:15).",
+   "evidence": "Crosshair crops at 0:39.9, 4:13.9-4:14.2, 4:55.7-4:56.0, 6:14.4-6:14.75; scoreboard 'Me READY' at 4:14.75, 4:50 and 6:16."
+  },
+  {
+   "clip": "Screen Recording 2026-10-17 at 6.13.34 PM.mov (TenZ, Valorant)",
+   "t": "0:41",
+   "field": "happened",
+   "was": "Pistol round. He clears the crate corner with his crosshair on the crate; the enemy shows in the far doorway to the left of it at 0:39-0:40; he fires once at 0:40 and dies at 0:41, with no teammate in view to trade.",
+   "now": "Pistol round (0-0). He walks up past the crate with his crosshair at head height just left of it, on the far doorway (0:39.5-0:40). Two enemies show in that doorway at 0:39.8-0:39.95, one stepping into his crosshair at 0:39.9. He fires once at 0:40.0 (8 -> 7) while moving (Shooting Error 1.40°, 0.00° before) and hits Fade in the body for 39; return fire from the doorway at 0:40.1-0:40.15 and he is dead at 0:40.25 (Fade, headshot; combat report: 128 from Fade, 26 from zeytazin). Teammate woo's marker is visible beyond the crate (0:39-0:40.2).",
+   "evidence": "Crosshair crops 0:39.5-0:40.0: the cyan crosshair sits on the doorway left of the crate, and an enemy walks into it at 0:39.9. Ammo 8 -> 7 at 0:40.0; Shooting Error graph 0.00° -> 1.40° on the shot (top bar 'Shooting Error: 1.40°'); combat report 0:41: outgoing 39 to Fade (body), 0 to zeytazin; incoming 128 Fade (KILLED YOU), 26 zeytazin; kill feed 'Fade [pistol][headshot] Me'; green ally marker labelled woo above the crate."
+  },
+  {
+   "clip": "Screen Recording 2026-10-17 at 6.13.34 PM.mov (TenZ, Valorant)",
+   "t": "0:41",
+   "field": "factors",
+   "was": {
+    "aim": "crosshair on the near corner, not the far doorway the enemy came from",
+    "numbers": "alone"
+   },
+   "now": {
+    "aim": "crosshair already on the far doorway at head height; the enemy walked into it, but his one shot was a moving body shot (39)",
+    "mechanics": "firing on the move: the gun model shifts between 0:39 and 0:39.75 and the shot's Shooting Error reads 1.40°",
+    "numbers": "one against two in that doorway (Fade and zeytazin both hit him); woo somewhere beyond the crate"
+   },
+   "evidence": "The critique's 'crosshair on the near corner, not the far doorway' is wrong (crosshair crops 0:39.5-0:40.0). 'Alone' becomes 1 v 2 by the combat report; woo's marker is in view."
+  },
+  {
+   "clip": "Screen Recording 2026-10-17 at 6.13.34 PM.mov (TenZ, Valorant)",
+   "t": "0:41",
+   "field": "mistake",
+   "was": "Clearing one angle with the crosshair while the open doorway behind it was unchecked.",
+   "now": "Shooting while still walking into a doorway two enemies held: the first Classic shot went to the body for 39 and Fade's headshot answered.",
+   "evidence": "Same frames."
+  },
+  {
+   "clip": "Screen Recording 2026-10-17 at 6.13.34 PM.mov (TenZ, Valorant)",
+   "t": "0:41",
+   "field": "better",
+   "was": "Clear the far doorway first, or with a teammate, before stepping past the crate.",
+   "now": "Stop before the first shot (counter-strafe) so the pre-aimed Classic shot lands on the head, and don't walk into a two-man doorway without a teammate or utility.",
+   "evidence": "Same frames."
+  },
+  {
+   "clip": "Screen Recording 2026-10-17 at 6.13.34 PM.mov (TenZ, Valorant)",
+   "t": "0:41",
+   "field": "unsure",
+   "was": [
+    "whether he was moving when he fired"
+   ],
+   "now": [
+    "whether woo was close enough to trade (only his marker is visible beyond the crate)"
+   ],
+   "evidence": "Settled: he was moving when he fired (gun bob 0:39-0:39.75, Shooting Error 1.40° on the shot)."
+  },
+  {
+   "clip": "Screen Recording 2026-10-17 at 6.13.34 PM.mov (TenZ, Valorant)",
+   "t": "2:17",
+   "field": "happened",
+   "was": "He throws an ability (blue, Yoru's) at 2:13; at 2:14 a purple orb flies by; his screen is white at 2:15-2:16 (flashed); he dies at 2:17 while blind.",
+   "now": "0-1, a 2-v-1 (he and CLV|bam alive against Fade, by the top bar at 2:12.5-2:14.9). He casts his blue hand ability at 2:13 and throws a blue orb at 2:13.5; it flies to the doorway (2:14) and pops there in his own view, next to the enemy, at 2:14.4. He switches to his Outlaw at 2:14.3 (HUD 2/6, rifle up at 2:14.6). Fade hits him: 92+32 shield at 2:14.6, 83+15 at 2:14.7; his screen goes to a blue flash starburst at 2:14.8 (46), 20 at 2:14.9, and he is dead at 2:15.0 (combat report: 0 damage to Fade, 156 from Fade). The peach screen at 2:15-2:16 is the death screen, not a flash. Fade later kills CLV|bam (2:30) and the round is lost.",
+   "evidence": "Frames 2:12.5-2:15 at 0.1-0.25 s: the orb is his own (thrown 2:13.5), not a 'purple orb flying by'; HUD health 92/83/46/20 at 2:14.6-2:14.9; combat report and peach screen from 2:15.0, so he died at 2:15.0, not 2:17, and the white screen is the death screen. Top bar: 2 allies vs 1 enemy. Kill feed 2:30 Fade -> CLV|bam."
+  },
+  {
+   "clip": "Screen Recording 2026-10-17 at 6.13.34 PM.mov (TenZ, Valorant)",
+   "t": "2:17",
+   "field": "factors",
+   "was": {
+    "utility": "the flash that blinded him",
+    "information": "Fade (an initiator) on the other side"
+   },
+   "now": {
+    "utility": "his own flash popped in his own sightline (2:14.4) and his screen showed the flash starburst at 2:14.8; it also blinded one enemy (ability report: ENEMIES BLINDED 1)",
+    "mechanics": "switching to the Outlaw (2:14.3-2:14.6) in the middle of the fight",
+    "numbers": "2 v 1 against Fade with CLV|bam alive, a fight he could have played together"
+   },
+   "evidence": "Ability report after the round reads 'ENEMIES BLINDED 1'; HUD weapon swap to OUTLAW 2/6 at 2:14.3; top bar 2 v 1."
+  },
+  {
+   "clip": "Screen Recording 2026-10-17 at 6.13.34 PM.mov (TenZ, Valorant)",
+   "t": "2:17",
+   "field": "mistake",
+   "was": "Staying in the angle while blind.",
+   "now": "Throwing his flash where it popped in his own view and swapping to the Outlaw mid-fight, in a 2 v 1 he could have played with CLV|bam.",
+   "evidence": "'Staying in the angle while blind' doesn't fit: he was dead 0.2 s after the starburst."
+  },
+  {
+   "clip": "Screen Recording 2026-10-17 at 6.13.34 PM.mov (TenZ, Valorant)",
+   "t": "2:17",
+   "field": "better",
+   "was": "When flashed, back out of the angle until he can see.",
+   "now": "Bounce the flash so it pops out of his own sightline (or turn away as it pops), swing on the pop with the gun already out, and trade off CLV|bam in the 2 v 1.",
+   "evidence": "Same frames."
+  },
+  {
+   "clip": "Screen Recording 2026-10-17 at 6.13.34 PM.mov (TenZ, Valorant)",
+   "t": "2:17",
+   "field": "unsure",
+   "was": [
+    "whose flash it was (his own Blindside bouncing back, or an enemy's)"
+   ],
+   "now": [],
+   "evidence": "Settled: his own flash. It is the only flash in the frames (thrown 2:13.5, pops in his view at 2:14.4, starburst 2:14.8); the only enemy alive was Fade; his ability report credits it with one enemy blinded."
+  },
+  {
+   "clip": "Screen Recording 2026-10-17 at 6.13.34 PM.mov (TenZ, Valorant)",
+   "t": "4:15",
+   "field": "kind",
+   "was": "death (killed by zeytazin, Reyna)",
+   "now": "death (killed by zeytazin, 'KILLED BY CLOVE')",
+   "evidence": "Kill feed 'zeytazin [rifle][headshot] Me' and card 'KILLED BY CLOVE' at 4:14.5; 'Reyna' is a different enemy player (40 damage in the report)."
+  },
+  {
+   "clip": "Screen Recording 2026-10-17 at 6.13.34 PM.mov (TenZ, Valorant)",
+   "t": "4:15",
+   "field": "happened",
+   "was": "Rifle. He walks through the archway into the open while moving; the enemy shows in the far doorway at 4:14; he dies at 4:15 having dealt 0 damage (the combat report's outgoing).",
+   "now": "0-2, spike planted (red spike icon; the spike is by Pequeno Cafe at 4:13.6-4:14.2), and he is his team's last player against two (top bar). 51 HP, no armor, rifle 20/50, ult READY. He peeks the courtyard from A Flowers on the move (the view drifts 4:13.6-4:14.1); zeytazin runs out from behind the left wall into his crosshair at 4:13.9 and crosses it until 4:14.2. He never fires (ammo stays 20, Shooting Error 0.00°, 0 damage to zeytazin) and dies to a headshot at 4:14.25; the round is LOST (0-3).",
+   "evidence": "Crosshair crops 4:13.6-4:14.2 (enemy on the crosshair from 4:13.9), ammo 20 unchanged, Shooting Error 0.00°, 'LOST' banner 4:14.25, scoreboard 'Me READY' at 4:14.75, top bar 1 ally vs 2 enemies, HUD 51 HP and no shield. The enemy came from behind the near-left wall, not 'the far doorway'. Confirmed: rifle, moving, 0 damage out."
+  },
+  {
+   "clip": "Screen Recording 2026-10-17 at 6.13.34 PM.mov (TenZ, Valorant)",
+   "t": "4:15",
+   "field": "factors",
+   "was": {
+    "mechanics": "entering on the move",
+    "utility": "none before entering the open (a Gatecrash at 4:06)"
+   },
+   "now": {
+    "mechanics": "peeking on the move and not shooting when the enemy crossed his crosshair (4:13.9-4:14.2)",
+    "utility": "nothing thrown before the peek, and his ult READY and unused in a 1 v 2 post-plant",
+    "numbers": "1 v 2 after the plant, at 51 HP with no armor"
+   },
+   "evidence": "Same frames. The 'Gatecrash at 4:06' can't be confirmed: something is used at 4:06 but not identified."
+  },
+  {
+   "clip": "Screen Recording 2026-10-17 at 6.13.34 PM.mov (TenZ, Valorant)",
+   "t": "4:15",
+   "field": "mistake",
+   "was": "Walking into an open courtyard with no utility and no stop to shoot.",
+   "now": "Swinging the open courtyard on the move in a 1 v 2 with his ult ready, and not firing when zeytazin ran across his crosshair.",
+   "evidence": "Same frames."
+  },
+  {
+   "clip": "Screen Recording 2026-10-17 at 6.13.34 PM.mov (TenZ, Valorant)",
+   "t": "4:15",
+   "field": "better",
+   "was": "Flash or clear it before entering, or jiggle-peek the doorway and stop to shoot.",
+   "now": "Use the ready ult (or a flash) to find the two before swinging; then peek from a stop with the crosshair where they will cross, and shoot the moment one does.",
+   "evidence": "Same frames."
+  },
+  {
+   "clip": "Screen Recording 2026-10-17 at 6.13.34 PM.mov (TenZ, Valorant)",
+   "t": "4:15",
+   "field": "unsure",
+   "was": [
+    "whether he stopped before firing"
+   ],
+   "now": [
+    "what he used at 4:06",
+    "how much spike time was left"
+   ],
+   "evidence": "Settled: he never fired (ammo 20 throughout, Shooting Error 0.00°, outgoing 0)."
+  },
+  {
+   "clip": "Screen Recording 2026-10-17 at 6.13.34 PM.mov (TenZ, Valorant)",
+   "t": "4:57",
+   "field": "kind",
+   "was": "death (killed by uliquorra)",
+   "now": "death (killed by ulquiorra, 'KILLED BY NEON')",
+   "evidence": "Kill feed at 4:56.25-4:59 reads 'ulquiorra', not 'uliquorra'; card 'KILLED BY NEON'."
+  },
+  {
+   "clip": "Screen Recording 2026-10-17 at 6.13.34 PM.mov (TenZ, Valorant)",
+   "t": "4:57",
+   "field": "happened",
+   "was": "After the buy phase (2,450 credits, ult READY) he runs down the alley alone with a pistol and dies to the first enemy he sees at 4:57; the ult is never used.",
+   "now": "0-3. He bought a Sheriff and no armor and kept 2,450 credits (scoreboard 4:50: no shield icon on his row; HUD 100 HP, Sheriff 6/24); ult READY. He goes down A Main alone with an ability out ahead of him (a dark orb rolling on the ground, its slot active, 4:53.5-4:56). His crosshair sits at head height on the wall edge; ulquiorra steps out into it at 4:55.7, he fires once at about 4:55.95 (6 -> 5), by then over her head as she moved; 0 damage, and he dies at 4:56.1 to a rifle headshot (156). The ult is never used.",
+   "evidence": "Scoreboard 4:50 (Me: ¤2,450, no shield icon, teammates with shields), HUD SHERIFF 6/24, crosshair crops 4:55.6-4:56.1, ammo 6 -> 5 at 4:56, Shooting Error 0.25°, combat report out 0 / in 156 KILLED YOU, kill feed 'ulquiorra [rifle][headshot] Me'. Confirmed: 2,450 credits, ult READY unused, first enemy he sees, pistol."
+  },
+  {
+   "clip": "Screen Recording 2026-10-17 at 6.13.34 PM.mov (TenZ, Valorant)",
+   "t": "4:57",
+   "field": "factors",
+   "was": {
+    "economy": "2,450 credits",
+    "resources": "ult ready, unused",
+    "numbers": "alone in the alley"
+   },
+   "now": {
+    "economy": "a Sheriff, no armor, 2,450 credits kept",
+    "resources": "ult ready, unused",
+    "aim": "pre-aimed at head height, but his one shot came about 0.25 s after she appeared and went over her head",
+    "numbers": "no teammate on screen down A Main (the minimap was not readable)"
+   },
+   "evidence": "Crosshair crops 4:55.7-4:56.0: on her head at 4:55.7, above it at 4:56.0; shot between 4:55.9 and 4:56.0."
+  },
+  {
+   "clip": "Screen Recording 2026-10-17 at 6.13.34 PM.mov (TenZ, Valorant)",
+   "t": "4:57",
+   "field": "mistake",
+   "was": "Taking the first fight alone and early on a light buy, with his ult ready.",
+   "now": "Taking the first duel alone on a Sheriff with no armor and his ult ready, and firing a beat late on a pre-aimed angle.",
+   "evidence": "Same frames."
+  },
+  {
+   "clip": "Screen Recording 2026-10-17 at 6.13.34 PM.mov (TenZ, Valorant)",
+   "t": "4:57",
+   "field": "better",
+   "was": "Play with a teammate on a light buy, or use the ult to take the fight.",
+   "now": "On a Sheriff, hold a tight angle and fire the instant the head crosses the crosshair, or use the ult or a flash to take the fight; buy light armor with 2,450 left; play with a teammate.",
+   "evidence": "Same frames."
+  },
+  {
+   "clip": "Screen Recording 2026-10-17 at 6.13.34 PM.mov (TenZ, Valorant)",
+   "t": "4:57",
+   "field": "unsure",
+   "was": [
+    "what he bought"
+   ],
+   "now": [
+    "where his teammates were (the minimap is rotated and too small to read)"
+   ],
+   "evidence": "Settled: he bought a Sheriff and no armor (HUD SHERIFF 6/24 from 4:54; no shield icon on his scoreboard row at 4:50)."
+  },
+  {
+   "clip": "Screen Recording 2026-10-17 at 6.13.34 PM.mov (TenZ, Valorant)",
+   "t": "6:15",
+   "field": "happened",
+   "was": "Full buy, rifle; with teammates near (Chamber), he pushes past the edge of a teammate's smoke and dies at 6:15 after dealing 137 damage; Reyna's Leer shows right after.",
+   "now": "1-3 (DEF 1, ATK 3 at 6:16). Full buy: Vandal 25/50 and 50 shield; ult READY; 4,000 credits unspent (scoreboard 6:16). He runs onto A Site with his knife out (6:12.6-6:13.5), past the box with a purple-white smoke on his left, and has the Vandal back at 6:13.8; from 6:14.0 to 6:14.6 the rifle is in an animation (held upright, off hand on it). Reyna is on his crosshair at the smoke's left edge at 6:14.4; his first shot is at 6:14.75 and he sprays (25 -> 20 by 6:15.5; Shooting Error 0.25° -> 0.77°). He deals 137 to Reyna and dies at about 6:15.7 (170 in, headshot). A red eye-like orb shows above the smoke at 6:15.9, after his death. Teammate Chamber is in view to his right; nobody trades: the next kills are lisa -> Veto (6:19) and CLV|bam -> zeytazin (6:24).",
+   "evidence": "Frames 6:12-6:15.75 at 0.25 s and crosshair crops 6:14.4-6:15.6: knife (HUD MELEE) 6:12.6-6:13.5, Vandal back 6:13.8, upright-rifle animation 6:14.0-6:14.6, enemy at the crosshair 6:14.4, ammo 25 -> 24 (6:14.75) -> 20 (6:15.5); combat report out 137 / in 170; scoreboard 6:16 (Me READY, ¤4,000; DEF 1, ATK 3); kill feed 6:19 and 6:24. Confirmed: full buy, Chamber near, 137 damage, killed by Reyna, the eye after."
+  },
+  {
+   "clip": "Screen Recording 2026-10-17 at 6.13.34 PM.mov (TenZ, Valorant)",
+   "t": "6:15",
+   "field": "factors",
+   "was": {
+    "position": "on the edge of the smoke",
+    "trade": "a teammate near"
+   },
+   "now": {
+    "position": "out in the open by the box, with the smoke to his left; Reyna at the smoke's left edge",
+    "mechanics": "knife out on the run in, rifle still in an animation when Reyna appeared (6:14.4); first shot 0.35 s later",
+    "resources": "ult READY and unused",
+    "trade": "Chamber in view to his right, but no trade on Reyna"
+   },
+   "evidence": "Same frames. Whose smoke it is can't be told (the enemy has a Clove: zeytazin's card at 4:14.5), so 'a teammate's smoke' moves to 'unsure'."
+  },
+  {
+   "clip": "Screen Recording 2026-10-17 at 6.13.34 PM.mov (TenZ, Valorant)",
+   "t": "6:15",
+   "field": "mistake",
+   "was": "Pushing past the smoke's edge into Reyna's angle.",
+   "now": "Running onto site with the knife out and the rifle not ready, so the duel with Reyna started 0.35 s late.",
+   "evidence": "Same frames: the enemy was on his crosshair before he could shoot."
+  },
+  {
+   "clip": "Screen Recording 2026-10-17 at 6.13.34 PM.mov (TenZ, Valorant)",
+   "t": "6:15",
+   "field": "better",
+   "was": "Hold the smoke's edge and let the enemy come through, or peek with the teammate together.",
+   "now": "Have the rifle out and ready before the smoke's edge comes into view (no knife or inspect on the approach), clear the edge with Chamber, or use the ready ult to take the space.",
+   "evidence": "Same frames."
+  },
+  {
+   "clip": "Screen Recording 2026-10-17 at 6.13.34 PM.mov (TenZ, Valorant)",
+   "t": "6:15",
+   "field": "unsure",
+   "was": [
+    "the 6:13 knife switch",
+    "whether a teammate traded"
+   ],
+   "now": [
+    "whose smoke it was",
+    "whether the 6:14.0-6:14.6 rifle animation was an equip or an inspect"
+   ],
+   "evidence": "Settled: the knife was out 6:12.6-6:13.5 (HUD MELEE) and the Vandal back by 6:13.8; nobody traded Reyna (next kills 6:19 lisa -> Veto, 6:24 CLV|bam -> zeytazin)."
+  }
+ ]
+}

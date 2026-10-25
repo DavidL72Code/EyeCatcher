@@ -1,4 +1,4 @@
-// Thirdeye's backend: npm run backend, or a web service on Render (render.yaml). It is the only place the Gemini key
+// Eye Catcher's backend: npm run backend, or a web service on Render (render.yaml). It is the only place the Gemini key
 // lives. The app sends its Gemini requests here and this forwards them with the key, so the key never reaches a
 // player's machine.
 //
@@ -27,8 +27,8 @@ export function settings(env = { ...readEnv(path.join(path.dirname(fileURLToPath
     host: env.HOST || (env.RENDER ? '0.0.0.0' : '127.0.0.1'),
     // the desktop app's page and the local dev server
     origins: list(env.ALLOWED_ORIGINS, 'http://127.0.0.1:5170,http://127.0.0.1:5177,http://localhost:5177'),
-    // the models the app asks for (gemini.js): Flash-Lite first, regular Flash as the last resort, 2.5 for search
-    models: list(env.ALLOWED_MODELS, 'gemini-3.5-flash-lite,gemini-3.1-flash-lite,gemini-3.5-flash,gemini-2.5-flash-lite,gemini-2.5-flash'),
+    // the models the app asks for (gemini.js): Flash-Lite only, 2.5 Flash-Lite for search
+    models: list(env.ALLOWED_MODELS, 'gemini-3.5-flash-lite,gemini-3.1-flash-lite,gemini-2.5-flash-lite'),
     perMinute: +(env.RATE_PER_MINUTE || 30),
     perDay: +(env.CALLS_PER_DAY || 200), // one review is about 20 to 40 calls
     uploadsPerDay: +(env.UPLOADS_PER_DAY || 6),
@@ -94,9 +94,9 @@ export function createServer(opts = settings(), { fetchImpl = fetch, uploadImpl 
   // a refusal, or null when the call may go ahead (and is counted)
   function admit(ip, kind) {
     const t = clock(), c = caller(ip);
-    if (total.calls >= opts.totalPerDay) return [429, "Thirdeye's server has used today's allowance. Try again tomorrow.", [{ '@type': 'type.googleapis.com/google.rpc.QuotaFailure', violations: [{ quotaId: 'ThirdeyeTotalPerDay' }] }]];
-    if (c.calls >= opts.perDay) return [429, "You've used today's Thirdeye allowance. Try again tomorrow.", [{ '@type': 'type.googleapis.com/google.rpc.QuotaFailure', violations: [{ quotaId: 'ThirdeyeCallsPerDay' }] }]];
-    if (kind === 'upload' && total.uploads >= opts.totalUploadsPerDay) return [429, "Thirdeye's server has taken today's uploads. Try again tomorrow.", [{ '@type': 'type.googleapis.com/google.rpc.QuotaFailure', violations: [{ quotaId: 'ThirdeyeTotalUploadsPerDay' }] }]];
+    if (total.calls >= opts.totalPerDay) return [429, "Eye Catcher's server has used today's allowance. Try again tomorrow.", [{ '@type': 'type.googleapis.com/google.rpc.QuotaFailure', violations: [{ quotaId: 'ThirdeyeTotalPerDay' }] }]];
+    if (c.calls >= opts.perDay) return [429, "You've used today's Eye Catcher allowance. Try again tomorrow.", [{ '@type': 'type.googleapis.com/google.rpc.QuotaFailure', violations: [{ quotaId: 'ThirdeyeCallsPerDay' }] }]];
+    if (kind === 'upload' && total.uploads >= opts.totalUploadsPerDay) return [429, "Eye Catcher's server has taken today's uploads. Try again tomorrow.", [{ '@type': 'type.googleapis.com/google.rpc.QuotaFailure', violations: [{ quotaId: 'ThirdeyeTotalUploadsPerDay' }] }]];
     if (kind === 'upload' && c.uploads >= opts.uploadsPerDay) return [429, "You've uploaded today's limit of match copies. Try again tomorrow.", [{ '@type': 'type.googleapis.com/google.rpc.QuotaFailure', violations: [{ quotaId: 'ThirdeyeUploadsPerDay' }] }]];
     if (c.minute.length >= opts.perMinute) {
       const wait = Math.max(1, Math.ceil((60e3 - (t - c.minute[0])) / 1000));
@@ -144,15 +144,15 @@ export function createServer(opts = settings(), { fetchImpl = fetch, uploadImpl 
 
   // ---------- the three requests the app makes ----------
   async function generate(req, res, model, h) {
-    if (!opts.models.includes(model)) return [404, `Thirdeye doesn't use ${model}.`];
+    if (!opts.models.includes(model)) return [404, `Eye Catcher doesn't use ${model}.`];
     const raw = await body(req, opts.maxBody);
     let json;
     try { json = JSON.parse(raw); } catch { return [400, 'That request isn\'t JSON.']; }
     if (!json || typeof json !== 'object' || !Array.isArray(json.contents)) return [400, 'A request needs contents.'];
     const extra = Object.keys(json).find((k) => !FIELDS.has(k));
-    if (extra) return [400, `Thirdeye doesn't send ${extra}.`];
+    if (extra) return [400, `Eye Catcher doesn't send ${extra}.`];
     const tool = (json.tools || []).flatMap((t) => Object.keys(t || {})).find((k) => !TOOLS.has(k));
-    if (tool) return [400, `Thirdeye doesn't use the ${tool} tool.`];
+    if (tool) return [400, `Eye Catcher doesn't use the ${tool} tool.`];
     const refused = admit(addressOf(req), 'call');
     if (refused) return refused;
     const config = json.generationConfig || json.generation_config || {};
@@ -171,7 +171,7 @@ export function createServer(opts = settings(), { fetchImpl = fetch, uploadImpl 
     if (!(size > 0 && size <= opts.maxUpload)) return [413, `A scan copy can be up to ${opts.maxUpload / MB} MB.`];
     if (!/^video\/(webm|mp4)$/.test(type)) return [400, 'The scan copy is a WebM or MP4 video.'];
     const raw = await body(req, 64 * 1024);
-    let name = 'thirdeye-scan';
+    let name = 'eye-catcher-scan';
     try { name = String(JSON.parse(raw)?.file?.display_name || name).slice(0, 80); } catch {}
     const refused = admit(addressOf(req), 'upload');
     if (refused) return refused;
@@ -214,7 +214,7 @@ export function createServer(opts = settings(), { fetchImpl = fetch, uploadImpl 
     const done = (status) => log(`${req.method} ${kind} ${status} ${Date.now() - t0}ms`);
     try {
       // a page on another site can't spend the key through its visitors' browsers
-      if (req.headers.origin && !opts.origins.includes(req.headers.origin)) { kind = 'origin'; res.writeHead(403, h); res.end(geminiError(403, 'This server only answers the Thirdeye app.')); return done(403); }
+      if (req.headers.origin && !opts.origins.includes(req.headers.origin)) { kind = 'origin'; res.writeHead(403, h); res.end(geminiError(403, 'This server only answers the Eye Catcher app.')); return done(403); }
       if (req.method === 'OPTIONS') { kind = 'preflight'; res.writeHead(204, h); res.end(); return done(204); }
       let m, out;
       if (req.method === 'GET' && url === '/health') { kind = 'health'; res.writeHead(200, h); res.end('{"ok":true}'); return done(200); }
@@ -222,7 +222,7 @@ export function createServer(opts = settings(), { fetchImpl = fetch, uploadImpl 
       else if (req.method === 'POST' && url === '/gemini/upload/v1beta/files') { kind = 'upload-start'; out = await uploadStart(req, res, h); }
       else if (req.method === 'POST' && (m = /^\/gemini\/upload-session\/([0-9a-f-]{36})$/.exec(url))) { kind = 'upload'; out = await uploadBytes(req, res, m[1], h); }
       else if (req.method === 'GET' && (m = /^\/gemini\/v1beta\/(files\/[a-z0-9-]{1,64})$/.exec(url))) { kind = 'file'; out = await fileState(req, res, m[1], h); }
-      else out = [404, 'Not a Thirdeye request.'];
+      else out = [404, 'Not a Eye Catcher request.'];
       if (out) { res.writeHead(out[0], h); res.end(geminiError(...out)); return done(out[0]); }
       done(res.statusCode);
     } catch (e) {
@@ -236,5 +236,5 @@ export function createServer(opts = settings(), { fetchImpl = fetch, uploadImpl 
 
 if (fileURLToPath(import.meta.url) === path.resolve(process.argv[1] || '')) {
   const opts = settings();
-  createServer(opts).listen(opts.port, opts.host, () => console.log(`Thirdeye backend: http://${opts.host}:${opts.port}/ (origins: ${opts.origins.join(', ')})`));
+  createServer(opts).listen(opts.port, opts.host, () => console.log(`Eye Catcher backend: http://${opts.host}:${opts.port}/ (origins: ${opts.origins.join(', ')})`));
 }

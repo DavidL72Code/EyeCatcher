@@ -66,3 +66,55 @@ test('Stockfish scores positions from White\'s side', async () => {
   assert.equal(scored[2].grade, 'blunder', `g4 allows Qh4 mate (${scored[2].loss})`);
   engine.quit();
 });
+
+test("a board's own dark share tells its black pieces from its white ones", () => {
+  // chess.com on a phone, Oct 24: black pawns with 8-11% dark pixels, white pieces with none, under a fixed 12%
+  const s = 20, w = s * 8, data = new Uint8ClampedArray(w * w * 4).fill(200);
+  const paint = (file, rank, dark, mid = 0) => {
+    const x0 = file * s, y0 = (8 - rank) * s;
+    let k = 0;
+    for (let y = y0 + 4; y < y0 + s - 4; y++) for (let x = x0 + 4; x < x0 + s - 4; x++, k++) { const v = k % 100 < dark * 100 ? 40 : k % 100 < (dark + mid) * 100 ? 120 : 250; const i = (y * w + x) * 4; data[i] = data[i + 1] = data[i + 2] = v; }
+  };
+  for (let f = 0; f < 8; f++) { paint(f, 1, 0.0, 0.3); paint(f, 2, 0.0, 0.3); paint(f, 7, 0.07, 0.4); paint(f, 8, 0.2, 0.4); }
+  const img = { data, width: w, height: w }, squares = R.boardSquares({ x: 0, y: 0, size: w });
+  const split = R.darkSplit(img, squares);
+  assert.ok(split > 0.01 && split < 0.08, `the split falls between the white pieces' share and the black pawns' (${split})`);
+  const read = R.readBoard(img, squares, { darkShare: split });
+  assert.equal(read.a7, 'b'); assert.equal(read.a2, 'w'); assert.equal(read.a8, 'b'); assert.equal(read.a4, '.');
+  // with the fixed share the pawns read white
+  assert.equal(R.readBoard(img, squares).a7, 'w');
+});
+
+test("a move's threat, in code: what it takes and what the moved piece attacks after", () => {
+  // a knight takes on f7 and forks the queen and the rook
+  const fork = R.moveThreat(Chess, 'rnbqk2r/pppp1ppp/5n2/2b1N3/4P3/8/PPPP1PPP/RNBQKB1R w KQkq - 0 4', 'e5f7');
+  assert.deepEqual(fork, { san: 'Nxf7', captured: 'pawn', check: false, attacks: ['queen on d8', 'rook on h8'] });
+  // the game graded on Oct 25: after 16.Qd3, ...Bc4 hits the queen, with the knight on e2 behind it
+  const game = play(new Chess().fen(), ...'e4 d5 f4 dxe4 Nc3 e6 Nxe4 Nf6 Nxf6+ Qxf6 Ne2 e5 fxe5 Qxe5 d4 Qe6 Qd3 Qg6 Qb5+ Qc6 Qe5+ Be6 Bd2 Nd7 Qe3 O-O-O O-O-O Bd6 Bc3 Rde8 Qd3'.split(' '));
+  assert.deepEqual(R.moveThreat(Chess, game.fen(), 'e6c4').attacks, ['queen on d3 with the knight on e2 behind it']);
+  game.move('Qa6'); game.move('Qxa6'); game.move('bxa6'); game.move('Nf4');
+  assert.deepEqual(R.moveThreat(Chess, game.fen(), 'd6f4'), { san: 'Bxf4+', captured: 'knight', check: true, attacks: [] }, 'a check is said as one, not as the king attacked');
+  assert.equal(R.moveThreat(Chess, new Chess().fen(), 'e2e5'), null, 'a move that can\'t be played there');
+  assert.equal(R.moveThreat(Chess, new Chess().fen(), ''), null);
+});
+
+test("the engine's own move loses nothing, whatever the next search scores", async () => {
+  // a shallow search sees further from the next position: 13.Qe3 was graded a mistake while being the engine's best
+  const scores = [{ cp: 100, best: 'e2e4' }, { cp: -20, best: 'e7e5' }, { cp: 160, best: 'g1f3' }]; // from White's side
+  const engine = { evaluate: async (fen) => scores.shift() };
+  const g = new Chess(), a = g.move('e4'), fenA = g.fen(), b = g.move('d5'), fenB = g.fen();
+  const out = await R.scoreGame(engine, new Chess().fen(), [{ ...a, fen: fenA }, { ...b, fen: fenB }], { depth: 1 });
+  assert.deepEqual(out.map((m) => [m.san, m.loss, m.grade]), [['e4', 0, null], ['d5', 180, 'mistake']]);
+});
+
+test("what the engine's line wins, in code: 16.Qd3 costs a pawn, not the queen", () => {
+  // the engine's line after 16.Qd3 in the Oct 24 game, as Stockfish gave it at depth 10
+  const game = play(new Chess().fen(), ...'e4 d5 f4 dxe4 Nc3 e6 Nxe4 Nf6 Nxf6+ Qxf6 Ne2 e5 fxe5 Qxe5 d4 Qe6 Qd3 Qg6 Qb5+ Qc6 Qe5+ Be6 Bd2 Nd7 Qe3 O-O-O O-O-O Bd6 Bc3 Rde8 Qd3'.split(' '));
+  const gain = R.lineGain(Chess, game.fen(), ['e6c4', 'd3d2', 'c6a6', 'e2g3', 'a6a2']);
+  assert.equal(gain.line, 'Bc4 17. Qd2 Qa6 18. Ng3 Qxa2');
+  assert.equal(gain.pawns, 1);
+  assert.match(gain.text, /^Black comes out 1 pawn of material up \(a pawn\)$/);
+  // a line that captures nothing gains position, said as such
+  assert.match(R.lineGain(Chess, new Chess().fen(), ['e2e4', 'e7e5']).text, /no material changes hands/);
+  assert.equal(R.lineGain(Chess, new Chess().fen(), []), null);
+});

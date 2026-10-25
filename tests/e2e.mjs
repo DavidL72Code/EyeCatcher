@@ -1,4 +1,4 @@
-// End-to-end test for Thirdeye in Chrome on the synthetic match (npm run fixture makes it). Gemini and the Files API
+// End-to-end test for Eye Catcher in Chrome on the synthetic match (npm run fixture makes it). Gemini and the Files API
 // are intercepted and answered with TEST FIXTURES shaped like real responses, so this checks the app's wiring, the
 // video pipeline, and the code checks, not the model's judgment. Mediabunny loads from jsDelivr, so it needs network.
 import { chromium } from 'playwright';
@@ -32,8 +32,11 @@ const scanEvents = [
   ...truth.rounds.map((t) => ({ t: C.mmss(t), kind: 'round_start', text: 'Round starts' })),
   ...truth.duels.map((d) => ({ t: C.mmss(Math.round(d.t + 0.6)), kind: d.outcome, text: d.outcome === 'kill' ? `You killed ${d.enemy}` : `Killed by ${d.enemy}` })),
 ];
-const call = (...calls) => ({ candidates: [{ content: { role: 'model', parts: calls.map(([name, args]) => ({ functionCall: { name, args } })) } }] });
-const text = (s) => ({ candidates: [{ content: { role: 'model', parts: [{ text: typeof s === 'string' ? s : JSON.stringify(s) }] } }] });
+// each turn comes with a summary of the coach's thinking first, as Gemini gives one when asked (includeThoughts), and
+// each answer says what it cost, as Gemini's usageMetadata does (the count line adds it up)
+const USAGE = { promptTokenCount: 1200, candidatesTokenCount: 80, totalTokenCount: 1280 };
+const call = (...calls) => ({ candidates: [{ content: { role: 'model', parts: [{ text: `Weighing what to look at next: ${calls.map(([name]) => name).join(' and ')}.`, thought: true }, ...calls.map(([name, args]) => ({ functionCall: { name, args } }))] } }], usageMetadata: USAGE });
+const text = (s) => ({ candidates: [{ content: { role: 'model', parts: [{ text: typeof s === 'string' ? s : JSON.stringify(s) }] } }], usageMetadata: USAGE });
 // the match record code reads before the coach's first turn, as the first prompt gives it
 const firstRecord = (b) => { const t = b.contents[0].parts.map((p) => p.text || '').join(' '), m = t.match(/The match record, read before your first turn:\n(\{[\s\S]*?\})(\n\n|$)/); return m ? JSON.parse(m[1]) : null; };
 const lastResults = (b) => [...b.contents].reverse().find((c) => c.parts?.some((p) => p.functionResponse))?.parts.filter((p) => p.functionResponse).map((p) => p.functionResponse) || [];
@@ -132,6 +135,19 @@ const RESEARCH = {
 function gemini(body) {
   const parts = body.contents?.[0]?.parts || [];
   const prompt = parts.map((p) => p.text || '').join(' ');
+  // the critique's script: what a coach says over each moment, written from the finding's own words. Each moment says a
+  // lead of its own and the first sentence of its text; the salvage review's adds a number no moment gives ("25 bullets"),
+  // so code has to refuse it and say the finding's own lines
+  if (!body.tools && /^You write what a coach says out loud/.test(prompt)) {
+    seen.scriptCalls = (seen.scriptCalls || 0) + 1;
+    const moments = [...prompt.matchAll(/Moment (\d+) \([^)]*\): <data>([^<]*)<\/data>/g)].map((m) => ({ moment: +m[1], text: m[2] }));
+    const leads = ['Watch this first one.', 'Here it goes wrong.', 'Same story here.', 'Look at this one too.', 'And the last one.'];
+    return text({
+      open: `This one comes down to the same corner, twice. Let's go through the ${moments.length} moments that cost you.`,
+      moments: moments.map((m, i) => ({ moment: m.moment, say: `${leads[i % leads.length]} ${m.text.split(/(?<=\.)\s/)[0]}${seen.salvage && i === 0 ? ' You had 25 bullets left.' : ''}` })),
+      close: 'Next time you die, come back from a different angle.',
+    });
+  }
   // the check of a finding against the video: every claim in one call, each with its own pictures; the claims the record
   // shows are false (planted by code) go against the video, the coach's show
   if (!body.tools && /^Each claim below is about a moment of a recorded/.test(parts[0]?.text || '')) {
@@ -169,10 +185,19 @@ function gemini(body) {
   }
   // the research's prose put in shape, by a call without search
   if (!body.tools && /^Put this research on/.test(prompt)) {
+    seen.researchSums = (seen.researchSums || 0) + 1;
     const game = Object.keys(RESEARCH).find((g) => prompt.includes(g));
     return text(RESEARCH[game]);
   }
-  if (!body.tools && /player clock of a/.test(prompt)) { seen.hudCalls++; return text({ readings: parts.filter((p) => p.inlineData).map((_, i) => ({ image: i + 1, value: ['0:25', '0:21', '0:58'][i] || '0:10', readable: true })) }); }
+  // the clock in each picture, as the fixture has it at that picture's time (each comes labelled "Image N, at M:SS.s"):
+  // answered by the order the pictures came in, a clock rose between moves (19.Nce5 read 0:58 between 0:10 and 0:21)
+  // and code's check for misread clocks dropped it, rightly
+  if (!body.tools && /player clock of a/.test(prompt)) {
+    seen.hudCalls++;
+    const white = chessTruth.recordings[path.basename(chessFile)].moves.filter((m) => m.color === 'w');
+    const clockAt = (t) => { const m = white.reduce((a, b) => (Math.abs(b.t - t) < Math.abs(a.t - t) ? b : a)), s = m.clockWhite; return `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`; };
+    return text({ readings: [...prompt.matchAll(/Image (\d+), at (\d+:\d+(?:\.\d)?)/g)].map((m) => ({ image: +m[1], value: clockAt(C.parseTime(m[2])), readable: true })) });
+  }
   // each death the low-detail pass saw, looked at again: the synthetic match's deaths are all real
   if (!body.tools && /a quick look took for their death/.test(prompt)) { seen.deathChecks = (seen.deathChecks || 0) + 1; return text({ deaths: [...prompt.matchAll(/Death (\d+),/g)].map((m) => ({ death: +m[1], dead: true, why: 'the death screen' })) }); }
   // each moment a finding cites, looked at again blind: the frames fit them all
@@ -198,8 +223,8 @@ const browser = await chromium.launch({ executablePath: process.env.CHROME || '/
 try {
   const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
   const errors = [];
-  page.on('pageerror', (e) => errors.push(e.message));
-  page.on('console', (m) => { if (m.type() === 'error') errors.push(`${m.text()}${m.location()?.url ? ` (${m.location().url.slice(0, 60)})` : ''}`); });
+  page.on('pageerror', (e) => { errors.push(e.message); if (process.env.E2E_ERRORS) console.log('  PAGE ERROR -', e.message); });
+  page.on('console', (m) => { if (process.env.E2E_ERRORS && /error|warn/.test(m.type())) console.log('  PAGE', m.type(), '-', m.text().slice(0, 300)); if (m.type() === 'error') errors.push(`${m.text()}${m.location()?.url ? ` (${m.location().url.slice(0, 60)})` : ''}`); });
   page.on('request', (r) => {
     const u = new URL(r.url());
     if (/\/games\//.test(u.pathname)) seen.gameFiles++;
@@ -210,7 +235,7 @@ try {
   const silence = (() => { const n = 4000, b = Buffer.alloc(44 + n * 2); b.write('RIFF', 0); b.writeUInt32LE(36 + n * 2, 4); b.write('WAVE', 8); b.write('fmt ', 12); b.writeUInt32LE(16, 16); b.writeUInt16LE(1, 20); b.writeUInt16LE(1, 22); b.writeUInt32LE(16000, 24); b.writeUInt32LE(32000, 28); b.writeUInt16LE(2, 32); b.writeUInt16LE(16, 34); b.write('data', 36); b.writeUInt32LE(n * 2, 40); return b; })();
   await page.route('**/voice', async (route) => {
     if (route.request().method() === 'GET') return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ voices: { am_michael: 'Michael', af_heart: 'Heart' } }) });
-    seen.voiceLines = [...(seen.voiceLines || []), JSON.parse(route.request().postData() || '{}')];
+    seen.voiceLines = [...(seen.voiceLines || []), { ...JSON.parse(route.request().postData() || '{}'), at: Date.now() }];
     return route.fulfill({ status: 200, contentType: 'audio/wav', body: silence });
   });
   await page.route('https://generativelanguage.googleapis.com/**', async (route) => {
@@ -225,7 +250,16 @@ try {
       seen.uploadBytes = req.postDataBuffer()?.length || 0;
       return route.fulfill({ status: 200, headers: cors, contentType: 'application/json', body: JSON.stringify({ file: { name: 'files/test', uri: 'https://generativelanguage.googleapis.com/v1beta/files/test', mimeType: 'video/webm', state: 'ACTIVE' } }) });
     }
-    if (url.includes(':generateContent')) return route.fulfill({ status: 200, headers: cors, contentType: 'application/json', body: JSON.stringify(gemini(JSON.parse(req.postData()))) });
+    if (url.includes(':generateContent')) {
+      const body = JSON.parse(req.postData());
+      // while seen.scriptBusy, the critique's script call is out of its daily quota on every key and model, as both keys
+      // were on Oct 25: the call fails, so the review must keep nothing and ask again next time
+      if (seen.scriptBusy && /^You write what a coach says out loud/.test(body.contents?.[0]?.parts?.[0]?.text || '')) {
+        seen.scriptRefusals = (seen.scriptRefusals || 0) + 1;
+        return route.fulfill({ status: 429, headers: cors, contentType: 'application/json', body: JSON.stringify({ error: { code: 429, status: 'RESOURCE_EXHAUSTED', message: 'You exceeded your current quota.', details: [{ '@type': 'type.googleapis.com/google.rpc.QuotaFailure', violations: [{ quotaId: 'GenerateRequestsPerDayPerProjectPerModel-FreeTier' }] }] } }) });
+      }
+      return route.fulfill({ status: 200, headers: cors, contentType: 'application/json', body: JSON.stringify(gemini(body)) });
+    }
     return route.fulfill({ status: 404, headers: cors, body: '{}' });
   });
 
@@ -234,9 +268,9 @@ try {
   check(/script-src 'self';/.test(first.headers()['content-security-policy']) && /connect-src 'self' https:\/\/generativelanguage\.googleapis\.com/.test(first.headers()['content-security-policy']), 'the page runs under a policy: only its own scripts, talking only to itself and Gemini');
   const fromElsewhere = await (await fetch(`${base}env.js`, { headers: { 'Sec-Fetch-Site': 'cross-site', 'Sec-Fetch-Dest': 'script' } })).text();
   const ownEnv = await page.evaluate(async () => (await fetch('/env.js')).text());
-  check(!/GEMINI_API_KEY|TEST2/.test(fromElsewhere) && /"GEMINI_API_KEY":"TEST"/.test(ownEnv) && /"GEMINI_API_KEY2":"TEST2"/.test(ownEnv), "both keys go to Thirdeye's own page and to no other site");
+  check(!/GEMINI_API_KEY|TEST2/.test(fromElsewhere) && /"GEMINI_API_KEY":"TEST"/.test(ownEnv) && /"GEMINI_API_KEY2":"TEST2"/.test(ownEnv), "both keys go to Eye Catcher's own page and to no other site");
   check(await page.locator('#homeTitle').innerText() === "FIND THE HABIT THAT'S\nLOSING YOU GAMES." && await page.locator('#home').isVisible() && await page.locator('#tabs [aria-current]').innerText() === 'Home', 'Home opens first, in the sidebar, with the headline');
-  check(/scenes\/apex\.mp4$/.test(await page.locator('#demoVideo').getAttribute('src')) && await page.locator('#demoHud .el').count() === 4 && /Reading the screen/i.test(await page.locator('#demoNow .now-kind').innerText()), "Home plays a real match with Thirdeye's steps over it");
+  check(/scenes\/apex\.mp4$/.test(await page.locator('#demoVideo').getAttribute('src')) && await page.locator('#demoHud .el').count() === 4 && /Reading the screen/i.test(await page.locator('#demoNow .now-kind').innerText()), "Home plays a real match with Eye Catcher's steps over it");
   check(await page.locator('#scenes .scene').count() === 4, 'and offers four scenarios');
   await page.click('#scenes [data-scene="2"]');
   check(/scenes\/vyse\.mp4$/.test(await page.locator('#demoVideo').getAttribute('src')) && /Reading the kill feed/i.test(await page.locator('#demoNow .now-kind').innerText()) && await page.locator('#scenes [aria-selected="true"]').getAttribute('data-scene') === '2', 'a scenario chip plays that scenario');
@@ -251,10 +285,12 @@ try {
   heads = [2.2, 2.0, 2.3];
   await page.setInputFiles('#fileInput', fixture);
   await page.waitForSelector('#review:not([hidden])');
-  await page.waitForSelector('.question:not([hidden])', { timeout: 60000 });
+  await page.waitForSelector('.question:not([hidden])', { timeout: 60000 }).catch(async (e) => { if (process.env.E2E_ERRORS) console.log('  STUCK -', JSON.stringify(Object.fromEntries(Object.entries(seen).filter(([, v]) => typeof v === 'number'))), await page.locator('#statusText').innerText().catch(() => '?'), '|', (await page.locator('.beat').allInnerTexts().catch(() => [])).slice(-4).join(' || ').replace(/\s+/g, ' ').slice(0, 1500)); throw e; });
   check(await page.locator('#statusText').innerText() === 'Waiting for you', 'status line waits for the player');
   check(await page.locator('#now').isVisible() && /A question for you/i.test(await page.locator('#now .now-kind').innerText()) && +(await page.locator('#now .now-n').innerText()) > 2, 'over the video, the caption says which step the coach is on and what it is doing');
   check(await page.evaluate(() => document.body.classList.contains('live') && getComputedStyle(document.querySelector('#tabs a[data-tab="reviews"]')).pointerEvents === 'none'), "while a review runs, the header can't take you away from it");
+  const counts = await page.locator('#counts').innerText();
+  check(await page.locator('#counts').isVisible() && /^\d+ of 25 model calls · [\d.]+k tokens · \d+:\d\d$/.test(counts) && await page.evaluate(() => getComputedStyle(document.querySelector('.live-head')).position === 'sticky'), `while it runs, a line held at the top of the rail says the model calls used of the 25, the tokens so far, and the time (${counts})`);
   check(await page.locator('.question p').innerText() === 'Did you expect someone at that corner?', 'the question shows');
   await shot(page, 'live');
   check(seen.uploads === 1 && seen.uploadBytes > 50000 && seen.uploadBytes < 5e6, `the scan copy was uploaded once (${seen.uploadBytes} bytes)`);
@@ -271,7 +307,8 @@ try {
   check(researched.from === 'the web (2 sources)' && researched.rewards === 'Rounds won' && researched.habits?.some((h) => /^crosshair_below_head_level: /.test(h)) && !/What matters in Synthetic test match/.test(seen.agentBodies[0].systemInstruction.parts[0].text), "the coach learns what the game rewards, what matters, and the habits' ids when it calls research, not before");
   check(/Kill feed seen, with no colored rows to measure: it's read as plain text/.test(await page.locator('.beat.learn').innerText()), 'a kill feed with no team colors is said to be read as plain text');
   check(await page.locator('.beat').first().locator('.beat-kind').innerText() === 'Question' && await page.locator('.beat').count() === 5, 'the breakdown has a card per step, newest first');
-  check(await page.locator('.beat.scan .beat-why').innerText() === 'the match record, read before the coach starts' && /^8 fights \(3 won, 5 lost, 0 no one fell\); 3 kills, 5 deaths, 0 teammates down$/.test(await page.locator('.beat.scan .beat-out').innerText()), `the scan card says what it checked and what it found (${await page.locator('.beat.scan .beat-out').innerText()})`);
+  // the mock's kill feed reads no rows, so the low-detail pass's kills stand, with nothing to confirm them
+  check(await page.locator('.beat.scan .beat-why').innerText() === 'the match record, read before the coach starts' && /^8 fights \(3 won, 5 lost, 0 no one fell\); 3 kills \(3 only guessed\), 5 deaths, 0 teammates down$/.test(await page.locator('.beat.scan .beat-out').innerText()), `the scan card says what it checked and what it found (${await page.locator('.beat.scan .beat-out').innerText()})`);
   check(/^2\.2 heads low$/.test(await page.locator('.beat.measure_aim figcaption').first().innerText()) && await page.locator('.beat.measure_aim .box').count() === 1, 'the aim card shows the measured frame, its box, and its number');
   check(/New theory Crosshair sits low\s*0:13 chest height at first sight/.test(await page.locator('.beat.measure_aim .beat-take').innerText()), "the coach's take lands on the card it was about");
   const firstAgent = seen.agentBodies[0];
@@ -315,13 +352,35 @@ try {
   check(await page.locator('.key:nth-child(1) .marks circle.bad').count() === 1 && await page.locator('.key:nth-child(1) .marks path.good').count() === 1, 'the crosshair is ringed in red and the head circled in the pen color');
   check(/^How it knew Measured 2\.2 heads below the head in step 0\d/.test(await page.locator('.key:nth-child(1) .key-how').innerText()), 'each moment says how it was found, with the step');
   check(seen.markCalls === 0, 'measured moments cost no marking call');
+  const openAtEnd = await page.locator('#logBox').evaluate((d) => d.open);
+  const reasoned = await page.locator('.log .beat .beat-think').allInnerTexts(), checker = await page.locator('.log .checker').first().innerText();
+  check(reasoned.length >= 5 && reasoned.some((t) => /How it reasoned\s*Weighing what to look at next: measure_aim/.test(t)) && !seen.agentBodies.some((b) => b.contents.some((c) => c.parts?.some((p) => p.thought))), `each step shows the coach's reasoning before it, and the reasoning isn't sent back to the model (${reasoned.length} steps)`);
+  check(/never saw the coach's reasoning, judged each claim against the video\./.test(checker) && /Code wrote 2 false claims from the record and mixed them in; a checker that can't tell them apart isn't trusted\./.test(checker) && /It caught 2 of the 2\./.test(checker) && await page.locator('.log .checker .ck-planted li.caught').count() === 2 && await page.locator('.log .checker .ck-own li.caught').count() === 0 && (checker.match(/Holds/g) || []).length >= 3, `the check against the video shows each claim it judged, and, set apart under a line that says what planting is, the false ones planted to test it, caught (${checker.slice(0, 260).replace(/\s+/g, ' ')})`);
+  check(/caught both false claims planted to test it/.test(await page.locator('.verdict .trust').innerText()), 'and the report says the checker caught the false claims planted to test it');
+  // How it worked: the whole review in order, drawn from its log, the planted claims set apart
+  const stages = (await page.locator('#traceBody .tr-stage h4').allInnerTexts()).map((x) => x.replace(/^\d+\s*/, ''));
+  check(await page.locator('#trace').isVisible() && await page.locator('#traceBox').evaluate((d) => d.open) && stages.join(' | ') === "What it learned about the game | The match record | The coach's turns | Sent back | The claim checks | The finding", `after the verdict, How it worked lays out the review by stage, open (${stages.join(' | ')})`);
+  check(await page.locator('#traceBody .tr-frame img').count() === 1 && await page.locator('#traceBody .tr-frame .el').count() === 2, 'it shows the frame the screen was learned from, with the boxes it kept');
+  check(await page.locator('#traceBody .tr-ev.guess').count() >= 3 && await page.locator('#traceBody .tr-ev.known').count() >= 5, `the match record says what code knows apart from what a model guessed (${await page.locator('#traceBody .tr-ev.known').count()} known, ${await page.locator('#traceBody .tr-ev.guess').count()} guessed)`);
+  // the turns fold: the live breakdown already showed them as they happened
+  check(await page.locator('#traceBody .tr-turns-fold').evaluate((d) => !d.open), "the coach's turns are folded, since the live breakdown showed them");
+  await page.locator('#traceBody .tr-turns-fold > summary').click();
+  const turnsText = await page.locator('#traceBody ol.tr-turns').innerText();
+  check(await page.locator('#traceBody .tr-turn').count() === 9 && await page.locator('#traceBody .tr-turn .tr-think').count() === 9 && /Measured the crosshair against the nearest enemy head at 0:46\.8, 1:40\.6, 2:13\.6, 2:15/.test(turnsText) && /Came back\s*answer: No/.test(turnsText), `each of the coach's turns shows its reasoning, the tool it called in plain words, and what came back (${await page.locator('#traceBody .tr-turn').count()} turns)`);
+  const sentBack = await page.locator('#traceBody .tr-sent > li').allInnerTexts();
+  check(sentBack.length === 2 && /haven't looked closely at 1:30/.test(sentBack[0]) && /haven't looked at a fight they won/.test(sentBack[1]), `each finish sent back is listed with exactly why (${sentBack.map((x) => x.replace(/\s+/g, ' ').slice(0, 70)).join(' | ')})`);
+  const plantedRows = await page.locator('#traceBody .ck-planted li').allInnerTexts();
+  check(/Planted to test the checker/.test(await page.locator('#traceBody .ck-plant-head').first().innerText()) && plantedRows.length === 2 && plantedRows.every((x) => /^Caught\s*\d+:\d\d\s*“The player (is killed|dies) here\.”/.test(x) && /False, since /.test(x)), `a block labelled "Planted to test the checker" lists the exact false claims code planted, each caught, with why it's false (${plantedRows.map((x) => x.replace(/\s+/g, ' ').slice(0, 90)).join(' | ')})`);
+  check(/^\d+ model calls · [\d.]+k tokens · 6 looks · \d+:\d\d start to end$/.test(await page.locator('#traceBody .tr-total').innerText()), `and it ends with the finding and what the review cost (${await page.locator('#traceBody .tr-total').innerText()})`);
+  // the log opens by default now: closed first, so the step link has to open it
+  await page.locator('#logBox').evaluate((d) => { d.open = false; });
   await page.click('.key:nth-child(1) .step-link');
   check(await page.locator('#logBox').evaluate((d) => d.open) && await page.locator('.log .beat.flash').count() === 1, 'the step link opens the log at that step');
-  await page.locator('#logBox summary').click();
+  await page.locator('#logSummary').click();
   check(await page.locator('#status').isHidden(), 'the spinner is gone when done');
   check(/0:31\s*On the head, and the fight was won/.test(await page.locator('.contrast').innerText()), 'moments they got right show apart from the evidence');
   check(await page.locator('.log .theory.supported').count() === 1, 'the board is kept under How it got here');
-  const learning = seen.learns + (seen.boxChecks || 0) + (seen.relocates || 0), calls = learning + 9 + 1 + seen.feedCalls + seen.deathChecks + 3 + seen.claimChecks + seen.verifyBodies.length;
+  const learning = seen.learns + (seen.boxChecks || 0) + (seen.relocates || 0), research = seen.research + (seen.researchSums || 0), calls = learning + 9 + 1 + seen.feedCalls + seen.deathChecks + 3 + seen.claimChecks + seen.verifyBodies.length + research;
   check(seen.claimChecks === 1, `the finding's claims are checked against the record once, when it passes the other checks (${seen.claimChecks})`);
   const vb = seen.verifyBodies[0], vText = vb.contents[0].parts.map((p) => p.text || '').join(' ');
   const vClaims = [...vText.matchAll(/Claim \d+, at [^:]+:[\d.]+: <data>([^<]*)/g)].map((m) => m[1]);
@@ -329,9 +388,12 @@ try {
   check(!/Crosshair below head level|Crosshair sits low|theory|Crosshair placement|Trading teammates|They are working on/.test(vText) && !vb.systemInstruction, "the check starts in a context of its own: the claims and the video, none of the coach's reasoning, board, research, or history");
   check(vClaims.filter((x) => /^The player (is killed|dies) here\.$/.test(x)).length === 2 && vClaims.length === 5, `two claims the record shows are false are planted among the three, unmarked (${vClaims.join(' | ')})`);
   check(seen.deathChecks === 1, `each death the low-detail pass saw is looked at again, in one call (${seen.deathChecks})`);
+  // the critique's script is written in the background as soon as the report shows, in one call counted with the review's
+  await page.waitForSelector('#critique[data-ready]', { timeout: 60000 });
+  check(seen.scriptCalls === 1, `as soon as the report shows, the critique's script is written in one call (${seen.scriptCalls})`);
   const summary = await page.locator('#logSummary').innerText();
-  check(summary === `How it got here: ${calls} calls, 6 looks`, `the review counts its model calls (${calls}: learning the game in ${learning} (the learn call, the box check, and the ask again for a box), 9 turns, the scan's ${1 + seen.feedCalls + seen.deathChecks} with its look again at the deaths, 3 aim, 1 claim check, ${seen.verifyBodies.length} by the agent that checks the finding against the video; the page says "${summary}")`);
-  check(await page.locator('.log .beat').count() === 11 && await page.locator('#logBox').evaluate((d) => !d.open), 'the breakdown folds into How it got here');
+  check(summary === `How it got here: ${calls + seen.scriptCalls} calls, 6 looks`, `the review counts its model calls (${calls}: learning the game in ${learning} (the learn call, the box check, and the ask again for a box), 9 turns, the scan's ${1 + seen.feedCalls + seen.deathChecks} with its look again at the deaths, 3 aim, 1 claim check, ${seen.verifyBodies.length} by the agent that checks the finding against the video, ${research} researching the game; the page says "${summary}")`);
+  check(await page.locator('.log .beat').count() === 11 && openAtEnd, `the breakdown moves into How it got here, open when the verdict shows: how it got there is part of the result (${await page.locator('.log .beat').count()} cards)`);
   check(await page.locator('.log .beat-kind').first().evaluate((e) => e.textContent) === 'Reading the screen', 'the log reads in order, first step first');
   await page.click('.key:nth-child(2) .key-frame');
   await page.waitForFunction(() => document.querySelector('#video').currentTime > 44);
@@ -379,9 +441,11 @@ try {
   await page.click('.cards li:nth-child(2) .card');
   await page.waitForSelector('#verdict:not([hidden])');
   check(await page.locator('.verdict h2').innerText() === 'CROSSHAIR BELOW HEAD LEVEL' && await page.locator('.key-fix').count() === 3 && await page.locator('.key .chip.bad').count() === 3, 'an older one opens with its marked-up moments and what to do instead');
-  check(await page.locator('.log .beat').count() === 11 && !(await page.locator('#logBox').evaluate((d) => d.open)), 'its log keeps every step, folded under the verdict');
+  check(await page.locator('.log .beat').count() === 11 && await page.locator('#logBox').evaluate((d) => d.open), 'its log keeps every step, open under the verdict');
+  check(await page.locator('#traceBody .tr-turn').count() === 9 && await page.locator('#traceBody .ck-planted li.caught').count() === 2 && await page.locator('#traceBody .tr-sent > li').count() === 2, 'and How it worked is drawn again from the saved log, the planted claims included');
   await page.click('#logSummary');
-  check(await page.locator('#logBox').evaluate((d) => d.open), 'and opens on a click');
+  check(await page.locator('#logBox').evaluate((d) => !d.open), 'and folds on a click');
+  await page.click('#logSummary');
   check(await page.locator('.log .beat img').count() >= 4 && await page.locator('.log .beat.measure_aim .box').count() >= 1, 'the log keeps the frames and measured boxes');
   check(await page.locator('.tick').count() === truth.duels.length && await page.locator('.pin').count() === 3, 'the timeline is drawn again');
   await page.waitForFunction(() => !!document.querySelector('#video').getAttribute('src'));
@@ -394,7 +458,7 @@ try {
   await page.goto('about:blank');
   await page.goto(pastUrl);
   await page.waitForSelector('#verdict:not([hidden])');
-  check(await page.locator('.log .beat').count() === 11 && await page.locator('.key-frame img').count() === 3, 'after a reload it is drawn from what was saved');
+  check(await page.locator('.log .beat').count() === 11 && await page.locator('.key-frame img').count() === 3 && await page.locator('#traceBody .ck-planted li').count() === 2, 'after a reload it is drawn from what was saved, How it worked too');
   await page.waitForSelector('#reattach:not([hidden])');
   check(true, 'with no saved copy, it asks for the recording');
   await page.setInputFiles('#reattachInput', chessFile);
@@ -403,6 +467,29 @@ try {
   check(await page.locator('#reattach').isHidden() && !!(await page.locator('#video').getAttribute('src')), 'the right recording loads');
   await page.waitForFunction(async () => { for await (const k of (await (await navigator.storage.getDirectory()).getDirectoryHandle('recordings')).keys()) return !!k; return false; });
   check(true, 'and is kept for next time');
+
+  // A review saved before planted claims, tool answers, thoughts, and the review's totals were logged (agent.js before
+  // Oct 25 kept only how many were planted, controls, and which fooled it, fooled): it opens with How it worked all the
+  // same, the planted claims counted, in the trace and on the checker's card. It's the first review's log, cut back.
+  const firstId = (await page.evaluate(() => JSON.parse(localStorage.getItem('thirdeye.v1')))).matches[0].id;
+  const oldId = await page.evaluate(async (id) => {
+    const R = window.ThirdeyeReviews, rec = await R.get(id), oldId = `${id}old`;
+    const log = rec.log.filter(([kind, e]) => !(kind === 'step' && (e.type === 'result' || e.type === 'thought')) && !(kind === 'mark' && e.what === 'done')).map(([kind, e]) => [kind, e.type === 'frames_checked' ? (({ planted, ...kept }) => kept)(e) : e]);
+    await R.save({ ...rec, id: oldId, log });
+    const h = JSON.parse(localStorage.getItem('thirdeye.v1'));
+    localStorage.setItem('thirdeye.v1.before', JSON.stringify(h));
+    localStorage.setItem('thirdeye.v1', JSON.stringify({ ...h, matches: [...h.matches, { ...h.matches.find((m) => m.id === id), id: oldId, at: Date.now() - 1e9 }] }));
+    return oldId;
+  }, firstId);
+  // the address set without a hash change, then a reload, so the page reads the history with the copy in it
+  await page.evaluate((id) => window.history.replaceState(null, '', `#review/${id}`), oldId);
+  await page.reload();
+  await page.waitForSelector('#verdict:not([hidden])');
+  const oldTrace = await page.locator('#traceBody .ck-planted').first().innerText(), oldCard = await page.locator('.log .checker .ck-planted').first().innerText();
+  check(/Code wrote 2 false claims from the record/.test(oldTrace) && /It caught 2 of the 2\./.test(oldTrace) && /Saved before each planted claim was kept/.test(oldTrace) && /It caught 2 of the 2\./.test(oldCard) && await page.locator('#traceBody .tr-turn').count() === 9 && await page.locator('#traceBody .tr-think').count() === 0 && await page.locator('#traceBody .tr-total').count() === 0, `a review saved before planted claims were listed still says how many were planted and caught, in How it worked and on its card (${oldTrace.replace(/\s+/g, ' ').slice(0, 140)})`);
+  // the history as it was, read again, so the reviews after this don't save the copy back
+  await page.evaluate(() => { localStorage.setItem('thirdeye.v1', localStorage.getItem('thirdeye.v1.before')); localStorage.removeItem('thirdeye.v1.before'); });
+  await page.reload();
 
   console.log('chess review: moves read off the board and scored by Stockfish in the browser');
   seen.agentBodies.length = 0;
@@ -425,6 +512,9 @@ try {
   const chessFirst = lastResults(seen.agentBodies[4]).find((r) => r.name === 'finish')?.response.result;
   check(chessFirst?.ok === false && chessFirst.problems.some((p) => /At 0:34 the engine scores c3 as fine/.test(p)), 'a finish citing a move the engine calls fine is sent back');
   check(await page.locator('.verdict h2').innerText() === 'BLUNDERS WHEN THE CLOCK IS LOW', 'the verdict names the chess habit');
+  // How it worked for chess: each graded move is known from the board and the engine, and the record gave nothing to plant
+  const chessRows = await page.locator('#traceBody .tr-record .tr-ev').allInnerTexts();
+  check(chessRows.filter((x) => /Your move, a blunder/.test(x) && /Code knows · the board and the engine/.test(x)).length >= 5 && await page.locator('#traceBody .tr-ev.guess').count() === 0 && await page.locator('#traceBody .tr-stage-checks .ck-planted.none').count() >= 1, `How it worked lists each graded move as known from the board and the engine, and says no false claim could be planted from a chess record (${chessRows.length} lines)`);
   await page.waitForFunction(() => document.querySelectorAll('.key .chip.bad').length === 3);
   check(seen.markCalls === 0 && await page.locator('.key .chip.bad', { hasText: /^Nce5 \(blunder\)$/ }).count() === 1 && await page.locator('.key .marks path.bad.arrow').count() === 3, `each blunder is drawn from the board itself: the move played, and the engine's (${await page.locator('.key .chip').evaluateAll((els) => els.map((e) => e.textContent).join(' | '))})`);
   check(await page.locator('.tick.death').count() >= 5 && /Your blunder/.test(await page.locator('#legend').innerText()), 'the timeline marks the blunders, and the legend says so');
@@ -443,6 +533,9 @@ try {
   seen.agentBodies.length = 0;
   seen.spectator = true;
   seen.chess = false;
+  // its critique's script call is refused for the day (both keys out, as on Oct 25), from the background work its report starts
+  seen.scriptBusy = true;
+  const specScripts = seen.scriptCalls || 0, specVoices = (seen.voiceLines || []).length;
   await page.goto(`${base}#coach`);
   await page.evaluate(() => localStorage.removeItem('thirdeye.learned'));
   // every line the live caption shows, to see what the video played while the coach looked
@@ -481,13 +574,31 @@ try {
   await page.click('#checkin [data-yes]');
   await page.waitForSelector('#verdict:not([hidden])', { timeout: 60000 });
   check(await page.locator('.verdict h2').innerText() === 'LATE TO THE BALL ON THE SET', 'a finding at the points they lost passes the checks');
+  // the call fails, so the critique says the finding's own lines and keeps nothing; the next play asks again, and says
+  // and keeps the script it gets
+  const specId = decodeURIComponent(new URL(page.url()).hash.slice(8)), keptScriptOf = (id) => page.evaluate(async (x) => (await window.ThirdeyeReviews.get(x))?.script ?? null, id);
+  await page.waitForSelector('#critique[data-ready]', { timeout: 60000 });
+  const busyLines = (seen.voiceLines || []).slice(specVoices).map((l) => l.text), afterBusy = await keptScriptOf(specId);
+  check(seen.scriptRefusals > 0 && (seen.scriptCalls || 0) === specScripts && afterBusy === null && /^First, here's the habit\. Arrives late/.test(busyLines[1] || '') && /didn't answer its script call, so the next play asks again/.test(await page.locator('#trScript').innerText()), `when the script call fails (${seen.scriptRefusals} requests refused for the day), the critique makes the finding's own lines and keeps nothing (${busyLines[1]})`);
+  seen.scriptBusy = false;
+  const retryVoices = (seen.voiceLines || []).length;
+  await page.click('#cqPlay');
+  await page.waitForFunction(() => document.querySelector('#cqPlayText')?.textContent === 'Pause', null, { timeout: 60000 });
+  await page.click('#cqStop');
+  // its lines as the kept script has them: one the same as an earlier review's (every mocked script closes alike, and
+  // two reviews with as many moments open alike) is made once and played from the page's cache, so it isn't asked again
+  const afterRetry = await keptScriptOf(specId), retryFirst = afterRetry?.moments?.[0] || '';
+  check(seen.scriptCalls === specScripts + 1 && afterRetry?.moments?.length === 3 && !afterRetry.failed && /^Watch this first one\. Arrives late/.test(retryFirst) && (seen.voiceLines || []).slice(retryVoices).some((l) => l.text === retryFirst) && /written from the finding in one call/.test(await page.locator('#trScript').innerText()), `and the next play asks again, and says and keeps the script it gets (${retryFirst})`);
+  // How it worked for footage of the whole match: each point's outcome is a clip read's, so it's a model's guess
+  const points = await page.locator('#traceBody .tr-ev').evaluateAll((els) => els.filter((el) => /^Point (won|lost)$/.test(el.querySelector('.tr-kind')?.textContent || '')).map((el) => el.className));
+  check(points.length === 6 && points.every((c) => /\bguess\b/.test(c)), `How it worked lists each point, its outcome badged as a model's read of the clip, not code's (${points.length} points)`);
   check((await page.evaluate(() => JSON.parse(localStorage.getItem('thirdeye.players') || '{}')))['synthetic court match|spectator']?.who === '#7, the setter', 'who they are is kept for the next review of this game');
   seen.spectator = false;
 
   console.log('no habit repeats: the biggest reason they lost is named anyway');
   seen.agentBodies.length = 0;
   seen.oneOff = true;
-  const checksBefore = { claims: seen.claimChecks, agents: seen.verifyBodies.length };
+  const checksBefore = { claims: seen.claimChecks, agents: seen.verifyBodies.length }, voicesBefore = (seen.voiceLines || []).length, oneOffScripts = seen.scriptCalls || 0;
   seen.fooled = true;
   await page.goto(`${base}#coach`);
   await page.evaluate(() => localStorage.removeItem('thirdeye.learned'));
@@ -503,21 +614,54 @@ try {
   check(await page.locator('#critique').isVisible() && await page.locator('#cqChapters .cq-ch').count() === 5 && await page.locator('#cqChapters .cq-ch.habit').count() === 1 && /^Narrated · 5 moments, 1 where it shows · about \d+:\d\d$/.test(await page.locator('#cqMeta').innerText()), `under the video, the critique lists every moment they lost as a chapter, the habit's flagged (${await page.locator('#cqMeta').innerText()})`);
   await shot(page, 'verdict-oneoff');
   const oneOffUrl = page.url();
+  // every caption and title card shown over the video, in order
+  await page.evaluate(() => { window.capLog = []; window.cardLog = []; window.capFirstAt = 0; const log = (id, into) => new MutationObserver(() => { const el = document.getElementById(id), t = el.hidden ? '' : el.innerText; if (t && id === 'caption' && !window.capFirstAt) window.capFirstAt = Date.now(); if (t && t !== into.at(-1)) into.push(t); }).observe(document.getElementById(id), { childList: true, subtree: true, characterData: true, attributes: true }); log('caption', window.capLog); log('cqCard', window.cardLog); });
+  // made as soon as the report showed, in the background: the script in one call, then all 7 lines' voice
+  await page.waitForSelector('#critique[data-ready]', { timeout: 60000 });
+  // the critique's 7 lines, as the script kept with the review has them; each made by now, here or for an earlier review
+  // that said the same words (every mocked script closes alike), since a line's voice is made once a page
+  const oneOffId = decodeURIComponent(new URL(page.url()).hash.slice(8)), oneOffScript = await page.evaluate(async (id) => (await window.ThirdeyeReviews.get(id))?.script ?? null, oneOffId);
+  const scriptLines = oneOffScript && !oneOffScript.failed ? [oneOffScript.open, ...oneOffScript.moments, oneOffScript.close] : [];
+  const made = (t, by = Infinity) => (seen.voiceLines || []).some((l) => l.text === t && l.at <= by);
+  check(seen.scriptCalls - oneOffScripts === 1 && scriptLines.length === 7 && scriptLines.every((t) => made(t)), `as soon as the report shows, the script is written and all 7 of its lines' voice made, before anyone presses play (${scriptLines.filter((t) => made(t)).length} of ${scriptLines.length} made, ${(seen.voiceLines || []).length - voicesBefore} of them for this review)`);
   await page.click('#cqPlay');
   await page.waitForFunction(() => document.querySelector('#cqPlayText')?.textContent === 'Pause');
   await shot(page, 'critique-intro');
-  const said = () => (seen.voiceLines || []).map((l) => l.text);
-  check(said().some((t) => /^What cost you this match: Peeking the same corner twice\./.test(t)) && await page.locator('#caption').isHidden(), 'watching it, the voice starts with the verdict, with no caption over the video: the highlighted chapter under it says the line');
+  const said = () => (seen.voiceLines || []).map((l) => l.text), shownOver = () => page.evaluate(() => ({ caps: window.capLog, cards: window.cardLog }));
+  await page.waitForFunction(() => window.capLog.some((c) => /moments that cost you/.test(c)), null, { timeout: 15000 }).catch(() => {});
+  const opening = await shownOver(), firstCaption = await page.evaluate(() => window.capFirstAt);
+  // made beforehand, it starts at once: no getting-ready card, no new call, no line made again
+  check(!opening.cards.some((c) => /Getting the critique ready/.test(c)) && seen.scriptCalls - oneOffScripts === 1 && scriptLines.length === 7 && scriptLines.every((t) => made(t, firstCaption)), `pressed after it's made, the critique starts at once, with no getting-ready card and every line made before the first is said (${opening.cards.slice(0, 2).map((c) => c.replace(/\s+/g, ' ')).join(' / ')})`);
+  check(scriptLines[0] === "This one comes down to the same corner, twice. Let's go through the 5 moments that cost you." && opening.caps[0] === 'This one comes down to the same corner, twice.' && opening.cards.some((c) => /What cost you this match\s*Peeking the same corner twice/i.test(c)), `watching it, the voice says the script's opening over the verdict's title card, its words as captions over the video (${opening.caps.join(' / ')})`);
+  // a coach's words from the finding: each moment its own lead and the finding's words, in order, no time read out
+  const leadsSaid = scriptLines.slice(1, 6).map((t) => t.split('. ')[0]);
+  check(leadsSaid.join(' | ') === 'Watch this first one | Here it goes wrong | Same story here | Look at this one too | And the last one' && /^Here it goes wrong\. Peeks the corner they just lost at, the same way\.$/.test(scriptLines[2] || '') && scriptLines[6] === 'Next time you die, come back from a different angle.' && !scriptLines.some((t) => /\d:\d\d|seconds into|\b\d{1,2} [0-5]\d\b/.test(t)), `each moment is said as the script has it, in order, and no time is read out (${leadsSaid.join(' | ')})`);
   await page.waitForSelector('#cqChapters .cq-ch.on.habit', { timeout: 30000 });
   await page.waitForFunction(() => Math.abs(document.querySelector('#video').currentTime - 46.8) < 0.3, null, { timeout: 30000 });
-  check(await page.locator('.key.playing').count() === 1 && /Peeks the corner they just lost at/.test(await page.locator('#cqChapters .cq-ch.on .cq-w').innerText()) && await page.locator('#caption').isHidden(), 'then holds on the moment the finding cites, its chapter highlighted under the video with the whole line, and marks its card');
-  check(said().some((t) => /^At \d+ seconds in\. You lost this one\. Killed by Enemy 1\.$/.test(t)), `a review with no turning points says each loss as the record has it, and their own death untraded says nothing about a trade (${said().find((t) => /Enemy 1/.test(t))})`);
-  check(said().some((t) => /^At \d+ seconds in\. Peeks the corner they just lost at, the same way\. Instead: Take the fight from the other side/.test(t)) && !said().some((t) => /This is it/.test(t)), 'each moment is said as its own, with no stock opening line repeated at every one');
+  const atMoment = await shownOver();
+  check(await page.locator('.key.playing').count() === 1 && /Peeks the corner they just lost at/.test(await page.locator('#cqChapters .cq-ch.on .cq-w').innerText()) && /^Moment \d of 5 · 0:46\.8$/.test(await page.locator('#cqTag').innerText()) && await page.locator('#cqCard').isHidden() && atMoment.caps.includes('Here it goes wrong.'), `then plays the moment the finding cites, tagged over the video, with captions of what is said, its chapter highlighted under it and its card marked (${atMoment.caps.slice(-3).join(' | ')})`);
+  // the moment's span, on a loop: marked on the timeline, played again from before the mistake, slowed around it
+  const span = await page.evaluate(() => { const s = document.querySelector('#track .cq-span'), tr = document.querySelector('#track').getBoundingClientRect(), r = s?.getBoundingClientRect(), d = document.querySelector('#video').duration; return s ? { from: ((r.left - tr.left) / tr.width) * d, to: ((r.right - tr.left) / tr.width) * d, mistake: !!s.querySelector('i') } : null; });
+  check(span && span.from < 46.8 - 2 && span.to > 46.8 && span.mistake, `the timeline marks the span it plays, not one point, with the mistake in it (${span ? `${span.from.toFixed(1)}–${span.to.toFixed(1)} s` : 'none'})`);
+  await page.waitForFunction(() => document.querySelector('#video').currentTime > 47.2, null, { timeout: 30000 });
+  const looped = await page.waitForFunction(() => document.querySelector('#video').currentTime < 45.5, null, { timeout: 30000 }).then(() => true).catch(() => false);
+  const slowed = looped && await page.waitForFunction(() => { const v = document.querySelector('#video'); return Math.abs(v.currentTime - 46.8) < 1.2 && v.playbackRate === 0.5; }, null, { timeout: 30000 }).then(() => true).catch(() => false);
+  check(looped && slowed, `and plays it again from before the mistake, slowed around the mistake the second time (looped ${looped}, slowed ${slowed})`);
+  check(scriptLines.some((t) => /Killed by Enemy 1\.$/.test(t)) && !said().some((t) => /This is it|Instead:|Where it shows|where it shows/.test(t)), `a review with no turning points says each loss as the record has it (${scriptLines.find((t) => /Enemy 1/.test(t))})`);
   await page.waitForTimeout(900); await shot(page, 'critique-moment');
   await page.click('#cqStop');
-  check(await page.locator('#caption').isHidden() && await page.locator('#cqPlayText').innerText() === 'Watch the critique', 'and stops when asked');
+  check(await page.locator('#caption').isHidden() && await page.locator('#cqCard').isHidden() && await page.locator('#cqTag').isHidden() && await page.locator('#cqPlayText').innerText() === 'Watch the critique', 'and stops when asked, taking its captions and cards with it');
+  // the script is kept with the review, its call counted with the review's, and playing again asks for none
+  const kept1 = await page.evaluate(async (id) => { const r = await window.ThirdeyeReviews.get(id); return { script: r?.script, calls: r?.calls, review: r?.log?.find(([k, e]) => k === 'mark' && e.what === 'done')?.[1]?.calls }; }, oneOffId);
+  const shownCalls = +(await page.locator('#logSummary').innerText()).match(/(\d+) calls/)[1];
+  check(kept1.script?.moments?.length === 5 && !kept1.script.failed && kept1.calls === kept1.review + 1 && shownCalls === kept1.calls && /written from the finding in one call/.test(await page.locator('#trScript').innerText()), `the script is kept with the review, and its one call counted with the review's (${kept1.review} + 1 = ${shownCalls} calls)`);
+  const voicesBeforeReplay = (seen.voiceLines || []).length;
+  await page.click('#cqPlay');
+  await page.waitForFunction(() => document.querySelector('#cqPlayText')?.textContent === 'Pause', null, { timeout: 30000 });
+  await page.click('#cqStop');
+  check(seen.scriptCalls - oneOffScripts === 1 && (seen.voiceLines || []).length === voicesBeforeReplay, `played again, it asks for no new script and makes no line again (${seen.scriptCalls - oneOffScripts} script calls, ${(seen.voiceLines || []).length - voicesBeforeReplay} lines made)`);
   check(await page.locator('#cqVoice optgroup').first().getAttribute('label') === 'Natural, made on this computer' && await page.locator('#cqVoice').inputValue() === 'kokoro:am_michael', 'the voice is Kokoro\'s Michael, made on this computer, unless they pick another');
-  check((seen.voiceLines || []).some((l) => l.voice === 'am_michael' && /^At \d+ seconds in\. Peeks the corner/.test(l.text)), `each line is said by that voice (${(seen.voiceLines || []).length} lines asked for: ${(seen.voiceLines || []).slice(0, 4).map((l) => `${l.voice}: ${String(l.text).slice(0, 40)}`).join(' | ')})`);
+  check((seen.voiceLines || []).some((l) => l.voice === 'am_michael' && /Peeks the corner/.test(l.text)), `each line is said by that voice (${(seen.voiceLines || []).length} lines asked for: ${(seen.voiceLines || []).slice(0, 4).map((l) => `${l.voice}: ${String(l.text).slice(0, 40)}`).join(' | ')})`);
   check(await page.locator('#acceptBtn').count() === 0, 'a one-off is not put to them as a habit to work on');
   const agents = seen.verifyBodies.slice(checksBefore.agents);
   check(seen.claimChecks - checksBefore.claims === 1 && agents.length === 2, `the reason's moments are checked against the record and the video, like a habit's; agreeing with a planted false claim, the check gets one fresh try (${agents.length} calls)`);
@@ -530,6 +674,7 @@ try {
   console.log("a finding that doesn't hold up still names what cost them, from what did");
   seen.agentBodies.length = 0;
   seen.salvage = true;
+  const salvageVoices = (seen.voiceLines || []).length, salvageScripts = seen.scriptCalls || 0;
   await page.goto(`${base}#coach`);
   await page.evaluate(() => localStorage.removeItem('thirdeye.learned'));
   await page.setInputFiles('#fileInput', fixture);
@@ -538,7 +683,56 @@ try {
   check(seen.agentBodies.length === 5 && await page.locator('.verdict h2').innerText() === 'FIGHTING WIDE ANGLES ALONE' && salvaged.reason === 'Fighting wide angles alone', `sent back twice and told to decide, the finding still doesn't stand, and the review names it anyway from the moment that held up, never "nothing named" (${await page.locator('.verdict h2').innerText()})`);
   check(/didn't hold up after two send-backs, so this names what the moments both checks let stand \(1 of its moments were left out\)/.test(await page.locator('.verdict .trust.warn').innerText()) && await page.locator('.key-fix').count() === 1, `the report says so, and shows only the moment that held up (${await page.locator('.verdict .trust').innerText()})`);
   const chapters = await page.locator('#cqChapters .cq-ch .cq-w').allInnerTexts();
-  check(chapters.length === 3 && chapters.some((t) => /Swings out a second time into the same enemy\. The enemy had already seen them and held the angle\. Instead: Reset after the first contact/.test(t)) && !chapters.some((t) => /Killed by/.test(t)), `the critique plays the moments that decided their losses, each with what made it lose and what to do instead, not every death (${chapters.length}: ${chapters.map((t) => t.slice(0, 40)).join(' | ')})`);
+  check(chapters.length === 3 && chapters.some((t) => /Swings out a second time into the same enemy\. The enemy had already seen them and held the angle\. Reset after the first contact/.test(t)) && !chapters.some((t) => /Killed by/.test(t)), `the critique plays the moments that decided their losses, each with what made it lose and what to do instead, not every death (${chapters.length}: ${chapters.map((t) => t.slice(0, 40)).join(' | ')})`);
+  // saved as a video: the same critique drawn with its marks, tag, cards, and captions onto a canvas as it plays,
+  // recorded with the voice mixed in through WebAudio, and downloaded as one file: MP4 where the recorder makes it (a
+  // Mac's QuickTime won't open WebM), else WebM. It records in real time.
+  check(await page.locator('#cqSave').isVisible() && await page.locator('#cqSave').isEnabled(), 'the critique offers to be saved as a video');
+  // when it starts recording, and every title card shown while it records
+  await page.waitForSelector('#critique[data-ready]', { timeout: 60000 });
+  await page.evaluate(() => { window.recLog = []; const box = document.getElementById('critique'), card = document.getElementById('cqCard'), note = () => window.recLog.push({ rec: box.classList.contains('recording'), card: card.hidden ? '' : card.innerText, at: Date.now() }); new MutationObserver(note).observe(box, { attributes: true, attributeFilter: ['class'] }); new MutationObserver(note).observe(card, { childList: true, subtree: true, characterData: true, attributes: true }); });
+  const downloaded = page.waitForEvent('download', { timeout: 180000 });
+  await page.click('#cqSave');
+  await page.waitForFunction(() => document.querySelector('#critique')?.classList.contains('recording'), null, { timeout: 30000 });
+  // the canvas the file is made from has the picture on it, not black: a share of its pixels lit
+  // (counted in each page function itself: the page's policy refuses code made from a string)
+  const drawn = await page.evaluate(() => { const c = document.querySelector('.rec-canvas'), d = c ? c.getContext('2d').getImageData(0, 0, c.width, c.height).data : []; let lit = 0; for (let i = 0; i < d.length; i += 4) if (d[i] + d[i + 1] + d[i + 2] > 120) lit++; return d.length ? lit / (d.length / 4) : 0; });
+  check(/^Recording the critique as it plays/.test(await page.locator('#cqNote').innerText()) && await page.locator('#cqSave').isDisabled() && await page.locator('#cqPlayText').innerText() === 'Pause' && drawn > 0.005, `saving plays the critique and records it as it plays, drawn onto its canvas (${(drawn * 100).toFixed(1)}% of the canvas lit; ${await page.locator('#cqNote').innerText()})`);
+  const saved = await downloaded, file = fs.readFileSync(await saved.path()), mp4 = file.subarray(4, 8).toString() === 'ftyp';
+  const tracks = (mp4 ? ['avc1', 'mp4a', 'Opus'] : ['V_VP8', 'V_VP9', 'A_OPUS']).filter((c) => file.includes(c));
+  const picture = mp4 ? tracks.includes('avc1') : tracks.some((c) => c.startsWith('V_')), voice = mp4 ? tracks.includes('mp4a') || tracks.includes('Opus') : tracks.includes('A_OPUS');
+  check(new RegExp(`^eye-catcher-critique-synthetic-test-match-\\d{4}-\\d\\d-\\d\\d\\.${mp4 ? 'mp4' : 'webm'}$`).test(saved.suggestedFilename()) && (mp4 || file.readUInt32BE(0) === 0x1a45dfa3) && picture && voice && file.length > 20000, `it ends as one ${mp4 ? 'MP4' : 'WebM'} file, named by its type, with the picture and the voice (${saved.suggestedFilename()}, ${file.length} bytes, ${tracks.join(', ')})`);
+  // and a frame of that file, played back in the page, is the picture, not black
+  await page.route('**/saved-critique', (route) => route.fulfill({ status: 200, contentType: mp4 ? 'video/mp4' : 'video/webm', body: file }));
+  const played = await page.evaluate(async () => {
+    const v = document.createElement('video');
+    v.muted = true;
+    v.src = '/saved-critique';
+    await new Promise((ok, no) => { v.onloadeddata = ok; v.onerror = () => no(new Error("the file didn't decode")); setTimeout(() => no(new Error('it never loaded')), 15000); });
+    await v.play().catch(() => {});
+    await new Promise((r) => setTimeout(r, 1500));
+    v.pause();
+    const c = document.createElement('canvas');
+    c.width = 320; c.height = 180;
+    const g = c.getContext('2d');
+    g.drawImage(v, 0, 0, 320, 180);
+    const d = g.getImageData(0, 0, 320, 180).data;
+    let lit = 0;
+    for (let i = 0; i < d.length; i += 4) if (d[i] + d[i + 1] + d[i + 2] > 120) lit++;
+    return lit / (d.length / 4);
+  }).catch((e) => e.message);
+  check(typeof played === 'number' && played > 0.005, `a frame of the saved file, played back, shows the picture (${typeof played === 'number' ? `${(played * 100).toFixed(1)}% of pixels lit` : played})`);
+  await page.waitForFunction(() => /^Saved /.test(document.querySelector('#cqNote')?.textContent || ''), null, { timeout: 10000 }).catch(() => {});
+  // its script said a number no moment gives, so the critique said the finding's own lines, each brought in by how it
+  // follows the last, with no lead twice running and no time read out
+  const salvageLines = (seen.voiceLines || []).slice(salvageVoices).map((l) => l.text), salvageMoments = salvageLines.filter((t) => !/^(What cost you|The habit costing|The drill)/.test(t));
+  const runs = (xs) => xs.every((x, i) => i === 0 || x !== xs[i - 1]), leads = salvageMoments.map((t) => t.split(',')[0]), segues = salvageMoments.map((t) => t.split('. ')[0]);
+  check(seen.scriptCalls - salvageScripts === 1 && /didn't hold up, since moment 1 said 25, which its text doesn't/.test(await page.locator('#trScript').innerText()) && !salvageLines.some((t) => /25 bullets/.test(t)) && salvageMoments.length === 3 && /^First, here's what cost you\. /.test(salvageMoments[0]) && runs(leads) && runs(segues) && !salvageLines.some((t) => /\d:\d\d|seconds into|\b\d{1,2} [0-5]\d\b/.test(t)), `a script that says a number its moment doesn't is refused in code, and the critique says the finding's own lines, no time read out, no lead twice running (${segues.join(' | ')})`);
+  // the file opens on the critique's own first card: every line made before it records, and the getting-ready card,
+  // which a saved Siege critique (Oct 25) held for over a minute, is never in it
+  const recLog = await page.evaluate(() => window.recLog), recStart = recLog.find((x) => x.rec), firstFrame = await page.locator('#critique').getAttribute('data-first-frame');
+  check(firstFrame === 'What cost you this match' && recStart && /What cost you this match/i.test(recStart.card) && !recLog.some((x) => x.rec && /Getting the critique ready/.test(x.card)) && (seen.voiceLines || []).slice(salvageVoices).every((l) => l.at <= recStart.at), `the saved file opens on the verdict's card, with every line made before it starts recording and no getting-ready card in it (first frame: ${firstFrame}; cards while recording: ${[...new Set(recLog.filter((x) => x.rec).map((x) => x.card.replace(/\s+/g, ' ').slice(0, 30)))].join(' / ')})`);
+  check(/^Saved eye-catcher-critique-.*\.(mp4|webm) · [\d.]+ MB$/.test(await page.locator('#cqNote').innerText()) && !(await page.evaluate(() => document.querySelector('#critique').classList.contains('recording'))), `and says it was saved (${await page.locator('#cqNote').innerText()})`);
   seen.salvage = false;
 
   if (process.env.E2E_SHOTS) { await page.goto(`${base}#reviews`); await page.waitForSelector('#reviews:not([hidden])'); await page.waitForTimeout(800); await shot(page, 'reviews'); }
@@ -558,7 +752,9 @@ try {
   await page.waitForSelector('#reviews:not([hidden])');
   check(await page.locator('.tabbar a[aria-current]').innerText() === 'Reviews', 'a tab goes there and is marked');
   check(seen.outside.length === 0, `no code loads from outside the app${seen.outside.length ? `: ${[...new Set(seen.outside)].join(', ')}` : ''}`);
-  check(errors.length === 0, `no page errors${errors.length ? `: ${errors.join(' | ')}` : ''}`);
+  // the 429s the script-call case answers on purpose show as failed loads in the console; any other error counts
+  const unexpected = errors.filter((e) => !(seen.scriptRefusals > 0 && /status of 429/.test(e) && /generativelanguage\.googleapis\.com/.test(e)));
+  check(unexpected.length === 0, `no page errors${unexpected.length ? `: ${unexpected.join(' | ')}` : ''}`);
 } finally {
   await browser.close();
   server.close();

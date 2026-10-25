@@ -1,4 +1,4 @@
-// Static dev server for Thirdeye: npm run dev -> http://localhost:5177/
+// Static dev server for Eye Catcher: npm run dev -> http://localhost:5177/
 // Serves this folder, makes env.js from .env, and reloads open pages when a file changes. No dependencies. The desktop
 // app (desktop/main.mjs) runs the same server inside itself, with a route that streams the player's recordings.
 import http from 'node:http';
@@ -26,11 +26,12 @@ export function readEnv(file) {
 const localName = (h) => /^(localhost|127\.0\.0\.1|\[::1\])(:\d+)?$/i.test(h || '');
 const localPeer = (req) => ['127.0.0.1', '::1', '::ffff:127.0.0.1'].includes(req.socket.remoteAddress) && localName(req.headers.host);
 
-// THIRDEYE_COACH_MODEL can come from the launch too, to try the coach on another model without touching .env
-const envOf = (overrides) => ({ ...readEnv(path.join(root, '.env')), ...(process.env.THIRDEYE_COACH_MODEL ? { THIRDEYE_COACH_MODEL: process.env.THIRDEYE_COACH_MODEL } : {}), ...overrides });
+// THIRDEYE_COACH_MODEL can come from the launch too, to try the coach on another model without touching .env, and so
+// can THIRDEYE_FLAGS, the experiments a review runs with (agent.js flag)
+const envOf = (overrides) => ({ ...readEnv(path.join(root, '.env')), ...Object.fromEntries(['THIRDEYE_COACH_MODEL', 'THIRDEYE_FLAGS'].filter((k) => process.env[k]).map((k) => [k, process.env[k]])), ...overrides });
 
 // Any page open in the browser can load this server's files as scripts, on this machine too, so the key goes only to
-// Thirdeye's own page: the browser marks that request same-origin (Sec-Fetch-Site), and a page can't fake the mark.
+// Eye Catcher's own page: the browser marks that request same-origin (Sec-Fetch-Site), and a page can't fake the mark.
 const ownPage = (req) => localPeer(req) && req.headers['sec-fetch-site'] === 'same-origin';
 
 function envScript(req, overrides = {}) {
@@ -38,7 +39,9 @@ function envScript(req, overrides = {}) {
   const pub = {};
   if (env.GEMINI_MODEL) pub.GEMINI_MODEL = env.GEMINI_MODEL;
   if (env.THIRDEYE_COACH_MODEL) pub.COACH_MODEL = env.THIRDEYE_COACH_MODEL; // the coach's turns only, tried first
-  // with Thirdeye's backend the key stays there
+  // comma-separated names, like near_loss,state_facts; anything else is left out
+  if (env.THIRDEYE_FLAGS) pub.FLAGS = String(env.THIRDEYE_FLAGS).split(',').map((x) => x.trim()).filter((x) => /^[a-z0-9_]{1,40}$/.test(x)).join(',');
+  // with Eye Catcher's backend the key stays there
   if (env.THIRDEYE_BACKEND) pub.THIRDEYE_BACKEND = env.THIRDEYE_BACKEND;
   else if (env.GEMINI_API_KEY && ownPage(req)) {
     pub.GEMINI_API_KEY = env.GEMINI_API_KEY;
@@ -51,7 +54,7 @@ function envScript(req, overrides = {}) {
 }
 
 // What the page may load and talk to. Its code is all its own (vendor/ holds the libraries), so a script that got into
-// it couldn't load more or send anything anywhere but Thirdeye's own server and Gemini (or the backend). Styles may be
+// it couldn't load more or send anything anywhere but Eye Catcher's own server and Gemini (or the backend). Styles may be
 // inline: the page positions marks with style attributes. Stockfish's worker gets no policy of its own and needs none:
 // it can't reach the page.
 export function policy(env) {
@@ -114,7 +117,7 @@ export function startServer({ port = 5177, host = '127.0.0.1', reload = true, re
       return;
     }
     if (url === '/env.js') { res.writeHead(200, { 'Content-Type': 'text/javascript', 'Cache-Control': 'no-store' }); return res.end(envScript(req, env)); }
-    // the critique's voice, made on this machine (voice.mjs): for Thirdeye's own page only, like the key
+    // the critique's voice, made on this machine (voice.mjs): for Eye Catcher's own page only, like the key
     if (url === '/voice') {
       if (!ownPage(req)) { res.writeHead(403); return res.end(); }
       return voiceRoute(req, res);
@@ -157,5 +160,5 @@ export function startServer({ port = 5177, host = '127.0.0.1', reload = true, re
 
 if (fileURLToPath(import.meta.url) === path.resolve(process.argv[1] || '')) {
   const { port } = await startServer({ port: +(process.env.PORT || 5177), host: process.env.HOST || '127.0.0.1' });
-  console.log(`Thirdeye: http://localhost:${port}/`);
+  console.log(`Eye Catcher: http://localhost:${port}/`);
 }

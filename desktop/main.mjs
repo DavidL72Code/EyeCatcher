@@ -1,10 +1,11 @@
-// Thirdeye as a desktop app: npm run desktop. It runs the same page as the browser version, from the same server
+// Eye Catcher as a desktop app: npm run desktop. It runs the same page as the browser version, from the same server
 // (scripts/dev.mjs), in a window. What a web page can't do and this can: remember where a recording is on disk, so a
 // past review streams the original file, with no copy and no prompt. The page can only name recordings the player gave
 // it, by dropping or picking them, so it can't point the app at any other file.
 //
-// Gemini goes through Thirdeye's backend (server/index.mjs), which holds the key: the address is THIRDEYE_BACKEND, or
-// else desktop/config.json. THIRDEYE_BACKEND=direct uses the key in .env instead, for working on the app.
+// Gemini is called with the player's own key from .env (config.json's "backend": "direct", the default: there's no
+// hosted backend). A backend of their own (server/index.mjs) can hold the key instead: its address in THIRDEYE_BACKEND
+// or desktop/config.json.
 import { app, BrowserWindow, dialog, ipcMain, shell } from 'electron';
 import crypto from 'node:crypto';
 import fs from 'node:fs';
@@ -37,8 +38,8 @@ function remember(p, st) {
   fs.writeFileSync(knownFile(), JSON.stringify(known));
 }
 
-// ---------- the Thirdeye folder ----------
-// With the player's say-so, asked once, each recording they add is also saved in Movies/Thirdeye, so every review's
+// ---------- the Eye Catcher folder ----------
+// With the player's say-so, asked once, each recording they add is also saved in Movies/Eye Catcher, so every review's
 // recording is in one place. It's a copy: their original is never moved or deleted. On the same disk the copy is a
 // clone, so it's instant and takes no extra space; from another disk it takes as long as copying the file.
 const settingsFile = () => path.join(app.getPath('userData'), 'settings.json');
@@ -47,7 +48,8 @@ function saveSetting(k, v) {
   fs.mkdirSync(path.dirname(settingsFile()), { recursive: true });
   fs.writeFileSync(settingsFile(), JSON.stringify({ ...settings(), [k]: v }));
 }
-const libraryDir = () => process.env.THIRDEYE_LIBRARY_DIR || path.join(app.getPath('videos'), 'Thirdeye');
+// the folder of an earlier install (named Thirdeye then) is kept, so its recordings stay together
+const libraryDir = () => process.env.THIRDEYE_LIBRARY_DIR || [path.join(app.getPath('videos'), 'Thirdeye')].find((d) => fs.existsSync(d)) || path.join(app.getPath('videos'), 'Eye Catcher');
 const shortPath = (p) => p.replace(app.getPath('home'), '~');
 
 let asking = null; // one question at a time, however many recordings arrive
@@ -57,8 +59,8 @@ function libraryOn(win) {
   asking ||= dialog.showMessageBox(win, {
     type: 'question',
     buttons: ['Save copies there', 'Not now'], defaultId: 0, cancelId: 1,
-    message: 'Keep your recordings in a Thirdeye folder?',
-    detail: `Thirdeye can save a copy of each match you add in ${shortPath(libraryDir())}, so every review's recording stays together. Your original file stays where it is.`,
+    message: 'Keep your recordings in an Eye Catcher folder?',
+    detail: `Eye Catcher can save a copy of each match you add in ${shortPath(libraryDir())}, so every review's recording stays together. Your original file stays where it is.`,
     checkboxLabel: "Don't ask again",
   }).then(({ response, checkboxChecked }) => {
     if (response === 0) saveSetting('library', 'on');
@@ -95,7 +97,7 @@ ipcMain.handle('recording:remember', (_, p) => {
   remember(p, st);
   return about(p, st);
 });
-// A remembered recording, saved in the Thirdeye folder when the player agrees: its place there, or null. The question
+// A remembered recording, saved in the Eye Catcher folder when the player agrees: its place there, or null. The question
 // can sit unanswered, so the review never waits on this.
 ipcMain.handle('recording:keep', async (e, p) => {
   const st = recordings()[p] && stat(p);
@@ -105,7 +107,7 @@ ipcMain.handle('recording:keep', async (e, p) => {
     remember(kept, kst);
     return about(kept, kst);
   } catch (err) {
-    console.warn("Couldn't save the recording in the Thirdeye folder:", err.message);
+    console.warn("Couldn't save the recording in the Eye Catcher folder:", err.message);
     return null;
   }
 });
@@ -123,8 +125,10 @@ ipcMain.handle('recording:reveal', (_, p) => { if (recordings()[p] && stat(p)) s
 
 function openWindow() {
   const win = new BrowserWindow({
-    width: 1440, height: 920, minWidth: 380, minHeight: 560, backgroundColor: '#0c0d0f', title: 'Thirdeye',
-    webPreferences: { preload: path.join(here, 'preload.cjs'), contextIsolation: true, sandbox: true, nodeIntegration: false },
+    width: 1440, height: 920, minWidth: 380, minHeight: 560, backgroundColor: '#0c0d0f', title: 'Eye Catcher',
+    // not throttled while another window covers it: macOS calls a covered window hidden, and a review's timers and
+    // a critique being saved as video (drawn frame by frame) stalled behind the user's other windows (Oct 25)
+    webPreferences: { preload: path.join(here, 'preload.cjs'), contextIsolation: true, sandbox: true, nodeIntegration: false, backgroundThrottling: false },
   });
   // links in a review (its research sources) open in the player's browser; a file dropped outside the drop zone
   // doesn't replace the app
@@ -150,7 +154,7 @@ async function main() {
     origin = `http://127.0.0.1:${server.port}`;
     app.on('will-quit', () => server.close());
   } catch (e) {
-    console.error(`Thirdeye couldn't start: port ${PORT} is taken (${e.code || e.message}). Set THIRDEYE_PORT to another port.`);
+    console.error(`Eye Catcher couldn't start: port ${PORT} is taken (${e.code || e.message}). Set THIRDEYE_PORT to another port.`);
     return app.exit(1);
   }
   openWindow();

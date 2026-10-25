@@ -1,0 +1,5 @@
+# the app's screenshots show third-party footage: kept on this machine only
+*.png
+*.jpg
+*.mp4
+*.webm

@@ -1,0 +1,311 @@
+{
+ "clip": "clash-royale/cr-9ILfFYDblIo.match1.mp4",
+ "game": "Clash Royale",
+ "validated": "Oct 24: every frame of the match saved at 1 s (0:00-3:42) and OCR'd for tower health, timer and elixir, then read by eye: 1 s contact sheets of each run-up, full-resolution crops of the hand and the right lane, and 0.2-0.25 s grids of the Royal Giant kill (1:33.6-1:35), the 3:05-3:16 overtime hits and the final Fireball (3:25.5-3:28.5); each claim checked against a frame time before reading its entry.",
+ "player": "Mr.XLEBUSHEK2.0 (bottom, blue side; the intro card at 0:02 reads 'MR.XLEBUSHEK2.0 5468', the result screen at 3:33 'Mr.XLEBUSHEK2.0 No Clan'; the login toast at 0:00 reads VladBaks777)",
+ "opponent": "THE FRABET (5450 trophies, clan НІНІНА), top, red side",
+ "habit": "Defending the damaged right tower late and right on top of it. The level-14 Royal Giant got all six shots off from the bridge (1:24.5-1:33, 3197 to 761) before the 6-elixir Sparky, placed at 1:24.5 when it became affordable, fired once at 1:34.2; then twice the player's defenders were bunched against that tower when the opponent's Fireball landed (2:23.2: 761 to 511, with two Sparkys beside it; 3:08.5: 384 to 134, with Teslas and Minions in front of it), until a Log (3:14.5) left it at 7 and a last Fireball (3:27.3) ended the match in sudden death.",
+ "result": "lost 0-1 in sudden-death overtime: the right Princess Tower, at 7 from 3:14.5, fell to the opponent's Fireball at 3:27.3 (overtime clock frozen at 1:33); 'Match Over!' at 3:31; the result screen shows -24 trophies (5468 to 5444) and 'Crown Towers Defended: 2'",
+ "losses": [
+  {
+   "t": "1:33",
+   "kind": "tower damage (right tower 3197 to 761)",
+   "decided": "1:18-1:24",
+   "happened": "After the player's Sparky push, the opponent counterpushes the right lane (an Ice Wizard and a Knight, level 12, and two level-13 Archers, 0:56-1:06). The player defends with a Tesla in the middle (dragged at 1:00, down by 1:02) and Minions at their right bridge (queued '2/3' at 1:07, deployed '3/3' at 1:08), going to 0 elixir at 1:08; the surviving Minions fly on and chip the opponent's right tower 2635 to 2493 (1:19). At 1:18 the opponent drops a level-14 Royal Giant at their right bridge; it walks onto the bridge and from 1:24.5 shoots the player's right tower: 3197 to 2791 (1:24.5), 2385 (1:27), 1979 (1:28), 1573 (1:30), 1167 (1:32), 761 (1:33), 406 a shot. The player has 4 elixir at 1:19-1:21 (hand: Battle Healer 4, Mirror showing Minions 4, Sparky 6, Ram Rider 5) and 5 at 1:22-1:23; at 1:23 they drag the 6-elixir Sparky with 5 ('Not enough Elixir!') and it deploys at 1:24.5 ('6/6 Sparky lvl.12') beside their own right tower, on the king's side. The Sparky's first shot lands at 1:34.0-1:34.2 and kills the Royal Giant (purple poof 1:34.6), after all six Royal Giant shots.",
+   "factors": {
+    "resources": "0 elixir at 1:08 after the Tesla and Minions defence; 4 at 1:19-1:21 when the Royal Giant landed; 5 at 1:23 ('Not enough Elixir!' on the 6-cost Sparky); 0 again at 1:25",
+    "position": "the Royal Giant shoots the tower from the bridge, out of reach of anything placed behind the tower; the Sparky stood beside the tower and took about 10 s from placement (1:24.5) to its first shot (1:34.2)",
+    "information": "the Royal Giant was on screen from its deploy at 1:18, about 6 s before its first shot"
+   },
+   "mistake": "Answering a Royal Giant at the bridge with the slowest, most expensive card, and only once it became affordable: the Sparky went down at 1:24.5 and first fired at 1:34.2, by which time the tower had taken all six shots (2436).",
+   "better": "As the Royal Giant lands (1:18-1:19, 4 elixir), put immediate damage on it at the bridge: the Mirror (4, showing Minions) or another air card, which it can't hit back. Save the Sparky until 6 is banked, and place it where it reaches the bridge.",
+   "unsure": [
+    "why the Sparky needed about 10 s to fire: its deploy and charge, and its distance from the bridge, can't be separated in the frames"
+   ]
+  },
+  {
+   "t": "2:36",
+   "kind": "tower damage (right tower 761 to 384), with the player's King Tower hit and activated (5582 bar from 2:24)",
+   "decided": "2:15-2:23",
+   "happened": "Double elixir from 2:00 (x2 at 2:00, 'X2 Elixir' banner 2:04). The player banks 4 to 9 elixir (2:04-2:10), puts a Knight behind their King Tower (label 2:09-2:11) and at 2:16 a Sparky there too ('Sparky lvl.12', 9 to 4), which walks up beside the right tower. The opponent pushes the right lane from 2:17: two level-14 horned Barbarians drop at their right bridge, with a level-12 Knight and Ice Wizard behind. At 2:21 the player adds the Mirror Sparky ('7/7 Sparky lvl.13') just right of the right tower and is at 0 elixir. At 2:21.5-2:23 the opponent's Fireball flies into that cluster: the tower drops 761 to 511 (2:23.2) and the King Tower, inside the blast, shows its bar (5582) from 2:24. Two 63-point hits follow: 511 to 448 at 2:26.4 (a red spell ring on the tower) and 448 to 384 at 2:35.8 (a spiked log rolling down the right lane from 2:33, the opponent's Log). The player counterpushes at the right bridge with Ram Rider (2:35), Battle Healer (2:36) and Knight (2:38-2:39), 0 elixir at 2:39, and at 2:46 queues another Sparky there ('5/6 Sparky lvl.12'). The tower holds at 384 to the end of regulation.",
+   "factors": {
+    "resources": "8-9 elixir at 2:09-2:15 in double elixir; Knight 3 + Sparky 6 + Mirror Sparky 7 = 16 elixir in 12 s, 0 at 2:21-2:22 as the Fireball came in",
+    "position": "both Sparkys parked against the 761-health tower and next to the King Tower, so one Fireball hit two Sparkys, the tower and the King Tower",
+    "information": "a Fireball took 250 from this tower here and again at 3:08.5, and the Log about 63; at 761 the tower was two or three spells from falling"
+   },
+   "mistake": "Stacking 13 elixir of Sparkys right against the damaged right tower, so the opponent's Fireball hit the tower (and the King Tower) along with the defence.",
+   "better": "Keep the defending Sparky a couple of tiles off the damaged tower, still covering the lane, so a Fireball on it doesn't also hit the tower; and don't drop the Mirror Sparky on the same spot while the first one already covers the lane.",
+   "unsure": [
+    "what the 2:26.4 spell was (a red ring on the tower, 63 damage)",
+    "how much the Fireball took from the King Tower: its bar first shows at 2:24, already at 5582"
+   ]
+  },
+  {
+   "t": "3:27",
+   "kind": "right tower destroyed in sudden-death overtime: the match lost 0-1",
+   "decided": "3:03-3:15",
+   "happened": "Sudden death from 3:00 ('Sudden Death: get next crown to win', '+120s Extra Time' at 3:02), the right tower at 384 and the player at 9-10 elixir (10 at 3:01-3:02, about 2 s at the cap). The opponent's Royal Giant lands at their right bridge at 3:03; the player's Sparky already there (from 2:46) hits it at 3:04, and the player adds a Tesla (3:03) and the Mirror Tesla (3:05) in the middle and Minions at the bridge (queued '2/3' at 3:06, '3/3' at 3:07): 0 elixir at 3:07. The Royal Giant dies at 3:10. Meanwhile the opponent's Fireball lands on the defence at the tower at 3:08.5 (384 to 134), another 63 comes off at 3:09.5 (134 to 71), and the opponent's Log rolls down the right lane (3:11.5-3:14.5) and leaves the tower on 7. The player counterattacks with Ram Rider at their right bridge ('4/5' 3:13, '5/5' 3:14, 0 elixir) and a Zap on the opponent's right tower (3:17-3:18): that tower goes 2423 to 2353 (3:19) to 1711 (3:23). At 3:25.5 the opponent's Fireball leaves their side and hits the 7-health tower at 3:27.3; 'Match Over!' at 3:31.",
+   "factors": {
+    "resources": "10 elixir for about 2 s at 3:01-3:02; then Tesla 4 + Mirror Tesla 5 + Minions 3 (0 at 3:07) and Ram Rider 5 (0 at 3:14): 17 elixir in 11 s, all but the Ram Rider on defence",
+    "map": "sudden death: one crown ends it; the player's right tower at 384 was inside the opponent's spell damage (Fireball 250 + Log about 63 a hit), while the opponent's towers stood at 3668 and 2423",
+    "position": "the defence (Teslas, Minions) stood in front of the right tower when the 3:08.5 Fireball came in"
+   },
+   "mistake": "With a 384-health tower in sudden death, spending everything on defending in front of it (where the Fireball hit both), with no threat elsewhere, so the opponent's spells could finish the tower at their leisure.",
+   "better": "In sudden death, count the opponent's spells against your weak tower: at 384 it dies to two Fireballs or a Fireball and Logs, which no defender stops. Keep defenders off the tower and put the 10 elixir from 3:00 into a crown attempt (the 2423 tower), so the opponent has to spend Fireball on defence.",
+   "unsure": [
+    "what took 63 at 3:09.5 (134 to 71)",
+    "the opponent's Log by name: a spiked log rolling from their side, with 63-64 tower damage"
+   ]
+  }
+ ],
+ "not_true": [
+  "an enemy Sparky took the right tower 3197 to 761 at 1:24-1:33 (the opponent's level-14 Royal Giant at the bridge did; the Sparky was the player's own, placed at 1:24.5, and it killed the Royal Giant at 1:34.2)",
+  "the opponent played Minions, Sparky or Ram Rider (all three are the player's cards; the name labels such as '2/3 Minions', '6/6 Sparky', '5/5 Ram Rider' mark the player's own placements and queued elixir)",
+  "the player was at 0 elixir when the Royal Giant came (4 at 1:19-1:21, 5 at 1:22-1:23)",
+  "a Ram Rider or any troop destroyed the right tower (the opponent's Fireball did, at 3:27.3)",
+  "the tower fell at 3:18-3:24 (it stood at 7 until 3:27.3)"
+ ],
+ "changes": [
+  {
+   "t": null,
+   "field": "player",
+   "was": "Mr.XLEBUSHEK2.0 (the result screen's name on the player's side; the login toast reads VladBaks777)",
+   "now": "Mr.XLEBUSHEK2.0 (bottom, blue side; the intro card at 0:02 reads 'MR.XLEBUSHEK2.0 5468', the result screen at 3:33 'Mr.XLEBUSHEK2.0 No Clan'; the login toast at 0:00 reads VladBaks777)",
+   "evidence": "Intro VS card 0:02-0:04 'THE FRABET 5450 VS MR.XLEBUSHEK2.0 5468'; result screen 3:33-3:34; login toast 'Выполнен вход как «VladBaks777»' at 0:00. Name confirmed; side and trophies added."
+  },
+  {
+   "t": null,
+   "field": "opponent",
+   "was": "THE FRABET (5450 trophies)",
+   "now": "THE FRABET (5450 trophies, clan НІНІНА), top, red side",
+   "evidence": "Top banner 0:05 onward 'THE FRABET / НІНІНА / 5450'; red level badges and red health bars on the opponent's troops."
+  },
+  {
+   "t": null,
+   "field": "habit",
+   "was": "Spending elixir down to zero on their own push or in overtime with their damaged right tower's lane undefended, so the opponent's counterpush down that lane (a Sparky, then Minions and a Ram Rider) hit with nothing to answer it.",
+   "now": "Defending the damaged right tower late and right on top of it. The level-14 Royal Giant got all six shots off from the bridge (1:24.5-1:33, 3197 to 761) before the 6-elixir Sparky, placed at 1:24.5 when it became affordable, fired once at 1:34.2; then twice the player's defenders were bunched against that tower when the opponent's Fireball landed (2:23.2: 761 to 511, with two Sparkys beside it; 3:08.5: 384 to 134, with Teslas and Minions in front of it), until a Log (3:14.5) left it at 7 and a last Fireball (3:27.3) ended the match in sudden death.",
+   "evidence": "The Sparky (1:24.5 '6/6 Sparky lvl.12', 2:16, 2:46 '5/6'), the Minions (1:07-1:08 '2/3'->'3/3', 3:06-3:07) and the Ram Rider (2:35, 3:13-3:14 '4/5'->'5/5') are all the player's own placements: each label appears where the player drops a card, the card leaves the player's hand at that moment, and the troops carry blue level badges. The damage came from the opponent's Royal Giant (1:18-1:34, level 14, red badge) and spells (Fireball 2:22-2:23, 3:08, 3:25.5-3:27.3; Log 2:33-2:35, 3:11.5-3:14.5)."
+  },
+  {
+   "t": null,
+   "field": "result",
+   "was": "lost: the right tower fell in sudden-death overtime (about 3:18-3:24); the result screen shows -24 trophies, 'Crown Towers Defended: 2'",
+   "now": "lost 0-1 in sudden-death overtime: the right Princess Tower, at 7 from 3:14.5, fell to the opponent's Fireball at 3:27.3 (overtime clock frozen at 1:33); 'Match Over!' at 3:31; the result screen shows -24 trophies (5468 to 5444) and 'Crown Towers Defended: 2'",
+   "evidence": "Fireball launched from the opponent's side at 3:25.5, travels down the right lane and hits the 7-health tower at 3:27.3; the tower is rubble with an 'ENEMY' crown from 3:27.5 and the overtime clock stays at 1:33 from 3:27; 'Match Over!' 3:31-3:32; '-24' at 3:33-3:34 and 5444 on the home screen at 3:37; 'Crown Towers Defended: 2' at 3:34."
+  },
+  {
+   "t": "1:34",
+   "field": "t",
+   "was": "1:34",
+   "now": "1:33",
+   "evidence": "The sixth Royal Giant shot takes the tower to 761 at 1:33.0; the Royal Giant dies at 1:34.2-1:34.6."
+  },
+  {
+   "t": "1:34",
+   "field": "decided",
+   "was": "1:06-1:22",
+   "now": "1:18-1:24",
+   "evidence": "The Royal Giant lands at the opponent's right bridge at 1:18 (deploy clock) and first fires at 1:24.5; the player's choice of answer falls in those six seconds (4 elixir at 1:19-1:21, 5 at 1:22-1:23)."
+  },
+  {
+   "t": "1:34",
+   "field": "happened",
+   "was": "From 1:06 to 1:16 the player pushes the right lane, the opponent's Minions (3/3) defending; their elixir goes 2, 0, 1, 2, 3. At 1:20 they are at 0 again as an enemy Sparky comes over the opponent's right bridge; at 1:24, as it crosses ('Sparky lvl 12, 6/6'), the player taps a card and gets 'Not enough Elixir!'. The Sparky shoots the right tower from 3197 to 2791 (1:26), 1979 (1:28), 1573 (1:30), 1167 (1:32) and 761 (1:34) before it is stopped about 1:36.",
+   "now": "After the player's Sparky push, the opponent counterpushes the right lane (an Ice Wizard and a Knight, level 12, and two level-13 Archers, 0:56-1:06). The player defends with a Tesla in the middle (dragged at 1:00, down by 1:02) and Minions at their right bridge (queued '2/3' at 1:07, deployed '3/3' at 1:08), going to 0 elixir at 1:08; the surviving Minions fly on and chip the opponent's right tower 2635 to 2493 (1:19). At 1:18 the opponent drops a level-14 Royal Giant at their right bridge; it walks onto the bridge and from 1:24.5 shoots the player's right tower: 3197 to 2791 (1:24.5), 2385 (1:27), 1979 (1:28), 1573 (1:30), 1167 (1:32), 761 (1:33), 406 a shot. The player has 4 elixir at 1:19-1:21 (hand: Battle Healer 4, Mirror showing Minions 4, Sparky 6, Ram Rider 5) and 5 at 1:22-1:23; at 1:23 they drag the 6-elixir Sparky with 5 ('Not enough Elixir!') and it deploys at 1:24.5 ('6/6 Sparky lvl.12') beside their own right tower, on the king's side. The Sparky's first shot lands at 1:34.0-1:34.2 and kills the Royal Giant (purple poof 1:34.6), after all six Royal Giant shots.",
+   "evidence": "Who's who: the 'Sparky lvl.12 6/6' label at 1:24.5 sits on the player's blue cart beside their own tower (deploy clock at 1:26), and the 6-cost card leaves the player's hand at 1:24; the shooter at the bridge is a Royal Giant with a red level-14 badge (full-res crops 1:18-1:24.5, 1:26-1:35). Elixir by the hand bar: 2 (1:06-1:07), 0 (1:08-1:09), 1 (1:10-1:12), 2 (1:13-1:15), 3 (1:16-1:18), 4 (1:19-1:21), 5 (1:22-1:23), 0 (1:25-1:26), not 0 at 1:20. Tower readouts 2791 at 1:24.5 (not 1:26), 2385 at 1:27, 761 at 1:33 (not 1:34). The Minions at 1:07-1:08 were the player's, defending, not the opponent's; 0:56-1:06 crops show the opponent's Ice Wizard, Knight and Archers crossing the player's right bridge."
+  },
+  {
+   "t": "1:34",
+   "field": "factors",
+   "was": {
+    "resources": "elixir 0 at 1:20 and 'Not enough Elixir!' at 1:24, the moment the Sparky crossed",
+    "position": "their own push in the same right lane; nothing placed in front of the tower to stop or reset the Sparky until it had fired five times",
+    "information": "the Sparky was played behind the opponent's tower at about 1:20, four seconds before it crossed"
+   },
+   "now": {
+    "resources": "0 elixir at 1:08 after the Tesla and Minions defence; 4 at 1:19-1:21 when the Royal Giant landed; 5 at 1:23 ('Not enough Elixir!' on the 6-cost Sparky); 0 again at 1:25",
+    "position": "the Royal Giant shoots the tower from the bridge, out of reach of anything placed behind the tower; the Sparky stood beside the tower and took about 10 s from placement (1:24.5) to its first shot (1:34.2)",
+    "information": "the Royal Giant was on screen from its deploy at 1:18, about 6 s before its first shot"
+   },
+   "evidence": "Elixir bar 1:08 (0), 1:19-1:21 (4), 1:23 (5, 'Not enough Elixir!'), 1:25 (0); Sparky placed 1:24.5, first shot 1:34.0-1:34.2 (0.2 s grid); Royal Giant deploy clock at 1:18-1:19. The draft's 'enemy Sparky played behind the opponent's tower at about 1:20' does not exist."
+  },
+  {
+   "t": "1:34",
+   "field": "mistake",
+   "was": "Emptying their elixir on a push down the right lane, so the opponent's Sparky counterpush down that lane met nothing for five shots.",
+   "now": "Answering a Royal Giant at the bridge with the slowest, most expensive card, and only once it became affordable: the Sparky went down at 1:24.5 and first fired at 1:34.2, by which time the tower had taken all six shots (2436).",
+   "evidence": "Same frames as 'happened': the player's elixir was 4-5, not 0, while the Royal Giant set up; the counterpush was the opponent's Royal Giant, not a Sparky."
+  },
+  {
+   "t": "1:34",
+   "field": "better",
+   "was": "Keep enough elixir after a push to answer the counterpush, and stop or reset the Sparky (a stun or zap, or a unit to take its shots) before it reaches the tower.",
+   "now": "As the Royal Giant lands (1:18-1:19, 4 elixir), put immediate damage on it at the bridge: the Mirror (4, showing Minions) or another air card, which it can't hit back. Save the Sparky until 6 is banked, and place it where it reaches the bridge.",
+   "evidence": "Hand at 1:19 (Battle Healer 4, Mirror-as-Minions 4 with the gold frame, Sparky 6, Ram Rider 5) and elixir 4: an answer was affordable 5 s before the Sparky was."
+  },
+  {
+   "t": "1:34",
+   "field": "unsure",
+   "was": [
+    "the player's cards by name (only the opponent's cards show names when played)",
+    "what stopped the Sparky at about 1:36"
+   ],
+   "now": [
+    "why the Sparky needed about 10 s to fire: its deploy and charge, and its distance from the bridge, can't be separated in the frames"
+   ],
+   "evidence": "Settled: the player's cards are named by the hand (Battle Healer, Sparky, Ram Rider, Knight, Zap, Tesla, Minions, Mirror) and the labels show the player's own placements; the Royal Giant was stopped by the player's Sparky shot at 1:34.0-1:34.2 (dead 1:34.6)."
+  },
+  {
+   "t": "2:38",
+   "field": "t",
+   "was": "2:38",
+   "now": "2:36",
+   "evidence": "448 to 384 at 2:35.8 (crop); 384 shows from 2:36."
+  },
+  {
+   "t": "2:38",
+   "field": "kind",
+   "was": "tower damage (right tower 761 to 384) and the king tower activated (5582)",
+   "now": "tower damage (right tower 761 to 384), with the player's King Tower hit and activated (5582 bar from 2:24)",
+   "evidence": "The 5582 bar is the player's own King Tower (bottom centre, blue), shown from 2:24 after the Fireball blast at 2:23.2. An activated King Tower shoots for the player, so it isn't a loss by itself."
+  },
+  {
+   "t": "2:38",
+   "field": "decided",
+   "was": "2:14-2:30",
+   "now": "2:15-2:23",
+   "evidence": "Sparky placed 2:16, Mirror Sparky 2:21, the opponent's Fireball in flight 2:21.5-2:22.5 and landing 2:23.2."
+  },
+  {
+   "t": "2:38",
+   "field": "happened",
+   "was": "Double elixir from 2:00. At 2:14 the player has 8 elixir with the right tower at 761; by 2:22 they are at 0. An enemy push at the right lane brings the tower to 511 (2:26), 448 (2:30) and 384 (2:38); the king tower shows 5582 from 2:26, so something reached it. At 2:46 a second Sparky ('5/5') comes at the right lane; the tower holds at 384 to the end of regulation.",
+   "now": "Double elixir from 2:00 (x2 at 2:00, 'X2 Elixir' banner 2:04). The player banks 4 to 9 elixir (2:04-2:10), puts a Knight behind their King Tower (label 2:09-2:11) and at 2:16 a Sparky there too ('Sparky lvl.12', 9 to 4), which walks up beside the right tower. The opponent pushes the right lane from 2:17: two level-14 horned Barbarians drop at their right bridge, with a level-12 Knight and Ice Wizard behind. At 2:21 the player adds the Mirror Sparky ('7/7 Sparky lvl.13') just right of the right tower and is at 0 elixir. At 2:21.5-2:23 the opponent's Fireball flies into that cluster: the tower drops 761 to 511 (2:23.2) and the King Tower, inside the blast, shows its bar (5582) from 2:24. Two 63-point hits follow: 511 to 448 at 2:26.4 (a red spell ring on the tower) and 448 to 384 at 2:35.8 (a spiked log rolling down the right lane from 2:33, the opponent's Log). The player counterpushes at the right bridge with Ram Rider (2:35), Battle Healer (2:36) and Knight (2:38-2:39), 0 elixir at 2:39, and at 2:46 queues another Sparky there ('5/6 Sparky lvl.12'). The tower holds at 384 to the end of regulation.",
+   "evidence": "Sheets 2:04-2:39 at 1 s, crops 2:17-2:24 and 2:25.8-2:35.8, 2:45.5-2:46.2. Readouts: 511 from 2:23 (not 2:26), 448 at 2:27 (not 2:30), 384 at 2:36 (not 2:38); 5582 from 2:24 (not 2:26). The 2:46 label reads '5/6 Sparky lvl.12' on the player's own queued Sparky at their right bridge (6-cost card gone from the hand), not '5/5' and not an enemy card."
+  },
+  {
+   "t": "2:38",
+   "field": "factors",
+   "was": {
+    "resources": "8 elixir at 2:14, 0 at 2:22, during double elixir",
+    "position": "the right tower, already at 761, is where every enemy push goes"
+   },
+   "now": {
+    "resources": "8-9 elixir at 2:09-2:15 in double elixir; Knight 3 + Sparky 6 + Mirror Sparky 7 = 16 elixir in 12 s, 0 at 2:21-2:22 as the Fireball came in",
+    "position": "both Sparkys parked against the 761-health tower and next to the King Tower, so one Fireball hit two Sparkys, the tower and the King Tower",
+    "information": "a Fireball took 250 from this tower here and again at 3:08.5, and the Log about 63; at 761 the tower was two or three spells from falling"
+   },
+   "evidence": "Elixir 8 (2:14), 9 (2:15), 4 (2:16), 0 (2:21); positions in the 2:21.5 and 2:23.2 crops; damage 761-511 = 250 (2:23.2), 384-134 = 250 (3:08.5), 63-64 per Log hit (2:35.8, 3:14.5)."
+  },
+  {
+   "t": "2:38",
+   "field": "mistake",
+   "was": "Letting a third push reach the right tower while it was at 761, after spending down to 0.",
+   "now": "Stacking 13 elixir of Sparkys right against the damaged right tower, so the opponent's Fireball hit the tower (and the King Tower) along with the defence.",
+   "evidence": "The damage at 2:23.2 is a Fireball on the cluster, not a third troop push reaching the tower; the 2:26.4 and 2:35.8 hits are spells (63 each)."
+  },
+  {
+   "t": "2:38",
+   "field": "better",
+   "was": "Defend the weak tower first in double elixir: keep a unit or spell ready for the right lane and counterattack the other lane only with spare elixir.",
+   "now": "Keep the defending Sparky a couple of tiles off the damaged tower, still covering the lane, so a Fireball on it doesn't also hit the tower; and don't drop the Mirror Sparky on the same spot while the first one already covers the lane.",
+   "evidence": "The units the Fireball hit were the player's own Sparkys beside the tower (2:21.5-2:23.2 crops)."
+  },
+  {
+   "t": "2:38",
+   "field": "unsure",
+   "was": [
+    "what hit the king tower",
+    "which cards they spent the 8 elixir on"
+   ],
+   "now": [
+    "what the 2:26.4 spell was (a red ring on the tower, 63 damage)",
+    "how much the Fireball took from the King Tower: its bar first shows at 2:24, already at 5582"
+   ],
+   "evidence": "Settled: the Fireball (2:21.5-2:23.2) hit the King Tower; the 8 elixir went on Knight (2:10), Sparky (2:16) and Mirror Sparky (2:21)."
+  },
+  {
+   "t": "3:20",
+   "field": "t",
+   "was": "3:20",
+   "now": "3:27",
+   "evidence": "The tower falls at 3:27.3 (0.25 s grid 3:25.5-3:28.5); 3:18-3:24 it is standing at 7."
+  },
+  {
+   "t": "3:20",
+   "field": "kind",
+   "was": "right tower destroyed in sudden-death overtime: the match lost",
+   "now": "right tower destroyed in sudden-death overtime: the match lost 0-1",
+   "evidence": "'ENEMY' crown banner with one red crown at 3:28; the player's crown count 0."
+  },
+  {
+   "t": "3:20",
+   "field": "decided",
+   "was": "3:02-3:14",
+   "now": "3:03-3:15",
+   "evidence": "The tower goes 384 to 7 between 3:08.5 and 3:14.5; from then on any spell ends the match."
+  },
+  {
+   "t": "3:20",
+   "field": "happened",
+   "was": "Overtime ('120s Extra Time', sudden death: the next crown wins) starts at 3:02 with the player at 10 elixir, the maximum, so elixir is being wasted, and the right tower at 384. At 3:06 they are at 2 (enemy Minions 2/3 at the right bridge); at 3:10 the tower is at 71; at 3:14 they are at 0 as an enemy Ram Rider ('5/5') comes down the right lane; the tower falls at about 3:18-3:24, and the result screen follows.",
+   "now": "Sudden death from 3:00 ('Sudden Death: get next crown to win', '+120s Extra Time' at 3:02), the right tower at 384 and the player at 9-10 elixir (10 at 3:01-3:02, about 2 s at the cap). The opponent's Royal Giant lands at their right bridge at 3:03; the player's Sparky already there (from 2:46) hits it at 3:04, and the player adds a Tesla (3:03) and the Mirror Tesla (3:05) in the middle and Minions at the bridge (queued '2/3' at 3:06, '3/3' at 3:07): 0 elixir at 3:07. The Royal Giant dies at 3:10. Meanwhile the opponent's Fireball lands on the defence at the tower at 3:08.5 (384 to 134), another 63 comes off at 3:09.5 (134 to 71), and the opponent's Log rolls down the right lane (3:11.5-3:14.5) and leaves the tower on 7. The player counterattacks with Ram Rider at their right bridge ('4/5' 3:13, '5/5' 3:14, 0 elixir) and a Zap on the opponent's right tower (3:17-3:18): that tower goes 2423 to 2353 (3:19) to 1711 (3:23). At 3:25.5 the opponent's Fireball leaves their side and hits the 7-health tower at 3:27.3; 'Match Over!' at 3:31.",
+   "evidence": "Crops 3:02-3:17 at 0.5-1 s and 3:25.5-3:28.5 at 0.25 s. The Minions ('2/3' 3:06) and Ram Rider ('5/5' 3:14) are the player's (cards leave the player's hand at those moments; blue badges; the Ram Rider runs at the opponent's tower, 2423 to 1711). Nothing of the opponent's troops touched the right tower after 3:00: only spells (Fireball 3:08.5, a 63 hit 3:09.5, Log 3:14.5, Fireball 3:27.3). 71 at 3:10 confirmed; 0 elixir at 3:14 confirmed."
+  },
+  {
+   "t": "3:20",
+   "field": "factors",
+   "was": {
+    "resources": "elixir at its cap (10) as overtime began, then 2, then 0 when the Ram Rider came",
+    "map": "sudden death: one tower ends the match; their right tower had 384 then 71",
+    "position": "nothing kept back for the right lane"
+   },
+   "now": {
+    "resources": "10 elixir for about 2 s at 3:01-3:02; then Tesla 4 + Mirror Tesla 5 + Minions 3 (0 at 3:07) and Ram Rider 5 (0 at 3:14): 17 elixir in 11 s, all but the Ram Rider on defence",
+    "map": "sudden death: one crown ends it; the player's right tower at 384 was inside the opponent's spell damage (Fireball 250 + Log about 63 a hit), while the opponent's towers stood at 3668 and 2423",
+    "position": "the defence (Teslas, Minions) stood in front of the right tower when the 3:08.5 Fireball came in"
+   },
+   "evidence": "Elixir 10 (3:01-3:02), 6 (3:03), 2 (3:06), 0 (3:07), 0 (3:14); tower 384 / 134 / 71 / 7 at 3:08 / 3:08.5 / 3:09.5 / 3:14.5; opponent towers 3668 and 2423 at 3:02. 'Nothing kept back for the right lane' is not what decided it: no troop reached the tower."
+  },
+  {
+   "t": "3:20",
+   "field": "mistake",
+   "was": "Wasting elixir at the cap, then spending it so that a 71-health tower in sudden death had nothing to stop the Ram Rider.",
+   "now": "With a 384-health tower in sudden death, spending everything on defending in front of it (where the Fireball hit both), with no threat elsewhere, so the opponent's spells could finish the tower at their leisure.",
+   "evidence": "The tower was killed by spells, not by a Ram Rider; the Ram Rider was the player's own attack."
+  },
+  {
+   "t": "3:20",
+   "field": "better",
+   "was": "In sudden death with a near-dead tower, spend before reaching 10 and always hold an answer for that lane (a building or a unit to pull or stop the Ram Rider).",
+   "now": "In sudden death, count the opponent's spells against your weak tower: at 384 it dies to two Fireballs or a Fireball and Logs, which no defender stops. Keep defenders off the tower and put the 10 elixir from 3:00 into a crown attempt (the 2423 tower), so the opponent has to spend Fireball on defence.",
+   "evidence": "Spell damage this match: Fireball 250 to the tower (2:23.2, 3:08.5), Log 63-64 (2:35.8, 3:14.5); the final blow was a Fireball (3:27.3)."
+  },
+  {
+   "t": "3:20",
+   "field": "unsure",
+   "was": [
+    "what they spent elixir on at 3:02-3:14"
+   ],
+   "now": [
+    "what took 63 at 3:09.5 (134 to 71)",
+    "the opponent's Log by name: a spiked log rolling from their side, with 63-64 tower damage"
+   ],
+   "evidence": "Settled: at 3:02-3:14 the player spent on Tesla (3:03), Mirror Tesla (3:05), Minions (3:06-3:07) and Ram Rider (3:13-3:14)."
+  },
+  {
+   "t": null,
+   "field": "not_true",
+   "was": [],
+   "now": [
+    "an enemy Sparky took the right tower 3197 to 761 at 1:24-1:33 (the opponent's level-14 Royal Giant at the bridge did; the Sparky was the player's own, placed at 1:24.5, and it killed the Royal Giant at 1:34.2)",
+    "the opponent played Minions, Sparky or Ram Rider (all three are the player's cards; the name labels such as '2/3 Minions', '6/6 Sparky', '5/5 Ram Rider' mark the player's own placements and queued elixir)",
+    "the player was at 0 elixir when the Royal Giant came (4 at 1:19-1:21, 5 at 1:22-1:23)",
+    "a Ram Rider or any troop destroyed the right tower (the opponent's Fireball did, at 3:27.3)",
+    "the tower fell at 3:18-3:24 (it stood at 7 until 3:27.3)"
+   ],
+   "evidence": "See the loss entries' evidence."
+  }
+ ]
+}

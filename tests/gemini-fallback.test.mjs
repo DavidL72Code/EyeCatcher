@@ -6,14 +6,14 @@ import vm from 'node:vm';
 
 // answer(model, n, key): the HTTP status for the nth call to that model (from 1) with that key, 200 for a reply
 function load(answer, env = {}) {
-  const calls = [], notices = [];
+  const calls = [], notices = [], bodies = [];
   const ctx = {
     window: { __ENV__: env }, console, AbortController,
     localStorage: { store: new Map([['gemini_api_key', 'TEST']]), getItem(k) { return this.store.get(k) ?? null; }, setItem(k, v) { this.store.set(k, String(v)); } },
     setTimeout: (fn) => fn(), clearTimeout: () => {},
     fetch: async (url, opts) => {
       const model = decodeURIComponent(url.split('/models/')[1].split(':')[0]), key = opts?.headers?.['x-goog-api-key'];
-      calls.push(model);
+      calls.push(model); bodies.push(JSON.parse(opts.body));
       const status = answer(model, calls.filter((m) => m === model).length, key);
       if (status === 200) return { ok: true, status, text: async () => JSON.stringify({ candidates: [{ content: { role: 'model', parts: [{ text: 'ok' }] } }] }) };
       // 'minute': a per-minute limit, with the retry time Google sends
@@ -25,9 +25,23 @@ function load(answer, env = {}) {
   ctx.globalThis = ctx;
   vm.createContext(ctx);
   vm.runInContext(fs.readFileSync(new URL('../gemini.js', import.meta.url), 'utf8'), ctx);
-  return { G: ctx.window.Gemini, calls, notices };
+  return { G: ctx.window.Gemini, calls, notices, bodies };
 }
-const ask = (G, notices) => G.generate({ contents: [{ role: 'user', parts: [{ text: 'hi' }] }] }, { onNotice: (n) => notices.push(n) });
+const ask = (G, notices, generationConfig) => G.generate({ contents: [{ role: 'user', parts: [{ text: 'hi' }] }], ...(generationConfig ? { generationConfig } : {}) }, { onNotice: (n) => notices.push(n) });
+
+test("3.1 Flash-Lite thinks at medium at most; 3.5 Flash-Lite thinks as asked", async () => {
+  // at high, 3.1 Flash-Lite thought 62,911 tokens and 250 to 352 s on one claim check (Oct 23)
+  const { G, calls, notices, bodies } = load((model) => (model === 'gemini-3.5-flash-lite' ? 429 : 200));
+  await ask(G, notices, { temperature: 0, thinkingConfig: { thinkingLevel: 'high' } });
+  assert.deepEqual(calls, ['gemini-3.5-flash-lite', 'gemini-3.1-flash-lite']);
+  assert.deepEqual(bodies.map((b) => b.generationConfig.thinkingConfig.thinkingLevel), ['high', 'medium']);
+  assert.equal(bodies[1].generationConfig.temperature, 0, 'the rest of the request as asked');
+  // asked for less, it gets what it asked for
+  const low = load(() => 200);
+  low.G.setModel('gemini-3.1-flash-lite');
+  await ask(low.G, low.notices, { thinkingConfig: { thinkingLevel: 'low' } });
+  assert.equal(low.bodies[0].generationConfig.thinkingConfig.thinkingLevel, 'low');
+});
 
 test('the main model out for the day and its fallback only busy: a minute later the fallback answers', async () => {
   const { G, calls, notices } = load((model, n) => (model === 'gemini-3.1-flash-lite' ? (n <= 2 ? 503 : 200) : 429));
@@ -52,16 +66,42 @@ test('every model out for the day ends at once, saying so', async () => {
   assert.ok(!notices.some((n) => /Waiting a minute/.test(n)));
 });
 
-test('every model out for the day on the first key: the second key gets the whole list again', async () => {
-  const { G, notices } = load((model, n, key) => (key === 'KEY2' && model === 'gemini-3.5-flash-lite' ? 200 : 429), { GEMINI_API_KEY: 'KEY1', GEMINI_API_KEY2: 'KEY2' });
+test('the main model out for the day on the first key: the same model on the second key, before the next model', async () => {
+  // Oct 23: 3.5 Flash-Lite out on the first key, nearly every call fell to 3.1 Flash-Lite, whose high thinking ran to
+  // 63k tokens a call, while the second key's 3.5 Flash-Lite answered in seconds
+  const { G, calls, notices } = load((model, n, key) => (key === 'KEY2' && model === 'gemini-3.5-flash-lite' ? 200 : 429), { GEMINI_API_KEY: 'KEY1', GEMINI_API_KEY2: 'KEY2' });
   G.preferEnv = true;
   assert.equal(G.textOf(await ask(G, notices)), 'ok');
   assert.ok(notices.some((n) => /Switching to the second key/.test(n)));
+  assert.deepEqual(calls, ['gemini-3.5-flash-lite', 'gemini-3.5-flash-lite']);
   assert.equal(G.getKey(), 'KEY2'); // and stays on it
+  // out on both keys, the next model answers on the second
+  const both = load((model, n, key) => (key === 'KEY2' && model === 'gemini-3.1-flash-lite' ? 200 : 429), { GEMINI_API_KEY: 'KEY1', GEMINI_API_KEY2: 'KEY2' });
+  both.G.preferEnv = true;
+  assert.equal(both.G.textOf(await ask(both.G, both.notices)), 'ok');
+  assert.deepEqual(both.calls, ['gemini-3.5-flash-lite', 'gemini-3.5-flash-lite', 'gemini-3.1-flash-lite']);
   // with no second key, it ends as before
   const one = load(() => 429, { GEMINI_API_KEY: 'KEY1' });
   one.G.preferEnv = true;
   await assert.rejects(ask(one.G, one.notices), /free limit is used up on every model/);
+});
+
+test('the second key out of every model and the first still has one: the first takes over again, and neither loops', async () => {
+  // Oct 24: the second key ran out of 3.1 Flash-Lite while the first still had it, and three reviews ended
+  const { G, calls, notices } = load((model, n, key) => (key === 'KEY1' && model === 'gemini-3.1-flash-lite' ? 200 : 429), { GEMINI_API_KEY: 'KEY1', GEMINI_API_KEY2: 'KEY2' });
+  G.preferEnv = true;
+  assert.equal(G.textOf(await ask(G, notices)), 'ok');
+  assert.deepEqual(calls, ['gemini-3.5-flash-lite', 'gemini-3.5-flash-lite', 'gemini-3.1-flash-lite', 'gemini-3.1-flash-lite']);
+  assert.ok(notices.some((n) => /Switching to the first key/.test(n)));
+  assert.equal(G.getKey(), 'KEY1');
+  // the next call goes straight to what's left, asking no spent model again
+  await ask(G, notices);
+  assert.deepEqual(calls.slice(4), ['gemini-3.1-flash-lite']);
+  // both keys out of everything: it ends, without handing the call back and forth
+  const none = load(() => 429, { GEMINI_API_KEY: 'KEY1', GEMINI_API_KEY2: 'KEY2' });
+  none.G.preferEnv = true;
+  await assert.rejects(ask(none.G, none.notices), /free limit is used up on every model/);
+  assert.ok(none.calls.length <= 6, `${none.calls.length} calls`);
 });
 
 test('one model at its per-minute limit and the rest out for the day: a minute later it answers', async () => {
@@ -71,10 +111,12 @@ test('one model at its per-minute limit and the rest out for the day: a minute l
 });
 
 test('the one model left sits out its per-minute limit and the rest are out for the day: the next call waits for it', async () => {
-  // Vyse, Oct 23: 3.1 Flash-Lite hit its per-minute limit twice and 3.5 Flash answered; on the next call only 3.5 Flash
-  // was left to try, out for the day, and the review ended on "used up on every model"
-  const { G, notices } = load((model, n) => (model === 'gemini-3.1-flash-lite' ? (n <= 2 ? 'minute' : 200) : model === 'gemini-3.5-flash' && n === 1 ? 200 : 429));
+  // Vyse, Oct 23: 3.1 Flash-Lite hit its per-minute limit twice and another model answered; on the next call only that
+  // one was left to try, out for the day, and the review ended on "used up on every model"
+  const { G, calls, notices } = load((model, n) => (model === 'gemini-3.1-flash-lite' ? (n <= 2 ? 'minute' : 200) : n === 1 ? 200 : 429));
+  G.setModel('gemini-3.1-flash-lite');
   assert.equal(G.textOf(await ask(G, notices)), 'ok');
+  assert.equal(calls.at(-1), 'gemini-3.5-flash-lite');
   assert.equal(G.textOf(await ask(G, notices)), 'ok');
   assert.ok(notices.some((n) => /per-minute limit\. Waiting a minute/.test(n)));
 });
