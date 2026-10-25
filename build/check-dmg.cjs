@@ -1,6 +1,7 @@
 // afterAllArtifactBuild guard: each .dmg must pass hdiutil's checksum, open, and hold an app whose signature still
-// covers every file. v0.1.0's arm64 DMG, built on a GitHub runner, did none of these: macOS refused to open it, and
-// parts of Electron's framework inside couldn't be read. This fails such a build instead of publishing it.
+// covers every file. v0.1.0's published arm64 DMG did none of these: macOS refused to open it, and parts of Electron's
+// framework inside couldn't be read (two copies had been written onto one path, .github/workflows/release.yml). This
+// fails a build whose own DMG is like that.
 //   node build/check-dmg.cjs <file.dmg>...   (the same check, by hand)
 const { execFileSync } = require('node:child_process');
 const fs = require('node:fs');
