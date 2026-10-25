@@ -8,12 +8,13 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = path.resolve(fileURLToPath(new URL('..', import.meta.url)));
-const rec = (name) => path.join(root, 'eval/recordings', fs.readdirSync(path.join(root, 'eval/recordings')).find((f) => f.startsWith(name) && /\.(mov|mp4)$/.test(f)));
+const rec = (name) => path.join(root, 'eval/recordings', name);
+// each clip runs a little past its last step, and its poster is the frame of the step whose marks say the most
 const SCENES = [
-  { id: 'apex', file: () => rec('Screen Recording 2026-10-18'), from: 40, to: 48, poster: 46.4 },
-  { id: 'tenz', file: () => rec('Screen Recording 2026-10-17'), from: 219, to: 232.5, poster: 231.8 },
-  { id: 'vyse', file: () => rec('yt-vyse-ascent'), from: 76, to: 86, poster: 81.5 },
-  { id: 'chess', file: () => path.join(root, 'tests/fixtures/chess-blunders.mp4'), from: 68, to: 78, poster: 74.6 },
+  { id: 'lol', file: () => rec('league-of-legends/lol-hacklet-mf.14-24.mp4'), from: 96, to: 107.6, poster: 100 },
+  { id: 'rl', file: () => rec('rocket-league/rl-somey-gc2.match1.mp4'), from: 245.5, to: 256, poster: 247.5 },
+  { id: 'r6', file: () => rec('rainbow-six/r6-fhx2tfA57ug.r2-4.mp4'), from: 512.5, to: 520, poster: 515.9 },
+  { id: 'mr', file: () => rec('marvel-rivals/mr-punk-magik.attack.mp4'), from: 251, to: 259.6, poster: 258 },
 ];
 const base = process.env.DEV_URL || 'http://localhost:5177';
 const out = path.join(root, 'assets/scenes');

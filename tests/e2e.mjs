@@ -270,10 +270,11 @@ try {
   const ownEnv = await page.evaluate(async () => (await fetch('/env.js')).text());
   check(!/GEMINI_API_KEY|TEST2/.test(fromElsewhere) && /"GEMINI_API_KEY":"TEST"/.test(ownEnv) && /"GEMINI_API_KEY2":"TEST2"/.test(ownEnv), "both keys go to Eye Catcher's own page and to no other site");
   check(await page.locator('#homeTitle').innerText() === "FIND THE HABIT THAT'S\nLOSING YOU GAMES." && await page.locator('#home').isVisible() && await page.locator('#tabs [aria-current]').innerText() === 'Home', 'Home opens first, in the sidebar, with the headline');
-  check(/scenes\/apex\.mp4$/.test(await page.locator('#demoVideo').getAttribute('src')) && await page.locator('#demoHud .el').count() === 4 && /Reading the screen/i.test(await page.locator('#demoNow .now-kind').innerText()), "Home plays a real match with Eye Catcher's steps over it");
-  check(await page.locator('#scenes .scene').count() === 4, 'and offers four scenarios');
+  check(/scenes\/lol\.mp4$/.test(await page.locator('#demoVideo').getAttribute('src')) && await page.locator('#demoHud .el').count() === 4 && /Reading the screen/i.test(await page.locator('#demoNow .now-kind').innerText()), "Home plays a real match with Eye Catcher's steps over it");
+  const games = await page.locator('#scenes .sc-game').allInnerTexts();
+  check(games.length === 4 && new Set(games).size === 4, `and offers four scenarios, each a different game (${games.join(', ')})`);
   await page.click('#scenes [data-scene="2"]');
-  check(/scenes\/vyse\.mp4$/.test(await page.locator('#demoVideo').getAttribute('src')) && /Reading the kill feed/i.test(await page.locator('#demoNow .now-kind').innerText()) && await page.locator('#scenes [aria-selected="true"]').getAttribute('data-scene') === '2', 'a scenario chip plays that scenario');
+  check(/scenes\/r6\.mp4$/.test(await page.locator('#demoVideo').getAttribute('src')) && /Reading the screen/i.test(await page.locator('#demoNow .now-kind').innerText()) && await page.locator('#scenes [aria-selected="true"]').getAttribute('data-scene') === '2', 'a scenario chip plays that scenario');
   await page.click('.hero-cta a[href="#coach"]');
   await page.waitForSelector('#start:not([hidden])');
   check(await page.locator('#tabs [aria-current]').innerText() === 'Coach' && await page.locator('#startTitle').innerText() === 'REVIEW A MATCH', 'Review a match goes to Coach');

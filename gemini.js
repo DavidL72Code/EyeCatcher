@@ -128,6 +128,8 @@
   // Eye Catcher's backend's own limits end at once.
   const MINUTE_ROUNDS = 2;
   async function generate(body, opts = {}) {
+    // the pictures and videos this call sends, once however many tries it takes, for a page that shows them (onSend)
+    if (api.onSend) try { api.onSend((body.contents || []).flatMap((c) => c.parts || []).map((p) => p.inlineData || (p.fileData && { mimeType: p.fileData.mimeType, uri: p.fileData.fileUri })).filter(Boolean)); } catch {}
     for (let round = 0; ; round++) {
       try {
         return await generateOnce(body, opts);
@@ -452,7 +454,8 @@
   const PHONE = /(?<![\w+-])(?:\+\d{1,3}[\s.-]?\(?\d{1,4}\)?(?:[\s.-]?\d{2,4}){2,4}|\(?\d{3}\)?[\s.-]\d{3}[\s.-]\d{4})(?![\w-])/g;
   const redact = (text) => String(text ?? '').replace(/[\w.+-]+@[\w-]+\.[\w.-]+/g, '[email hidden]').replace(PHONE, '[number hidden]');
 
-  // onUsage({ model, search, usage }): called with each answer's usageMetadata (token counts), when a page sets it
-  const api = root.Gemini = { preferEnv: false, backend: '', onUsage: null, SAFETY, untrusted, guardRequest, redact, timeoutMs: 60000, heavyTimeoutMs: 150000, getKey, setKey, holdKey, getModel, setModel, hasKey, backendUrl: backend, storedKey, storedModel, keySource, generate, json, grounded, runAgent, parseJSON, textOf, fileToInline, fileToPart, loadImage, GeminiError, FALLBACK_MODELS, SEARCH_MODELS, isLite };
+  // onUsage({ model, search, usage }): called with each answer's usageMetadata (token counts), when a page sets it.
+  // onSend(media): called with what each call sends, [{ mimeType, data }] inline and [{ mimeType, uri }] uploaded
+  const api = root.Gemini = { preferEnv: false, backend: '', onUsage: null, onSend: null, SAFETY, untrusted, guardRequest, redact, timeoutMs: 60000, heavyTimeoutMs: 150000, getKey, setKey, holdKey, getModel, setModel, hasKey, backendUrl: backend, storedKey, storedModel, keySource, generate, json, grounded, runAgent, parseJSON, textOf, fileToInline, fileToPart, loadImage, GeminiError, FALLBACK_MODELS, SEARCH_MODELS, isLite };
   if (typeof module !== 'undefined') module.exports = root.Gemini;
 })(typeof window !== 'undefined' ? window : globalThis);

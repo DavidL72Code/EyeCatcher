@@ -39,6 +39,17 @@
     run.tokens += usage?.totalTokenCount || (usage?.promptTokenCount || 0) + (usage?.candidatesTokenCount || 0) + (usage?.thoughtsTokenCount || 0);
     paintCounts();
   };
+  // what each call sends (gemini.js onSend): while the match is read or its clips are watched, the caption counts the
+  // pictures and videos and shows the latest pictures, so it can be seen what Gemini is given at those two steps (the
+  // user, Oct 25: "it has to be clear what it's doing")
+  G.onSend = (media) => {
+    if (!run || run.done || run.replay || !nowState || ![READING, WATCHING].includes(nowState.kind)) return;
+    const pics = media.filter((m) => /^image\//.test(m.mimeType) && m.data), videos = media.filter((m) => /^video\//.test(m.mimeType));
+    nowState.sent.pictures += pics.length;
+    nowState.sent.videos += videos.length;
+    if (pics.length) nowState.frames = [...pics.slice(-3).reverse().map((m) => ({ url: `data:${m.mimeType};base64,${m.data}` })), ...nowState.frames].slice(0, 4);
+    paintNow();
+  };
   const files = new Map(); // review id -> its recording, for this visit
   const recent = new Map(); // review id -> its saved record, for this visit
 
@@ -196,6 +207,7 @@
     } catch (e) {
       if (mine !== run) return;
       run.done = true;
+      vid.controls = true;
       renderStart();
       if (e.name === 'AbortError') return setStatus('Stopped. Pick the match again to restart.', 'error');
       console.error(e);
@@ -358,7 +370,7 @@
   }
 
   function drawLegend(game) {
-    $('legend').innerHTML = game?.genre === 'chess' ? '<li class="k-death">Your blunder</li><li class="k-ally">Your mistake</li><li class="k-look">Looked at</li>' : '<li class="k-kill">Your kill</li><li class="k-death">Your death</li><li class="k-ally">Teammate died</li><li class="k-fight">Fight</li><li class="k-look">Looked at</li>';
+    $('legend').innerHTML = game?.genre === 'chess' ? '<li class="k-death">Your blunder</li><li class="k-ally">Your mistake</li><li class="k-look">Looked at</li>' : '<li class="k-kill">Your kill</li><li class="k-death">Your death</li><li class="k-ally">Teammate died</li><li class="k-fight">Fight</li><li class="k-cw">Clip to watch</li><li class="k-look">Looked at</li>';
   }
 
   const LINES = {
@@ -384,14 +396,17 @@
     if ((e.type === 'look' || e.type === 'clips') && run.looks) stageNote('look', `${run.looks} look${run.looks === 1 ? '' : 's'}`);
     if (e.type === 'step' && e.name === 'finish') stage('check', 'against the record and the video');
     if (e.type === 'rejected') stageNote('check', 'sent back, looking again');
-    if (e.type === 'scanning' && e.progress != null) setStatus(`Reading the match ${C.mmss(e.from)}–${C.mmss(e.to)}`, '', `${Math.round(e.progress * 100)}%`);
-    if (e.type === 'step') { beatStart(e); if (e.why) nowWhy(e.why); }
+    if (e.type === 'scanning' && e.progress != null) { setStatus(`Reading the match ${C.mmss(e.from)}–${C.mmss(e.to)}`, '', `${Math.round(e.progress * 100)}%`); if (nowState?.kind === READING) nowPhase(`Reading ${C.mmss(e.from)}–${C.mmss(e.to)} · ${Math.round(e.progress * 100)}%`); }
+    if (e.type === 'phase' && nowState?.kind === READING) { nowState.done.push(e.what); paintNow(); }
+    // the record before the coach's first turn is code's step, not a call of the coach's: it gets its caption here
+    if (e.type === 'step') { beatStart(e); if (e.name === 'scan' && nowState?.kind !== READING) nowStep(READING, null); if (e.why) nowWhy(e.name === 'scan' && !run.turns ? 'Every kill, death, and fight in the match, and the clips worth watching' : e.why); }
     if (e.type === 'scanning') { if (e.progress != null) sweepTo(e.from + e.progress * (e.to - e.from)); else fastForward(e.from, e.to); }
-    if (e.type === 'scan') { stopFast(); nowPhase(scanLine(e.counts)); run.events = e.events; drawEvents(e.events); addMark('scanned', e.from, e.to); run.calls += e.calls; drawMeter(); beatOut(scanLine(e.counts)); }
+    if (e.type === 'scan') { stopFast(); nowPhase(scanLine(e.counts)); run.events = e.events; drawEvents(e.events); addMark('scanned', e.from, e.to); run.calls += e.calls; drawMeter(); beatOut(scanLine(e.counts)); if (e.clips) listClips(e.clips); }
+    if (e.type === 'reading_clips') readingClips(e.windows);
     // a clip window is read in the scan, not a look the coach chose: it's marked, not counted
     if (e.type === 'look' && e.kind === 'clip') addMark('look clip', e.from, e.to);
     else if (e.type === 'look') { run.looks++; addMark(e.kind === 'measure' ? 'look measure' : 'look', e.from, e.to); moveEye((e.from + e.to) / 2); drawMeter(); }
-    if (e.type === 'clips') { if (e.events) { run.events = e.events; drawEvents(e.events); } run.calls += e.calls; drawMeter(); beatOut(`Watched ${plural(e.windows.length, 'clip')}: ${e.seconds} s at 8 frames a second, in ${plural(e.calls, 'call')}`); for (const w of e.windows) { if (w.reading?.story || w.reading?.outcome_why) beatOut(`${C.mmss(w.from)}–${C.mmss(w.to)}: ${w.reading.story || `${w.reading.outcome}, ${w.reading.outcome_why}`}`, 'muted'); if (w.reading?.last_choice?.choice) beatOut(`The choice before the loss, as the read saw it: ${w.reading.last_choice.t} ${w.reading.last_choice.choice}`, 'muted'); } }
+    if (e.type === 'clips') { if (e.events) { run.events = e.events; drawEvents(e.events); } run.calls += e.calls; drawMeter(); beatOut(`Watched ${plural(e.windows.length, 'clip')}: ${e.seconds} s at 8 frames a second, in ${plural(e.calls, 'call')}`); clipsRead(e.windows); }
     if (e.type === 'character') beatOut(`The clip reads agree you play ${e.name}, so every check now knows that's you`, 'muted');
     // research's own calls (its web searches and the answer that sums them up) count toward what the review spent
     if (e.type === 'research') { if (e.calls) { run.calls += e.calls; drawMeter(); } if (e.research) drawResearch(run.game?.name || 'this game', e.research); else { beatOut(short(e.answer || 'Nothing came back')); beatOut(e.researched ? `From ${sourceLinks(e.sources) || 'the web'}` : "From the model's own knowledge: no web search worked", 'muted'); } }
@@ -429,24 +444,30 @@
   // that frame while it thinks. The caption says which step this is and what's happening. Touching the player hands it
   // back; the chip picks the coach up again.
   const RUN_UP = 6; // seconds of run-up played into each moment
+  const READING = 'Reading the match', WATCHING = 'Watching clips'; // the two steps whose caption shows what's sent
   const following = () => !!run && !run.replay && !run.done && !run.handsOn && hasVideo();
   let nowState = null, queue = [], playing = false;
-  function nowStep(kind, at, why = '') { nowState = { n: (nowState?.n || 0) + 1, kind, at, why, phase: '', frames: [] }; paintNow(); }
-  function nowWhy(why) { if (nowState) { nowState.why = why; paintNow(); } }
+  // done: the parts of the scan finished so far; sent: the pictures and videos this step gave Gemini (G.onSend)
+  function nowStep(kind, at, why = '') { nowState = { n: (nowState?.n || 0) + 1, kind, at, why, phase: '', frames: [], done: [], sent: { pictures: 0, videos: 0 } }; paintNow(); }
+  function nowWhy(why) { if (nowState) { nowState.why = clipNames(why); paintNow(); } }
   function nowPhase(phase, frames) { if (!nowState) return; nowState.phase = phase; if (frames) nowState.frames = frames; paintNow(); }
   function paintNow() {
+    // the player's own controls stay away while it follows the coach: a paused video shows them, over the caption
+    vid.controls = !following();
     const el = $('now');
     el.hidden = !nowState || !run || run.replay || run.done;
     if (el.hidden) return;
     const s = nowState;
-    el.innerHTML = `<span class="now-n">${String(s.n).padStart(2, '0')}</span><div class="now-text"><p class="now-kind">${esc(s.kind)}${s.at != null ? ` <span>${C.mmss(s.at, true)}</span>` : ''}</p>${s.why ? `<p class="now-why">${esc(s.why)}</p>` : ''}${s.phase ? `<p class="now-phase"><i></i>${esc(s.phase)}</p>` : ''}</div>${s.frames.length ? `<div class="now-frames">${s.frames.slice(0, 5).map((f) => `<img src="${f.url}" alt="" />`).join('')}</div>` : ''}`;
+    const sent = [s.sent.pictures && plural(s.sent.pictures, 'picture'), s.sent.videos && plural(s.sent.videos, 'video')].filter(Boolean).join(' and ');
+    const trail = [...s.done.map((d) => `<span class="now-done">✓ ${esc(d)}</span>`), sent && `<span>${sent} sent to Gemini</span>`].filter(Boolean).join('');
+    el.innerHTML = `<span class="now-n">${String(s.n).padStart(2, '0')}</span><div class="now-text"><p class="now-kind">${esc(s.kind)}${s.at != null ? ` <span>${C.mmss(s.at, true)}</span>` : ''}</p>${s.why ? `<p class="now-why">${esc(s.why)}</p>` : ''}${s.phase ? `<p class="now-phase"><i></i>${esc(s.phase)}</p>` : ''}${trail ? `<p class="now-trail">${trail}</p>` : ''}</div>${s.frames.length ? `<div class="now-frames">${s.frames.slice(0, 5).map((f) => `<img src="${f.url}" alt="" />`).join('')}</div>` : ''}`;
   }
   // a tool call: what it looks at, played as it starts
   function followCall(name, a) {
     const times = [a.at, ...(Array.isArray(a.more) ? a.more : [])].map(C.parseTime).filter(Number.isFinite);
-    if (name === 'scan') nowStep('Reading the match', null);
+    if (name === 'scan') { if (nowState?.kind !== READING) nowStep(READING, null); }
     else if (name === 'research') nowStep('Looking up the game', null, a.question ? String(a.question).slice(0, 120) : 'Guides, the community, the meta, and the wiki');
-    else if (name === 'read_clips') nowStep('Watching clips', null, 'About 10 s around each moment, at 8 frames a second');
+    else if (name === 'read_clips') nowStep(WATCHING, null, 'About 10 s around each moment, at 8 frames a second');
     else if (name === 'frames' || name === 'measure_aim' || name === 'read_hud') {
       // a new step cuts straight to its moment: the video stays with what the caption says. A clip look plays exactly
       // the stretch the coach watches (C.clipPlan, as agent.js cuts it); the rest play the RUN_UP seconds into each moment
@@ -461,19 +482,58 @@
   function runUp() {
     const next = queue.shift();
     if (next == null || !following()) { playing = false; return; }
-    const { t, from, to, clip } = next;
+    const { t, from, to, clip, id, label } = next;
     playing = true;
     vid.muted = true; // following plays on its own, and a muted video always may
     stopFast();
     hideVideoMarks();
     $('player').classList.remove('holding');
-    if (nowState) { nowState.at = t; nowPhase(clip ? `Watching ${C.mmss(from, true)}–${C.mmss(to, true)}, the stretch the coach watches` : `Watching the run-up to ${C.mmss(t, true)}`); }
+    if (nowState) { nowState.at = label ? null : t; nowPhase(label || (clip ? `Watching ${C.mmss(from, true)}–${C.mmss(to, true)}, the stretch the coach watches` : `Watching the run-up to ${C.mmss(t, true)}`)); }
+    $('track').querySelectorAll('.cw.now').forEach((n) => n.classList.remove('now'));
+    if (id) $('track').querySelector(`.cw[data-id="${id}"]`)?.classList.add('now');
     playClip(from, to, () => {
       vid.currentTime = t;
       $('player').classList.add('holding');
+      // clips being read play in turn, round again until the read answers
+      if (!queue.length && run.reading) queue = readQueue();
       if (queue.length) setTimeout(runUp, 700);
       else playing = false;
     });
+  }
+  // The clip windows the scan lists, by id: marked on the timeline, listed on its card, and named by their times wherever
+  // the coach writes an id (W12 means nothing on screen)
+  const MOMENT = { kill: 'your kill', death: 'your death', near_death: 'near-death', ally_death: 'teammate down', point_lost: 'point against', point_won: 'point won', engagement: 'fight', damage: 'damage taken' };
+  const clipWhat = (c) => (c.unit ? `a ${c.unit}` : [...c.moments.map((m) => `${MOMENT[m.kind] || m.kind.replace(/_/g, ' ')} ${C.mmss(m.t)}`), c.hits && 'hits landed', c.firing && 'firing'].filter(Boolean).slice(0, 3).join(', ') || 'a fight');
+  const clipSpan = (c) => `${C.mmss(c.from)}–${C.mmss(c.to)}`;
+  function clipNames(text) { return String(text || '').replace(/\bW(\d+)\b/g, (id) => { const c = run?.clips?.get(id); return c ? clipSpan(c) : id; }); }
+  function listClips(clips) {
+    run.clips = new Map(clips.map((c) => [c.id, c]));
+    const track = $('track');
+    track.querySelectorAll('.cw').forEach((n) => n.remove());
+    for (const c of clips) { addMark('cw', c.from, c.to); Object.assign(track.lastElementChild.dataset, { id: c.id }); track.lastElementChild.title = `${clipSpan(c)}: ${clipWhat(c)}`; }
+    if (!clips.length) return;
+    if (nowState?.kind === READING) { nowState.done.push(`${plural(clips.length, 'clip')} worth watching`); paintNow(); }
+    beatHtml(`<p class="clip-head">${plural(clips.length, 'clip')} worth watching, about 10 s around each moment:</p><ul class="clip-list">${clips.map((c) => `<li><span class="cl-t">${clipSpan(c)}</span><span class="cl-what">${esc(clipWhat(c))}</span></li>`).join('')}</ul>`);
+  }
+  const readQueue = () => run.reading.map((w, i, all) => ({ t: w.to, from: w.from, to: w.to, clip: true, id: w.id, label: `Clip ${i + 1} of ${all.length} · ${clipSpan(w)}${run.clips?.get(w.id) ? ` · ${clipWhat(run.clips.get(w.id))}` : ''} · sent as video, 8 frames a second` }));
+  function readingClips(windows) {
+    run.reading = windows;
+    beatHtml(`<ul class="clip-list reading">${windows.map((w) => `<li data-from="${w.from}" data-to="${w.to}"><span class="cl-t">${clipSpan(w)}</span><span class="cl-what">${esc(run.clips?.get(w.id) ? clipWhat(run.clips.get(w.id)) : '')}</span><span class="cl-saw"><i></i>Gemini is watching it</span></li>`).join('')}</ul>`);
+    queue = readQueue();
+    if (!playing) runUp();
+  }
+  function clipsRead(windows) {
+    run.reading = null;
+    const rows = [...(run.beat?.querySelectorAll('.clip-list.reading li') || [])];
+    for (const w of windows) {
+      const saw = w.reading?.story || (w.reading?.outcome_why ? `${w.reading.outcome}, ${w.reading.outcome_why}` : '');
+      const choice = w.reading?.last_choice?.choice ? `The choice before the loss: ${w.reading.last_choice.t} ${w.reading.last_choice.choice}` : '';
+      const row = rows.find((r) => +r.dataset.from === w.from && +r.dataset.to === w.to);
+      if (row) { row.querySelector('.cl-saw').innerHTML = `${esc(saw || "Nothing it could read")}${choice ? `<span class="cl-choice">${esc(choice)}</span>` : ''}`; row.classList.add('done'); continue; }
+      if (saw) beatOut(`${C.mmss(w.from)}–${C.mmss(w.to)}: ${saw}`, 'muted');
+      if (choice) beatOut(choice, 'muted');
+    }
+    $('track').querySelectorAll('.cw.now').forEach((n) => n.classList.remove('now'));
   }
   // the frame a step is about, held, with something drawn over it (the learned screen, a measured aim)
   function holdOn(t, overlay) {
@@ -522,10 +582,10 @@
   function stopFast() { if (!fast) return; fast = null; vid.playbackRate = 1; vid.pause(); }
   vid.addEventListener('timeupdate', () => { if (fast && vid.currentTime >= fast.to - 0.5) vid.currentTime = fast.from; });
   // the player takes over when they touch the video or the timeline
-  const handsOn = () => { if (!run || run.replay || run.done || run.handsOn) return; run.handsOn = true; queue = []; playing = false; stopFast(); vid.muted = false; $('player').classList.remove('holding'); $('followBtn').hidden = false; };
+  const handsOn = () => { if (!run || run.replay || run.done || run.handsOn) return; run.handsOn = true; queue = []; playing = false; stopFast(); vid.muted = false; vid.controls = true; $('player').classList.remove('holding'); $('followBtn').hidden = false; };
   vid.addEventListener('pointerdown', handsOn);
   timeline.addEventListener('pointerdown', handsOn);
-  $('followBtn').addEventListener('click', () => { if (!run) return; run.handsOn = false; $('followBtn').hidden = true; if (nowState?.at != null) holdOn(nowState.at); });
+  $('followBtn').addEventListener('click', () => { if (!run) return; run.handsOn = false; vid.controls = !following(); $('followBtn').hidden = true; if (nowState?.at != null) holdOn(nowState.at); });
 
   // ---------- the breakdown: one card per step, as it happens ----------
   // A card says what the coach checks (its own words), what it saw (frames, a measured box), and what it made of it. The
@@ -540,7 +600,8 @@
     li.className = `beat ${name}`;
     // what the coach thought before this step, as the model summed it up (includeThoughts), so its reasoning can be followed
     const thought = run.thought; run.thought = '';
-    li.innerHTML = `<p class="beat-kind">${KIND[name] || esc(name)}</p>${why ? `<p class="beat-why">${esc(why)}</p>` : ''}${thought ? `<details class="beat-think" open><summary>How it reasoned</summary><p>${esc(thought).replace(/\n+/g, '</p><p>')}</p></details>` : ''}<div class="beat-shots"></div><div class="beat-outs"></div><ul class="beat-take"></ul>`;
+    const prose = (text) => esc(clipNames(text)).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/`([^`]+)`/g, '<code>$1</code>').replace(/\n+/g, '</p><p>');
+    li.innerHTML = `<p class="beat-kind">${KIND[name] || esc(name)}</p>${why ? `<p class="beat-why">${esc(clipNames(why))}</p>` : ''}${thought ? `<details class="beat-think" open><summary>How it reasoned</summary><p>${prose(thought)}</p></details>` : ''}<div class="beat-shots"></div><div class="beat-outs"></div><ul class="beat-take"></ul>`;
     $('beats').prepend(li);
     run.beat = li;
     li.times = [];
@@ -846,6 +907,7 @@
   async function finishReview(r) {
     stopStatus();
     run.done = true;
+    vid.controls = true;
     // what the whole review cost, kept in its log for How it worked, a past review's too
     run.log.push(['mark', { what: 'done', ms: Math.round(performance.now() - run.t0), calls: run.calls, tokens: run.tokens, requests: run.requests }]);
     const match = { id: run.id, date: today(), at: Date.now(), name: run.video.name, video: { size: run.video.size, lastModified: run.video.file.lastModified }, game: run.game.name, found: r.found, habit: r.habit, ...(r.reason ? { reason: r.reason } : {}), habitId: r.habitId, drill: r.drill, recheck: r.recheck, aim: r.aim, progress: r.progress, stats: r.stats, status: 'new' };
@@ -1321,10 +1383,18 @@
     });
     const problemLower = !from || !to || from.cy >= to.cy;
     if (p && from) chip(from, 'bad', p.label, problemLower ? 'below' : 'above');
-    if (f && to) chip(to, 'good', f.label, problemLower ? 'above' : 'below');
+    // say: a spot of its own for the label (its left end, in fractions of the frame), with a line back to its ring, for
+    // a mark beside another whose label would land on it (two HUD rows, one under the other)
+    if (f && to && f.say) {
+      const sx = f.say[0] * W, sy = f.say[1] * H, dx = to.cx - sx, dy = to.cy - sy, len = Math.hypot(dx, dy), r = 1 / Math.hypot(dx / len / to.rx, dy / len / to.ry);
+      if (len > r + 20) svg.push(`<path class="good lead" pathLength="1" d="M${n(sx)} ${n(sy)}L${n(to.cx - (dx / len) * (r + 6))} ${n(to.cy - (dy / len) * (r + 6))}" />`);
+      chips.push({ tone: 'good', text: f.label, spot: true, off: f.say[0] * 100, top: f.say[1] * 100 });
+    } else if (f && to) chip(to, 'good', f.label, problemLower ? 'above' : 'below');
     return { W, H, svg, chips };
   }
-  const chipHtml = (c) => (c.at
+  const chipHtml = (c) => (c.spot
+    ? `<span class="chip ${c.tone} spot" style="left:${c.off.toFixed(1)}%;top:${c.top.toFixed(1)}%">${esc(c.text)}</span>`
+    : c.at
     ? `<span class="chip ${c.tone} at${c.dashed ? ' dashed' : ''}" data-d="${c.d.toFixed(2)}" style="left:${c.off.toFixed(1)}%;top:${c.top.toFixed(1)}%;animation-delay:${c.d.toFixed(2)}s">${esc(c.text)}</span>`
     : `<span class="chip ${c.tone}${c.up ? ' up' : ''}${c.edge ? ` ${c.edge}` : ''}" style="${c.side}:${c.off.toFixed(1)}%;top:${c.top.toFixed(1)}%">${esc(c.text)}</span>`);
   function marksHtml(k) {
@@ -2327,58 +2397,52 @@
   // hand labels), and Stockfish's score for a chess move. Every step and mark was checked against the clip's frames.
   // The steps run on the clip's own clock; on the step with a hold, the clip freezes while the pen marks it up. The
   // Valorant and Apex clips are other players' videos, for testing; the chess game is generated.
+  // Four real matches, four games, each with a loss as the coach's frame-checked read has it (eval/answer-keys/coach):
+  // the screen read, the moment the record found, what decided it, and what to do instead. Every circled number was
+  // read off the very frame the clip freezes on (t = the clip's start in the match + at), at full size; change a clip's
+  // times (scripts/make-scenes.mjs) and they have to be read again.
   const SCENES = [
     {
-      id: 'apex', title: 'A fight won', game: 'Apex Legends', aspect: 2170 / 1162, from: 40,
-      hud: [['kill feed', [0.729, 0.174, 0.234, 0.166]], ['minimap', [0.058, 0, 0.17, 0.318]], ['ammo', [0.804, 0.816, 0.195, 0.155]], ['damage', [0.866, 0.083, 0.07, 0.048]]],
+      id: 'lol', title: 'Pinged and ignored', game: 'League of Legends', aspect: 16 / 9, from: 96,
+      hud: [['chat', [0.028, 0.565, 0.142, 0.09]], ['abilities', [0.418, 0.918, 0.132, 0.04]], ['health', [0.403, 0.966, 0.144, 0.022]], ['minimap', [0.844, 0.722, 0.156, 0.278]]],
       steps: [
-        { at: 0, kind: 'Reading the screen', phase: 'Found the kill feed, the minimap, the ammo, and the damage dealt', hud: true },
-        { at: 2.4, kind: 'Finding the fights', phase: 'Looking for damage numbers, knocks, and kill-feed rows' },
-        { at: 4.4, kind: 'Close look', t: 44.4, phase: 'Watching the run-up to the fight' },
-        { at: 6.4, kind: 'A fight won', t: 46.4, phase: 'Knocked down Raygebait: 127 damage inflicted', hold: 2.8, marks: [['Hits landing', [0.39, 0.495, 0.53, 0.57]], ['Knocked down · 127 damage', [0.7, 0.425, 0.765, 0.635]]] },
+        { at: 0, kind: 'Reading the screen', phase: 'Found the chat, the abilities with their cooldowns, health, and the minimap', hud: true },
+        { at: 1.6, kind: 'The record', t: 97.6, phase: 'Your death at 1:46, one of three losses in the match' },
+        { at: 4, kind: 'What you knew, what you had', t: 100, phase: 'Pinged four times that enemies were missing, Flash and ult on cooldown, 43% health: still at the front of the wave', hold: 3.8, marks: [['4× "enemies are missing"', [0.566, 0.028, 0.648, 0.17]], ['Ult 1:30 · Flash 3:55', [0.918, 0.486, 0.958, 0.551], [0.585, 0.8]], ['631 / 1479 health', [0.967, 0.455, 0.99, 0.497], [0.19, 0.84]]] },
+        { at: 7.8, kind: 'The cue', t: 103.8, phase: "Nearsighted: the enemy jungler's ult. About 2 s to walk back", hold: 2.4, marks: [['Nearsighted', [0.228, 0.44, 0.256, 0.512]]] },
+        { at: 10.4, kind: 'What cost the fight', t: 106.4, phase: 'Stayed at the front of the wave after the pings, with Flash and ult down', fix: "Stand behind your wave, or recall and spend the gold. Nearsighted means walk back now.", hold: 4.6, marks: [['"Retreat" pinged at 1:44', [0.645, 0.028, 0.662, 0.126], [0.03, 0.74]], ['0 / 1479', [0.963, 0.455, 0.988, 0.497], [0.19, 0.84]], ['1,216 gold unspent', [0.97, 0.555, 0.997, 0.6], [0.64, 0.84]]] },
       ],
     },
     {
-      id: 'tenz', title: 'Three kills in 11.6 s', game: 'Valorant', aspect: 2170 / 1162, from: 219,
-      hud: [['kill feed', [0.77, 0.082, 0.225, 0.11]]],
+      id: 'rl', title: 'Both forward', game: 'Rocket League', aspect: 16 / 9, from: 245.5,
+      hud: [['score and clock', [0.405, 0.008, 0.19, 0.077]], ['boost', [0.85, 0.73, 0.12, 0.24]]],
       steps: [
-        { at: 0, kind: 'Reading the kill feed', phase: 'Every row, both teams, from the full-quality recording', hud: true },
-        { at: 1, kind: 'Your kill', t: 220, phase: 'You ▸ Fade, enemy team' },
-        { at: 9.6, kind: 'Your kill', t: 228.6, phase: 'You ▸ ulquiorra, enemy team' },
-        { at: 12.8, kind: 'Three in 11.6 s', t: 231.6, phase: 'You ▸ Reyna: the third kill, 11.6 s after the first', hold: 2.8, marks: [['Kill 3 · You ▸ Reyna', [0.133, 0.8, 0.166, 0.99]]] },
+        { at: 0, kind: 'Reading the screen', phase: 'Found the score and the clock, boost, and the name tags', hud: true },
+        { at: 1.2, kind: 'The record', t: 246.7, phase: 'A goal against at 4:15, the only one: 2–0 becomes 2–1' },
+        { at: 2, kind: 'Both forward', t: 247.5, phase: 'Your teammate is already in their corner, and you drive at the same ball', hold: 2.8, marks: [['FORKY JR. in their corner', [0.442, 0.183, 0.482, 0.277]], ['65 boost', [0.815, 0.87, 0.882, 0.952]], ['2–0, 1:16 left', [0.008, 0.403, 0.085, 0.597]]] },
+        { at: 3.5, kind: 'The shot', t: 249, phase: 'A tight-angle shot from the corner, 65 down to 42 boost', hold: 2.4, marks: [['Shot on goal', [0.185, 0.423, 0.25, 0.577]], ['42 boost', [0.815, 0.87, 0.882, 0.952]]] },
+        { at: 9, kind: 'What cost the goal', t: 254.5, phase: 'Both of you forward and shooting: nobody back for the clear, and your net is empty', fix: "Up 2–0 late with your teammate already forward, rotate to the back post as the last man.", hold: 4.6, marks: [['3 boost, chasing from behind', [0.81, 0.875, 0.885, 0.945]], ['2–0, 1:09 left', [0.008, 0.403, 0.085, 0.597]]] },
       ],
     },
     {
-      id: 'vyse', title: 'Traded after a flash', game: 'Valorant', aspect: 1290 / 726, from: 76,
-      hud: [['kill feed', [0.74, 0.08, 0.25, 0.12]]],
+      id: 'r6', title: 'An empty rifle', game: 'Rainbow Six Siege', aspect: 16 / 9, from: 512.5,
+      hud: [['ammo, each weapon', [0.81, 0.82, 0.152, 0.14]], ['health', [0.035, 0.87, 0.1, 0.065]], ['round', [0.27, 0.005, 0.47, 0.095]], ['kill feed', [0.82, 0.282, 0.165, 0.038]]],
       steps: [
-        { at: 0, kind: 'Reading the kill feed', phase: 'Teammates\' kills and deaths too, with each side\'s team', hud: true },
-        { at: 1.4, kind: 'Flashed', t: 77.4, phase: 'The screen whites out, kill feed and all' },
-        { at: 3.8, kind: 'Teammate down', t: 79.8, phase: 'As the flash clears: Omen ▸ ZedCapetinha, your team' },
-        { at: 5.5, kind: 'Traded', t: 81.5, phase: 'You ▸ Omen, the killer, 1.4 s after the flash cleared', hold: 2.8, marks: [['You ▸ Omen', [0.162, 0.745, 0.197, 0.987]], ['Your kill', [0.72, 0.45, 0.87, 0.55]]] },
-        { at: 8, kind: 'Your kill', t: 84, phase: 'You ▸ Killjoy, 2.8 s later' },
+        { at: 0, kind: 'Reading the screen', phase: "Found the ammo for each weapon, health, the round's top bar, and the kill feed", hud: true },
+        { at: 1, kind: 'The record', t: 513.5, phase: 'Down to 19 health at 8:38.9: round 4, match point' },
+        { at: 2.5, kind: 'The rifle runs dry', t: 515, phase: 'Holding the trigger on the far doorway: 8 rounds left and RELOAD on screen', hold: 2.4, marks: [['RELOAD', [0.562, 0.464, 0.596, 0.538]], ['Rifle 8 / 89', [0.856, 0.81, 0.91, 0.962]]] },
+        { at: 3.4, kind: 'In cover, no reload', t: 515.9, phase: 'Behind the counter with the rifle at 0 / 89, and the pistol next', hold: 2.6, marks: [['Rifle 0 / 89 · pistol 21 / 100', [0.856, 0.81, 0.952, 0.962]]] },
+        { at: 6.4, kind: 'What it cost', t: 518.9, phase: 'Walked through that doorway on the pistol into a set enemy: 100 to 19 health in 0.4 s', fix: 'Reload behind the counter, then hold the doorway with a full rifle, or drone the room first.', hold: 4.6, marks: [['19 / 100', [0.872, 0.035, 0.93, 0.105]], ['Rifle still 0 / 89 · pistol 15 / 100', [0.855, 0.81, 0.945, 0.962]]] },
       ],
     },
     {
-      id: 'chess', title: 'A blunder with 25 s left', game: 'Chess', note: 'a generated test game', aspect: 16 / 9, from: 68,
-      hud: [['board', [0.0625, 0.055, 0.5, 0.89]], ['your clock', [0.609, 0.778, 0.188, 0.098]]],
+      id: 'mr', title: 'All in, no exit', game: 'Marvel Rivals', aspect: 16 / 9, from: 251,
+      hud: [['health', [0.468, 0.9, 0.066, 0.042]], ['abilities', [0.775, 0.868, 0.12, 0.1]], ['ult', [0.897, 0.86, 0.08, 0.105]], ['both teams', [0, 0.1, 1, 0.09]]],
       steps: [
-        { at: 0, kind: 'Reading the board', phase: 'Every move read off the board in code: no model calls', hud: true },
-        { at: 3, kind: 'Scoring every move', phase: 'Stockfish rates each of your moves' },
-        { at: 6, kind: 'Your move', t: 74, phase: '19. Nce5' },
-        // squares are the fixture's: an 80 px board at (80, 40) in 1280 x 720, White at the bottom
-        {
-          at: 6.6, kind: 'A blunder', t: 74.6, phase: '19. Nce5 loses 4.9 pawns: the f6 pawn takes the knight. Re1 was best.', hold: 4,
-          mark: {
-            aspect: 16 / 9,
-            moves: [
-              { tone: 'bad', from: [0.21875, 0.5556], to: [0.34375, 0.4444], label: '19. Nce5 · −4.9 pawns', say: [0.61, 0.3] },
-              { tone: 'bad', dashed: true, from: [0.40625, 0.3333], to: [0.34375, 0.4444], ring: false, stop: 40, label: 'then f6 takes the knight', say: [0.61, 0.38] },
-              { tone: 'good', from: [0.40625, 0.8889], to: [0.34375, 0.8889], ring: false, label: 'Re1 was best', say: [0.61, 0.46] },
-            ],
-          },
-          marks: [['0:25 on your clock', [0.778, 0.609, 0.876, 0.797]]],
-        },
+        { at: 0, kind: 'Reading the screen', phase: 'Found health, the abilities and their cooldowns, the ult charge, and both teams', hud: true },
+        { at: 1.5, kind: 'Ult cast', t: 252.5, phase: 'Her ult at 4:12.5: 12 s of ult form, 100% down to 0' },
+        { at: 4, kind: 'Close look', t: 255, phase: 'Trading head-on in her ult, at full health', hold: 2, marks: [['250 / 250', [0.907, 0.468, 0.94, 0.53]]] },
+        { at: 7, kind: 'What it cost', t: 258, phase: 'Kept trading head-on: 250 to 54 health in 3 s, with two abilities ready to step out', fix: 'Use the 12 s of ult in bursts: dash out to your healers at about 85, then go back in.', hold: 4.6, marks: [['54 / 253', [0.898, 0.474, 0.934, 0.532]], ['2 abilities ready, 1 on 4 s · ult spent', [0.865, 0.775, 0.97, 0.976]]] },
       ],
     },
   ];
@@ -2397,7 +2461,7 @@
       if (shown === s) return;
       shown = s;
       const n = SCENES[scene].steps.indexOf(s) + 1;
-      $('demoNow').innerHTML = `<span class="now-n">${String(n).padStart(2, '0')}</span><div class="now-text"><p class="now-kind">${esc(s.kind)}${s.t != null ? ` <span>${C.mmss(s.t, true)}</span>` : ''}</p><p class="now-phase"><i></i>${esc(s.phase)}</p></div>`;
+      $('demoNow').innerHTML = `<span class="now-n">${String(n).padStart(2, '0')}</span><div class="now-text"><p class="now-kind">${esc(s.kind)}${s.t != null ? ` <span>${C.mmss(s.t, true)}</span>` : ''}</p><p class="now-phase"><i></i>${esc(s.phase)}</p>${s.fix ? `<p class="now-fix"><b>Instead</b> ${esc(s.fix)}</p>` : ''}</div>`;
       move($('demoNow'), { opacity: [0, 1], y: [10, 0] }, { duration: 0.35, ease: [0.2, 0.7, 0.2, 1] });
       hud.classList.toggle('on', !!s.hud);
       marks.innerHTML = '';
@@ -2411,7 +2475,7 @@
       s.steps.forEach((x) => { x.held = false; });
       $('demo').style.aspectRatio = s.aspect;
       hud.innerHTML = s.hud.map(([name, [x, y, w, h]]) => `<span class="el" style="left:${x * 100}%;top:${y * 100}%;width:${w * 100}%;height:${h * 100}%"><span>${esc(name)}</span></span>`).join('');
-      $('demoCaption').textContent = `Eye Catcher reading ${s.note || `a real ${s.game} match`}`;
+      $('demoCaption').textContent = `A real ${s.game} match, ${C.mmss(s.from)}–${C.mmss(s.from + s.steps.at(-1).at)}. Every circled number is read off the frame it's drawn on.`;
       bar.querySelectorAll('.scene').forEach((b, k) => { b.setAttribute('aria-selected', String(k === i)); b.querySelector('i').style.transform = 'scaleX(0)'; });
       move($('demo'), { opacity: [0.35, 1], scale: [0.985, 1] }, { duration: 0.5, ease: [0.2, 0.7, 0.2, 1] });
       v.src = `assets/scenes/${s.id}.mp4`;
@@ -2436,10 +2500,12 @@
         s.held = holding = true;
         v.pause();
         v.currentTime = s.at;
-        marks.innerHTML = (s.mark ? marksHtml(s.mark) : '') + (s.marks || []).map(([label, box]) => marksHtml({ aspect: SCENES[scene].aspect, fix: { box, label } })).join('');
-        // labels pop in one after another, or each with its own move when it has one
+        marks.innerHTML = (s.mark ? marksHtml(s.mark) : '') + (s.marks || []).map(([label, box, say]) => marksHtml({ aspect: SCENES[scene].aspect, fix: { box, label, say } })).join('');
+        // labels pop in one after another, or each with its own move when it has one. The CSS scale property, not a
+        // transform: Motion's scale wrote over the transform that sets each label beside its ring (they sat on the
+        // numbers they pointed at, Oct 25)
         const cs = marks.querySelectorAll('.chip');
-        move(cs, { scale: [0.6, 1], opacity: [0, 1] }, { type: 'spring', bounce: 0.45, duration: 0.6, delay: (i) => (cs[i].dataset.d ? +cs[i].dataset.d : 0.35 + i * 0.12) });
+        if (!calm) cs.forEach((c, i) => c.animate([{ scale: 0.6, opacity: 0 }, { scale: 1, opacity: 1 }], { duration: 520, delay: (c.dataset.d ? +c.dataset.d : 0.35 + i * 0.14) * 1000, easing: 'cubic-bezier(0.34, 1.56, 0.64, 1)', fill: 'both' }));
         holdTimer = setTimeout(() => { holding = false; marks.innerHTML = ''; v.play().catch(() => {}); }, s.hold * 1000);
       }
     });
@@ -2448,9 +2514,9 @@
     // it plays only while it's on screen
     new IntersectionObserver(([e]) => { if (e.isIntersecting) { if (!holding) v.play().catch(() => {}); } else v.pause(); }, { threshold: 0.3 }).observe(v);
     play(0);
-    // the walkthrough's last step: Apex's knock-down frame, marked
+    // the walkthrough's last step: the first scene's poster (League at 1:40), its pings marked
     $('stepProof').querySelector('img').src = `assets/scenes/${SCENES[0].id}.jpg`;
-    $('stepProof').insertAdjacentHTML('beforeend', marksHtml({ aspect: SCENES[0].aspect, fix: { box: [0.39, 0.495, 0.53, 0.57], label: 'Hits landing' } }));
+    $('stepProof').insertAdjacentHTML('beforeend', marksHtml({ aspect: SCENES[0].aspect, fix: { box: [0.566, 0.028, 0.648, 0.17], label: '4× enemies are missing' } }));
   }
 
   // the opening card arrives in a short stagger, and each section rises in as it scrolls into view
@@ -2529,6 +2595,7 @@
     vid.load();
     releaseLater(old);
     run = { id, replay: true, done: true, rec, script: rec?.script || null, file: null, handle: rec?.handle || null, video: { name: m.name, duration: rec?.video.duration || 0 }, game: rec?.game || null, workingOn: rec?.workingOn || null, abort: new AbortController(), looks: 0, turns: 0, calls: 0, beat: null, log: [] };
+    vid.controls = true;
     $('crumbs').hidden = false;
     $('crumbs').innerHTML = `<a class="back" href="#reviews"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3 5 8l5 5" /></svg>All reviews</a><span>${niceWhen(m)} · ${esc(m.game || '')} · ${esc(m.name)}</span>${D && rec?.path ? `<button class="quiet reveal" type="button" id="revealBtn">${/Mac/.test(navigator.userAgent) ? 'Show in Finder' : 'Show the file'}</button>` : ''}`;
     $('revealBtn')?.addEventListener('click', () => D.reveal(rec.path));

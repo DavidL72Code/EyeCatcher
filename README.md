@@ -92,7 +92,13 @@ npm test
 
 ### Using it
 
-It's laid out as an app: a sidebar (a tab bar on phones) with three places. **Home** says what Eye Catcher is, with four real scenarios played over their footage: a fight won (Apex), three kills in 10 s and a trade in 2 s (Valorant, read off the kill feed), and a blunder Stockfish scores (a generated chess game). Each clip freezes while the pen marks the moment up. Its motion (entrance, crossfades, reveals, springs) is [Motion](https://motion.dev), shipped in `vendor/`. **Coach** is where you drop in a match. **Past reviews** lists them by game.
+It's laid out as an app: a sidebar (a tab bar on phones) with three places. **Home** says what Eye Catcher is, with four real matches, each a different game, played with the coach's read of one loss over its footage:
+- **League of Legends:** stayed at the front of the wave after four "enemies are missing" pings, with Flash and ult on cooldown.
+- **Rocket League:** a corner shot with the teammate already forward, which left the net empty at 2–0.
+- **Rainbow Six Siege:** emptied the rifle at a doorway, didn't reload behind cover, and walked in on the pistol.
+- **Marvel Rivals:** traded head-on through the ult, 250 to 54 health in 3 s, with two abilities ready.
+
+Each one goes the way a review does: the screen read, the loss the record found, what decided it, and what to do instead. The clip freezes while the pen circles the HUD's numbers, each read off the frame it's drawn on. The reads come from the frame-checked coach baselines in `eval/answer-keys/coach/`. Its motion (entrance, crossfades, reveals, springs) is [Motion](https://motion.dev), shipped in `vendor/`. **Coach** is where you drop in a match. **Past reviews** lists them by game.
 
 While a review runs, the video follows the coach:
 - it flips through the match while the screen is read;
@@ -437,7 +443,7 @@ Each key moment in the report is a full frame marked up like a telestrator (`rep
 
 ```
 index.html  styles.css  app.js   UI: Home, Coach (start a review, the live review, the check-in), the verdict, past reviews
-assets/scenes/                   Home's scenario clips and posters (npm run scenes); the Apex and Valorant ones are other players' videos, for testing: replace before publishing
+assets/scenes/                   Home's scenario clips and posters (npm run scenes), cut from other players' videos for testing: replace before publishing
 scripts/make-scenes.mjs          encodes those clips from recordings on this machine
 reviews.js                       past reviews in IndexedDB: log, frames, report, recording handle; recording copies in OPFS
 report.js                        key moments marked up: problem and fix on each frame
