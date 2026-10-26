@@ -1,0 +1,116 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="330 10 1160 1800" width="580" height="900" role="img" aria-labelledby="title desc">
+  <title id="title">How Eye Catcher reviews a match</title>
+  <desc id="desc">Your recording is decoded on your device. Gemini learns the game, and Gemini and code check every box. Gemini and code read the match record. The coach agent loop picks its steps with six tools, up to 25 calls. Code checks the finding, Gemini checks each claim against the record and then the video, and you check the finding; any of the three can send it back to the coach. Then the report and narrated critique. The next match re-measures the habit.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 16 16" refX="13" refY="8" markerWidth="16" markerHeight="16" markerUnits="userSpaceOnUse" orient="auto-start-reverse">
+      <path d="M2,2 L13,8 L2,14" fill="none" stroke="#8a8a85" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+    <linearGradient id="split" x1="0" x2="1" y1="0" y2="0">
+      <stop offset="0.5" stop-color="#eeedfe"/><stop offset="0.5" stop-color="#e1f5ee"/>
+    </linearGradient>
+    <linearGradient id="split-edge" x1="0" x2="1" y1="0" y2="0">
+      <stop offset="0.5" stop-color="#7f77dd"/><stop offset="0.5" stop-color="#4fb894"/>
+    </linearGradient>
+    <style>
+      text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; text-anchor: middle; }
+      .t { font-size: 27px; font-weight: 500; }
+      .s { font-size: 22px; }
+      .tile { font-size: 26px; fill: #2c2c2a; }
+      .note { font-size: 22px; fill: #5f5e5a; }
+      .you { fill: #f1efe8; stroke: #8a8984; stroke-width: 1.5; }
+      .you-t { fill: #2c2c2a; } .you-s { fill: #5f5e5a; }
+      .gem { fill: #eeedfe; stroke: #7f77dd; stroke-width: 1.5; }
+      .gem-t { fill: #3c3489; } .gem-s { fill: #534ab7; }
+      .code { fill: #e1f5ee; stroke: #4fb894; stroke-width: 1.5; }
+      .code-t { fill: #085041; } .code-s { fill: #0f6e56; }
+      .both { fill: url(#split); stroke: url(#split-edge); stroke-width: 1.5; }
+      .both-t { fill: #2c2c2a; } .both-s { fill: #444441; }
+      .line { fill: none; stroke: #8a8a85; stroke-width: 2.5; }
+      .back { fill: none; stroke: #8a8a85; stroke-width: 2.5; stroke-dasharray: 8 6; }
+    </style>
+  </defs>
+
+  <rect x="330" y="10" width="1160" height="1800" rx="28" fill="#ffffff"/>
+
+  <!-- your recording -->
+  <rect class="you" x="670" y="40" width="400" height="112" rx="14"/>
+  <text class="t you-t" x="870" y="86">Your recording</text>
+  <text class="s you-s" x="870" y="125">Decoded on your device</text>
+
+  <!-- learning the game -->
+  <path class="line" d="M870,152 V184 H640 V212" marker-end="url(#arrow)"/>
+  <rect class="gem" x="450" y="216" width="380" height="112" rx="14"/>
+  <text class="t gem-t" x="640" y="262">Learn the game</text>
+  <text class="s gem-s" x="640" y="301">Game, HUD boxes, habits</text>
+
+  <path class="line" d="M830,272 H906" marker-end="url(#arrow)"/>
+  <rect class="both" x="910" y="216" width="380" height="112" rx="14"/>
+  <text class="t both-t" x="1100" y="262">Check every box</text>
+  <text class="s both-s" x="1100" y="301">Pixels + a second look</text>
+
+  <!-- the match record -->
+  <path class="line" d="M1100,328 V396" marker-end="url(#arrow)"/>
+  <rect class="both" x="450" y="400" width="840" height="112" rx="14"/>
+  <text class="t both-t" x="870" y="446">Read the match record</text>
+  <text class="s both-s" x="870" y="485">Kill feed, HUD counters, fights, before turn 1</text>
+
+  <!-- the coach agent loop -->
+  <path class="line" d="M870,512 V576" marker-end="url(#arrow)"/>
+  <rect x="370" y="580" width="1000" height="352" rx="26" fill="#efeefd" stroke="#9e97e6" stroke-width="1.5" stroke-dasharray="8 6"/>
+  <text class="t gem-t" x="870" y="638">Coach agent loop</text>
+  <text class="s gem-s" x="870" y="677">Gemini picks each step, up to 25 calls</text>
+  <g fill="#ffffff" stroke="#d3d1c7" stroke-width="1.5">
+    <rect x="410" y="704" width="280" height="80" rx="10"/>
+    <rect x="730" y="704" width="280" height="80" rx="10"/>
+    <rect x="1050" y="704" width="280" height="80" rx="10"/>
+    <rect x="410" y="812" width="280" height="80" rx="10"/>
+    <rect x="730" y="812" width="280" height="80" rx="10"/>
+    <rect x="1050" y="812" width="280" height="80" rx="10"/>
+  </g>
+  <text class="tile" x="550" y="753">Read clips</text>
+  <text class="tile" x="870" y="753">Research</text>
+  <text class="tile" x="1190" y="753">Frames</text>
+  <text class="tile" x="550" y="861">Measure aim</text>
+  <text class="tile" x="870" y="861">Read HUD</text>
+  <text class="tile" x="1190" y="861">Ask you</text>
+
+  <!-- the checks -->
+  <path class="line" d="M870,932 V996" marker-end="url(#arrow)"/>
+  <rect class="code" x="450" y="1000" width="840" height="112" rx="14"/>
+  <text class="t code-t" x="870" y="1046">Check the finding in code</text>
+  <text class="s code-s" x="870" y="1085">Every loss looked at, 2+ losses cited</text>
+
+  <path class="line" d="M870,1112 V1176" marker-end="url(#arrow)"/>
+  <rect class="gem" x="450" y="1180" width="840" height="112" rx="14"/>
+  <text class="t gem-t" x="870" y="1226">Check each claim</text>
+  <text class="s gem-s" x="870" y="1265">Record, then blind video, planted fakes</text>
+
+  <path class="line" d="M870,1292 V1356" marker-end="url(#arrow)"/>
+  <rect class="you" x="450" y="1360" width="840" height="112" rx="14"/>
+  <text class="t you-t" x="870" y="1406">You check the finding</text>
+  <text class="s you-s" x="870" y="1445">Confirm it, or send it back</text>
+
+  <!-- the report -->
+  <path class="line" d="M870,1472 V1536" marker-end="url(#arrow)"/>
+  <rect class="you" x="450" y="1540" width="840" height="112" rx="14"/>
+  <text class="t you-t" x="870" y="1586">Report and narrated critique</text>
+  <text class="s you-s" x="870" y="1625">Marked moments, what to do instead, drill</text>
+
+  <!-- sent back to the coach -->
+  <path class="back" d="M1290,1056 H1430 M1290,1236 H1430 M1290,1416 H1430 V756 H1380" marker-end="url(#arrow)"/>
+  <text class="note" x="1413" y="975" style="text-anchor: end">Sent back</text>
+
+  <text class="note" x="870" y="1713">↻ Next match re-measures the habit against this one</text>
+
+  <!-- key -->
+  <g class="note" style="text-anchor: start; fill: #2c2c2a">
+    <rect class="gem" x="450" y="1756" width="24" height="24" rx="5"/>
+    <text x="486" y="1776" style="text-anchor: start">Gemini (Flash-Lite)</text>
+    <rect class="code" x="726" y="1756" width="24" height="24" rx="5"/>
+    <text x="762" y="1776" style="text-anchor: start">Code</text>
+    <rect class="both" x="852" y="1756" width="24" height="24" rx="5"/>
+    <text x="888" y="1776" style="text-anchor: start">Gemini and code</text>
+    <rect class="you" x="1093" y="1756" width="24" height="24" rx="5"/>
+    <text x="1129" y="1776" style="text-anchor: start">You and your files</text>
+  </g>
+</svg>

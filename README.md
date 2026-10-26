@@ -1,69 +1,89 @@
 # Eye Catcher
 
-A post-game coach that watches a recording of your match, finds the one habit losing you games, shows you the moments that prove it with what to do instead at each one, and gives you a drill. In your next match it checks whether the habit is getting better.
+A post-game coach for any game. Drop in a recording of your match. It finds the one habit that's losing you games, shows you the moments that prove it with what to do instead at each one, and gives you a drill. In your next match it checks whether the habit got better.
 
-It learns each game from the recording itself, so there's no game profile to write. Once it knows the game, it looks up what matters in it (what the game rewards, what top players focus on, which fights are worth taking) instead of judging every game by one shooter's rules. It coaches fights, not only kills and deaths: a fight where nobody dies can still decide a match. Measuring is done in code by genre: shooters (kill feed, crosshair height, shots, dead time) and chess (every move read off the board and scored by Stockfish). Any other game still gets the generic tools: close looks, HUD reading, questions, and the evidence checks.
+## The problem
 
-## Run it yourself
+Most players lose to the same few habits, match after match, and don't see them. Watching your own replay takes as long as the match did, and you have to know what to look for. A coach knows, but most players don't have one.
 
-Eye Catcher is open source and runs on your own computer with your own Gemini API key. There's no hosted server: the app calls Google's Gemini API straight from your machine, and your recordings, reviews, and key stay on it (only the frames and clips each step needs go to Gemini).
+Giving the video to an AI model doesn't fix that. On Oct 17 our first version reviewed the first 14 minutes of one Valorant match three times and named three different habits. Checked frame by frame, none of them held. Models guess numbers, mix up players, and call a teammate an enemy, and they sound just as sure when they're wrong.
 
-There are three ways to run it. All three need a free Gemini key ([below](#get-a-gemini-api-key)).
+## How Eye Catcher solves it
+
+- It learns each game from the recording: what's on the HUD, where the kill feed is, how a death looks. There's no game profile to write.
+- Code measures everything it can: the kill feed, the HUD's numbers, health, ammo, aim, and every chess move, scored by Stockfish. The model isn't asked for a number code can read.
+- An agent decides where to look closely, within 25 model calls a review. Nobody gives it a list of steps.
+- Every claim is checked twice before you see it: against the match record, and against the video by a check that never sees the coach's reasoning.
+- You confirm it. A finding comes to you before it's final, and whatever you say goes back to the coach.
+- The report marks up each moment on its own frame, with what to do instead, a drill, and a narrated critique you can save as a video.
+
+## Run it
+
+There are three ways. All three need a free Gemini API key.
 
 | | What you do | What you get |
 | --- | --- | --- |
-| **Download the app** | Install it, paste your key | Everything, with the local Kokoro voice. No terminal. |
-| **Use the website** | Open https://davidl72code.github.io/EyeCatcher/, paste your key | The same coach in your browser, with the browser's own voices. Nothing to install. |
-| **Run from source** | `git clone`, `npm install`, `npm run desktop` | Everything, plus the tests and the eval tools. |
-
-### Download the app
-
-Get the installer for your system from the [latest release](https://github.com/DavidL72Code/EyeCatcher/releases/latest):
-
-| System | File |
-| --- | --- |
-| Mac with Apple silicon (M1 or later) | `Eye-Catcher-<version>-mac-arm64.dmg` |
-| Mac with Intel | `Eye-Catcher-<version>-mac-x64.dmg` |
-| Windows 10 or 11 | `Eye-Catcher-<version>-win-x64.exe` |
-| Linux | the `.AppImage` |
-
-The installers aren't signed with a paid Apple or Microsoft certificate yet, so each system warns you the first time:
-- **macOS:** open the `.dmg` and drag Eye Catcher into Applications. The first launch says it can't check the app. Go to System Settings › Privacy & Security, find "Eye Catcher was blocked", and choose **Open Anyway**. Or run `xattr -dr com.apple.quarantine "/Applications/Eye Catcher.app"` once.
-- **Windows:** SmartScreen says it protected your PC. Choose **More info**, then **Run anyway**.
-- **Linux:** make the file runnable with `chmod +x Eye-Catcher-*.AppImage`, then open it.
-
-Then open **Coach**, paste your key, and drop in a recording. The key is kept encrypted by your system's keychain (the macOS Keychain, Windows' DPAPI, or the Linux keyring), not in a plain file; on a Linux desktop with no keyring, the app keeps it as a browser would. An unsigned update looks like a new app to macOS, so after one the Mac may ask once to let Eye Catcher read its key: choose **Always Allow**. The voice model, Kokoro (about 90 MB), downloads on the first critique.
-
-### Use the website
-
-Open https://davidl72code.github.io/EyeCatcher/, go to **Coach**, and paste your key. It's the same page as the app, served as static files with no server behind it: your browser keeps the key and sends it only to Google, and your recordings and reviews stay in the browser. The differences:
-- the critique speaks with your browser's own voices;
-- a past review asks you to allow its recording again (Chrome), or to pick the file, instead of opening it straight from disk;
-- Home's scenario clips aren't included, as with the download.
-
-Use Chrome, Edge, or another Chromium browser for the best video support.
-
-### What you need to run from source
-
-- **Node.js 20 or newer**, and **git**. Check with `node -v`.
-- **A Gemini API key** (free; see below).
-- **macOS, Windows, or Linux**, with about 1 GB free for the dependencies. Electron and the local voice model, Kokoro (about 90 MB), download on first use.
-- **A recording of your own match** (MP4, MOV, MKV, or WebM): a shooter, a MOBA, a sports game, chess, or a card battler.
-- **Google Chrome**, only to run the end-to-end tests.
+| 1. The website | Open a link, paste your key | The coach in your browser. Nothing to install. |
+| 2. Download the app | Install it, paste your key | Everything, with a voice that runs on your computer. |
+| 3. From source | Clone, install, run | Everything, plus the tests and evals. |
 
 ### Get a Gemini API key
 
 1. Go to https://aistudio.google.com/apikey and sign in with a Google account. You must be 18 or older, in a region where the Gemini API is available.
-2. Choose **Create API key**. It makes a Google Cloud project for the key if you don't have one.
-3. Copy the key. Paste it into the app's **Coach** screen, or into `.env` when you run from source. It's sent only to Google, to authenticate.
+2. Choose Create API key.
+3. Copy the key. You paste it into the app's Coach screen, or into `.env` when you run from source. It's sent only to Google.
 
-**The free tier:**
-- **Cost:** none.
-- **Daily limit:** about 500 requests a day per model on the Flash-Lite models Eye Catcher uses. A review takes 15 to 25, so that's roughly 20 reviews a day per key.
-- **A second key** from another Google Cloud project, as `GEMINI_API_KEY2`, takes over when the first runs out for the day.
-- **Privacy:** on the free tier, Google may use what you send to improve its products, and human reviewers may read it ([Gemini API terms](https://ai.google.dev/gemini-api/terms)). Don't review recordings that show anything private; with billing on, the paid tier's terms apply instead.
+The free tier costs nothing and allows about 500 requests a day per model. A review takes 15 to 25, so that's about 20 reviews a day. On the free tier Google may use what you send to improve its products, and people may read it ([Gemini API terms](https://ai.google.dev/gemini-api/terms)). Don't review recordings that show anything private.
 
-### Install and run from source
+### 1. The website
+
+1. Open https://davidl72code.github.io/EyeCatcher/ in Chrome or Edge.
+2. Go to Coach and paste your key. Your browser keeps it and sends it only to Google.
+3. Drop in a recording (MP4, MOV, MKV, or WebM).
+
+There's no server behind the website. Your recordings and reviews stay in your browser. Unlike the app, the critique uses your browser's voices, and a past review asks for its recording again.
+
+To run the website copy on your own machine (needs Node.js 20 or newer and Python 3):
+
+```bash
+git clone https://github.com/DavidL72Code/EyeCatcher.git
+cd EyeCatcher
+npm run web
+python3 -m http.server 8080 --directory site
+```
+
+Then open http://localhost:8080. `npm run web` uses only Node, so there's nothing to install first.
+
+To put your own copy on GitHub Pages: fork the repo, set Settings › Pages › Source to GitHub Actions, and push to `main`. `.github/workflows/pages.yml` builds and deploys it.
+
+### 2. Download the app
+
+1. Get the installer for your system from the [latest release](https://github.com/DavidL72Code/EyeCatcher/releases/latest):
+
+   | System | File |
+   | --- | --- |
+   | Mac with Apple silicon (M1 or later) | `Eye-Catcher-<version>-mac-arm64.dmg` |
+   | Mac with Intel | `Eye-Catcher-<version>-mac-x64.dmg` |
+   | Windows 10 or 11 | `Eye-Catcher-<version>-win-x64.exe` |
+   | Linux | `Eye-Catcher-<version>-linux-x86_64.AppImage` |
+
+2. Install it. The installers aren't signed with a paid certificate yet, so each system warns you the first time.
+   - macOS: open the `.dmg` and drag Eye Catcher into Applications. The first launch is blocked. Go to System Settings › Privacy & Security, find "Eye Catcher was blocked", and choose Open Anyway. Or run this once:
+     ```bash
+     xattr -dr com.apple.quarantine "/Applications/Eye Catcher.app"
+     ```
+   - Windows: run the `.exe`. If SmartScreen stops it, choose More info, then Run anyway.
+   - Linux: make the file runnable, then open it:
+     ```bash
+     chmod +x Eye-Catcher-*.AppImage
+     ```
+3. Open Coach, paste your key, and drop in a recording.
+
+The app keeps your key encrypted in the system keychain (the macOS Keychain, Windows DPAPI, or the Linux keyring). The voice model, Kokoro (about 90 MB), downloads the first time a critique plays. Each release lists every installer's SHA-256 in `SHA256SUMS.txt`, to compare with `shasum -a 256 <file>`.
+
+### 3. From source
+
+You need Node.js 20 or newer and git.
 
 ```bash
 git clone https://github.com/DavidL72Code/EyeCatcher.git
@@ -72,457 +92,231 @@ npm install
 cp .env.example .env
 ```
 
-Open `.env` and put your key after `GEMINI_API_KEY=`. On Windows, use `copy .env.example .env` instead of `cp`. Then start the desktop app:
+On Windows, use `copy .env.example .env`. Open `.env` and put your key after `GEMINI_API_KEY=`. Then start the desktop app:
 
 ```bash
 npm run desktop
 ```
 
-Or run it in your browser at http://localhost:5177/ instead:
+Or run it in your browser at http://localhost:5177/:
 
 ```bash
 npm run dev
 ```
 
-Drop a recording onto **Coach** and the review starts. Home's scenario clips aren't in the repo (they were made from other players' videos, for testing); `npm run scenes` makes them from recordings on your machine. To check the install, run the unit tests and the end-to-end suite (the second needs Chrome; set `CHROME` to its path if it isn't in the default place):
+Home's demo clips aren't in the repo, since they're cut from other players' videos. `npm run scenes` makes them from recordings on your machine.
 
-```bash
-npm test
-```
+## What we built
 
-### Using it
+| Part | What it does | Where |
+| --- | --- | --- |
+| The app | Home, Coach, and Past reviews. While a review runs, the video follows the coach and each step shows as a card. | `index.html`, `app.js`, `styles.css` |
+| Learning a game | Names the game and boxes its HUD from 8 frames, checks every box, and measures the kill feed's colors in code. | `learn.js` |
+| Readers in code | The kill feed, the HUD's counters, ammo, aim geometry, and chess moves scored by Stockfish. | `learn.js`, `video.js`, `core.js`, `chess-reader.js` |
+| The coach | One Gemini agent loop with eight tools and a 25-call budget. | `agent.js`, `gemini.js` |
+| The checks | The finish rules in code, the claim check against the record, and the check against the video. | `core.js`, `agent.js` |
+| The report | Marked-up frames, what to do instead, a drill, and the narrated critique, saved as a video if you want. | `report.js`, `app.js` |
+| Past reviews | Each review's log, report, and recording, kept in the browser. | `reviews.js` |
+| Desktop app | Electron. Remembers where recordings are on disk, keeps the key in the keychain, and runs the Kokoro voice. | `desktop/`, `scripts/voice.mjs` |
+| Website | A static copy for GitHub Pages. | `scripts/build-web.mjs` |
+| Backend (optional) | Holds one key for other people to use, rate-limited. Nobody hosts one; you don't need it. | `server/index.mjs` |
+| Evals | Answer keys written off the frames, the scorecard, and every loop's report. | `eval/`, `tests/evals/` |
+| Releases | Builds the installers on a version tag and checks every file before it's published. | `.github/workflows/`, `build/` |
 
-It's laid out as an app: a sidebar (a tab bar on phones) with three places. **Home** says what Eye Catcher is, with four real matches, each a different game, played with the coach's read of one loss over its footage:
-- **League of Legends:** stayed at the front of the wave after four "enemies are missing" pings, with Flash and ult on cooldown.
-- **Rocket League:** a corner shot with the teammate already forward, which left the net empty at 2–0.
-- **Rainbow Six Siege:** emptied the rifle at a doorway, didn't reload behind cover, and walked in on the pistol.
-- **Marvel Rivals:** traded head-on through the ult, 250 to 54 health in 3 s, with two abilities ready.
+How each piece works, with the measurements behind it, is in [docs/how-it-works.md](docs/how-it-works.md).
 
-Each one goes the way a review does: the screen read, the loss the record found, what decided it, and what to do instead. The clip freezes while the pen circles the HUD's numbers, each read off the frame it's drawn on. The reads come from the frame-checked coach baselines in `eval/answer-keys/coach/`. Its motion (entrance, crossfades, reveals, springs) is [Motion](https://motion.dev), shipped in `vendor/`. **Coach** is where you drop in a match. **Past reviews** lists them by game.
+## How the agent works
 
-While a review runs, the video follows the coach:
-- it flips through the match while the screen is read;
-- it sweeps along while the match is copied and scanned;
-- it plays a 6-second run-up into each moment the coach checks, then holds on that frame while it thinks.
+![How Eye Catcher reviews a match: learn the game, read the match record, the coach agent loop with its six tools, three checks that can send a finding back, then the report](docs/architecture.svg)
 
-A caption on the video says which step it's on, why, and what's happening, with the frames being sent. Touching the player hands it back, and "Follow the coach" picks it up again. Put a free Gemini key in `.env` as `GEMINI_API_KEY=...`; the dev server passes it only to pages opened on this machine. Without one, the start screen asks for a key and keeps it in the browser.
+Purple steps are Gemini (Flash-Lite), green ones are code, and beige ones are you and your files. A step that's half of each uses both: code cuts the crops and checks the numbers, and Gemini reads them. A dashed line is a finding sent back to the coach.
 
-### Optional: a backend of your own
+1. The recording stays on your device. The browser decodes it, and only what a step needs goes to Gemini, with no sound. Voice chat never leaves your device.
+2. One call looks at 8 frames and names the game, the genre, and what's on screen. A second call checks every box without being told what it's meant to be, and code drops the boxes that fail.
+3. Before the coach's first turn, code builds the match record: every kill-feed line, the HUD's counters (K/D/A, score, health), and a second look at any death it isn't sure of. A game with no kill feed gets a low-detail pass over a small silent copy, checked against the HUD.
+4. The coach gets a goal, its tools and what each costs, the budget, what it learned about the game, and your history in this game. It decides what to research and which moments to watch.
+5. When it calls `finish`, code sends the finding back if any cited moment wasn't looked at closely, if it shows fewer than 2 losses, or if your losses weren't looked at first.
+6. The claim check reads each claim beside the record. The video check sees only the claims, who you are, and the video. Up to two false claims are planted among them. A check that agrees with one runs again, and if it agrees again, it doesn't count.
+7. You see the finding and decide. Then the report is built, and one call writes the critique's script, which code checks before it's used.
 
-```bash
-npm run backend
-```
-
-Nobody hosts a backend for Eye Catcher, and you don't need one: by default the app uses the key in your `.env` (`desktop/config.json` says `"backend": "direct"`). If you want to share one key with other people without giving it to them, you can run this backend yourself. It's `server/index.mjs`, and it adds the key on its side. The backend reads `GEMINI_API_KEY` from its environment, or from `.env` when it runs on your machine, at http://127.0.0.1:8787/. `desktop/config.json` says where the app finds it; set `THIRDEYE_BACKEND` to point one launch elsewhere, or to `direct` to use the key in `.env` instead.
-
-To put it online, push this repo to GitHub, then in Render choose New > Blueprint and pick the repo (`render.yaml`). Set `GEMINI_API_KEY` when Render asks, and put the service's address in `desktop/config.json`. Render's free plan sleeps after 15 minutes idle and takes about a minute to wake, so the app pings `/health` when it opens. A paid plan stays awake.
-
-Because its address is public, the backend is locked down:
-- **The key stays on the server.** It lives only in the server's environment. The app never sees it, and neither does Gemini's upload session address, which stays on the server.
-- **Only Eye Catcher's requests go through.** That means generateContent on the app's own models, with only the request fields and tools the app sends, plus the scan-copy upload and status checks on uploads made through it. Everything else gets a 404 before it reaches Gemini.
-- **Other websites are refused.** A request from any page other than the app gets a 403, so another site can't spend the key through its visitors' browsers.
-- **Limits:**
-  - 30 requests a minute and 200 a day per address, which is about 5 reviews;
-  - 6 uploads a day per address;
-  - 2,000 requests and 100 uploads a day for the whole server;
-  - 12 MB per request, 256 MB per upload, and 16,384 tokens per reply, thinking included, so no single call can run up a big bill.
-  
-  Every limit is an environment variable. The limit replies look like Gemini's own, so the app waits out a short one and reports a used-up day plainly.
-- **Nothing is kept.** Requests and replies aren't stored or logged; the log has only each request's kind, status, and time. Uploads stream through without being held in memory.
-
-What it can't stop:
-- **Fake callers:** with no accounts, someone who copies the app's requests can still use the backend, within the per-address limits.
-- **Restarts reset counts:** the limits are counted in memory, so a restart, including Render waking from sleep, starts them over.
-- **Shared quota:** everyone shares the key's quota, so a free key's daily allowance covers far fewer people than a paid one.
-
-What protects the page itself, in the browser and the desktop app:
-- **The key goes only to Eye Catcher's own page.** With the key in `.env` and no backend, any page open in the browser could otherwise load `env.js` as a script and read the key. The server now sends the key only when the browser marks the request same-origin (`Sec-Fetch-Site`), which a page can't fake. Every response also carries `Cross-Origin-Resource-Policy: same-origin`.
-- **All code ships with the app.** Mediabunny, chess.js, and Stockfish live in `vendor/`, copied from the exact npm versions by `npm run vendor`, with their licenses and SHA-256 hashes in `vendor/manifest.json`. Nothing loads from a CDN.
-  - Stockfish is GPL-3.0. It ships unchanged, as its own program in a worker, with its license, and the manifest says where its source is.
-- **A Content Security Policy** lets the page run only its own scripts and talk only to itself and Gemini, or the backend. A script that got in couldn't load more or send recordings or reviews anywhere else.
-- **Only `https` links:** research links that aren't `https` become plain text.
-
-### As a desktop app
-
-```bash
-npm run desktop
-```
-
-The same page in an Electron window (`desktop/`); the [download](#download-the-app) is this app, packaged. It runs the dev server inside itself on port 5170, so its saved reviews stay put between launches, and set `THIRDEYE_PORT` if that port is taken. What it adds is memory for where recordings are on disk, the way Medal-style clip apps work: a past review streams the original file, with no copy and no "Allow" prompt, and offers to show it in Finder. If a recording moved, the review asks for it once and remembers the new place. The first time you add a recording, it asks whether to keep your recordings in an Eye Catcher folder (Movies › Eye Catcher). With a yes, each recording is copied there. On the same disk the copy is instant and takes no extra space. Your original stays where it is, and the start screen gets a button that opens the folder. The page can only name recordings the player dropped or picked; the app refuses to stream any other file. Its reviews are separate from the browser version's.
-
-### Building the installers and the website
-
-```bash
-npm run dist:mac
-npm run dist:win
-npm run dist:linux
-npm run web
-```
-
-The first three build an installer for that system into `dist/` with [electron-builder](https://www.electron.build). Build each on its own system: the voice's native parts are picked for the machine that builds it. A check after packing (`build/check-pack.cjs`) stops the build if anything private got in: the eval footage, test records, voice samples, scene clips, a `.env`, or more than 600 MB. Another after the installers are made (`build/check-dmg.cjs`) stops it if a `.dmg` fails `hdiutil verify`, won't open, or holds an app whose signature no longer matches its files. The packed app is about 186 MB, and the Mac `.dmg` about 160 MB. `npm run web` copies the page into `site/` with an empty `env.js` and the dev server's security policy as a meta tag (`scripts/build-web.mjs`); it refuses to finish if a video, a `.env`, or anything shaped like a Google key would ship.
-
-Two GitHub Actions workflows do both on GitHub:
-- **`.github/workflows/release.yml`:** pushing a version tag (`git tag v0.1.0 && git push origin v0.1.0`) runs the unit tests, builds the four installers on macOS (Apple silicon and Intel), Windows, and Linux runners, and puts them on a GitHub release with their SHA-256 sums in `SHA256SUMS.txt`. Each runner builds one installer, and the release job checks each file against the sum taken where it was built.
-- **`.github/workflows/pages.yml`:** each push to `main` rebuilds the website and deploys it to GitHub Pages. It needs one setting first, under the repository's Settings › Pages › Source: **GitHub Actions**.
-
-`npm run fixture` makes a 2.5-minute synthetic shooter match and `npm run fixture:chess` two synthetic chess games, one with blunders planted under time pressure and one clean (`tests/fixtures/`, not committed). Once the shooter match exists, the start screen offers it as a test match.
-
-## How it works
-
-1. **The recording stays on your device.** The browser decodes it with [Mediabunny](https://mediabunny.dev) (WebCodecs).
-2. **A small silent copy goes to Gemini, only when needed.** For a game with no kill feed to read, a 640 px copy at 2 frames a second, with no audio, goes to the Gemini Files API, which deletes it after 48 hours. A game whose kill feed reads never needs it: the clips around its events are sent instead, also silent. Voice chat never leaves the device.
-3. **The game is learned** (`learn.js`, one model call, kept for a day per recording). Gemini sees 8 frames spread over the match and names the game and genre. It boxes what's on screen (kill feed, ammo, minimap, board, clocks…), says how key moments look, and lists habits with drills and what code can check each one with. Code then measures the rest from pixels:
-   - **Kill feed:** team colors are measured, not asked. On Vyse's recording the learn call called the teal rows "blue", and Ascent's orange walls filled half the feed's box. So every pair of hues in the box is tried, and the pair wins under which the most rows show both colors side by side with a white name, ending on one edge at one height. A band that stays put, like a stream's FPS graphs, is an overlay. The reported colors only say which team is the player's. The victim's portrait at each row's end is measured too: walking in from the edge, it's where few rows show team color. New-row direction is whichever way finds fewer new rows. A layout that finds more new rows a minute than a match has kills is thrown out. A feed with no colored rows (Apex Legends writes plain text) is read as text, line by line (below).
-   - **Chess board:** the exact 8×8 grid near the box, and which side is at the bottom.
-   - **Every box is checked** before anything reads it: one call sees three whole frames with the boxes drawn on and numbered, and says what each outlines, without being told. A number (ammo, a counter, a clock) is also checked in code, by whether its digits read. A box neither check confirms is dropped, and the first card says so: Apex's "health" box sat on the ultimate icon every time, and the check dropped it every time. A health box must also be long like a bar or a row of digits (twice as long as it's thick); the ultimate icon is square. Two boxes that each show the other's element swap names, unless they overlap: then one box's number sits inside the other, and the answers are about the wrong box. On Oct 24 League's health bar and ability row, and its minimap and team bar, swapped that way, both wrongly. The check also says which box holds the player's K/D/A, and that answer keeps the kill-count box even when the picture-by-picture answers call it the scoreboard beside it. A box that went is asked for once more, with what the first box showed, and the new box is checked the same way. On Oct 20 that found Apex's health in the squad panel at bottom left, where the bars are, and Vyse's scoreboard in the top bar. The learn call runs at temperature 0, but its boxes still shift between calls, so each recording's is kept.
-4. **What matters is looked up, when the coach asks** (its `research` tool; `researchGame` in `learn.js`, kept for 7 days per game and per character, since the meta moves with patches). Nothing is researched before the coach starts: it chooses when, and it can ask questions of its own (`researchQuestion`: one search each). The questions below are the same for every game. Four Google searches (Gemini 2.5 Flash-Lite with Search) look it up the way a player would:
-   - improvement guides and coaching;
-   - what the community (Reddit, forums) calls good and bad habits;
-   - the current meta: the patch, what's strongest, recent reworks;
-   - the game's wiki: every character, map, weapon, and other pick.
-
-   Each search answers in prose. A search that cites fewer than 2 pages is asked once more, to search first. Then one call without search puts it all in shape: what wins (never cosmetics), the systems that decide fights and matches (abilities, roles, economy, objectives…) and how good players use them, priorities, when fights are worth it, where good players aim, 6 to 8 costly habits, the meta, and the lists. Asked for JSON outright, the search came back as prose for 2 of 6 games. With the character the learn call saw the player on, a fifth search finds its kit as of the latest patch: each ability by its in-game name and key, what it does, how it's used, and the mistakes players make with it.
-
-   Code has the last word on what can check a habit: aim only for one about the crosshair, shots only for firing, the chess engine only in chess, abilities only for ability use. A game other than a shooter has no aim target, and an answer counts as researched only with 2 or more web pages. A search that fails is answered from the model's own knowledge, marked as such, and the rest of that research doesn't search again (each failure costs two minutes of quota waits). The habits become the coach's (the character's too, up to 3), the rewards its goal, and the systems, meta, and kit its background. The "Reading the screen" card shows the priorities, the kit, and the sources by search.
-
-   Scored against a checklist written before any answer (`eval/research-checklist.json`, `eval/researchcheck.mjs`; Oct 20, six games named only: Overwatch 2, Valorant, Apex Legends, League of Legends, Rocket League, Street Fighter 6). Coverage of what decides each game went from 47 of 57 items (82%) to 55 of 57 (96%). Errors went from 26 to 0: before, 20 habits were tagged for the chess engine in games without one, 2 non-aim habits for the aim check, 2 answers called cosmetics what wins, and 2 counted as researched with no web pages. Character abilities named exactly went from 0 of 20 to 20 of 20, and long-standing characters, maps, and weapons found in the lists from 0 of 51 to 35 of 51. The meta was found for 5 of 6 games. Still short: League's list gave champion classes instead of champions (the prompt now asks for names; not rerun, the search quota ran out); whether the meta is current isn't checked. A new game takes 72 to 134 s and about 10 calls to research.
-5. **The coach runs.** It's one Gemini agent loop (`agent.js` on the shared `runAgent` in `gemini.js`), on Flash-Lite models.
-
-   **The call budget.** A whole review takes at most 25 model calls, learning a new game included (about 4, once per game, cached after), every read and check counted (the user's 20 to 25 for the whole thing, Oct 23). Audited on five reviews before this, they took 18 to 34, and the extra calls were mostly ones nothing needed:
-   - **The record, asked for.** The coach's first turn was always `scan` over the whole match, and League's coach asked for it three times. Code now reads it before the first turn, with research when that's saved this week (free). Research that would search stays the coach's call, at its cost.
-   - **Tools with nothing to work on.** League's coach called `read_clips` twice in a game with no kill feed, so no windows, each answered "scan first". A tool with nothing to work on isn't offered.
-   - **The counters, every 2 s.** 12 calls for League's ten minutes, now a sparse read through the match and a fine one around what happened (above, under Counters).
-   - **A finding sent back again and again.** TenZ's coach called `finish` 7 times, each one a turn and most of them a check or two. The checks stay, since the first send-backs caught false claims; within 3 calls of the end only `finish` runs, and the last one still gets its checks, up to 3 past it, so a review never ends unnamed on the budget alone.
-   - Every tool result says how many calls are left, and the coach can call several tools in one turn when one doesn't need the other's answer.
-
-The coach gets a goal, its tools and what each costs, a budget, the learned profile, and the player's history for this game. The prompt never lists an order of steps, and a tool the game has no use for isn't offered: no `measure_aim` without a first-person crosshair, no `read_hud` without a HUD element.
+The coach's tools:
 
 | Tool | What it does | Cost |
-|---|---|---|
-| `scan` | Run by code before the coach's first turn, over the whole match; the coach gets it with its first message and can't spend a turn on it (offered only when that read failed). Reads every kill-feed line in a stretch from the full-quality recording: the player's kills and deaths, and teammates' too, with each side's team and whether each death was traded within 5 s. It lists the fights (the feed's outcome until a clip is read) and the windows worth reading as video: about 10 s around each kill, knock, teammate down, hit, and burst of firing. With no kill feed to read, a low-detail pass over a small copy of the match stands in. The video never enters the coach's own context. | 1 call per 32 kill-feed lines (48 for plain text), 1 for banners, 1 or more for the HUD counters; 0 looks |
-| `read_clips` | Reads windows `scan` listed, up to 4 a call, as video (below): what happened, who engaged first, the fight's story, what the player did, whether each downed teammate was near (off the minimap), and the player's abilities. A read window counts as looked at. | 1 call per 2 windows (4 with firing alone); 0 looks |
-| `research` | What matters in the game, from the web (below), with the habits whose ids `finish` takes, and the kit of the character the player plays; or one question of the coach's own. | Free if researched this week; else up to 10 calls, a question 1 or 2; 0 looks |
-| `frames` | Grabs frames around up to 3 moments from the full-quality recording, of the whole screen or a region (aim area, kill feed, minimap). With `as: clip` it sends the run-up to each moment as video instead: 6 s before to 1 s after by default, at 6 frames a second, for about 30% of the tokens (below). The coach sees them for one turn; after that they're swapped for a note. | 1 look per moment, 0 calls |
-| `measure_aim` | Gemini boxes the heads near the crosshair at up to 6 moments, in one call, and copies any name tag over each person. Code leaves out anyone tagged or called a teammate, and turns the nearest enemy head into head-heights and degrees using the game's FOV. A moment after the player's own death is skipped for free. | 1 look per moment, 1 call |
-| `read_hud` | Reads one learned screen element (a clock, a counter, the score) at up to 8 moments. Only offered when the game has one. | 1 call, 0 looks |
-| `ask_player` | One question about a moment, for what video can't show. The app plays the moment and the player taps an answer. At most 3 per review. | Waits for the player |
-| `finish` | Ends the review with one habit, or, when none repeats, with the biggest reason they lost. | Checked in code |
+| --- | --- | --- |
+| `scan` | Run by code before the coach starts: the kill feed, fights, and the windows worth watching. | 1 call per 32 kill-feed lines, plus the HUD reads |
+| `read_clips` | Reads up to 4 of those windows as video: what happened, who engaged first, what decided it. | 1 call per 2 windows |
+| `research` | Looks up what matters in this game and this character, from the web. | Free if done this week, else up to 10 calls |
+| `frames` | Full-quality stills or a short clip around up to 3 moments. | 1 look per moment |
+| `measure_aim` | Boxes the heads near the crosshair, and code turns that into head-heights and degrees. | 1 call |
+| `read_hud` | Reads one HUD element (a clock, a counter, the score) at up to 8 moments. | 1 call |
+| `ask_player` | Asks you one question about a moment. At most 3 a review. | Waits for you |
+| `finish` | Ends the review with one habit, or with the biggest reason you lost when no habit repeats. | Checked in code |
 
-Every tool also takes `why` (what this step checks, shown live in the breakdown) and `notes` (theory board changes). Notes ride along with the next step, so updating the board never costs a turn of its own.
+## Tools and outside resources
 
-Nobody tells the coach what to look for; it decides. The player comes in at three points:
-- **Which player is you.** When the kill feed can't tell (no marked rows, and the deaths don't settle it), the scan asks the player to pick their name from the teammates it read, or to type it, while the video plays a moment where it shows. The answer is kept for that game. With no feed to read from, there's nothing to ask.
-- **A question, when video can't answer it:** `ask_player`.
-- **The check-in.** Once a finding passes the code checks, it goes to the player before it's final: the habit, why, and the moments that show it, played. "Yes, that's it" makes it final at no extra call. "Not really", or anything they type, goes back to the coach as data for one more look. If no turn is left, no habit is named rather than one they doubted. The verdict says how the check-in went.
+| What | Used for | Where it runs |
+| --- | --- | --- |
+| Gemini 3.5 Flash-Lite, falling back to 3.1 Flash-Lite | The coach, the clip reads, both checks, and the critique's script | Google's API |
+| Gemini 2.5 Flash-Lite with Google Search | Researching each game, its meta, and the character's kit | Google's API |
+| Gemini Files API | The small silent copy for games with no kill feed. Google deletes it after 48 hours. | Google's API |
+| [Mediabunny](https://mediabunny.dev) | Decoding the recording and cutting clips (WebCodecs) | Your device |
+| [chess.js](https://github.com/jhlywa/chess.js) and [Stockfish 10](https://stockfishchess.org) | Legal moves and each move's score | Your device |
+| [Kokoro](https://github.com/hexgrad/kokoro) (kokoro-js on onnxruntime) | The critique's voice in the desktop app | Your device |
+| The browser's speech voices | The critique's voice on the website | Your device |
+| [Motion](https://motion.dev) | The interface's motion | Your device |
+| [Electron](https://www.electronjs.org) and [electron-builder](https://www.electron.build) | The desktop app and its installers | Your device |
+| GitHub Actions, Releases, and Pages | Building the installers and hosting the website | GitHub |
+| [Playwright](https://playwright.dev) and Chrome | The browser tests and the evals | Your device |
+| [Render](https://render.com) (optional) | Hosting your own backend | Render |
 
-### Chess
+All third-party code the page runs ships in `vendor/`, pinned, with its license and hash. Nothing loads from a CDN.
 
-`scan` reads the game in code. `chess-reader.js` reads each square as empty, a white piece, or a black piece. Each change is matched to the legal move (chess.js) whose board explains it, so a last-move highlight never fools it, and two moves between samples are tried as a pair. Stockfish 10 (its asm.js build in a Web Worker) scores every position, so each of the player's moves gets its centipawn loss: a mistake at 100 or more, a blunder at 250. The player's clock at each graded move is read in one `read_hud` call. A habit the learn call marks as engine-checked can only cite the player's moves that the engine calls a mistake or worse.
+## When it's unsure, it asks you
 
-On the synthetic recordings, all 64 plies come back in order, timed to the frame they land in, and the blunder and mistake counts match a depth-12 Stockfish truth file (`npm run test:chess-video`). Real chess-site recordings are untested. A recording has to start from the starting position.
+It doesn't guess on the calls only you can make:
 
-On a real recording (chess.com on a phone, Oct 24) it read none, for three reasons, all fixed:
-- **The board is found where it's clearest.** It used to be found in one frame at 0.5 s, when the app was still searching for a game. It's now found in four frames through the match.
-- **The first board in view starts the game.** That can be the starting position or a move or two into it, and the moves before it are filled in from the start. Frames before any board is in view are skipped, for up to a third of the recording.
-- **Black and white by the set's own shades.** A black piece was a square with 12% or more of its pixels dark, and the phone's dark-grey black pawns had 8 to 11%, against the white pieces' 0.5% at most. The split is now taken from the first board: halfway between the paler side's darkest square and the darker side's palest, over the two rows at each end.
-All 52 plies of that game now read, in order, matching the move list on screen.
+- Which player is you. When the kill feed can't tell, it plays a moment where your name shows and asks you to pick it, or type it. It keeps the answer for that game.
+- Which side, and who you are, in footage of a whole match (a broadcast or a game film). The sides come as buttons, then you say who you are in your own words ("#16, the quarterback").
+- A question the video can't answer. The coach can ask up to 3 a review. The app plays the moment and you tap an answer.
+- The check-in. Before a finding is final, you see the habit, why, and the moments that show it. "Yes, that's it" makes it final. "Not really", or anything you type, goes back to the coach for one more look. If no turn is left, nothing is named rather than something you doubted.
+- What to work on. You choose "Work on this" or "Not this", and the next review of that game checks it.
+- Your files. The desktop app asks before it keeps copies of your recordings in its own folder.
 
-Where a finding has to show the game was lost, the coach is told the six moves that cost the most, with how many pawns each gave away. It used to get the first six in time order: in that game they were the opening's small mistakes, and the blunders from move 15 on, which decided it, were never named. Each graded move also says, in code, what the engine's best answer to it does: the piece it takes, check, and what the moved piece then attacks, with a piece behind it on the same line (a pin or a skewer). Told only the pawns lost, the coach guessed from the frames and called 16.Qd3 "hanging the queen to the queen on c6"; the answer is ...Bc4, hitting the queen with the knight on e2 behind it. The engine's own move is never graded: at depth 10, 13.Qe3 was a "mistake" while being the engine's best.
+What code can settle on its own (a missing field, a moment it can fill in from the record) it settles without asking you.
 
-### Footage of the whole match
+## Evaluation
 
-A broadcast, coaching film, or a match filmed from the stands isn't the player's own screen: the player is one of many, and nothing on screen says which.
-- **How it's recognized.** The learn call says so (`view: spectator`), and names the sides and how each looks, and the game's unit of play (a play, point, rally, or possession).
-- **Who the player is.** Before the coach starts, code asks which side they're on, with the sides as buttons, then which one they are, in their own words ("#16, the quarterback"). The answer is kept per game and offered first next time. Every prompt names the player that way, as data, and the coach is told to judge them, not their team.
-- **Units, not kills.** `scan`'s low-detail pass lists each unit and code times its edges to the nearest camera cut, found from small gray frames. On the five QB School reels it found all 64 snap boundaries.
-- **Reading each unit.** `read_clips` reads units at 8 frames a second, 8 to a call: whether the player shows, what they did, what teammates and opponents did, whether the unit was won or lost for the player, and who decided it.
-- **What wins and loses.** `research` looks up what wins and loses a unit in the player's role.
-- **Gates.** A lost unit is a loss as a death is, so the finish gates hold. Code won't end the review on "nothing lost" while units are unread.
-- **Not used.** No aim is measured and no deaths are timed.
+### What we test
 
-### The record, when there's no kill feed to read
+| Area | What's tested | How | Latest result |
+| --- | --- | --- | --- |
+| Logic | 237 unit tests: the finish rules, aim geometry, the kill-feed reader, chess reading and scoring, the claim-check rules, the backend's locks, the scorecard | `npm run test:unit` | 237 of 237 pass (Oct 25) |
+| The app | 178 checks in Chrome on a synthetic match, with Gemini mocked: upload, scan, timeline, the finish checks, the report, past reviews, phone layout, no code from outside | `npm run test:e2e` | 178 of 178 pass (Oct 25) |
+| Desktop app | 22 checks in Electron: recordings remembered across a restart, files you didn't give it refused, the key never in the page, the Eye Catcher folder | `npm run test:desktop` | 22 of 22 pass (Oct 25) |
+| Chess reader | Moves read back off synthetic chess video, against a Stockfish truth file | `npm run test:chess-video` | All 64 plies, in order |
+| Installers | Nothing private packed; each DMG verifies, opens, and keeps its signature; every file matches the sum taken where it was built | `build/check-pack.cjs`, `build/check-dmg.cjs`, `.github/workflows/release.yml` | v0.1.2: 4 of 4 installers pass (Oct 25) |
+| Kill-feed reader | 41 kill-feed lines labeled by hand on a real Valorant match | `npm run eval` | 41 of 41 lines; all 9 kills and 6 deaths (Oct 20) |
+| Match record | Deaths, kills, and goals on Rocket League, Marvel Rivals, and League clips, against truth read off the frames | `node eval/recordcheck.mjs` | Rocket League 4 of 4 goals to the right side; Rivals 1 of 1 death, 13 of 14 kills, none invented; League 2 of 2 deaths, no kills invented (Oct 22) |
+| Video check | 25 claims labeled off the frames (15 true, 10 false), run twice | `node eval/verifycheck.mjs` | 30 of 30 true claims stood, 18 of 20 false ones stopped, 0 of 24 planted ones agreed with (Oct 22) |
+| Research | Six games, scored against a checklist written before any answer | `node eval/researchcheck.mjs` | Coverage 47 of 57 to 55 of 57; errors 26 to 0 (Oct 20) |
+| Shots | The ammo counter over 12 stretches labeled by eye | `node eval/shotprobe.mjs` | 12 of 12, none wrongly "no shots" (Oct 22) |
+| Chess, real | A chess.com game recorded on a phone | By hand, against the move list | 52 of 52 plies, in order (Oct 24) |
+| Whole pipeline | Learning, scan, aim, and a review on a synthetic match with a planted habit | `npm run test:live` | 7 of 8 kills and deaths within 2 s; aim error 0.27° median; found the planted habit in 12 calls |
+| Whole reviews | Every review held against a coach's read of 33 losses in 9 games, frame by frame | `eval/scorecard.mjs` | Below |
 
-A game with no kill feed Eye Catcher can read (League of Legends, Rocket League, Marvel Rivals before its feed is found) gets its record from a low-detail pass: one frame a second at low resolution. On Oct 22 that pass misrepresented every one of three test clips:
-- it took the low-health tint for a death;
-- it saw one long death screen as two deaths;
-- it gave the player's own goals to the other side.
+### Whole reviews, loop by loop
 
-So the pass is now checked against what the HUD itself counts:
-- **Counters.** The player's K/D/A, each side's score, and damage dealt are read every 6 s through the match, beside the low-detail pass; a running count never goes back down, so that still shows every rise. Then one finer read, every 2 s, covers only what happened: each fight and moment the pass saw, and each rise the coarse read found, with the HP number, to time each rise and catch the near-deaths where they fight. Read every 2 s through League's ten minutes, the four counters took 12 calls (Oct 23). With no K/D/A on the HUD, the HP number at 0 is how a death shows, so it's read through the match too. Gemini reads the numbers off numbered cells, as for damage. A count only goes up, so a rise counts when the next reading and most of the six after it agree. Each readout's box is grown to at least 7% of the screen tall, about its middle, before it's read. A learned box can sit next to the number: Marvel Rivals' health box held only the bar under "32/250", and the HP read at 28 of 250 moments. League's scoreboard box held the FPS line under the K/D/A. Grown, they read at 246 of 250 and 275 of 300.
-- **Deaths.** Where the K/D/A counter was read, it decides, with one check the other way. A death it shows that the pass missed is added. A death the pass saw, or an HP 0, that the counter doesn't show gets a second look, and stays only if the player is dead there: a League K/D/A read off a box beside it held steady through two deaths. Elsewhere, each death the pass saw, and each time the HP reads 0, gets a second look: alive 3 s before, and dead 1 and 2.5 s after. A second death within 6 s is the same death.
-- **Goals and points (sports).** These come from the scoreboard; the pass's own guesses at goals are dropped, and so are its lost fights. The banner after each goal says who scored. The player confirms their name once ("Which name is you?"), since a name the learn call reads off the screen can be a teammate's tag. If no banner names them and the side isn't known, they're asked which side they're on.
-- **Near-deaths.** A time the HP number fell under 25% of full health, with no death right after, is a loss too: a habit that nearly got them killed shows there as well as at their deaths. Full health is the HUD's own maximum, read nearest that moment, since League's grows with each level. HP read every 2 s catches most dips only once (Marvel Rivals' 30 of 250 at 5:10), and one low number can be a misread. So each candidate gets a second look at the HP readout a second before, at, and a second after, in one call for all of them. Kill-feed games read the HP number for this too. Read every 2 s, a short dip shows as a higher number (Rivals' 50 of 250 at 1:19 read as 80 at 1:18), so any reading under 40% is a candidate, and the second look a second either side of it decides. Candidates come from wherever the HP number was read, even when it wasn't read often enough to trust for deaths: League's was read at 140 of 300 moments, and its 280 of 1589 at 4:30 was dropped with it until Oct 23. A dip shorter than about 1.5 s can still fall between two readings (Rivals' 42 of 250 at 7:37, read as 136 and 218 either side). With more than ten candidates the second look takes the ten lowest, and only what it looked at counts: League's health box also held the mana line, its mana read as health gave more than ten lows, and an eleventh, kept unlooked, was a near-death at full health (1667 of 1820 at 8:22). Readings up to 20 s apart, none of them high, are one low stretch, so League's one dip at 4:30, regenerating, isn't counted twice.
-- **Who the player is, in a game new to it.** The learn call names the opponent too, in a one-on-one game: a name over the far side, opposite the player's own cards, units, or pieces, is the opponent's, and a player name the same as the opponent's is dropped. In Clash Royale (Oct 24) it read the opponent's name for the player's, so the scan called the player's lost tower a kill and the loss a victory. A kill feed that writes the player as YOU or ME (Siege; TenZ's streamer mode) names them. When the feed can't say which name is theirs and they don't answer, the low-detail pass, checked against the HUD, reads their kills and deaths, as it does with no feed. Until Oct 24 that left an empty record, and Siege and Fortnite ended "nothing lost" over matches with deaths in them. A chess game is read off its board, with the player's side at the bottom, however it was filmed: chess.com on a phone was called spectator footage, read as units of play, and none were found. A clan, team, or guild tag under a name belongs to that player and is no one's name: Clash Royale shows only the opponent's name and clan during play, and the clan was taken for the player's, so the review read a 0-1 loss as a win. The learned names reach prompts as data, never as instructions.
-- **A death the HUD shows by hiding itself.** A health readout that reads low and then isn't read at all at the next two sampled times is a candidate death for the second look, like the HP at 0. In Brawl Stars the bar goes and the screen follows a teammate, and both of the player's deaths were missed.
-- **Missed counters.** When the learn call misses one of these counters, it's asked for once more. A box the check says shows one of them, when no other box holds it, takes that counter's name instead of being dropped. On Oct 24 League's K/D/A, boxed as the scoreboard, was dropped as "shows kill_count" with nothing else holding it, and the record took the low-detail pass's 8 kills (true: 0) and two deaths that never happened. A scoreboard becomes the K/D/A this way only where the check's own K/D/A answer names its box: League's top bar holds the team score beside the K/D/A, and renamed on the picture-by-picture answers alone it gave a death at 5:46 and 5 kills that weren't (loop 40); otherwise it stays the scoreboard.
-- **A kill feed is checked too.** Where a K/D/A reads, it outranks the feed's idea of which rows are the player's. A feed kill or death with no rise near it is left out, and a rise the feed missed is added; the feed's own times are kept. On Oct 22 one learn call boxed League's chat as its kill feed, which gave the player four kills they never got. A kill count read while the player is dead isn't theirs: the screen then shows the teammate they spectate, and on TenZ (Oct 22) two kills were added off a teammate's count, each a second after one of the player's deaths. And a count that stayed flat through deaths that held up isn't the player's K/D/A, so its kills are left out too: on Oct 23 a learn call boxed a number in the middle of TenZ's screen as the K/D/A, it never rose through the player's 5 deaths, and it gave them 4 kills they didn't get.
-- **Structures are the score only in a one-on-one game.** There a tower destroyed is a point to one side (Clash Royale's crowns), and a fight where a structure lost much of its health is won or lost by it. In a team game a structure taken is neither a kill nor a death of the player's: League's "ally turret destroyed" was counted as two of their deaths (Oct 24).
-- **A kill is another player's.** The pass is told a kill or a death is a player's character, never a minion, creep, monster, or other unit the game runs: told "the player took someone down", League's pass gave them 22 kills, every one "Player kills an enemy minion" (loop 40; true: 0).
-- **Guesses counted apart.** Kills and deaths only the low-detail pass saw, which nothing confirmed, are counted apart in the scan's numbers and on its card ("6 kills (6 only guessed)"). With League's K/D/A box dropped, the pass gave the player 6 kills they never got, counted with the real ones.
-- **The scan copy, made early.** With no kill feed the low-detail pass always runs, so its scan copy is made as the record starts, while the counters are read. Made when the pass asked for it, Brawl Stars waited 160 s on the copy before its first look at the match (Oct 24, on a loaded machine).
-- **"Nothing lost" is said only as far as it was checked.** When no feed, death counter, or HP number could be read, the deaths come from the low-detail pass alone. The scan and the ending then say a death it missed isn't ruled out. And before it's said, the end of each fight the pass saw is a window (its last 8 s to 2 s after), read at high detail, and `finish` asks once for them to be read. A death a read shows there on screen (the player named defeated, or the screen following someone else) gets the second look and goes in the record, as `spectate_deaths` does everywhere: in Brawl Stars (loop 40) the learn call boxed no health readout, the pass listed 9 fights and no deaths, and the review ended "nothing lost" after 3 calls; the match had 2.
-- **Character.** The character is read twice and kept only when both reads agree, since a wrong character brings the wrong kit and its habits. The second read rides along in the box check's call, which sees the same whole screens, so it costs no call of its own.
-- **One call for every second look.** The deaths a K/D/A sample needs checked, the deaths the record or the HP number shows that the count doesn't, and the near-deaths are all known before any is judged. So one call looks at all of them, where looking as each need arose took up to four. On probes of the three clips it gave the same answers: dead at Rivals 4:28 and League 1:48 and 8:56, alive at Rivals 3:14 and League 5:00, and the near-deaths at 1:19, 5:10, and 4:30.
-- **Counters, one sheet a call.** A sheet holds up to 48 moments (about 26 when a crop is wide). Putting two or four sheets in one call would halve or quarter the counter calls, but it misread: League's assists stayed 5 for 20 and 72 cells after they went to 6, each time from about the 33rd cell of the call. Shuffling the cells out of time order lost a third of them instead. So it stays at one sheet a call.
+The coach baselines in `eval/answer-keys/coach/` cover League of Legends, Rocket League, Marvel Rivals, Valorant, Clash Royale, Fortnite, Brawl Stars, chess, and Rainbow Six Siege. Each loop reviews every game 2 or 3 times in the desktop app, and every run is scored on the same card ([eval/SCORECARD.md](eval/SCORECARD.md)). From [tests/evals/README.md](tests/evals/README.md), Oct 25:
 
-On the three clips, against ground truth read off the frames (eval/answer-keys/games, scored by eval/recordcheck.mjs; every run in eval/results-games-2026-10-22-loops.json):
+| Loop | Losses found in the record (higher is better) | Losses cited (higher) | Cited and explained right (higher) | Deaths and points invented (lower) | False claims caught (higher) | Calls a run | Prompt tokens a run |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| 37 | 40 of 55 (73%) | 19 of 55 (35%) | not graded | 6 of 22 (27%) | not graded | 18.7 | 244k |
+| 38 | 26 of 48 (54%) | 15 of 48 (31%) | not graded | 3 of 9 (33%) | not graded | 18.9 | 262k |
+| 39 | 45 of 66 (68%) | 25 of 66 (38%) | not graded | 7 of 33 (21%) | not graded | 23.1 | 351k |
+| 40 | 37 of 61 (61%) | not counted | 10 of 61 (16%) | 14 of 33 (42%) | 17 of 22 (77%) | 18.1 | 264k |
+| 41 | 22 of 46 (48%) | not counted | 9 of 46 (20%) | 5 of 12 (42%) | 13 of 16 (81%) | 21.0 | 298k |
 
-| Clip | Before (Oct 22) | After (loop 12) |
-|---|---|---|
-| Rocket League | goals given to the wrong side | 4 of 4 goals, right side and scorer; 1 of 1 loss real |
-| Marvel Rivals | low-health tint read as deaths | 1 of 1 death, 13 of 14 kills, none invented |
-| League of Legends | low-health tint read as deaths | 2 of 2 deaths, no kills invented (0 real), 4 of 4 losses real |
+Loops 38 and 41 ran fewer games: in loop 41, 6 of 18 runs (Rocket League, Marvel Rivals, Valorant) had most of their calls refused by the quota and don't count. Each loop's card, report, and grades are in `tests/evals/`.
 
-One run per clip per loop varies: loop 10 still missed Rivals' death and invented a League death and 4 kills, which led to the readout and K/D/A fixes above. Loop 12 ran on Gemini 3.1 Flash-Lite, since 3.5's daily limit had run out. The Valorant recordings, rerun after it, kept their records: Vyse 9 of 9 kills and 6 of 6 deaths, TenZ 5 of 5 and 5 of 5.
+## What worked and what didn't
 
-### Fights, not only kills
+### What worked
 
-A fight where nobody dies can still decide a match: one that wasn't worth taking, or one taken from a bad spot. So `scan` returns fights as well as kill-feed lines.
+- Readers written in code held up: 41 of 41 kill-feed lines, 52 of 52 chess plies off a phone recording, 12 of 12 ammo stretches. Before the kill-feed reader, the scan found 1 to 4 of the player's 9 kills.
+- The video check. It let 30 of 30 true claims stand, stopped 18 of 20 false ones, and agreed with none of the 24 planted. In loops 40 and 41 the checks caught 17 of 22 and 13 of 16 false claims.
+- Research. Coverage of what decides each game went from 82% to 96%, with no errors left.
+- The same match takes the same path. At temperature 0, three reviews of one Apex match on Oct 19 came out identical, down to 263,008 prompt tokens each.
+- Cost. Loop 41 averaged 21 calls and 298k prompt tokens a run, about $0.20 at 3.5 Flash-Lite's list price, and nothing on the free tier.
 
-**The HUD's counters.** When the game shows the player's kills and damage dealt, Gemini reads them off a strip of the HUD every 2 s, 48 moments to a picture (4 calls for the Apex match). A rise counts once the next two readings confirm it, so a misread drops out. A rise in damage dealt is a fight, since the player hit someone. The kill count only checks the feed: a rise with no kill of theirs near it is told to the coach as a kill that may be missing, and adds nothing to the record, since read off a box placed a little off it once rose three times where the HUD didn't. On the Apex recording the kills read 1, 2, 4, 5 at 0:32, 0:54, and 4:32, and the 8 fights from damage are the 8 by eye. The ammo counter, which code reads itself, found 13 bursts of firing, 9 of them no fight (looting, shooting a vending machine), and missed 3 fights; it stands in only for a game with no damage counter. Code's own digit reader misread the small damage digits with scenery behind them.
+### What didn't
 
-**Read as video, when the coach chooses** (`read_clips`). Code finds every moment worth seeing: each of the player's kills and deaths, each teammate down, and each fight the damage counter shows (or each burst of firing the ammo counter shows). Each window runs 7 s before to 3 s after (windows that overlap merge, up to 14 s; 16 at most a scan, deaths first), and `scan` lists them with what's in each. The coach reads the ones it picks. Until a window is read, its fight has only the kill feed's outcome, and a teammate down in it isn't known to be near. So `finish` is handed back, rather than answered "no single habit", while fewer than 2 losses are known and such a teammate down is unread. Each window read goes to Gemini as a silent WebM (VP8) at 8 frames a second, with what the kill feed shows in it given as fact: at high detail, 2 to a call, when it holds a kill, a knock, or a teammate down; at low detail, a quarter of the tokens, 4 to a call, when it holds firing alone (most of those turn out to be no fight, and low detail tells that apart). Gemini says what happens second by second, whether there was a fight and who engaged first, what the player did, where the teammates were, and whether each teammate who went down was near the player. For each teammate down it also gets the minimap at full size a second before and a second after, because in the clip the map is a few pixels a player. A teammate down counts as the player's loss only when they were near. Each read also lists the abilities used, with full-size crops of the player's ability icons at the clip's start and end and the character's kit from the research. On two Vyse windows checked by eye (Oct 20), the times were within 2 s, but one of the two named the wrong ability (Razorvine for the ult, Steel Garden) and an enemy Sage's wall went to a teammate. So only the player's own uses go in the record, as "the clip read calls it…", not as fact. A code reader of the ability icons' pixels found 4 of 6 frame-checked uses on Vyse, plus 2 false ones from flashes, and missed uses during flashes; it was tuned on one game's HUD, so it isn't used. Checked by eye on Oct 20, after adding the map: Vyse 13 of 13 near/away flags right (11 of 13 before; two downs on B site, with the team stacked, had been called away), TenZ 5 of 5 (4 more were too unclear on its see-through map to label). The kill feed decides how a fight ended; the clip says how it went. A window of firing that the clip shows was no fight (a reload, a swap) is dropped, and one not read yet isn't a fight. A read window counts as looked at.
+- Explaining the loss. The coach named what decided a loss in 16% of them (loop 40) and 20% (loop 41).
+- Coverage. In loops 37 to 39 the coach cited only 31% to 38% of the baseline losses.
+- Invented deaths and points: 14 of 33 in loop 40, 5 of 12 in loop 41.
+- Who the player is. Loop 41 got the player's name right in 4 of 12 runs.
+- Good claims thrown out. In loop 41, 7 of the 20 claims the checks sent back were true.
+- The quota. Loop 41 lost 6 of 18 runs to refused calls, and a review that falls back to 3.1 Flash-Lite can take 10 to 20 minutes.
 
-Why video, and why high detail: two 10 s Apex clips at 8 fps cost 10,560 tokens at low detail and 42,240 at high. At low detail Gemini said the player was knocked at 4:16, and on a second try at 4:19; the player had knocked Sparrow9617 at 4:17. At high detail it read the stretch right. Gemini sees 8 frames a second, never all 60; code reads every frame it needs for numbers (the ammo counter at up to 30).
+### Failures we hit
 
-Measured on the Apex recording, three full reviews from the same start (Oct 19): the same 16 windows each time, and the same record (3 kills, 0 deaths, 2 teammates down). All three clip reads put FYR_rLayze near the player when he went down at 0:25 and at 4:16 (4:16 traded), so 0:25 is the match's one loss. The story of each window mostly agreed between runs; who engaged first and whether a teammate was near varied in a few windows (one run said FYR_rLayze was near at 0:30, two said 100 m away, which the marker on screen shows). 9 of the 13 firing-only windows turned out to be no fight (looting, shooting a vending machine), and 3 were cut by the cap of 16. Each review cost 17 to 25 calls and 377k to 484k prompt tokens, 318k to 320k of them video, plus 9k to 12k output; 4 to 6 minutes. Verdicts: two said no single habit; one named "Running in solo", citing 0:25 against its own clip reads (FYR_rLayze near, on screen).
+Each has a fix in the code. [tests/evals/ledger.md](tests/evals/ledger.md) says which are proven on their own case.
 
-With firing-only windows at low detail, three more reviews (Oct 19) used 152k video tokens each, down from 318k, and 210k to 317k prompt tokens in all, at 15 to 23 calls (about $0.09 to $0.12 a review at Gemini 3.5 Flash-Lite's list price of $0.30 per million input tokens and $2.50 per million output). The verdicts still split: one said no single habit; two named a habit about not supporting teammates ("Retreating or disengaging instead of supporting teammates", "Lagging behind teammates during pushes"), each citing 0:25 plus moments the record contradicts (at 4:16 the player traded the downed teammate within a second).
+- Clash Royale: it took the opponent's name for the player's, and called a 0-1 loss a win (Oct 24).
+- League: the low-detail pass gave the player 22 kills, every one of them a minion (loop 40; true: 0).
+- Brawl Stars: a review ended "nothing lost" after 3 calls, on a match with 2 deaths (loop 40).
+- Habits judged by eye: on Oct 18, 2 of the 3 habits it named were false. Apex's "reloading in the open" cited moments that were healing and riding ziplines.
+- The first release: v0.1.0's Mac download was corrupt. Each Mac runner built both DMGs, and their copies landed on one path. v0.1.2 fixed it, and the release now checks every file before it's published.
 
-After the accuracy fixes (Oct 19: boxes checked, lines read twice, fights from the damage counter, code-backed marks, claims checked, a habit needing two losses), three more reviews from the same start came out identical: the same record and the same answer, with the same 263,008 prompt tokens each. Against the frames and the HUD's own counters: 4 of 4 kills, 0 deaths (right), both of FYR_rLayze's downs (0:25 near and not traded, 4:16 traded by the player), and the 8 fights the damage counter shows, plus 2 windows that weren't fights; one stray squad name (cXz), read as far away, so it changed nothing. With one loss, code answered no single habit each time, and said why. Each review: 21 calls, 263k prompt tokens (219k of them video) and 23k output, about $0.14 at list price, 3 to 4 minutes. This match never asks the coach to name a habit, so the claim check and the code-backed marks weren't exercised here.
+### Limitations
 
-**Without a kill feed to read**, the older path stands in:
-- **The low-detail pass lists them:** each fight's start, end, and outcome (won, lost, or no one fell), judged with the researched criteria for fights.
-- **Code stretches them:** it reads the ammo counter 4 times a second, and steady drops are shots. Shots, damage dealt (when the game has a damage counter), and the kill feed's kills and deaths extend a fight the pass saw or one around a kill or death.
-- **Shots alone don't make a fight.** Reloads and weapon swaps also change the ammo counter; on the Apex recording two "fights" made only of shots were a reload and a swap, checked by eye at 1:25 and 3:07.
+- Post-game only. It never reads game memory and never runs during a match.
+- Shooters and chess have readers in code. Any other game gets the generic tools: close looks, HUD reads, questions, and the checks.
+- With no kill feed, the scan reads one frame a second at low resolution, so a short fight can be missed.
+- Aim math breaks on stretched resolutions, a crosshair moved off center, or heads under 6 px.
+- Learning varies from call to call, and a box can land beside the number it's meant to read.
+- Google Search often fails on a free key, and research then falls back to the model's own knowledge. The app says when that happens.
+- A free key covers about 20 reviews a day.
+- The installers aren't signed with paid certificates, so macOS and Windows warn on first launch.
+- The website has no Kokoro voice and doesn't remember where your recordings are.
+- The eval recordings are other players' footage and aren't in the repo, so the loops can't be rerun as they are.
 
-The timeline draws each fight as a band colored by outcome. The brief asks the coach to judge whether each fight was worth taking and how it was taken, not only who died, and the won-fight check counts won fights.
+The full list is in [docs/how-it-works.md](docs/how-it-works.md#limits-in-full).
 
-### Close looks: stills or a clip
+## Run the tests and evals yourself
 
-`frames` gives the coach two ways to look. **Stills** (the default) are full-quality pictures, for detail: a number on the HUD, who stood where. **A clip** (`as: clip`) is the run-up as video, for what happened and in what order. `measure_aim` stays on stills. A clip costs the same 1 look per moment, and it rides in the coach's own turn like stills do, so calls per review don't change. While the coach watches, the video plays exactly that stretch (the agent and the app share `C.clipPlan`), and the step's card shows the clip that was sent.
+### Tests, no API key
 
-Measured on the Apex recording at 4:30 (Oct 22):
-- **Tokens:** 10 stills around the moment (1.5 s at 768 px) count 10,890 prompt tokens. The clip from 4:24 to 4:31 at 6 frames a second counts 3,251, about 30%. In a real call to Gemini 3.5 Flash-Lite, at the coach's settings, it took 2,851 prompt tokens, 2,772 of them video: 66 a frame. Width doesn't change the count: 960, 640, and 480 px all came to 3,206 as MP4. So a clip is 640 px, which keeps it to about 560 KB.
-- **What it can read:** asked what happens, Gemini got the order right: a Shield Cell on the stairs, cancelled to run along the train, a second Shield Cell, then the SMG out and firing at 4:30.8 (the ammo goes 26 to 21 by 4:30.9). Its times were within about a second: it had the SMG out at 4:29.0, when the frame at 4:29.5 still shows the Shield Cell. That's the low detail per frame. A number or an exact position still needs stills.
-- **Time to make one:** clips used to be cut by a conversion of the whole stretch to H.264 MP4. That took 1.1 to 1.5 s for this clip at 960 px in Chrome and in the desktop app (Electron), first or later. The 12.8 s first seen didn't come back with that code. It does come back as the start-up of the Mac's hardware H.264 encoder: 9.4 to 12.3 s for the first clip in each new browser, then 0.3 to 0.7 s. Now only the frames the clip keeps are decoded, at the clip's size, and they're encoded as VP8 in WebM, which starts at once. Software H.264 in MP4 stands in where VP8 can't encode. `read_clips` uses the same path. Old and new side by side, each in fresh browsers run one after another, including the base64 the request needs:
+The fixtures and browser tests drive Google Chrome. Set `CHROME` to its path if it isn't in the default Mac location.
 
-  | | Before | Now |
-  |---|---|---|
-  | Clip look, 7 s at 6 fps, 640 px | 0.46 to 1.08 s | 0.35 to 0.37 s, with 4 stills for the card |
-  | `read_clips` window, 10 s at 8 fps, 960 px | 1.57 to 2.08 s | 0.76 to 1.15 s |
-
-  Over 7 fresh starts in Chrome, Chrome with a window, and the desktop app, the first clip look took 0.47 to 1.12 s. Times ran higher while other work shared the machine.
-
-### Watching it work
-
-The rail shows the review as it happens. One line with a spinner names the step running now. Under the theory board, **the breakdown** adds a card per step, newest first: what the coach is checking, in its own words; the frames it pulled or the aim crop with the head box and the measured number; what code skipped or sent back; and the theory it changed after that look. Each time on a card plays that moment. Under the timeline, **five stages** show where the review is: reading the screen, the match record (with its deaths, near-deaths, and kills), looking closely (with the looks spent), checking it (against the record and the video), and the verdict. When the review ends, the cards fold into "How it got here", closed.
-
-### The report, and the critique narrated
-
-The report has one structure for every verdict: what it is (a habit, or what cost them this match once), where it shows (each moment's frame, marked, with what to do instead), and what to practice, then "How it got here" folded.
-
-**How it worked** follows, open: the whole review in order, drawn from its saved log, so a past review opened again shows it too. It has six stages:
-- what it learned about the game: the frame it learned from, with the boxes it kept and the ones it dropped;
-- the match record: each line marked as read in code (the kill feed, the HUD, the board) or guessed by a model watching the video;
-- each of the coach's turns, folded: its reasoning, the tool it called in plain words, and what came back;
-- each finish that was sent back, with exactly why;
-- the claim checks: each claim's verdict fact by fact, and, set apart, the false claims code planted from the record to test the checker, with what each was built from and whether the checker caught it;
-- the finding, with the review's calls, tokens, looks, and time.
-
-While a review runs, one line at the top of the rail counts its model calls of the budget, its tokens, and the time so far.
-
-The critique plays as one piece:
-- a title card with the verdict opens it;
-- each moment is said the way a coach talks over a clip, and it never says a time: the tag on the picture shows it;
-- it closes on a card with the drill;
-- a tag in the corner says which moment is on ("Moment 2 of 5 · 0:46.8"), and the picture dips to black between moments.
-
-**What it says** is written once, as soon as the report shows: one Flash-Lite call, counted with the review's calls, turns the finding into a coach's words. The call gets the verdict, the drill, and each moment's own text, as data. It writes an opening, one to three short sentences for each moment, and a close, in plain words and contractions, with at most two numbers a moment and no times. Said word for word, the finding's lines sounded like a stat sheet read aloud ("ammo was at 25/64, equal forces with 3 teammates alive", "First, at 8 38"), and the user called it robotic (Oct 25). Code checks the script before it's used:
-- every moment is there, in order;
-- every number in a part, as digits or words, is one that part's own text states, and a moment says at most two;
-- no time is read out, and no part runs past four sentences;
-- two moments in a row don't start the same way.
-
-A script that fails any of these isn't used: the critique says the finding's own lines, each brought in by how it follows the last ("Next round", "33 seconds later", "3 moves later"), never the same words twice running. The script, or that it didn't hold up, is kept with the review, so playing it again, opening the review later, or saving the video needs no new call. A call that fails (a quota, a busy model, the network, or no answer in 30 s) keeps nothing: that play says the finding's own lines, and the next one asks again. How it worked says which the critique used, and why.
-
-**Getting it ready** happens in the background as soon as the report shows: the script, then the voice for every line, so Watch and Save start at once. Pressed before that's done, either waits under a card over the first moment's frame that says how far it has got ("Making the voice: 3 of 7 lines"), with no giving up, and Stop ends the wait. A saved video starts recording only once every line is made, on the critique's own first card. Kokoro makes a line on the CPU at about 1.2 times its length (a 26.6 s line took 31.9 s, said whole or a sentence at a time, Oct 25), one line at a time. Lines made while the critique played took the CPU from the video:
-- loop 40's saved Siege critique froze on one frame for 16 s while its next line was made;
-- the next export gave up waiting after 60 s and started recording with 2 of its 4 lines made. Its getting-ready card came back over the first moment when a late line finished, and the picture stalled at 8:37.2 for 70 s.
-
-A span also goes on looping for as long as its line runs, instead of holding on one frame.
-
-**Save as video** records that same sequence into one file: the footage at each moment, the marks, the cards and captions, and the voice, mixed in through WebAudio. It's MP4 where the recorder supports it, else WebM. It records in real time, so it takes as long as the critique, and the window has to stay in view: hidden, the recording pauses, and it resumes when shown. Under the headline, one line says what checked it: the record and the video, or the record only when the video check didn't hold up.
-
-**Watch the critique** plays the whole match back like a coach's breakdown video, not just the finding. It walks every moment the player lost, in order: each death with the lost fight around it, each near-death ("Your health fell to 30 of 250"), each point given up, and each lost fight that didn't end in a death. The moments where the finding shows are flagged as the habit, and a loss within a few seconds of one joins it. For each moment, its span plays on a loop with the game's sound off: from 3 s before the mistake through the loss it led to, 1.5 s past it, up to 12 s. A voice says what happened there and what to do instead as it plays. The span plays at least twice, and as many times as the line runs, and after the first pass the 2.4 s around the mistake play at half speed with its marks drawn. The timeline marks the span with the mistake inside it, not one point, and the chapter says both times (4:09 → 4:15). Until Oct 24 the run-up played 4 s and the video held on one frame while the voice spoke, so the moment went by before anyone saw it. A clip longer than 6 s was also dropped as soon as it started: the guard against the player seeking took the jump back to its own start for a seek away. It opens with the verdict and closes with what cost the most ("It showed at 4 of the 6 moments you lost") and the drill. Each moment is a chapter under the video, and its card in the report is outlined while it plays. A chapter starts the critique from there; touching the video or the timeline, or Stop, ends it.
-
-Its marks are the review's own, and its words come from the review's own, with one call for the script. The voice is Kokoro (82M parameters, 8-bit), a neural text-to-speech model run on this computer by `kokoro-js`, so the lines never leave it either. The page asks the local server for each line (`POST /voice`, refused to any other site), and the server makes it on the CPU: a 7.7 s line took 9 s on an M-series Mac, so every line is made before the critique plays, and lines already made are kept. A line is said a sentence at a time, each sentence with the style Kokoro picks for its own length, with a short breath between. Michael is the default. kokoro-js grades him C+, the best any of its male voices gets. Heart (A) and Bella (A-), its two best voices, and the system's own voices are in the picker. The server loads `scripts/voice.mjs` once, so a change to it takes effect only after the dev server or desktop app restarts. The model, about 90 MB, is fetched from Hugging Face the first time and kept in the transformers cache (under `node_modules/@huggingface/transformers/.cache`). Without Kokoro, the system's voice reads the lines, and without any voice, the captions hold for the time it takes to read them.
-
-The marks are only what code read. A crosshair against the measured head, a kill-feed line found again by its pixels, or a chess move. Otherwise the HUD number behind the moment: the health readout at a near-death ("Health 30 of 250"), at a death the HP number read as 0, or the scoreboard at a point. A number's mark goes on the frame the record read that number from, not the cited moment's, in the report's pictures and over the video alike. A moment is paired with a reading up to 1.2 s away, and the HUD can read something else at the moment itself: the Siege report circled 100/100 at 8:38 for a near-death of 19 of 100 read at 8:38.9 (Oct 25). With no frame at the reading, the number isn't circled.
-
-### Reading the kill feed
-
-It's a team game, so the coach needs every kill, not just the player's own. The low-detail scan copy can't show that: at 640 px the kill feed is a smear, and it found only 1 to 4 of 9 kills. So `scan` reads the kill feed from the original recording:
-
-1. **Rows.** Code samples the kill-feed corner once a second and reads its rows on the game's grid (`killfeedGrid` in the profile). The grid is first fitted to the recording from 30 frames, because a stream layout can shift the feed (the TenZ VOD draws it 13 px lower). A slot holds a row when it's mostly team color and has white name text, so a red wall or a teal ability flash doesn't count.
-2. **Teams.** Code reads each row's teams from pixels, starting at the right edge, past the victim's portrait: the first color is the victim's team (teal for the player's side, red for the enemy) and the next different color is the killer's. The game draws the victim's end in a muted shade, so muted color counts inside a row. A row that reads as one team on both ends gets no sides, since the background must have shown through.
-3. **Each row once.** Code tracks rows from second to second by the shape of the victim's name in white text, which the background behind the feed can't change. New kills join at the bottom and old rows only move up, so a look-alike row lower down is a new kill. Each new row is cut out as a strip, and three frames in the second before it find when it appeared, to a quarter second.
-4. **Names.** The strips go to Gemini numbered, 32 to a call, and Gemini reads the names. Gemini is good at names but mixed up the team colors in about half the rows, so the teams come from code. Measured from pixels on the two real recordings (`eval/feedprobe.mjs`): 2 calls for TenZ's 36 lines and 3 for Vyse's 41, with 35 and 41 of them in a strip. Whole crops, 12 to a call, took 7 and 9 calls.
-5. **Events.** Code turns the readings into an event log. Repeated sightings become one event. A death counts as traded when the killer dies within 5 s. When a reading comes out as one team on both sides, the names' other kills settle it. A name that appears on both teams (both can pick Omen) is never trusted this way.
-6. **Who the player is.** It's the name typed on the start screen. Without one, it's the victim the kill feed names at the player's own deaths, which the low-detail pass catches from the "Killed by" panel. A first version used the yellow marker on the player's rows instead, and it picked Killjoy, whose portrait is yellow.
-
-#### A kill feed of plain text
-
-Apex Legends writes its kill feed as text, with no colored bars to find rows by, so the learned layout finds nothing and, before this, the low-detail pass stood in. That pass misread the Apex recording two ways in two runs: once it took the player's own KNOCKED DOWN banner at 4:17 for the player being knocked, and once it found no knock there at all. Now:
-
-1. **Lines.** Code samples the feed once a second from the original and finds its lines by their text: bright pixels beside much darker ones, in bands. The crop reaches past the learned box (two learn calls drew it 0.12 of the screen apart), lines share an edge (Apex right-aligns them), and only the feed's own band counts: new lines pile up at one end of it, so HUD rows above and text in the world below drop out. Each line is cut from the second after it first shows, since Apex draws a new line in names last (that's how "[Bleed Out]" kills were missed). On the 6:09 Apex recording that's about 200 to 320 lines, read in 5 to 7 calls of 48.
-2. **Names, read twice.** Gemini reads every line: its text, its kind (kill, knock, or message), and for kills and knocks the two names, without clan tags. Each line is read twice, cut 1 s and 3 s after it first shows, in different sheets, because one read of the same strip can come back different: on the Apex recording a "[Bleed Out]" kill was missed in one run, and the chat line "FYR_rLayze: Thanks Silent Gaming." was taken for the player's death in two. A line goes when either read calls it a message or a colon is in its text or a name; a kill either read finds stays. That doubles the feed's calls (about 8 for the Apex match).
-3. **Squad.** The colors come from pixels, not from Gemini: asked for each name's color, Flash-Lite answered with the scenery behind the strip ("Silent Gaming" came back blue and orange; it's gold). The killer's color is the first dense run of text on the line, the victim's the run on the shared edge, and each name keeps the color of most of its lines. The color most names have is everyone outside the squad; the others are the squad, when a name is colored on two lines or more (one colored reading is as likely a misread or a stream overlay). On the Apex recording that gives Silent Gaming, FYR_rLayze, and O5HK, plus two strays. A battle royale has many teams, so a kill between two others stays theirs, a teammate's death counts as traded only when the player's own team takes out the killer, and a "kill" inside the squad is dropped as a misread line: "FYR_rLayze: Thanks Silent Gaming." was read once as a death. A name read short (the "r_Layze" of that line) is mapped to the full name it's part of.
-4. **The banner.** For the squad's lines, one call reads the middle of the screen just after, where games announce the player's own knocks and deaths (Apex's KNOCKED DOWN). It names the player only when every banner that fits one line points at the same name. On the Apex recording they didn't: Apex shows the banner for assists too, and Flash-Lite borrowed a name from the next picture. Otherwise the player is asked, once per game. A banner that matches one of the player's own lines marks it confirmed.
-
-Measured on the Apex recording, three full reviews from the same start (history cleared, the same learned game and research, run in the desktop app on Oct 19; `consistency.mjs` in the session scratchpad). The record matched every time: 3 kills at 0:47, 0:53, and 4:17, 0 deaths, 0 lost fights, and 4 or 5 teammates down (one line read differently). The verdicts didn't: one review named "Running in solo"; the other two named no habit, one of them only because code refused that same theory twice. The frames contradict it: at 4:16 the player traded a downed teammate within a second, and at 5:59 both teammates are on screen. So the record is now steady, and the coach's verdict, judged by eye from frames, still isn't. Before these changes, two reviews disagreed on whether there was a death at all.
-
-With the rule that a finding cites a loss, and stray squad names filtered out, three more reviews from the same start read the same record again: the same 3 kills, 0 deaths, and 2 teammates down (0:25, untraded; 4:16, traded by the player within a second). All three looked at 0:25 first, the match's only loss. Two answered no single habit, and one named "Teammate separation", citing 0:25. The frames side with the two: at 0:24 FYR_rLayze is one doorway ahead, in view, and the player turns to use a Shield Cell as he goes down. 12, 15, and 19 calls; 3 to 6 minutes each.
-
-### What code enforces
-
-- **The budget.** 24 looks and 14 turns by default (12 before research and clip reads became the coach's to call), and every tool result says what's left. Turns run out first, so the brief asks for several moments per call.
-- **Dead time.** After the player dies, the screen is a death recap or a teammate's view until they're back in. How long that lasts comes from the profile's `deadFor`: the rest of a round when the scan found round starts, a respawn when it found none (deathmatch). `measure_aim` skips those moments before they cost a look or a call, and `finish` refuses evidence from more than 2 s after a death (the death itself can show a habit like dying alone).
-- **No hunting for a reading.** A fight can be measured twice (the first try can land on the kill-feed line or the death); a third try is refused for free. When the numbers rule a habit out, `finish` says to drop the theory and name another, or finish with no habit, rather than to show more measurements.
-- **Theories need a look.** A theory goes to "supported" only once one of its moments was looked at closely. A hunch stays at "testing", and the coach is told why.
-- **The finding is a supported theory.** `finish` with a habit is sent back unless every moment it cites is on a supported theory on the board. Before this, a review named "Running in solo" while its only theory sat at "testing" with no moments.
-- **Losses first.** `finish`, with a habit or without, is sent back until the coach has looked at each of the player's deaths, near-deaths, and lost fights, or 4 of them when there are more. A match is lost there, and two reviews of one recording that look at different moments reach different answers. With the kill feed read, the feed decides how a fight ended, over the low-detail pass.
-- **What code can settle costs no send-back.** A moment of contrast (optional) the coach never looked at is left out, and a missing `recheck` is filled from the finding. A missing field never counts toward "sent back twice for the same reason": Rocket League and League (Oct 23) were each sent back twice for one of these, and ended with nothing named. The drill and the recheck are required by `finish`'s own schema, with or without a habit: over three loops (Oct 24), 15 of 62 send-backs were only for the drill, each a turn of the coach's.
-- **The last two turns decide.** With one turn left, only `finish` runs: on Vyse (Oct 22) the coach spent its turns measuring for an aim check the moments couldn't meet (the enemies that killed it were off screen), and the review ended with nothing named.
-- **A finding shows two losses.** A habit that's losing games shows up where they were lost, more than once: `finish` with a habit must cite moments at 2 or more separate losses (the player's deaths, fights they lost, teammates down near them that nobody traded, or, in chess, moves the engine calls a mistake). The scan lists them. Each moment counts at one loss, the one its `led_to` names when that's a loss, else its own: until Oct 25 one moment at a death, with `led_to` a teammate down 9 s later, counted at both and met the rule alone.
-- **No habit still names what cost them.** When no habit repeats, or the match has only one loss, `finish` has to name the biggest reason they lost anyway, as a one-off. It gives a `reason` and the moments that show it, at least one where they lost, each with what to do instead. Those moments go through the same checks: looked at closely, against the record, and against the frames. Until Oct 22, code ended a match with one loss on "no single habit", and the coach could end any match that way. Players lose for a reason, so that ending explained nothing. The verdict now says "What cost you this match". Only a match with nothing lost at all ends with nothing named.
-- **Never "nothing named" when something was lost.** A finding sent back twice, or a review out of calls, still ends with what cost them. The review keeps the latest finding's moments that both checks let stand, if one is where they lost, and names its habit or reason from those, saying how many of its moments were left out. With none, one closing call names the biggest reason and says what went wrong at each loss from the record and the clip reads alone. Its notes are read against the record, and the report says it wasn't checked against the video. Until Oct 23 these reviews ended "nothing named": TenZ and Vyse ran out of calls, and Rocket League and League were sent back over a missing field. The moments kept that way keep their cause (`because`) and the loss each led to: until Oct 25 they kept only the moment and what to do instead, and all 5 findings salvaged that way in loops 37 and 38 lost every cause.
-- **The moments that decided it, and why.** The mistake that loses a fight is often made before the death, once it can't be won any more. So a moment can carry `led_to`, the loss it cost within 30 s after it, and it counts at that loss. `finish` gives turning points, the moments that decided the fights they lost, and each cited moment says `because`: what made it lose there, as the video shows it. That means missing information (no vision, an enemy missing from the map), resources (health, an ability down), numbers, position or timing, not the action itself, since the same aggressive play is right when those favor it. "Died chasing, should have backed off" describes it, while "chased into a bush nobody could see, with the jungler missing" diagnoses it (the user, Oct 23). The cause is checked with the moment, against the record and the video, and a turning point either check doesn't back is left out, not sent back. The clip reads say what decided each fight the same way: who saw whom first, the numbers, health and abilities, and position.
-- **The critique is those moments, each its own.** It plays the finding's moments and the turning points, not every death and kill. Each line is that moment's situation, what made it lose, and what to do instead, with no stock opening ("This is it") said at every one. What's said is captioned over the video as it's spoken, and the chapter list under it highlights the line, whole; a caption that only repeats the title card's words is left off the card. The record never says "not traded" of the player's own death, since often nobody was left alive to trade it, and names a player by their character alone ("Sova", not "Sova (Sova)").
-- **Claims are checked against the facts.** Before a finding is accepted, one text-only call reads each claim beside what the review knows as fact around that moment: the kill feed's record, the fights, and the clip readings. A claim that goes against them ("a teammate goes down" where the feed shows him getting a knock) goes back to the coach with the fact. A player named by their player name in one place and their character in another is one player to both checks: TenZ's 4:14 killer was "zeytazin" in the kill feed and "Reyna" in the combat report, each check refused the other's name, and the review ended with nothing named (Oct 23). Each moment is read with what the finding says it shows, the habit or the reason, and judged fact by fact, like the check against the video. TenZ's "taking duels without using utility" cited its deaths as "engaged an enemy and was killed", which the record fits, and judged whole it passed, while the record had an ability 3 to 4 s before two of the deaths (the frames show one thrown at 2:13.5 and a Gatecrash at 4:06). On the five findings of Oct 23 it sent back 4 moments, each wrong on the frames (TenZ's three, and Vyse "alone" at 11:07 with a teammate beside them), and none of Marvel Rivals', League's, or Rocket League's. A name the game writes on screen (a clip read's screen text, such as Clash Royale's "Sparky lvl.12" over the player's own card) counts as shown, for this check and for code's check of named characters; Clash Royale's own cards were sent back as unshown names twice. Each claim gets only its own moment's facts: the record's lines near it, code's numbers at their own times, and of each clip read over it the story, the screen's words, and only the moments, factors, and last choice timed within 5 s of it. A number (health, ammo, a count, the score) goes against a claim only on the record's number at the claim's own moment (the time the claim gives it, else its own), never on a reading's: in loop 40 the check sent back Marvel Rivals' right "157/250" at 4:17 against a read's "70/250" at 4:18, and Siege's "13/64" at 8:59 against "25/64" at 8:55. A contradiction resting on such a line is dropped in code (`C.staleAgainst`).
-- **A number goes against a claim only from code or the video, at its moment** (round 4, Oct 25, not run in a loop yet). The claim check drops a contradiction on a number, the claim's or the fact's, unless the fact it quotes is a line of the record (code's HUD reads, the kill feed) or of what the check against the video saw of the HUD at that moment (`C.videoSaw`, given to the claim check and the closing call as true); a reading's number, a quote that is no line given, or a line from another moment can't contradict (`C.staleAgainst`). A game's own clock in a claim ("R on 1:48 cooldown") counts as a number, and a time counts as the recording's only where it's written as one ("at 1:46") near the claim's moment, never beside a timer word (`C.recordingTimes`). A player's name with digits in it, a chess square, and a move's number are no numbers (`C.numberText`). Each line has a kind (`C.lineKind`): a HUD number or an ability icon's look holds at its own second (compared at whole seconds), a standing count (the score, the K/D/A, who is down) over its span from its last change, and something that happened (a kill-feed line, a move) whenever; a quote that is no line given goes against only a claim that gives a number. The claim check's memo is kept without the video check's lines, so a finding sent again costs no call. In chess the claim check also sees the next move of each side after the claim's, and a fact the check against the video calls the engine's is so only where code agrees (`C.engineFact`): never one that says an engine move was played ("Black replied Bc4") or names the move played at its moment ("Nd4 gives away a pawn" at 1:30, Nd4 played there), and a claim stands only on a fact the board shows. On loop 41's 10 contradictions (a dry run of the code side on the saved runs), round 3 alone dropped 2 of the 6 that rested on a reading's or another moment's number (League 5:05, Siege 8:39); this drops all 6 (League 4:26, 5:05, 8:46 and run 2's 4:25, Siege 8:39 and 8:59's clock), drops chess's 2:03 as round 3 did, and keeps the 3 that rest on what happened (Clash Royale's "no one fell" at 3:07, its 0:20 placement, Brawl Stars' teammates nearby).
-- **Losses that aren't deaths, from the clip reads** (round 4). A read's factor, moment, or last-choice cost saying the player's own health, shield, or structure went from one number to another (two digits or more) by a fifth of full or more becomes a loss (`C.readDrops`): a structure's as `objective_damage`, health or shield as `damage`, said "seen by a clip read". Whose it is comes from the thing's own possessive ("the player's Hog Rider damages the left tower" is the other side's tower); a clause about a timer, the score, or another resource (elixir, mana, ammo) is none; a structure with no side said is theirs only where the read's last choice says it cost them, or an enemy did it; one at a death, near-death, or damage the record has is that one. It's checked against the HUD's numbers code read already (`C.dropChecked`), at its own scale: read near the drop's own numbers, or falling the same share of full, "the HUD's … agrees"; steady through, dropped; else kept as the read's, a guess in every prompt. No model call. On loop 41's reads it finds one: Clash Royale run 2's right tower, 1979 to 761, at 1:34 (the baseline's 1:33).
-- **The camera follows the player** (round 4, unflagged). Every clip read, second look, and check against the video is told so, a name known or not, and that a camera following someone else after a death is the player dead. A read also names the character the camera keeps centered (`centered`), which decides who the player plays when the reads disagree on it. A read's own words that the player went down ("the player is eliminated by enemy fire") are a death cue for the second look, like the screen's ("PANDA YT Defeated", `C.narratedDeath`): Brawl Stars run 2's reads said both its deaths so, with no screen text naming the player, and neither reached the record. On that run's reads it now gives 1:10 and 2:58, both real. These cues run without any flag for the windows whose deaths nothing could check (a fight's end the low-detail pass saw), as the screen's own cues do, and under `spectate_deaths` for every window read; each takes the second look's one call. The player has to be the one going down: "The player's teammate is eliminated", "The player's shield is down", and "health is down to 20%" aren't.
-- **Which number is which** (round 4). The HUD sheets and the read's prompt say it generically: health is the number on the health bar, a second bar beside it is another resource (mana, energy, shield); the match clock is the scoreboard's, never a number on an ability icon. League's reads took her mana for health and Flash's timer for the clock (loop 41).
-- **Ammo by weapon slot, and where the player faced** (Oct 25, from the user on loop 40's Siege critique). A HUD with two weapon slots shows each one's magazine and reserve, the highlighted slot the weapon in hand: Siege at 8:38 read rifle 0 / 89 and pistol 21 / 100, and the critique said "ammo was at 21/89". The clip read now gets the ammo HUD at full size beside the health (its rows said as "each weapon slot's magazine and reserve read as a pair from the same slot"), its resources factor asks for each slot's pair and which is in hand, the code's ammo fact says it's the in-hand weapon's magazine, and the check against the video gets the ammo row too and is told a pair holds only from one slot. A fact whose pair mixes the slots the video check itself read there goes against, whatever it called it (`C.mixedAmmo`, `C.ammoSlots`). In first person the screen is where the player faces, so the clip read and the video check say they faced away or weren't looking only when the enemy came from off screen. The critique's "holding an angle facing away from the incoming enemy approach" at 8:38, with the enemy in front of them on screen, came from the closing call (the review ended on the record's say), which took a read's last choice as true and was checked against the record alone; its notes now go to the check against the video too (one call, nothing planted), which leaves out one it goes against.
-- **The mistake ledger, closed in code** (Oct 25, `tests/evals/ledger.md`; each row's proof a unit test named `ledger <row>`, on that run's saved data or frames off its recording). Chess: the cover asks after the eight costliest moves; each graded move carries the engine's line played out (`lineGain`), and a claim of a piece lost that the line never takes goes against it in code; a cite's better that isn't the engine's move gets it written in; clock reads that rise between moves, or fall faster than the recording, are left out. Clash Royale: in a one-on-one game whose pass scored points, one look at the end screen, its result decided in code from the banner, the trophies by the player's own name, the winner's banner and the crowns, turns over the points the record gave the wrong side (the 0-1 loss called a win in every review). Fortnite: a quieter fall counts where no fight is near (6:59), the shield bar is a second series (7:30, 98 to 24), a fix resting on a heal nothing shows is asked about once and then taken out, and "the 1v1" goes against the screen's YOU PLACED #4. League: a lone "Game in progress" at 0:00 is no rounds, and a death the death count rose at stays (8:56). Brawl Stars: a death the record checked isn't the video's "seen surviving". Marvel Rivals: a row code can't split tells the read nothing is known of it. First person, under `state_facts`: whether the view moved in the last 2 s, read in code. The reads and the video check name a place and the teammates near only by the minimap (which the check now gets with such a claim), the weapon only by the HUD's icon, and a cast as the player's only where their own icon dims.
-- **What's known, apart from what was guessed.** Every event keeps what code knows (the kill feed, the HUD's numbers, the scoreboard, a second look at a death) apart from what a model's look at the video said about it (`guess`): who killed them, where, how the fight went. Every prompt says the guess as a guess ("a look at the video guessed: … (it may be wrong)"). The clip reads get only the known part as fact. The claim check takes the readings as readings: a character or a structure only a reading names counts as unsupported and goes back to be said as "an enemy". Until Oct 23 both took the guesses as fact. The low-detail pass's "eliminated by Miss Fortune" (the player's own champion) went to the clip read as "what the kill feed and HUD show, which is true". The read repeated it, the claim check agreed, and so did a turret and an "enemy Gragas" a read had made up.
-- **Who the player plays.** Learning names the character off a few stills and keeps it only when its two reads agree (Miss Fortune was once read as Samira), so a review often starts without it. Each clip read now names the character the camera follows, from its portrait, its ability icons and what it casts. Once two reads agree (and two thirds of those naming one), every step after knows it: the coach, later reads, and both checks. Each is told that this character on screen is the player, so an enemy is that character only where a second one shows.
-- **What the screen wrote.** Each clip read lists every banner, announcement, status over a character, and prompt the screen writes, word for word with its time: SHOT ON GOAL, NEARSIGHTED, Not enough Elixir!, RELOAD. They're facts that mark the decisive moments the reads kept missing, and the coach and the claim check see them. Every time a read gives is the recording's own: its factors came back on League's game clock (15:43 for 1:43). Told so, reads still gave some times on a clip's own clock, and a loss's clip in two parts tells each part its own 0:00, so code puts every time a read gives (moments, abilities, factors, the last choice, the screen's words) on the recording's clock (`C.onClock`): as given, from the clip's start, or from a part's start, whichever puts it inside the clip; where two do, the one the rest of that list settles, else the one nearest the loss; a time that fits none is dropped. Over loops 37 and 38 and loop 39's first 10 runs (Oct 25), 64% of these times (482 of 756) were inside their clip as given, 85% of the high-detail ones (395 of 463); after, all 756, none dropped. Where it could be checked, it was right: Valorant's "KILLED BY FADE" at "0:08" and "0:05" landed 0 and 3 s from the record's deaths, against 10 and 13 s off from the clip's start. In Valorant (loop 37) the two deaths whose reads came back so timed were the two the coach never cited. The screen's words reach the coach, the claim check, and the closing call as data, since they carry other players' chat word for word, and so do other players' names off the kill feed, the research the brief and the clip reads are given, and the words code reads off the scoreboard. A name in chat or the feed in the player's own team's color is a teammate's: reads called League's Evelynn and Gragas, both teammates, enemies.
-- **What decided each loss.** A clip read with a loss in it fills in each of the conditions a coach reads, by kind: position, information, resources, numbers, the map's state, and mechanics, leaving one empty only when nothing on screen shows it. Asked for a list, a read named one kind per loss (Brawl Stars, Oct 24: "2690 health", where the baseline had him alone ahead of his team, three enemies on him, and his super and gadgets unused). Each comes with its time and what the screen shows, with the HUD's number where it writes one. The read gets the HUD at full size 6 s and 2 s before the loss to read them from: health, the cooldowns and the ult, the K/D/A or score, and the kill feed or chat. It's also told what research says decides fights in the game. The coach sees them in each clip line and is told to name every one that was true, with the numbers. The finding is graded against a coach's read of every loss made from the frames (`eval/answer-keys/coach/baseline.json`), so it can be checked for whether it reached those or only described what happened. Read as "overextended without vision", every League death left out the facts that decided it: Flash and the ult on cooldown, 42% health, two levels down, two teammates dead at 8:56, and the team pinging that enemies were missing.
-- **The loss read where the decision is.** A loss's clip comes in two parts: its first stretch at 2 frames a second for the setup, and its last 8 s at 8 a second, where the decision is. Read at 4 a second throughout, Rocket League's shot from the corner 7 s before the goal went unseen in two reads of three, taken for a rotation back (Oct 24). Each clip also tells Gemini the rate it was cut at. Until Oct 24 every long clip was cut at 4 a second but sent as 8, so Gemini sampled each frame twice and paid for it twice.
-- **Fewer, cheaper reads.** A loss is read at high detail, two to a call, with the HUD as it came. A fight they won, or firing, is there for contrast and is read at low detail, four to a call. `read_clips` reads only as many windows as the calls left allow, losses first, and says which it left out: two asks of eight windows took one Valorant review to 40 calls (Oct 24). The losses' clips are cut while the coach takes its first turn, through the video's one cutting queue, so `read_clips` finds them ready. False claims are planted in the check against the video until it has caught them once; a later finding's check plants none, which saves two calls and about 100k tokens each time a finding is sent back.
-- **Who of theirs was down.** Learning boxes the team bar (teammates' portraits or health bars, with who is dead or respawning) where the HUD has one, and the clip read sees it at full size before each loss. No League read had said that two teammates were dead at 8:56.
-- **The choice before each loss.** A clip read with a loss in it names the last choice the player made while it could still be avoided: its time, what it left them without (position, numbers, health, vision, a key ability, a resource), and what to do instead. On Oct 23 one Rocket League read caught the shot from the corner at 4:09 that left the net open, and the coach got it right. Two reads of the same clip missed it, and the coach blamed the goal itself or a boost pickup.
-- **And against the video, in a context of its own.** A finding that passes the claim check has every claim checked against the video (`verifyClaims`), in one call that never sees the coach's reasoning, board, research, or turns, nor the record: only the claims, who the player is, and the video. Each claim comes in a block of its own with its own pictures: the run-up as video, the HUD's numbers (health, the K/D/A, the score) 3 s before, at, and after the moment, and a full-size still at the moment. The video runs to 3 s after the moment, or to the end of the record's fight the moment falls in, up to 8 s: a claim cited at a fight's start says how it ended (League's "caught, leading to a lost fight and death" at 1:43, the death at 1:48). A moment cited with `led_to` a loss runs to that loss, up to 12 s on: cut 8 s after a push that ended in a death 10 s later, the check saw TenZ alive to the end and called each death false (Oct 24). What happens after the video ends is "can't tell", never "goes against". For each claim it names every fact and what it saw, then judges each: shows, goes against, or can't tell. A claim stands only when every fact in it shows. A number is judged at its own moment: the HUD's numbers also come at a time the claim names for one, and a number it judged by what it saw at another second can't tell, not goes against (League, loop 40: "661 of 1479 at 1:40", cited at 1:41, called wrong by the 608 at 1:41). In chess, what a move allows, the best move, and the pawns it cost are the engine's, not judged by the video (verdict "engine"): 16.Qd3 "allowing Bc4" was sent back because Black played ...Qa6 instead. Anything else goes back to the coach, to say only what the moment shows. A claim already judged keeps its verdict when the finding comes back after a send-back, and so does a claim the claim check already read against the same facts.
-  - **Planted false claims.** Up to two claims the record shows are false go in among them, unmarked: "the player is killed here" at one of their kills, "the player dies here" at a quiet moment, a near-death called full health, the other side's point called theirs. A check that agrees with one isn't checking. It runs once more from scratch, and if it agrees again, the report says the video check doesn't count.
-  - **Measured** (`eval/verifycheck.mjs`, Oct 22). There are 25 claims labeled off the frames across Valorant, Marvel Rivals, League, and Rocket League: 15 true, 10 false, some with one fact of two false. Over two runs, 30 of 30 true claims stood and 18 of 20 false ones were stopped, with the same verdicts both times. It agreed with none of 24 planted claims. The cost was 16 calls for 14 checks, about one a finding. The false claim it missed, twice, was "the player's team scores" at the other team's goal in Rocket League. The claim check catches that one, since the record has each goal's side from the scoreboard.
-  - **What it replaced, measured on the same claims.** One blind call per finding looked at two stills, judged a whole sentence at once, and let through what it couldn't tell. "Peeking without utility" passed at Vyse 6:34 with a smoke up on the site. An agent working through the claims with its own looks mixed them up: it read 4:15's "NYAL SCORED" into 3:26.5's goal. It also judged health and kills off the picture, calling League's 280 of 1589 health "well above a quarter" and an assist a kill. An agent of its own for each claim fixed the mixing (29 of 30, 16 of 20) but took 99 calls for the same 14 checks. Each claim in a marked block of its own, in one call, did better for a sixth of that. Cutting several claims' clips from one video at once handed frames to the wrong claim, so each claim's video is made one at a time.
-  - **Why not one more reasoning pass over the record.** A second pass reading the coach's record would agree with it. This one never sees it: it checks the video, and the claim check checks the record.
-- **The same steps on the same match.** The coach, the scan, and every reader run at temperature 0, so a second review of one recording takes the same path as far as the model allows.
-- **Shots.** Code reads the HUD ammo counter (the profile's `ammo` region) 2 s either side of each close look and says whether the player fired: "no shots" only when every steady reading of the magazine digits matches the one before it, so a magazine emptied and reloaded to the same count still reads as fired. Background behind the digits can make them unreadable, and then the answer is "unclear", never "no shots". A habit the profile marks `needsShots` (spraying, shooting while moving) can't cite a moment with no shots. On 12 stretches labeled by eye in three real recordings (`eval/shotprobe.mjs`), all 12 read right; none read "no shots" wrongly.
-- **Said ahead.** Every look's result says what `finish` will still ask for (losses or a won fight not yet looked at), so the coach rarely spends a turn on a rejected finish.
-- **Evidence.** `finish` is sent back if any cited moment wasn't looked at closely, or if it cites fewer than 3 separate moments.
-- **Aim habits match the numbers, for this game.** `measure_aim` only reports where the crosshair sat (above the head, on it, upper or lower body) and never calls a spot right. A habit measured by aim needs at least 3 measurements with an enemy in view, and is judged against where the research says good players aim:
-  - **Head games** (Valorant): "low" means more than 0.75 head-heights below the head.
-  - **Body games:** "low" means below the body, about 3.5 head-heights down, and head level is never wrong.
-  - **Tracking games** (Apex): no height is checkable, so aim habits get no aim check and are judged by eye.
-- **Evidence shows the habit.** Moments where the player got it right go in a separate `contrast` list, which the verdict shows as "Where you got it right". A moment can't be in both lists. With fewer than 3 moments that show the habit, the coach is told to name the biggest reason instead.
-- **Real heads only.** A head box counts only if it sits at the top of a body box, and never on a teammate: anyone with a name tag over them, or called a teammate, is left out. Gemini also boxes every name tag on its own, and code drops anyone under one, since it doesn't always say whose a tag is. Before that, an Apex review measured O5HK, a teammate, at 5:59 and again at 5:55.5. Measurements where the enemy is very close come back with a warning.
-- **Won fights.** `finish` is sent back once if the coach never looked at a fight the player won, since a habit that shows up just as often in wins isn't what's losing fights. Finishing again keeps the answer.
-- **Measurement timing.** A measurement taken when the kill feed shows a won fight ending comes back with a warning. The scan times fights by their kill-feed line, but placement shows earlier, when the enemy first comes into view.
-- **Progress.** When the player is working on an aim habit, code compares this match's measured median with the baseline. Half a head of change, over at least 3 duels each, counts as better or worse. The coach's own opinion is used only when there are no numbers.
-- **Decide after two send-backs.** If `finish` is sent back twice for the same reason on the same habit (moments not looked at, too few moments, aim at the target height…), the coach is told to decide: its next call must be `finish`, and other tools are refused. If that answer still fails the checks, the review ends with no habit named, and the report says code made that call. A question asked once (the decision before a loss cited at the loss itself, a won fight not looked at, a name the record doesn't show, a check that couldn't run, cover_losses' ask) isn't a failure: it's answered first (Oct 25 review: a clean finding given one of these after the coach was told to decide was thrown away). It was added after a review of the Apex recording tried "low crosshair placement" three times.
-- **Post-game only.** Eye Catcher never reads game memory and never runs during a match.
-
-The player decides which habit to work on ("Work on this" or "Not this"). The short history the coach reads lives in `localStorage`. Each review's full log (every step the coach drew, with the frames it looked at), its report, and a handle to the recording live in IndexedDB (`reviews.js`), so a past review reopens as the same screen: the recording pinned on the left, the report and the numbered log beside it. The Past reviews page puts each game on its own shelf, with the game played most recently first. Chips at the top jump to each shelf, and a shelf says which habit you're working on in that game. The recording itself is copied into the browser's private storage (OPFS) for the 3 most recent recordings, so those reviews play without asking. For older ones it uses the file handle (from a drop or the browser's file picker), and otherwise asks for the file and checks it's the same one by size. Everything stays on the device.
-
-Each key moment in the report is a full frame marked up like a telestrator (`report.js`), with only what code can stand behind: a measured moment shows the crosshair and the enemy head it was measured on; a moment at a kill-feed line shows that line, found again on the frame by its pixels; a chess move shows the move played and the engine's move on the board's squares. A moment with none of these shows the frame unmarked. A model call used to box the rest, and in an audit of three Apex moments about 1 of its 6 boxes meant anything (loops on a door, on the player's own gun). None of the marks costs a model call. Each moment also says how it was found (the log step that measured or saw it, the ammo counter, the match record line) and what to do instead. Watching a moment plays up to it, then holds on that frame with the same marks over the video.
-
-## Files
-
-```
-index.html  styles.css  app.js   UI: Home, Coach (start a review, the live review, the check-in), the verdict, past reviews
-assets/scenes/                   Home's scenario clips and posters (npm run scenes), cut from other players' videos for testing: replace before publishing
-scripts/make-scenes.mjs          encodes those clips from recordings on this machine
-reviews.js                       past reviews in IndexedDB: log, frames, report, recording handle; recording copies in OPFS
-report.js                        key moments marked up: problem and fix on each frame
-agent.js                         the coach: its brief, six tools, and the finish checks
-video.js                         decode frames, make the scan copy, upload to the Files API
-core.js                          pure logic: times, aim geometry, budget, evidence checks, theories, history
-learn.js                         learns a game from its recording: the learn call, what matters (research), then the kill-feed layout from pixels
-chess-reader.js                  reads chess moves off the board in code, and scores them with Stockfish
-eval/answer-keys/valorant.json   the answer key for learning Valorant (never loaded by the app)
-gemini.js                        copied from hackathon/shared/gemini.js (REST client and agent loop)
-scripts/dev.mjs                  static dev server; makes env.js from .env, sets the page's security policy; the desktop app runs it too
-scripts/vendor.mjs               copies the pinned libraries into vendor/ with their licenses and hashes
-vendor/                          Mediabunny, chess.js, Stockfish, Motion: the only third-party code the page runs
-desktop/                         the Electron app: main.mjs (window, server, remembered recordings, the Eye Catcher folder, the key in the system keychain), preload.cjs (the page's bridge), config.json (where the backend is)
-build/                           the installers' icon; check-pack.cjs fails a build that packed anything private, check-dmg.cjs one whose .dmg doesn't verify or open
-scripts/build-web.mjs            the website copy in site/, for GitHub Pages
-.github/workflows/               release.yml (installers on a version tag), pages.yml (the website on each push to main)
-server/index.mjs                 the backend: holds the Gemini key and forwards only Eye Catcher's requests, rate-limited
-render.yaml                      deploys the backend on Render
-tests/                           unit tests, the browser test, the live check, and the fixture maker
+```bash
+npm install
+npm run fixture
+npm run fixture:chess
+npm run test:unit
+npm run test:e2e
+npm run test:desktop
+npm run test:chess-video
 ```
 
-There are no game profiles to write. `eval/answer-keys/valorant.json` was hand-made for the first version and is now only the answer key `eval/learncheck.mjs` compares learned profiles against; the app never loads it. A new genre needs code (an instrument, as chess got); a new game in a known genre needs nothing.
+`npm run fixture` makes a 2.5-minute synthetic shooter match, and `npm run fixture:chess` two synthetic chess games, one with blunders planted under time pressure. Both go in `tests/fixtures/`, which git ignores. `npm test` runs the unit tests and the browser test together.
 
-## Tests
+### Evals that call Gemini
 
-| Command | What it runs | Result (Oct 18, 2026) |
-|---|---|---|
-| `npm run test:unit` | 230 unit tests. The backend's: only Eye Catcher's requests pass, the key never comes back out, other sites are refused, per-address limits ignore a forged `X-Forwarded-For`, uploads go through a session that stays on the server, and reply length and server-wide uploads are capped. The rest: aim geometry and aim targets, the finish checks and the decide rule, the theory board, events, the kill-feed reader, learning and research (with a failed search falling back), grouping shots into fights, history, chess reading and scoring, and how the agent loop handles pictures | 193 pass (Oct 25) |
-| `npm run test:e2e` | 169 checks in Chrome, under the app's own server and its security policy on the synthetic shooter match and chess game, with Gemini and the Files API mocked: learning and research, upload, scan and fights, timeline, questions, the finish checks, the verdict and its marked-up key moments, past reviews drawn from their saved logs with the recording reattached, the re-check against a baseline, a phone-width layout, the key going to no other site, and no code loading from outside the app | 85 pass |
-| `npm run test:desktop` | 20 checks in Electron. Gemini goes only through the backend, with no key in the page, and the page's policy lets it reach nothing else. With a yes, recordings are copied to the Eye Catcher folder with the same date, never twice, and the original stays. Also: a picked recording is remembered by its path and streamed in parts, files the player never gave it are refused, a past review streams its recording after a restart with nothing copied, and a recording that moved is asked for and remembered at its new place. No model calls | 20 pass |
-| `npm run test:live` | The real pipeline on the synthetic match, about 25 requests | Below |
+Put your key in `.env` first. Each one spends real requests from your daily allowance.
 
-**Live check on the synthetic match** (one run, 720p at 30 fps, 150 s):
-- **Scan copy:** 0.63 MB, made in 2.7 s and uploaded in 6.1 s.
-- **Scan:** found 7 of 8 kills and deaths within 2 s. Every time it found was 0.4 s late, because times are whole seconds.
-- **Aim:** boxed 8 of 8 heads. The median error was 0.27° and the worst 1.01°, against a target of 0.5° median.
-- **Review:** found the planted habit (crosshair low) in 12 calls and 7 looks, in 42 s. It measured two fights the player won as well as the losses.
+```bash
+npm run test:live
+```
 
-These numbers come from drawn shapes, not game footage.
+The whole pipeline on the synthetic match: learning, the scan, aim, and a full review, about 25 requests. It prints what each piece measured against the fixture's truth.
 
-**Real footage (Oct 17).** The first 14 minutes of a YouTube match by a skilled player, screen-recorded at 1290x726. I labeled it by hand (9 kills, 6 deaths), and the labels match the in-game scoreboard. There were three eval runs (`npm run eval`):
-- **Scan copy:** 27 MB, made in about 30 s and uploaded in about 30 s.
-- **Scan:** found 4 of 6 deaths, but only 1 to 4 of 9 kills per run. Two frames a second and higher image detail didn't help.
-- **Head boxes:** landed on the right head whenever an enemy was in view. Gemini once boxed a wall mark as a head, so it now has to return each head with its body, and code drops heads that aren't on a body.
-- **Verdicts:** nothing usable yet. Across three runs the agent named three different habits (crosshair low, peeking wide, shooting while moving), and a frame-by-frame check supports none of them. Twice it measured, saw the crosshair at head level, and dropped that theory. Gemini's agentic mode said "crosshair low" every time, against the measurements. The fixed pipeline mostly measured empty or point-blank frames.
+```bash
+npm run eval -- match
+```
 
-**Kill feed on the same footage.** I labeled every kill-feed line from 0:00 to 10:00 by hand: 41 events, most of them teammates'. Each full 14-minute scan costs about 15 model calls and 1 to 2 minutes.
-- **Lines found:** all 41 in each of the last three full-match runs, against 1 to 4 of the player's 9 kills before the reader existed. The first version found 22 of 22 and 19 of 19 on two stretches, but it only worked because the team checks covered for rows it merged; on the full match it picked the wrong player.
-- **Player's own fights:** when the player was identified correctly, the scan found all 9 kills and all 6 deaths.
-- **Teams:** 37 of 41 right in the best run. All four misses were teammate Febera's deaths: her portrait at the end of the row reads as the enemy color. The reader now skips the portrait, and those frames read correctly.
-- **Who the player is:** wrong in two of four full-match runs, first Killjoy (a yellow portrait), then the allied Omen (two Omens, plus a teammate's death taken for the player's). On Oct 20 it picked Omen again: Gemini marked six "Omen > Omen" rows as the player's own, and only four of Im Muted's. A marked row now credits only the name on its own team's side, and a row with one name on both sides doesn't vote. A name the feed shows on the other team more than once in a while (10% of its rows, or more than one) can't be the player: in a smoke test the pick took Omen anyway, and every enemy Omen's kill became "yours". When the rule can't decide, the review asks the player instead of guessing.
-- **Oct 20, after measuring the colors (three full reviews, fresh learn):** the learn call called the teal rows "blue". Before the fix, the scan found 0 of 9 kills. After, every run found all 9 kills (within 0.7 s of the labels), all 6 deaths (5 within 0.8 s, one 1.8 s late), and all 19 teammate deaths from 0:00 to 10:00, with no extras. The three runs were identical, down to every event and clip reading. Each run asked which name was the player's (Omen, Im Muted, Rumpelstiltskin, ZedCapetinha). Cost: 19 to 20 calls, about 430k tokens in, $0.15 to $0.16; the clips took 84% of the input. The verdict, "holds static angles", held at two of its three moments by eye: at 5:18 the player was walking through Mid Market after a kill, not holding.
+Runs the agent, a fixed pipeline, and Gemini's own agentic video mode on the synthetic match, and scores each against the planted habit (about 27 requests). `npm run eval -- chess` does the same on the chess games. `EVAL_MAX_CALLS` caps the calls per recording (default 80).
 
-**Research and fights, live (Oct 18).** One eval run over four recordings with fresh learning and research: 40 model calls in all, plus 29 upload requests, in 9.6 minutes (`eval/results-2026-10-18-11.json`). None of these recordings has a planted habit except the chess one, so a named habit on the others counts as a false positive.
+```bash
+node eval/researchcheck.mjs
+```
 
-| Recording | Calls | Fights (won / lost / no one fell) | Verdict | Checked by eye |
-|---|---|---|---|---|
-| Vyse, Valorant, 14 min | 16 | 35 (2 / 5 / 28) | Ran out of turns, no habit | Most "no one fell" fights came from a damage counter Valorant doesn't have; fixed since (below) |
-| TenZ, Valorant | 10 | 11 (3 / 5 / 3) | "W-keying into sites" | False positive. Code only checks that he fired; the moving forward was judged from frames |
-| Apex, the blind recording | 8 | 16 (3 / 0 / 13) | "Reloading in the open" | False. The cited moments were healing and riding ziplines |
-| Chess, planted blunders | 6 | none | "Playing without a plan and missing tactical threats under pressure" | Right moments (the engine check only lets it cite mistakes), but a vaguer name than the planted habit, so the eval scored it a miss |
+Researches six games and scores the answers against `eval/research-checklist.json`. About 10 requests a game. `GAMES="Valorant,Rocket League"` runs fewer.
 
-- **Research:** chess was searched and cited 6 sources (chess.com among them). Valorant and Apex fell back to the model's own knowledge; why the search failed wasn't logged then and is now. Apex's answer still put survival and placement first and set aim to "tracking", and the coach made no aim measurements in that review.
-- **Fixed since:** firing and damage now only extend a fight that has a kill, a death, or a sighting in it, after reloads, swaps, and Valorant's missing damage counter made fights out of nothing. That change hasn't been run live yet.
+### Your own recordings
 
-**Next test:** a recording with a habit played on purpose, to see whether a strong habit gets caught.
+1. Play a match with one habit on purpose (aim at the floor, always swing wide), or a normal one as a control.
+2. Put the file in `eval/recordings/`. Git ignores that folder.
+3. Add it to `eval/recordings.json` with the habit you played, or `null` for a control. The fields are in [eval/README.md](eval/README.md).
+4. Run it, by any part of its file name:
+   ```bash
+   npm run eval -- my-match
+   ```
 
-## Limits
+To score whole reviews the way the loops are scored, write a baseline for your clip like those in `eval/answer-keys/coach/`, then:
 
-- **Scan detail.** The scan watches one frame a second at low resolution. A fight that ends between frames, or a kill feed the model can't read, gets missed. A missed fight only lowers recall; the coach can still look closely anywhere.
-- **Head size.** Small heads, under 6 px, give rough measurements, and the tool says so. A head far to the side of the crosshair isn't counted. Stretched resolutions or a crosshair moved off center break the aim math.
-- **Teammates in the aim crop.** Code leaves out anyone Gemini reads a name tag on, calls a teammate, or finds under a name it boxed. A teammate it misses all three ways still gets measured. A head within 3 head-heights (or a third of a body-height) of the crop's top is skipped, since a tag over it would be cut off, as FYR_rLayze's was on the Apex recording at 5:55.5 (Oct 22). That also skips an enemy far above the crosshair. The tag distance was fit on four Apex frames (5:55 to 5:59), and no other game has been checked.
-- **Ammo counter.** Shots come from the shapes of the magazine digits, found as separate glyphs in the HUD's text color. A frame where background runs into a digit doesn't read, so a counter over bright, busy scenery can come out "unclear". A swap or reload counts as a change, so "fired" can be wrong, while "no shots" needs every steady reading to match. 12 of 12 stretches labeled by eye in three recordings (Valorant and Apex) read right on Oct 22, none wrongly as "no shots". The Apex fight at 0:46, which read "no shots" before, now reads as fired. Over the whole Apex match, the scan's firing windows cover all 11 stretches where the count fell (2 or 3 before), and its 10 other windows are weapon swaps and reloads.
-- **Learning varies.** The learn call's boxes and colors differ from call to call. On the low-resolution Vyse recording the learned kill feed ranged from 38/41 to 40/41 lines between calls. A new recording of a known game is the real test, and none has been tried yet.
-- **Other genres.** A MOBA, a fighting game, or a sports game gets the generic tools only: close looks, `read_hud`, questions, and the evidence checks. Measuring them needs an instrument written for the genre, as chess got.
-- **Habits judged by eye.** A habit no code check covers (W-keying, reloading in the open, playing without a plan) rests on the model's read of a few frames. On Oct 18 that read was wrong in 2 of the 3 habits it named.
-- **Search.** Google Search on the free key failed for 2 of 3 games on Oct 18, so their research came from the model's own knowledge. The app says when that happens.
-- **Quota.** Each turn is one request from Gemini's free daily allowance. Gemini 3.5 Flash-Lite allows 500 requests a day per model, and a review takes about 15 to 55. A call falls through from 3.5 Flash-Lite to 3.1 Flash-Lite, Flash-Lite only (regular Flash's free tier is a few dozen requests a day, about one review), fixed versions only: the `-latest` aliases were dropped. They move to new models on their own, and on Oct 22 the key showed 3.6 and 3.8 Flash requests that no code names. A model that's only busy (503), or at its per-minute limit, gets two more tries a minute apart before the review gives up. On Oct 22 the main model ran out, its fallback answered 503 for a minute, and whole reviews ended until this wait was added. So does a model left out of a call only because it's sitting out a per-minute limit, while the rest are out for the day: on Oct 23 a Vyse review ended on "used up on every model" while 3.1 Flash-Lite sat out 20 s. With `GEMINI_API_KEY2` in `.env`, the second key takes over as soon as the main model is out for the day on the first, so its 3.5 Flash-Lite answers before the first key's 3.1 Flash-Lite. Each key's spent models are remembered, and when the second is out of every model and the first still has one, the first takes over again (Oct 24: three Fortnite reviews ended "used up on every model" while the first key still had 3.1 Flash-Lite). A call switches keys at most twice, so two spent keys never hand it back and forth. On Oct 23 the first key's 3.5 Flash-Lite ran out and nearly every call of twelve reviews fell to 3.1 Flash-Lite. At high thinking it sometimes thinks about 63,000 tokens before answering (the same five claims: 250 to 352 s on 3.1 Flash-Lite, 8 s and 3,234 thinking tokens on 3.5 Flash-Lite). Reviews took 10 to 20 minutes and up to 163k output tokens, against 2 to 5 minutes and 21k to 46k before.
-- **Thinking.** The steps that judge (the coach's turns, the clip reads, the claim check, the check against the video, and the closing call) run with thinking on (`thinkingLevel: high`). Flash-Lite thinks not at all by default, 0 thought tokens (Oct 23), and every review took what it saw at face value. It costs output tokens and time (a coach turn went from 1–8 s to 20–50 s), not calls. 3.1 Flash-Lite, the fallback, thinks at medium at most (`MOST_THINKING` in gemini.js). At high it sometimes thinks until its output limit, 62,911 tokens and 250 to 352 s on one claim check, with the old prompt as with the new. On cases with known answers (Oct 24: League's claims naming the player's own Miss Fortune as their killer, a turret, and Gragas; Rocket League's shot at 4:09; League's death at 1:48; the check against the video), low and medium both kept it under 1,200 thinking tokens. Medium flagged the player's own champion, which low let through. 3.5 Flash-Lite at high thought at most 7,091 tokens there and checked best: it flagged all three names in both runs, and rejected the false claim that low and medium let pass. A clip look can reach 20 s before a moment, for the decision a fight was lost on; past 14 s it's sampled more thinly, so it costs about what a short one does, and the check against the video keeps the 6 frames a second it was measured at.
-- **A stronger coach, as a setting.** `THIRDEYE_COACH_MODEL` at launch, or in `.env`, puts one model first for the coach's own turns, with the usual Flash-Lite list behind it when it's busy or out; every other step stays on Flash-Lite. Tried on Oct 23 with `gemini-3.5-flash` (served as 3.6 Flash) on Rocket League and League, on the same code: on 3.1 Flash-Lite the coach gave "overextended without vision" at all three League deaths, its cause copying the moment word for word; on 3.6 Flash each had a cause of its own in the game's terms (turret range ahead of the minion wave, turret aggro with no tank in front, an unwarded river bush), in 3 and 6 turns. Checked on the frames, they were right as far as they went, and both still missed what decided the fights: Nocturne's ult, after "enemies missing" pings, at both League deaths, and in Rocket League the shot at 4:09 that left the player out of position for the 4:15 goal, which it cited at the goal. Flash-Lite stays the default: 3.5 Flash's free tier is 20 requests a day per key, a few reviews. `THIRDEYE_SECOND_KEY_FIRST=1` at launch starts on the second key, the first as its spare.
-- **Experiments, as flags.** `THIRDEYE_FLAGS=near_loss,state_facts` at launch (served in `env.js`, like the coach's model) turns on experiments from `tests/evals/ideas-loop-39.md`, so one copy of the code runs both arms of an A/B, and the review's result says which were on. None is on by default, and none is measured yet (Oct 25). `near_loss`: the two lowest near-deaths a review are read like deaths, from 18 s before, with the last 8 s at the full rate, the HUD and minimap as they came, and high detail; read as before, none of the four near-deaths recorded in loops 37 and 38 got a factor. `state_facts`: each loss's read and the coach get what code read at it, as true: the score off the scoreboard and its clock (now read in the same counter cells), the K/D/A, health 10, 6, and 2 s before, in a game played in rounds who is left on each side by the kill feed (Valorant 4:15: four teammates and three enemies down of five a side, 1 v 2, which no read said; a line the record left without sides takes them from its names' other lines, the round starts where the scoreboard last changed, and with a line since then still without sides nothing is said: Siege's plain-text feed sided only the player's own lines, and the 8:58 read was told 0 and 0 down since 0:00, where it was 2 v 3), and the ammo counter's changes over the last 8 s; and a factor that names no condition ("caught out of position") is dropped. `spectate_deaths`: a read's screen text with the player as the one who went down ("PANDA YT™ Defeated", "KILLED BY FADE"; not "YOU killed francomix" or "You were revived"), or the screen following someone else, gets the second look after the reads, in one call; and in a game played in rounds with no respawn in one, a death or near-death while the player is dead from an earlier one that round is dropped, whatever the second look said (Brawl Stars, loop 39: two of four deaths were a teammate's health at 0, 52 and 31 s after the player's, past the 30 s a death in a round game lasted). Only where the record has round starts to end a death, and not where the learn call says players respawn mid-round (the profile's `respawns`, from its respawn time). `far_downs_low`: a teammate's death goes to a high-detail read only when the player fought in the same window (a kill, a near-death, hits, or firing of theirs), not for downs across the map: League read four at high detail, each far away, about 100k prompt tokens. Round 2 (Oct 25, none measured yet): `objectives`: a structure whose health the HUD writes (a tower, a turret, a base) is learned with whose it is (the near side, in a one-on-one game on the player's screen) and read in the counters' cells by a letter beside its crop; a drop of 10% of full or more that holds (2 readings after it, unless it reads 0) is a loss with its numbers ("your right tower's health fell from 3197 to 761"), read like a death, one of theirs gone is the point lost, and the pass's structures destroyed yield to the numbers where they were read (Clash Royale's invented 0:44 tower and 3:28 win); every tower falling at once to one number is a result screen, not damage; only in a one-on-one or strategy game. `cover_losses`: finish goes back once (never once the coach was told to decide) unless each of the six costliest losses (outside chess, by kind: deaths and points against, then a structure's drop, then near-deaths and damage) has a cited moment at it or led to it; then code adds each still uncovered as a turning point from its clip read's last choice and factors (a chess move from the engine's line), checked like the coach's; and an engine-graded move counts as looked at (alone: `chess_seen`). `factor_refs`: a moment can name the read's factors and code's facts by reference (W3.resources, W3.fact2), and code writes their numbers into its because. `long_runup`: a loss is read from 30 s before, its head at 1 frame a second. `hud_zoom`: the loss's HUD at 10, 5, and 2 s before, its digit rows (abilities 3x, health and the K/D/A until their digits are 40 px) in a picture of their own, laid out nearest square. `game_profile`: a game is learned once with more effort (a second learn call on 8 more frames, the two calls' boxes in consensus, the box check on 5 frames) and its layout kept per game, view, aspect ratio, and the code's version (`thirdeye.gameprofile.v1`), only for a game the learn call named (not "a first person shooter") and only once its box check passed; a new recording of it takes that layout with one box check, 2 calls in all, who the player is and the team colors still its own; a box that check drops, or a check that can't run, learns the game again and writes the entry over; a layout read back is cleaned to its shape, and its words go into the scan's prompt as data. `par_counters`: two counter sheets in flight at once. `ability_state` (round 3, not run in a review yet): the learned ability row read in code, no calls. Crops every 2 s through the match split it into icons by its columns, on the rows that change most (gaps hold still and stay flat), and each icon's ready look is its look in its most vivid crops. At 6 and 2 s before a loss each icon is lit (ready) or dimmed (on cooldown or unusable, with the share of it unlike its ready look), as code facts in the read's facts and the coach's clip line ("lit (ready) icons 2, 3, and 7; dimmed (on cooldown or unusable) icons 4 (91% unlike its ready look) and 8 (98%)"). An icon dark all match keeps its place and gets nothing said, and a row that doesn't split clearly into 2 to 10 icons gets nothing. On League's clip (crops pulled off the file, Oct 25) the row split into its 9 pieces (portrait, passive, Q, W, E, R, D, F, an item), and Q to F read as the frames show at 6 moments around the three losses, 36 of 36 by eye: Flash dimmed at 1:40 and, spent, at 8:53. At 8:49 she was stunned and every icon but D read dimmed, hence "or unusable". Marvel Rivals' row, with the game showing through it and the ult twice as wide, didn't split, so nothing is said there; Valorant's file wouldn't open here, so it's untried. The clips event's `abilityRow` says what the split came to. `hp_bar`: the health bar's fill read in code every half second, its color and full fill calibrated where the HP number read full, kept only for a box that is a bar (long, filled from one end at full: a box around "100" alone isn't) whose fill agrees with the number where both were read; its lows join the near-death candidates for the number's second look, and a fall of 20% of full or more within 3 s that holds, with no death or near-death in it and the number after it not well above it, is a `damage` loss (Fortnite's falls, 97 to 72 and 75 to 55; 55 to 45 is under the line). Round 4 (Oct 25, not run yet): finish works on its own copy of the coach's call, flag or not (the result is built from it, as it was from the call it edited in place), so code's fills never enter the coach's history (League run 2's coach sent them back as its own, unmarked), and the result keeps `filled` and `refsAdded`; `cover_losses` never fills a loss with a decision either check turned down in the coach's words (`C.fillRejected`: League's 1:44 and 9:17 fills); the six turning points the checks judge are those at the costliest losses (`C.pickTurns`), not the first six by time (chess run 1 dropped 15.Bc3, 16.Qd3, and 18.Nf4 that way); and in chess a move whose cites the checks dropped is filled after them from the engine's line (its grade and cost, the reply it allows, the engine's move, no clock), which neither check judges, as it's code's. `factor_refs` takes every reference tag out of what the player sees and the claims, resolves the ones the coach wrote in its text, and writes in no read's factor whose number the check against the video went against. `hp_bar` takes a bar set inside its box (an icon on one side, its number on the other: Fortnite's, turned away in loop 41), measures it along the bar alone, counts only pixels near the bar's own brightness (the drained part over Fortnite's grass read as full), tries the next color when the first fails (a health bar beside a shield bar), and drops a bar that doesn't fall where the number does (Brawl Stars' box sat on the sand beside the player's name); on Fortnite's crops it gives the 2:43 and 6:09 falls and nothing else. `objectives` makes the learn call return `structures` (required when asked; optional, Clash Royale's came back without them).
+```bash
+node eval/scorecard.mjs <loop dir> <name>
+node eval/scorecard.mjs compare <a> <b>
+```
+
+The first writes the card for one loop's runs, and the second compares two loops on the games valid in both. How each row is graded is in [eval/SCORECARD.md](eval/SCORECARD.md). The harness that runs a loop's reviews in the desktop app isn't in the repo yet.
