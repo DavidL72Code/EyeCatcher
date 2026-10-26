@@ -181,9 +181,10 @@ The coach baselines in `eval/answer-keys/coach/` cover League of Legends, Rocket
 | 40 | 8 (13 runs) | 25 of 46 (54%) | 11 of 46 (24%) | 7 of 11 (64%) | 6 of 15 (40%) | 14 of 17 (82%) | 16.8 | 211k |
 | 41 | 6 (11 runs) | 21 of 41 (51%) | 15 of 41 (37%) | 8 of 15 (53%) | 1 of 7 (14%) | 13 of 16 (81%) | 21.4 | 308k |
 | 46 | 9 (9 runs) | 24 of 33 (73%) | 14 of 33 (42%) | 5 of 14 (36%) | 3 of 14 (21%) | 10 of 15 (67%) | 24.3 | 383k |
+| 49 | 9 (9 runs) | 25 of 33 (76%) | 21 of 33 (64%) | 9 of 21 (43%) | 0 of 15 (0%) | 13 of 16 (81%) | 24.6 | 329k |
 <!-- /loop-table -->
 
-A run where the API refused or dropped 3 or more calls (busy, 503, over quota), or failed a call no retry answered, is void and left out of every column, not counted as the code's failure. Under that rule, re-scored Oct 26, the quota took most runs of loops 37 and 38, 7 of loop 41's 18, and 4 of loop 40's 17. Loop 46 ran each game once; one game can move a column by up to a fifth (chess is 7 of the 33 losses), so a change under about 10 points can be run-to-run noise. Loop 46's grades come from one grading agent, stricter than loop 41's, with no second grader yet. Each loop's card, report, and grades are in `tests/evals/`.
+A run where the API refused or dropped 3 or more calls (busy, 503, over quota), or failed a call no retry answered, is void and left out of every column, not counted as the code's failure. Under that rule, re-scored Oct 26, the quota took most runs of loops 37 and 38, 7 of loop 41's 18, and 4 of loop 40's 17. Loops 46 and 49 ran each game once (loop 49's Valorant, Siege, and an earlier attempt's games were void and run again until each had a valid run); one game can move a column by up to a fifth (chess is 7 of the 33 losses), so a change under about 10 points can be run-to-run noise. Loops 46 and 49 were each graded by one grading agent, stricter than loop 41's, with no second grader yet. Each loop's card, report, and grades are in `tests/evals/`.
 
 ### What worked
 
@@ -195,9 +196,9 @@ A run where the API refused or dropped 3 or more calls (busy, 503, over quota), 
 
 ### What didn't
 
-- Explaining the loss. Of the losses it critiqued, the coach named what decided them in 36% (5 of 14, loop 46); loops 40 and 41's 64% and 53% were graded by a more lenient grader.
-- Coverage. The coach cited 38% of the baseline losses in loop 39 (the one of loops 37 to 39 with every game valid) and 42% in loop 46.
-- Invented deaths and points: 6 of 15 in loop 40, 1 of 7 in loop 41, 3 of 14 in loop 46 (valid runs only).
+- Explaining the loss. Of the losses it critiqued, the coach named what decided them in 36% (5 of 14) in loop 46 and 43% (9 of 21) in loop 49, 4 of those 9 chess moves explained from the engine; loops 40 and 41's 64% and 53% were graded by a more lenient grader.
+- Coverage. The coach cited 38% of the baseline losses in loop 39 (the one of loops 37 to 39 with every game valid), 42% in loop 46, and 64% in loop 49.
+- Invented deaths and points: 6 of 15 in loop 40, 1 of 7 in loop 41, 3 of 14 in loop 46, and none of 15 in loop 49 (valid runs only).
 - Who the player is. Loop 41 got the player's name right in 4 of 11 valid runs.
 - Good claims thrown out. In loop 41, 7 of the 20 claims the checks sent back were true.
 - The quota. Refused calls voided 7 of loop 41's 18 runs, and a review that falls back to 3.1 Flash-Lite can take 10 to 20 minutes.
