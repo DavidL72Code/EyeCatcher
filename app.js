@@ -982,9 +982,10 @@
     drawBoard($('finalBoard'), r.board || [], false);
     $('logBody').append($('breakdown'));
     [...$('beats').children].reverse().forEach((li) => $('beats').append(li));
-    // open: how it got here, with the coach's reasoning at each step and what each check made of each claim, is part of
-    // the result (the user, Oct 23: the thought process "should be seen somewhere at the end as well")
-    $('logBox').open = true;
+    // folded: the report is the key moments. How it got here, with the coach's reasoning at each step and what each check
+    // made of each claim, stays one click away at the end (the user, Oct 23: the thought process "should be seen
+    // somewhere at the end as well"; Oct 25: open, the working the live steps already showed made the report messy)
+    $('logBox').open = false;
     paintLogSummary(r);
     // the whole review in order, drawn from its log, so a past review shows the same
     renderTrace(past ? run.rec?.log : run.log, r);
@@ -1000,7 +1001,7 @@
     // what checked it: the record and the video (a check of the video that agreed with a planted false claim doesn't count)
     // a verdict the review put together after the coach's own didn't stand says where it came from
     const salvaged = r.salvaged === 'checked' ? `<p class="trust warn">${esc(r.note)}, so this names what the moments both checks let stand${r.left > 0 ? ` (${r.left} of its moments were left out)` : ''}.</p>` : r.salvaged === 'record' ? `<p class="trust warn">${esc(r.note)}, so this comes from what the match record and the clip reads show at each loss, checked against the record. It wasn't checked against the video.</p>` : '';
-    const trust = salvaged || (!r.verified ? '' : r.verified.error ? '<p class="trust warn">Checked against the record. The check against the video couldn\'t run this time.</p>' : r.verified.unreliable ? '<p class="trust warn">Checked against the record. The check against the video didn\'t hold up this time.</p>' : `<p class="trust"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.2 4.2L19 7" /></svg>Checked against the record and the video${r.verified.controls ? `, by a checker that caught ${r.verified.controls === 1 ? 'the false claim' : r.verified.controls === 2 ? 'both false claims' : `all ${r.verified.controls} false claims`} planted to test it` : ''}</p>`);
+    const trust = salvaged || (!r.verified ? '' : r.verified.error ? '<p class="trust warn">Checked against the record. The check against the video couldn\'t run this time.</p>' : r.verified.unreliable ? '<p class="trust warn">Checked against the record. The check against the video didn\'t hold up this time.</p>' : `<p class="trust"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.2 4.2L19 7" /></svg>Checked against the record and the video</p>`);
     // one structure for every verdict: what it is, where it shows, what to practice
     const { label, headline } = verdictWords(r);
     const habit = r.found ? run.game?.habits?.find((h) => h.id === r.habitId) : null;
@@ -1158,8 +1159,8 @@
     const t = traceOf(log);
     const stages = [learnedStage(t), recordStage(t), turnsStage(t), sentStage(t), checksStage(t), findingStage(t, r)].filter(Boolean);
     $('traceBody').innerHTML = stages.map((s, i) => `<section class="tr-stage tr-stage-${s.id}"><h4><span class="tr-n">${i + 1}</span>${s.title}</h4>${s.body}</section>`).join('');
-    // open: the working is what the audience is shown (the user, Oct 25: "we need to see the working")
-    $('traceBox').open = true;
+    // folded, like How it got here: the live steps show the working as it happens, and the report is the key moments
+    $('traceBox').open = false;
     paintScriptNote();
   }
   const lab = (label) => `<span class="k">${label}</span>`;

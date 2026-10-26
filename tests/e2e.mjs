@@ -20,6 +20,8 @@ const base = `http://127.0.0.1:${server.port}/`;
 const fail = [];
 const check = (c, m) => { if (!c) { fail.push(m); console.log('  FAIL -', m); } else console.log('  ok -', m); };
 // E2E_SHOTS=<dir>: screenshots of the main screens, to look at
+// the report folds How it worked and How it got here under the key moments; a check that reads inside opens them first
+const unfold = (page) => page.evaluate(() => { for (const id of ['traceBox', 'logBox']) { const d = document.getElementById(id); if (d) d.open = true; } });
 const shot = async (page, name) => { if (process.env.E2E_SHOTS) await page.screenshot({ path: path.join(process.env.E2E_SHOTS, `${name}.png`) }); };
 
 // ---- fixtures (test only) ----
@@ -354,13 +356,15 @@ try {
   check(/^How it knew Measured 2\.2 heads below the head in step 0\d/.test(await page.locator('.key:nth-child(1) .key-how').innerText()), 'each moment says how it was found, with the step');
   check(seen.markCalls === 0, 'measured moments cost no marking call');
   const openAtEnd = await page.locator('#logBox').evaluate((d) => d.open);
+  await page.locator('#logBox').evaluate((d) => { d.open = true; });
   const reasoned = await page.locator('.log .beat .beat-think').allInnerTexts(), checker = await page.locator('.log .checker').first().innerText();
   check(reasoned.length >= 5 && reasoned.some((t) => /How it reasoned\s*Weighing what to look at next: measure_aim/.test(t)) && !seen.agentBodies.some((b) => b.contents.some((c) => c.parts?.some((p) => p.thought))), `each step shows the coach's reasoning before it, and the reasoning isn't sent back to the model (${reasoned.length} steps)`);
   check(/never saw the coach's reasoning, judged each claim against the video\./.test(checker) && /Code wrote 2 false claims from the record and mixed them in; a checker that can't tell them apart isn't trusted\./.test(checker) && /It caught 2 of the 2\./.test(checker) && await page.locator('.log .checker .ck-planted li.caught').count() === 2 && await page.locator('.log .checker .ck-own li.caught').count() === 0 && (checker.match(/Holds/g) || []).length >= 3, `the check against the video shows each claim it judged, and, set apart under a line that says what planting is, the false ones planted to test it, caught (${checker.slice(0, 260).replace(/\s+/g, ' ')})`);
-  check(/caught both false claims planted to test it/.test(await page.locator('.verdict .trust').innerText()), 'and the report says the checker caught the false claims planted to test it');
+  check(/^Checked against the record and the video$/.test((await page.locator('.verdict .trust').innerText()).trim()), 'the report says it was checked against the record and the video, and leaves the planted claims to the steps');
   // How it worked: the whole review in order, drawn from its log, the planted claims set apart
-  const stages = (await page.locator('#traceBody .tr-stage h4').allInnerTexts()).map((x) => x.replace(/^\d+\s*/, ''));
-  check(await page.locator('#trace').isVisible() && await page.locator('#traceBox').evaluate((d) => d.open) && stages.join(' | ') === "What it learned about the game | The match record | The coach's turns | Sent back | The claim checks | The finding", `after the verdict, How it worked lays out the review by stage, open (${stages.join(' | ')})`);
+  const stages = (await page.locator('#traceBody .tr-stage h4').evaluateAll((hs) => hs.map((h) => h.textContent))).map((x) => x.replace(/^\d+\s*/, ''));
+  check(await page.locator('#trace').isVisible() && await page.locator('#traceBox').evaluate((d) => !d.open) && stages.join(' | ') === "What it learned about the game | The match record | The coach's turns | Sent back | The claim checks | The finding", `after the verdict, How it worked lays out the review by stage, folded under the key moments (${stages.join(' | ')})`);
+  await page.locator('#traceSummary').click();
   check(await page.locator('#traceBody .tr-frame img').count() === 1 && await page.locator('#traceBody .tr-frame .el').count() === 2, 'it shows the frame the screen was learned from, with the boxes it kept');
   check(await page.locator('#traceBody .tr-ev.guess').count() >= 3 && await page.locator('#traceBody .tr-ev.known').count() >= 5, `the match record says what code knows apart from what a model guessed (${await page.locator('#traceBody .tr-ev.known').count()} known, ${await page.locator('#traceBody .tr-ev.guess').count()} guessed)`);
   // the turns fold: the live breakdown already showed them as they happened
@@ -373,7 +377,7 @@ try {
   const plantedRows = await page.locator('#traceBody .ck-planted li').allInnerTexts();
   check(/Planted to test the checker/.test(await page.locator('#traceBody .ck-plant-head').first().innerText()) && plantedRows.length === 2 && plantedRows.every((x) => /^Caught\s*\d+:\d\d\s*“The player (is killed|dies) here\.”/.test(x) && /False, since /.test(x)), `a block labelled "Planted to test the checker" lists the exact false claims code planted, each caught, with why it's false (${plantedRows.map((x) => x.replace(/\s+/g, ' ').slice(0, 90)).join(' | ')})`);
   check(/^\d+ model calls · [\d.]+k tokens · 6 looks · \d+:\d\d start to end$/.test(await page.locator('#traceBody .tr-total').innerText()), `and it ends with the finding and what the review cost (${await page.locator('#traceBody .tr-total').innerText()})`);
-  // the log opens by default now: closed first, so the step link has to open it
+  // the log is folded at the end: closed again here, so the step link has to open it
   await page.locator('#logBox').evaluate((d) => { d.open = false; });
   await page.click('.key:nth-child(1) .step-link');
   check(await page.locator('#logBox').evaluate((d) => d.open) && await page.locator('.log .beat.flash').count() === 1, 'the step link opens the log at that step');
@@ -394,7 +398,7 @@ try {
   check(seen.scriptCalls === 1, `as soon as the report shows, the critique's script is written in one call (${seen.scriptCalls})`);
   const summary = await page.locator('#logSummary').innerText();
   check(summary === `How it got here: ${calls + seen.scriptCalls} calls, 6 looks`, `the review counts its model calls (${calls}: learning the game in ${learning} (the learn call, the box check, and the ask again for a box), 9 turns, the scan's ${1 + seen.feedCalls + seen.deathChecks} with its look again at the deaths, 3 aim, 1 claim check, ${seen.verifyBodies.length} by the agent that checks the finding against the video, ${research} researching the game; the page says "${summary}")`);
-  check(await page.locator('.log .beat').count() === 11 && openAtEnd, `the breakdown moves into How it got here, open when the verdict shows: how it got there is part of the result (${await page.locator('.log .beat').count()} cards)`);
+  check(await page.locator('.log .beat').count() === 11 && !openAtEnd, `the breakdown moves into How it got here, folded when the verdict shows: the report is the key moments (${await page.locator('.log .beat').count()} cards)`);
   check(await page.locator('.log .beat-kind').first().evaluate((e) => e.textContent) === 'Reading the screen', 'the log reads in order, first step first');
   await page.click('.key:nth-child(2) .key-frame');
   await page.waitForFunction(() => document.querySelector('#video').currentTime > 44);
@@ -442,11 +446,10 @@ try {
   await page.click('.cards li:nth-child(2) .card');
   await page.waitForSelector('#verdict:not([hidden])');
   check(await page.locator('.verdict h2').innerText() === 'CROSSHAIR BELOW HEAD LEVEL' && await page.locator('.key-fix').count() === 3 && await page.locator('.key .chip.bad').count() === 3, 'an older one opens with its marked-up moments and what to do instead');
-  check(await page.locator('.log .beat').count() === 11 && await page.locator('#logBox').evaluate((d) => d.open), 'its log keeps every step, open under the verdict');
+  check(await page.locator('.log .beat').count() === 11 && await page.locator('#logBox').evaluate((d) => !d.open), 'its log keeps every step, folded under the verdict');
   check(await page.locator('#traceBody .tr-turn').count() === 9 && await page.locator('#traceBody .ck-planted li.caught').count() === 2 && await page.locator('#traceBody .tr-sent > li').count() === 2, 'and How it worked is drawn again from the saved log, the planted claims included');
   await page.click('#logSummary');
-  check(await page.locator('#logBox').evaluate((d) => !d.open), 'and folds on a click');
-  await page.click('#logSummary');
+  check(await page.locator('#logBox').evaluate((d) => d.open), 'and opens on a click');
   check(await page.locator('.log .beat img').count() >= 4 && await page.locator('.log .beat.measure_aim .box').count() >= 1, 'the log keeps the frames and measured boxes');
   check(await page.locator('.tick').count() === truth.duels.length && await page.locator('.pin').count() === 3, 'the timeline is drawn again');
   await page.waitForFunction(() => !!document.querySelector('#video').getAttribute('src'));
@@ -486,6 +489,7 @@ try {
   await page.evaluate((id) => window.history.replaceState(null, '', `#review/${id}`), oldId);
   await page.reload();
   await page.waitForSelector('#verdict:not([hidden])');
+  await unfold(page);
   const oldTrace = await page.locator('#traceBody .ck-planted').first().innerText(), oldCard = await page.locator('.log .checker .ck-planted').first().innerText();
   check(/Code wrote 2 false claims from the record/.test(oldTrace) && /It caught 2 of the 2\./.test(oldTrace) && /Saved before each planted claim was kept/.test(oldTrace) && /It caught 2 of the 2\./.test(oldCard) && await page.locator('#traceBody .tr-turn').count() === 9 && await page.locator('#traceBody .tr-think').count() === 0 && await page.locator('#traceBody .tr-total').count() === 0, `a review saved before planted claims were listed still says how many were planted and caught, in How it worked and on its card (${oldTrace.replace(/\s+/g, ' ').slice(0, 140)})`);
   // the history as it was, read again, so the reviews after this don't save the copy back
@@ -514,6 +518,7 @@ try {
   check(chessFirst?.ok === false && chessFirst.problems.some((p) => /At 0:34 the engine scores c3 as fine/.test(p)), 'a finish citing a move the engine calls fine is sent back');
   check(await page.locator('.verdict h2').innerText() === 'BLUNDERS WHEN THE CLOCK IS LOW', 'the verdict names the chess habit');
   // How it worked for chess: each graded move is known from the board and the engine, and the record gave nothing to plant
+  await unfold(page);
   const chessRows = await page.locator('#traceBody .tr-record .tr-ev').allInnerTexts();
   check(chessRows.filter((x) => /Your move, a blunder/.test(x) && /Code knows · the board and the engine/.test(x)).length >= 5 && await page.locator('#traceBody .tr-ev.guess').count() === 0 && await page.locator('#traceBody .tr-stage-checks .ck-planted.none').count() >= 1, `How it worked lists each graded move as known from the board and the engine, and says no false claim could be planted from a chess record (${chessRows.length} lines)`);
   await page.waitForFunction(() => document.querySelectorAll('.key .chip.bad').length === 3);
@@ -580,6 +585,7 @@ try {
   const specId = decodeURIComponent(new URL(page.url()).hash.slice(8)), keptScriptOf = (id) => page.evaluate(async (x) => (await window.ThirdeyeReviews.get(x))?.script ?? null, id);
   await page.waitForSelector('#critique[data-ready]', { timeout: 60000 });
   const busyLines = (seen.voiceLines || []).slice(specVoices).map((l) => l.text), afterBusy = await keptScriptOf(specId);
+  await unfold(page);
   check(seen.scriptRefusals > 0 && (seen.scriptCalls || 0) === specScripts && afterBusy === null && /^First, here's the habit\. Arrives late/.test(busyLines[1] || '') && /didn't answer its script call, so the next play asks again/.test(await page.locator('#trScript').innerText()), `when the script call fails (${seen.scriptRefusals} requests refused for the day), the critique makes the finding's own lines and keeps nothing (${busyLines[1]})`);
   seen.scriptBusy = false;
   const retryVoices = (seen.voiceLines || []).length;
@@ -589,6 +595,7 @@ try {
   // its lines as the kept script has them: one the same as an earlier review's (every mocked script closes alike, and
   // two reviews with as many moments open alike) is made once and played from the page's cache, so it isn't asked again
   const afterRetry = await keptScriptOf(specId), retryFirst = afterRetry?.moments?.[0] || '';
+  await unfold(page);
   check(seen.scriptCalls === specScripts + 1 && afterRetry?.moments?.length === 3 && !afterRetry.failed && /^Watch this first one\. Arrives late/.test(retryFirst) && (seen.voiceLines || []).slice(retryVoices).some((l) => l.text === retryFirst) && /written from the finding in one call/.test(await page.locator('#trScript').innerText()), `and the next play asks again, and says and keeps the script it gets (${retryFirst})`);
   // How it worked for footage of the whole match: each point's outcome is a clip read's, so it's a model's guess
   const points = await page.locator('#traceBody .tr-ev').evaluateAll((els) => els.filter((el) => /^Point (won|lost)$/.test(el.querySelector('.tr-kind')?.textContent || '')).map((el) => el.className));
@@ -654,6 +661,7 @@ try {
   check(await page.locator('#caption').isHidden() && await page.locator('#cqCard').isHidden() && await page.locator('#cqTag').isHidden() && await page.locator('#cqPlayText').innerText() === 'Watch the critique', 'and stops when asked, taking its captions and cards with it');
   // the script is kept with the review, its call counted with the review's, and playing again asks for none
   const kept1 = await page.evaluate(async (id) => { const r = await window.ThirdeyeReviews.get(id); return { script: r?.script, calls: r?.calls, review: r?.log?.find(([k, e]) => k === 'mark' && e.what === 'done')?.[1]?.calls }; }, oneOffId);
+  await unfold(page);
   const shownCalls = +(await page.locator('#logSummary').innerText()).match(/(\d+) calls/)[1];
   check(kept1.script?.moments?.length === 5 && !kept1.script.failed && kept1.calls === kept1.review + 1 && shownCalls === kept1.calls && /written from the finding in one call/.test(await page.locator('#trScript').innerText()), `the script is kept with the review, and its one call counted with the review's (${kept1.review} + 1 = ${shownCalls} calls)`);
   const voicesBeforeReplay = (seen.voiceLines || []).length;
@@ -728,6 +736,7 @@ try {
   // follows the last, with no lead twice running and no time read out
   const salvageLines = (seen.voiceLines || []).slice(salvageVoices).map((l) => l.text), salvageMoments = salvageLines.filter((t) => !/^(What cost you|The habit costing|The drill)/.test(t));
   const runs = (xs) => xs.every((x, i) => i === 0 || x !== xs[i - 1]), leads = salvageMoments.map((t) => t.split(',')[0]), segues = salvageMoments.map((t) => t.split('. ')[0]);
+  await unfold(page);
   check(seen.scriptCalls - salvageScripts === 1 && /didn't hold up, since moment 1 said 25, which its text doesn't/.test(await page.locator('#trScript').innerText()) && !salvageLines.some((t) => /25 bullets/.test(t)) && salvageMoments.length === 3 && /^First, here's what cost you\. /.test(salvageMoments[0]) && runs(leads) && runs(segues) && !salvageLines.some((t) => /\d:\d\d|seconds into|\b\d{1,2} [0-5]\d\b/.test(t)), `a script that says a number its moment doesn't is refused in code, and the critique says the finding's own lines, no time read out, no lead twice running (${segues.join(' | ')})`);
   // the file opens on the critique's own first card: every line made before it records, and the getting-ready card,
   // which a saved Siege critique (Oct 25) held for over a minute, is never in it
