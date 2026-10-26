@@ -169,34 +169,38 @@ All third-party code the page runs ships in `vendor/`, pinned, with its license 
 
 ### Whole reviews, loop by loop
 
-The coach baselines in `eval/answer-keys/coach/` cover League of Legends, Rocket League, Marvel Rivals, Valorant, Clash Royale, Fortnite, Brawl Stars, chess, and Rainbow Six Siege. Each loop reviews every game 2 or 3 times in the desktop app, and every run is scored on the same card ([eval/SCORECARD.md](eval/SCORECARD.md)). From [tests/evals/README.md](tests/evals/README.md), Oct 25:
+The coach baselines in `eval/answer-keys/coach/` cover League of Legends, Rocket League, Marvel Rivals, Valorant, Clash Royale, Fortnite, Brawl Stars, chess, and Rainbow Six Siege. Each loop reviews the games once to three times in the desktop app, and every run is scored on the same card ([eval/SCORECARD.md](eval/SCORECARD.md)). The targets: the record finds 80% or more of the losses, every loss is critiqued, 80% or more are explained right, and nothing is invented. After each loop, `node eval/scorecard.mjs <loop dir> loop-N` scores it and `node eval/loop-table.mjs --write` rewrites this table:
 
-| Loop | Losses found in the record (higher is better) | Losses cited (higher) | Cited and explained right (higher) | Deaths and points invented (lower) | False claims caught (higher) | Calls a run | Prompt tokens a run |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| 37 | 40 of 55 (73%) | 19 of 55 (35%) | not graded | 6 of 22 (27%) | not graded | 18.7 | 244k |
-| 38 | 26 of 48 (54%) | 15 of 48 (31%) | not graded | 3 of 9 (33%) | not graded | 18.9 | 262k |
-| 39 | 45 of 66 (68%) | 25 of 66 (38%) | not graded | 7 of 33 (21%) | not graded | 23.1 | 351k |
-| 40 | 37 of 61 (61%) | not counted | 10 of 61 (16%) | 14 of 33 (42%) | 17 of 22 (77%) | 18.1 | 264k |
-| 41 | 22 of 46 (48%) | not counted | 9 of 46 (20%) | 5 of 12 (42%) | 13 of 16 (81%) | 21.0 | 298k |
+<!-- loop-table -->
+| Loop | Games (valid runs) | Losses found in the record ↑ | Losses critiqued ↑ | Explained right, of those critiqued ↑ | Deaths and points invented ↓ | False claims caught ↑ | Calls a run | Prompt tokens a run |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| **Target** | all 9 | **80%+** | **every loss** | **80%+** | **0** | | | |
+| 37 | 2 (2 runs) | 3 of 3 (100%) | 3 of 3 (100%) | not graded | 0 of 2 (0%) | not graded | 20.0 | 187k |
+| 38 | 1 (3 runs) | 1 of 9 (11%) | 2 of 9 (22%) | not graded | – | not graded | 15.0 | 190k |
+| 39 | 9 (18 runs) | 45 of 66 (68%) | 25 of 66 (38%) | not graded | 7 of 33 (21%) | not graded | 23.1 | 351k |
+| 40 | 8 (13 runs) | 25 of 46 (54%) | 11 of 46 (24%) | 7 of 11 (64%) | 6 of 15 (40%) | 14 of 17 (82%) | 16.8 | 211k |
+| 41 | 6 (11 runs) | 21 of 41 (51%) | 15 of 41 (37%) | 8 of 15 (53%) | 1 of 7 (14%) | 13 of 16 (81%) | 21.4 | 308k |
+| 46 | 9 (9 runs) | 24 of 33 (73%) | 14 of 33 (42%) | 5 of 14 (36%) | 3 of 14 (21%) | 10 of 15 (67%) | 24.3 | 383k |
+<!-- /loop-table -->
 
-Loops 38 and 41 ran fewer games: in loop 41, 6 of 18 runs (Rocket League, Marvel Rivals, Valorant) had most of their calls refused by the quota and don't count. Each loop's card, report, and grades are in `tests/evals/`.
+A run where the API refused or dropped 3 or more calls (busy, 503, over quota), or failed a call no retry answered, is void and left out of every column, not counted as the code's failure. Under that rule, re-scored Oct 26, the quota took most runs of loops 37 and 38, 7 of loop 41's 18, and 4 of loop 40's 17. Loop 46 ran each game once; one game can move a column by up to a fifth (chess is 7 of the 33 losses), so a change under about 10 points can be run-to-run noise. Loop 46's grades come from one grading agent, stricter than loop 41's, with no second grader yet. Each loop's card, report, and grades are in `tests/evals/`.
 
 ### What worked
 
 - Readers written in code held up: 41 of 41 kill-feed lines, 52 of 52 chess plies off a phone recording, 12 of 12 ammo stretches. Before the kill-feed reader, the scan found 1 to 4 of the player's 9 kills.
-- The video check. It let 30 of 30 true claims stand, stopped 18 of 20 false ones, and agreed with none of the 24 planted. In loops 40 and 41 the checks caught 17 of 22 and 13 of 16 false claims.
+- The video check. It let 30 of 30 true claims stand, stopped 18 of 20 false ones, and agreed with none of the 24 planted. In loops 40 and 41 the checks caught 14 of 17 and 13 of 16 false claims (valid runs only).
 - Research. Coverage of what decides each game went from 82% to 96%, with no errors left.
 - The same match takes the same path. At temperature 0, three reviews of one Apex match on Oct 19 came out identical, down to 263,008 prompt tokens each.
-- Cost. Loop 41 averaged 21 calls and 298k prompt tokens a run, about $0.20 at 3.5 Flash-Lite's list price, and nothing on the free tier.
+- Cost. Loop 41 averaged 21 calls and 308k prompt tokens a valid run, about $0.20 at 3.5 Flash-Lite's list price, and nothing on the free tier.
 
 ### What didn't
 
-- Explaining the loss. The coach named what decided a loss in 16% of them (loop 40) and 20% (loop 41).
-- Coverage. In loops 37 to 39 the coach cited only 31% to 38% of the baseline losses.
-- Invented deaths and points: 14 of 33 in loop 40, 5 of 12 in loop 41.
-- Who the player is. Loop 41 got the player's name right in 4 of 12 runs.
+- Explaining the loss. Of the losses it critiqued, the coach named what decided them in 36% (5 of 14, loop 46); loops 40 and 41's 64% and 53% were graded by a more lenient grader.
+- Coverage. The coach cited 38% of the baseline losses in loop 39 (the one of loops 37 to 39 with every game valid) and 42% in loop 46.
+- Invented deaths and points: 6 of 15 in loop 40, 1 of 7 in loop 41, 3 of 14 in loop 46 (valid runs only).
+- Who the player is. Loop 41 got the player's name right in 4 of 11 valid runs.
 - Good claims thrown out. In loop 41, 7 of the 20 claims the checks sent back were true.
-- The quota. Loop 41 lost 6 of 18 runs to refused calls, and a review that falls back to 3.1 Flash-Lite can take 10 to 20 minutes.
+- The quota. Refused calls voided 7 of loop 41's 18 runs, and a review that falls back to 3.1 Flash-Lite can take 10 to 20 minutes.
 
 ### Failures we hit
 
