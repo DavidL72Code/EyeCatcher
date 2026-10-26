@@ -1,28 +1,24 @@
-# EyeCatcher
+# Eye Catcher
 
-David Le, Tri Huynh, Deavan Hudtohan, Evan Yang
+## The problem
 
-## 1. Project Overview
+Many people like to game but get frustrated after they reach a plateau in their skills. Coaching from people online often costs an arm and a leg, watching your own replay is a pain and a hassle, and sometimes you still don't know what you did wrong. The people we think would benefit most are competitive players looking to get better, but any gamer can reap the benefits, from children, to adults, to coaches.
 
-Many people like to game but get frustrated after they reach a plateau in their skills. Coaching from people online often costs an arm and a leg, and watching your own replay is a pain and a hassle, and sometimes you still don't know what you did wrong. The people we think would benefit most from our application are competitive players looking to get better, but any gamer can reap the benefits it provides, from children, to adults, to coaches.
+## What we built
 
-So what we made is an open source agentic AI coach that you can use through GitHub Pages or download onto your own machine. Just plug in a Google AI Studio key, drop in a video, follow the AI in real time, and get a critique video and a report on what you could have done better throughout the match.
+Eye Catcher is an open source agentic AI coach for any video game. You can use it through GitHub Pages or download it onto your own machine. Just plug in a Google AI Studio key, drop in a prerecorded match, follow the AI in real time, and get a critique video and a report on what you could have done better throughout the match. Code and the AI coach agent scan the match, identify what matters, take a closer look, analyze, confirm with you, and then output the critique video and the final report.
 
 This system benefits from agentic AI because there's no set structure or workflow for critiquing a video: you need different things every time. Agentic AI gives the AI the autonomy to pick any tool it thinks it needs for the task. It also lets us support numerous games, because the AI researches the game itself instead of using a hardcoded profile.
 
-## 2. Agentic AI Design
+## How to run it
 
-![How EyeCatcher reviews a match: learn the game, read the match record, the coach agent loop with its six tools, three checks that can send a finding back, then the report](docs/architecture.svg)
+There are three ways. All three need a free Gemini API key.
 
-For the overall workflow, you only need to upload your recording. The AI first learns the game with a first pass over the recording, collecting key information like the screen layout, the HUD, and which game it is. Code and Gemini then do a second-look scan and build the match record: kills, fights, the kill feed, key moments, and so on. The coach then uses the tools at its disposal to critique the key moments passed in and form a hypothesis about why the player is losing overall. Its tools are research, which searches the web; read clips and frames, which get clips or frames at certain moments; measure aim; read HUD; and ask you, for clarification when something is unclear.
-
-The proposed findings for the key moments are then checked by code, and each claim is checked by the AI verification agent, which we test by planting fake claims for it to catch. The final pass goes to the human, who decides whether they agree with the finding, and if not, can send it back for further review. If they accept it, it outputs the final report and the narrated critique.
-
-Tools and resources used: Electron, Python, [Motion](https://motion.dev), Claude Code, [chess.js](https://github.com/jhlywa/chess.js), Mediabunny and MediaRecorder, HTML, CSS, JavaScript, and the Gemini API.
-
-## 3. Working Prototype
-
-How to run and test the application. Every way needs a free Gemini API key.
+| | What you do | What you get |
+| --- | --- | --- |
+| 1. The website | Open a link, paste your key | The coach in your browser. Nothing to install. |
+| 2. Download the app | Install it, paste your key | Everything, with a voice that runs on your computer. |
+| 3. From source | Clone, install, run | Everything, plus the tests and evals. |
 
 ### Get a Gemini API key
 
@@ -32,7 +28,7 @@ How to run and test the application. Every way needs a free Gemini API key.
 
 The free tier costs nothing and allows about 500 requests a day per model. A review takes 15 to 25, so that's about 20 reviews a day. On the free tier Google may use what you send to improve its products, and people may read it ([Gemini API terms](https://ai.google.dev/gemini-api/terms)). Don't review recordings that show anything private.
 
-### Use it on GitHub Pages
+### 1. The website
 
 1. Open https://davidl72code.github.io/EyeCatcher/ in Chrome or Edge.
 2. Go to Coach and paste your key. Your browser keeps it and sends it only to Google.
@@ -53,7 +49,7 @@ Then open http://localhost:8080. `npm run web` uses only Node, so there's nothin
 
 To put your own copy on GitHub Pages: fork the repo, set Settings › Pages › Source to GitHub Actions, and push to `main`. `.github/workflows/pages.yml` builds and deploys it.
 
-### Download it
+### 2. Download the app
 
 1. Get the installer for your system from the [latest release](https://github.com/DavidL72Code/EyeCatcher/releases/latest):
 
@@ -78,7 +74,7 @@ To put your own copy on GitHub Pages: fork the repo, set Settings › Pages › 
 
 The app keeps your key encrypted in the system keychain (the macOS Keychain, Windows DPAPI, or the Linux keyring). The voice model, Kokoro (about 90 MB), downloads the first time a critique plays. Each release lists every installer's SHA-256 in `SHA256SUMS.txt`, to compare with `shasum -a 256 <file>`.
 
-### Run it from source
+### 3. From source
 
 You need Node.js 20 or newer and git.
 
@@ -103,75 +99,72 @@ npm run dev
 
 Home's demo clips aren't in the repo, since they're cut from other players' videos. `npm run scenes` makes them from recordings on your machine.
 
-### Test it
+## System architecture
 
-#### Tests, no API key
+![How Eye Catcher reviews a match: learn the game, read the match record, the coach agent loop with its six tools, three checks that can send a finding back, then the report](docs/architecture.svg)
 
-The fixtures and browser tests drive Google Chrome. Set `CHROME` to its path if it isn't in the default Mac location.
+Purple steps are Gemini (Flash-Lite), green ones are code, and beige ones are you and your files. A step that's half of each uses both: code cuts the crops and checks the numbers, and Gemini reads them. A dashed line is a finding sent back to the coach.
 
-```bash
-npm install
-npm run fixture
-npm run fixture:chess
-npm run test:unit
-npm run test:e2e
-npm run test:desktop
-npm run test:chess-video
-```
+1. The recording stays on your device. The browser decodes it, and only what a step needs goes to Gemini, with no sound. Voice chat never leaves your device.
+2. One call looks at 8 frames and names the game, the genre, and what's on screen. A second call checks every box without being told what it's meant to be, and code drops the boxes that fail.
+3. Before the coach's first turn, code builds the match record: every kill-feed line, the HUD's counters (K/D/A, score, health), and a second look at any death it isn't sure of. A game with no kill feed gets a low-detail pass over a small silent copy, checked against the HUD.
+4. The coach gets a goal, its tools and what each costs, the budget, what it learned about the game, and your history in this game. It decides what to research and which moments to watch.
+5. When it calls `finish`, code sends the finding back if any cited moment wasn't looked at closely, if it shows fewer than 2 losses, or if your losses weren't looked at first.
+6. The claim check reads each claim beside the record. The video check sees only the claims, who you are, and the video. Up to two false claims are planted among them. A check that agrees with one runs again, and if it agrees again, it doesn't count.
+7. You see the finding and decide. Then the report is built, and one call writes the critique's script, which code checks before it's used.
 
-`npm run fixture` makes a 2.5-minute synthetic shooter match, and `npm run fixture:chess` two synthetic chess games, one with blunders planted under time pressure. Both go in `tests/fixtures/`, which git ignores. `npm test` runs the unit tests and the browser test together.
+The coach's tools:
 
-#### Evals that call Gemini
+| Tool | What it does | Cost |
+| --- | --- | --- |
+| `scan` | Run by code before the coach starts: the kill feed, fights, and the windows worth watching. | 1 call per 32 kill-feed lines, plus the HUD reads |
+| `read_clips` | Reads up to 4 of those windows as video: what happened, who engaged first, what decided it. | 1 call per 2 windows |
+| `research` | Looks up what matters in this game and this character, from the web. | Free if done this week, else up to 10 calls |
+| `frames` | Full-quality stills or a short clip around up to 3 moments. | 1 look per moment |
+| `measure_aim` | Boxes the heads near the crosshair, and code turns that into head-heights and degrees. | 1 call |
+| `read_hud` | Reads one HUD element (a clock, a counter, the score) at up to 8 moments. | 1 call |
+| `ask_player` | Asks you one question about a moment. At most 3 a review. | Waits for you |
+| `finish` | Ends the review with one habit, or with the biggest reason you lost when no habit repeats. | Checked in code |
 
-Put your key in `.env` first. Each one spends real requests from your daily allowance.
+### The parts
 
-```bash
-npm run test:live
-```
+| Part | What it does | Where |
+| --- | --- | --- |
+| The app | Home, Coach, and Past reviews. While a review runs, the video follows the coach and each step shows as a card. | `index.html`, `app.js`, `styles.css` |
+| Learning a game | Names the game and boxes its HUD from 8 frames, checks every box, and measures the kill feed's colors in code. | `learn.js` |
+| Readers in code | The kill feed, the HUD's counters, ammo, aim geometry, and chess moves scored by Stockfish. | `learn.js`, `video.js`, `core.js`, `chess-reader.js` |
+| The coach | One Gemini agent loop with eight tools and a 25-call budget. | `agent.js`, `gemini.js` |
+| The checks | The finish rules in code, the claim check against the record, and the check against the video. | `core.js`, `agent.js` |
+| The report | Marked-up frames, what to do instead, a drill, and the narrated critique, saved as a video if you want. | `report.js`, `app.js` |
+| Past reviews | Each review's log, report, and recording, kept in the browser. | `reviews.js` |
+| Desktop app | Electron. Remembers where recordings are on disk, keeps the key in the keychain, and runs the Kokoro voice. | `desktop/`, `scripts/voice.mjs` |
+| Website | A static copy for GitHub Pages. | `scripts/build-web.mjs` |
+| Backend (optional) | Holds one key for other people to use, rate-limited. Nobody hosts one; you don't need it. | `server/index.mjs` |
+| Evals | Answer keys written off the frames, the scorecard, and every loop's report. | `eval/`, `tests/evals/` |
+| Releases | Builds the installers on a version tag and checks every file before it's published. | `.github/workflows/`, `build/` |
 
-The whole pipeline on the synthetic match: learning, the scan, aim, and a full review, about 25 requests. It prints what each piece measured against the fixture's truth.
+How each piece works, with the measurements behind it, is in [docs/how-it-works.md](docs/how-it-works.md).
 
-```bash
-npm run eval -- match
-```
+## Tools we used
 
-Runs the agent, a fixed pipeline, and Gemini's own agentic video mode on the synthetic match, and scores each against the planted habit (about 27 requests). `npm run eval -- chess` does the same on the chess games. `EVAL_MAX_CALLS` caps the calls per recording (default 80).
+| What | Used for | Where it runs |
+| --- | --- | --- |
+| Gemini 3.5 Flash-Lite, falling back to 3.1 Flash-Lite | The coach, the clip reads, both checks, and the critique's script | Google's API |
+| Gemini 2.5 Flash-Lite with Google Search | Researching each game, its meta, and the character's kit | Google's API |
+| Gemini Files API | The small silent copy for games with no kill feed. Google deletes it after 48 hours. | Google's API |
+| [Mediabunny](https://mediabunny.dev) | Decoding the recording and cutting clips (WebCodecs) | Your device |
+| [chess.js](https://github.com/jhlywa/chess.js) and [Stockfish 10](https://stockfishchess.org) | Legal moves and each move's score | Your device |
+| [Kokoro](https://github.com/hexgrad/kokoro) (kokoro-js on onnxruntime) | The critique's voice in the desktop app | Your device |
+| The browser's speech voices | The critique's voice on the website | Your device |
+| [Motion](https://motion.dev) | The interface's motion | Your device |
+| [Electron](https://www.electronjs.org) and [electron-builder](https://www.electron.build) | The desktop app and its installers | Your device |
+| GitHub Actions, Releases, and Pages | Building the installers and hosting the website | GitHub |
+| [Playwright](https://playwright.dev) and Chrome | The browser tests and the evals | Your device |
+| [Render](https://render.com) (optional) | Hosting your own backend | Render |
 
-```bash
-node eval/researchcheck.mjs
-```
+All third-party code the page runs ships in `vendor/`, pinned, with its license and hash. Nothing loads from a CDN.
 
-Researches six games and scores the answers against `eval/research-checklist.json`. About 10 requests a game. `GAMES="Valorant,Rocket League"` runs fewer.
-
-#### Your own recordings
-
-1. Play a match with one habit on purpose (aim at the floor, always swing wide), or a normal one as a control.
-2. Put the file in `eval/recordings/`. Git ignores that folder.
-3. Add it to `eval/recordings.json` with the habit you played, or `null` for a control. The fields are in [eval/README.md](eval/README.md).
-4. Run it, by any part of its file name:
-   ```bash
-   npm run eval -- my-match
-   ```
-
-To score whole reviews the way the loops are scored, write a baseline for your clip like those in `eval/answer-keys/coach/`, then:
-
-```bash
-node eval/scorecard.mjs <loop dir> <name>
-node eval/scorecard.mjs compare <a> <b>
-```
-
-The first writes the card for one loop's runs, and the second compares two loops on the games valid in both. How each row is graded is in [eval/SCORECARD.md](eval/SCORECARD.md). The harness that runs a loop's reviews in the desktop app isn't in the repo yet.
-
-## 4. Demo
-
-https://www.youtube.com/watch?v=FdzcqXNcqk8
-
-1. Problem: the user keeps dying the same way in ranked and doesn't know why.
-2. User interaction: the user drops in a match recording and answers any clarifying question the AI asks.
-3. Agentic AI workflow: the system chooses its own tools to accomplish the task, like scanning for key moments, getting clip intervals, getting higher-clarity frames or clips, and asking the user when something is unclear.
-4. Result: the user gets a critique video that points out the mistakes at key moments, and an overall critique of what's making them lose the most and what to do to improve.
-
-## 5. Evaluation
+## Evaluation results
 
 ### What we test
 
@@ -232,18 +225,108 @@ Each has a fix in the code. [tests/evals/ledger.md](tests/evals/ledger.md) says 
 - Habits judged by eye: on Oct 18, 2 of the 3 habits it named were false. Apex's "reloading in the open" cited moments that were healing and riding ziplines.
 - The first release: v0.1.0's Mac download was corrupt. Each Mac runner built both DMGs, and their copies landed on one path. v0.1.2 fixed it, and the release now checks every file before it's published.
 
-## 6. Project Documentation
+## How to run our tests and evals
 
-GitHub: https://github.com/DavidL72Code/EyeCatcher
+### Tests, no API key
 
-What was built: EyeCatcher, an open source agentic AI coach for any video game. You upload a prerecorded match, and code and the AI coach agent scan it, identify what matters, take a closer look, analyze, confirm, and finally output a critique video and a final report.
+The fixtures and browser tests drive Google Chrome. Set `CHROME` to its path if it isn't in the default Mac location.
 
-How it works: Gemini learns the game's HUD from the recording, then, along with code, builds a match record of kills, deaths, HUD numbers, and the clips worth watching, and an AI coach watches the losing clips. Then a separate verification agent checks each claim against the record (including false claims we planted, to make sure it doesn't just agree with everything) and against the video, before it reaches you.
+```bash
+npm install
+npm run fixture
+npm run fixture:chess
+npm run test:unit
+npm run test:e2e
+npm run test:desktop
+npm run test:chess-video
+```
 
-How to run it: download the installer for macOS, Windows, or Linux from [GitHub Releases](https://github.com/DavidL72Code/EyeCatcher/releases/latest), or in a terminal, `git clone` the repo, `cd EyeCatcher`, `npm install`, then `npm run desktop`. The full steps are in [Working Prototype](#3-working-prototype).
+`npm run fixture` makes a 2.5-minute synthetic shooter match, and `npm run fixture:chess` two synthetic chess games, one with blunders planted under time pressure. Both go in `tests/fixtures/`, which git ignores. `npm test` runs the unit tests and the browser test together.
 
-Tools and technologies: the Gemini API, Electron, [Mediabunny](https://mediabunny.dev), [chess.js](https://github.com/jhlywa/chess.js), [Stockfish](https://stockfishchess.org), [Playwright](https://playwright.dev), and GitHub Actions.
+### Evals that call Gemini
 
-Known limitations: in our last eval (loop 41), of the 16 losses the coach cited, it explained 9 right, 4 partly, and 3 wrong, and it's weakest in games without a kill feed. Another limitation is that the application is post-game only, not during the match. The biggest thing holding our app back is the free Gemini tier, which allows about 20 reviews a day per key, but that should be enough for the average person.
+Put your key in `.env` first. Each one spends real requests from your daily allowance.
 
-How each step works in detail, with the measurements behind it and the full list of limits, is in [docs/how-it-works.md](docs/how-it-works.md).
+```bash
+npm run test:live
+```
+
+The whole pipeline on the synthetic match: learning, the scan, aim, and a full review, about 25 requests. It prints what each piece measured against the fixture's truth.
+
+```bash
+npm run eval -- match
+```
+
+Runs the agent, a fixed pipeline, and Gemini's own agentic video mode on the synthetic match, and scores each against the planted habit (about 27 requests). `npm run eval -- chess` does the same on the chess games. `EVAL_MAX_CALLS` caps the calls per recording (default 80).
+
+```bash
+node eval/researchcheck.mjs
+```
+
+Researches six games and scores the answers against `eval/research-checklist.json`. About 10 requests a game. `GAMES="Valorant,Rocket League"` runs fewer.
+
+### Your own recordings
+
+1. Play a match with one habit on purpose (aim at the floor, always swing wide), or a normal one as a control.
+2. Put the file in `eval/recordings/`. Git ignores that folder.
+3. Add it to `eval/recordings.json` with the habit you played, or `null` for a control. The fields are in [eval/README.md](eval/README.md).
+4. Run it, by any part of its file name:
+   ```bash
+   npm run eval -- my-match
+   ```
+
+To score whole reviews the way the loops are scored, write a baseline for your clip like those in `eval/answer-keys/coach/`, then:
+
+```bash
+node eval/scorecard.mjs <loop dir> <name>
+node eval/scorecard.mjs compare <a> <b>
+```
+
+The first writes the card for one loop's runs, and the second compares two loops on the games valid in both. How each row is graded is in [eval/SCORECARD.md](eval/SCORECARD.md). The harness that runs a loop's reviews in the desktop app isn't in the repo yet.
+
+## How we use AI responsibly
+
+### Safeguards on your data
+
+- Post-game only. It never reads game memory and never runs during a match.
+- The recording stays on your device. Only the frames, clips, and text a step needs go to Gemini, with no sound, so voice chat never leaves your device. A game with no kill feed sends a small silent copy to the Gemini Files API, which deletes it after 48 hours.
+- Your own key. The app keeps it encrypted in the system keychain, and the website keeps it in your browser. It's sent only to Google, and no key ships with the app or the website.
+- The page can only talk to itself and Google's API (a Content Security Policy), and all third-party code ships in `vendor/`, pinned with its hash. Nothing loads from a CDN.
+- The critique's voice is made on your device (Kokoro in the app, the browser's voices on the website).
+- On the free tier Google may use what you send to improve its products, and people may read it. We say not to review recordings that show anything private.
+
+### Checks on what the AI says
+
+- Code measures what it can: the kill feed, the HUD's numbers, health, ammo, aim, and every chess move, scored by Stockfish. The model isn't asked for a number code can read.
+- What's known is kept apart from what's guessed. Every prompt marks a model's read of the video as a guess, and words read off the screen (chat, names, banners) reach the model as data, never as instructions.
+- Code checks every finding before anyone sees it: every cited moment looked at closely, at least 2 losses, your losses looked at first, and a fight you won looked at too.
+- The claim check reads each claim beside the match record. The video check sees only the claims, who you are, and the video, never the coach's reasoning. Up to two false claims are planted among them, and a check that agrees with one runs again; if it agrees again, it doesn't count.
+- A review has a budget of 25 model calls, so it can't run up a bill, and the coach and readers run at temperature 0, so the same match takes the same path.
+
+### Asking a human
+
+It doesn't guess on the calls only you can make:
+
+- Which player is you. When the kill feed can't tell, it plays a moment where your name shows and asks you to pick it, or type it. It keeps the answer for that game.
+- Which side, and who you are, in footage of a whole match (a broadcast or a game film). The sides come as buttons, then you say who you are in your own words ("#16, the quarterback").
+- A question the video can't answer. The coach can ask up to 3 a review. The app plays the moment and you tap an answer.
+- The check-in. Before a finding is final, you see the habit, why, and the moments that show it. "Yes, that's it" makes it final. "Not really", or anything you type, goes back to the coach for one more look. If no turn is left, nothing is named rather than something you doubted.
+- What to work on. You choose "Work on this" or "Not this", and the next review of that game checks it.
+- Your files. The desktop app asks before it keeps copies of your recordings in its own folder.
+
+What code can settle on its own (a missing field, a moment it can fill in from the record) it settles without asking you.
+
+## Limitations
+
+- Post-game only. It never reads game memory and never runs during a match.
+- Shooters and chess have readers in code. Any other game gets the generic tools: close looks, HUD reads, questions, and the checks.
+- With no kill feed, the scan reads one frame a second at low resolution, so a short fight can be missed.
+- Aim math breaks on stretched resolutions, a crosshair moved off center, or heads under 6 px.
+- Learning varies from call to call, and a box can land beside the number it's meant to read.
+- Google Search often fails on a free key, and research then falls back to the model's own knowledge. The app says when that happens.
+- A free key covers about 20 reviews a day.
+- The installers aren't signed with paid certificates, so macOS and Windows warn on first launch.
+- The website has no Kokoro voice and doesn't remember where your recordings are.
+- The eval recordings are other players' footage and aren't in the repo, so the loops can't be rerun as they are.
+
+The full list is in [docs/how-it-works.md](docs/how-it-works.md#limits-in-full).
