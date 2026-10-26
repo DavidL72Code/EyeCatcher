@@ -126,23 +126,6 @@ The coach's tools:
 | `ask_player` | Asks you one question about a moment. At most 3 a review. | Waits for you |
 | `finish` | Ends the review with one habit, or with the biggest reason you lost when no habit repeats. | Checked in code |
 
-### The parts
-
-| Part | What it does | Where |
-| --- | --- | --- |
-| The app | Home, Coach, and Past reviews. While a review runs, the video follows the coach and each step shows as a card. | `index.html`, `app.js`, `styles.css` |
-| Learning a game | Names the game and boxes its HUD from 8 frames, checks every box, and measures the kill feed's colors in code. | `learn.js` |
-| Readers in code | The kill feed, the HUD's counters, ammo, aim geometry, and chess moves scored by Stockfish. | `learn.js`, `video.js`, `core.js`, `chess-reader.js` |
-| The coach | One Gemini agent loop with eight tools and a 25-call budget. | `agent.js`, `gemini.js` |
-| The checks | The finish rules in code, the claim check against the record, and the check against the video. | `core.js`, `agent.js` |
-| The report | Marked-up frames, what to do instead, a drill, and the narrated critique, saved as a video if you want. | `report.js`, `app.js` |
-| Past reviews | Each review's log, report, and recording, kept in the browser. | `reviews.js` |
-| Desktop app | Electron. Remembers where recordings are on disk, keeps the key in the keychain, and runs the Kokoro voice. | `desktop/`, `scripts/voice.mjs` |
-| Website | A static copy for GitHub Pages. | `scripts/build-web.mjs` |
-| Backend (optional) | Holds one key for other people to use, rate-limited. Nobody hosts one; you don't need it. | `server/index.mjs` |
-| Evals | Answer keys written off the frames, the scorecard, and every loop's report. | `eval/`, `tests/evals/` |
-| Releases | Builds the installers on a version tag and checks every file before it's published. | `.github/workflows/`, `build/` |
-
 How each piece works, with the measurements behind it, is in [docs/how-it-works.md](docs/how-it-works.md).
 
 ## Tools we used
