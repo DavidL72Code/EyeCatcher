@@ -1,10 +1,38 @@
 # Eval: loop-41
 
-Generated 2026-10-25 15:38 from `41` by `eval/loop-report.mjs`. Each game was reviewed 2 times by the desktop app in a harness (`consistency.mjs`); run 1 learns the game afresh, later runs reuse what it learned. Graded against the frame-checked coach baselines in `eval/answer-keys/coach/`.
+Generated 2026-10-26 01:07 from `41` by `eval/loop-report.mjs`. Each game was reviewed 2 times by the desktop app in a harness (`consistency.mjs`); run 1 learns the game afresh, later runs reuse what it learned. Graded against the frame-checked coach baselines in `eval/answer-keys/coach/`.
+
+## Scorecard
+
+The same card for every loop (`eval/SCORECARD.md`): counts over the valid runs, n of N. ↑ higher is better, ↓ lower is better.
+
+| Group | Measure | LoL | RL | Rivals | Val | CR | FN | BS | Chess | R6 | All |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| Seeing | Player identified ↑ | 2/2 | void | void | void | 0/2 | 0/2 | 0/2 | 2/2 | 0/2 | 4/12 (33%) |
+| Seeing | Character identified ↑ | 2/2 | void | void | void | – | – | – | – | 2/2 | 4/4 (100%) |
+| Seeing | Losses found in the record ↑ | 4/6 | void | void | void | 0/6 | 2/10 | 0/6 | 12/14 | 4/4 | 22/46 (48%) |
+| Seeing | Deaths and points invented ↓ | 4/7 | void | void | void | – | 0/2 | 1/1 | – | 0/2 | 5/12 (42%) |
+| Seeing | Numbers read right ↑ | 2/9 | void | void | void | – | 1/1 | – | – | 4/9 | 7/19 (37%) |
+| Claims | Losses explained right ↑ | 1/6 | void | void | void | 0/6 | 1/10 | 0/6 | 5/14 | 2/4 | 9/46 (20%) |
+| Claims | Losses explained partly right | 1/6 | void | void | void | 0/6 | 1/10 | 0/6 | 1/14 | 1/4 | 4/46 (9%) |
+| Claims | Losses explained wrong ↓ | 3/6 | void | void | void | 0/6 | 0/10 | 0/6 | 0/14 | 0/4 | 3/46 (7%) |
+| Claims | Losses not cited ↓ | 1/6 | void | void | void | 6/6 | 8/10 | 6/6 | 8/14 | 1/4 | 30/46 (65%) |
+| Claims | Cites at no loss ↓ | 4/13 | void | void | void | 2/2 | 0/3 | 2/2 | 9/16 | 0/4 | 17/40 (43%) |
+| Checker | False claims caught ↑ | 7/10 | void | void | void | 1/1 | – | 3/3 | 1/1 | 1/1 | 13/16 (81%) |
+| Checker | True claims sent back ↓ | 3/10 | void | void | void | 0/1 | – | 1/4 | 1/2 | 2/3 | 7/20 (35%) |
+| Cost | Runs (valid of all) | 2/2 | 0/2 | 0/2 | 0/2 | 2/2 | 2/2 | 2/2 | 2/2 | 2/2 | 12/18 |
+| Cost | Minutes a run | 6.9 | – | – | – | 4.5 | 13.3 | 4.5 | 4.0 | 5.3 | 6.4 |
+| Cost | Calls a run (answered / failed) | 31.5 / 1.5 | – | – | – | 20.5 / 1.5 | 18.5 / 8.5 | 20.0 / 1.0 | 13.5 / 1.0 | 22.0 / 1.0 | 21.0 / 2.4 |
+| Cost | Tokens a run (prompt / output) | 514k / 66k | – | – | – | 315k / 43k | 204k / 27k | 304k / 43k | 174k / 36k | 275k / 48k | 298k / 44k |
+
+- Void, left out of every row (most calls refused, or no result): RL run 1, RL run 2, Rivals run 1, Rivals run 2, Val run 1, Val run 2.
+- Graded by a grading agent, from the loop-41 worksheet, notes and ledger and the validated baselines (loss grades as the notes give them; sent-back claims judged against each baseline's happened, factors and not_true); checked by a second grading agent (every wrong grade, every true send-back, and every other graded run), its 12 changes applied, by eval/SCORECARD.md.
+
+## Detail
 
 **How to read it.** *Losses cited*: of the baseline's losses (deaths, lost points, blunders, tower losses), how many the finding cites, at the loss or at the decision that led to it. *Factor coverage*: of the kinds of factor the baseline says decided each cited loss (position, information, resources, numbers, map, mechanics), the share the cited cause names, by its words (rough; not graded for chess). *Numbers named*: of the cited losses, how many have a cause that names a number matching one in the baseline's factors (health like 42% or 631/1479, a cooldown like 3:55 left, a score like 2-0, a count like 1 v 2), so depth shows, not only kinds. Cites, kinds, and numbers are the coach's own words; *By code* counts apart the losses only a turning point code filled in cites (cover_losses), and the losses where numbers code wrote match (factor_refs or a filled turning point). *Deaths found*: the record's deaths against the baseline's. *Matches the baseline*: every loss cited with at least 60% coverage (yes), at least half cited (partly), else no.
 
-## Summary
+### Summary
 
 | Game | Runs | Min/run | Calls answered / failed | Model share (answered) | Prompt / output tokens | Deaths found | Losses cited | Factor coverage | Matches the baseline | Numbers named | By code (cited, numbers) |
 |---|---|---|---|---|---|---|---|---|---|---|---|
@@ -16,7 +44,7 @@ Generated 2026-10-25 15:38 from `41` by `eval/loop-report.mjs`. Each game was re
 | Fortnite | 2 | 13.3 | 18.5 / 8.5 | 3.5-flash-lite 59%, 3.1-flash-lite 41% | 204k / 27k | 1/1, 1/1 | 1/5, 1/5 | 67%, 33% | no | 1/1, 1/1 | +0, 0; +0, 0 |
 | Brawl Stars | 2 | 4.5 | 20.0 / 1.0 | 3.5-flash-lite 100% | 304k / 43k | 0/2 +1 invented, 0/2 | 0/3, 0/3 | –, – | no | 0/0, 0/0 | +0, 0; +0, 0 |
 | Chess | 2 | 4.0 | 13.5 / 1.0 | 3.5-flash-lite 85%, 2.5-flash-lite 15% | 174k / 36k | –, – | 3/7, 3/7 | n/a, n/a | no | 0/3, 0/3 | +0, 0; +0, 0 |
-| Rainbow Six Siege | 2 | 5.3 | 22.0 / 1.0 | 3.5-flash-lite 100% | 275k / 48k | 1/1, 1/1 | 1/2, 2/2 | 33%, 33% | partly | 1/1, 1/2 | +0, 0; +0, 1 |
+| Rainbow Six Siege | 2 | 5.3 | 22.0 / 1.0 | 3.5-flash-lite 100% | 275k / 48k | 1/1, 1/1 | 1/2, 2/2 | 33%, 33% | partly | 1/1, 1/2 | +0, 0; +0, 0 |
 
 Across 18 runs: 8.2 min, 15.9 calls answered and 13.6 failed (429/503, retried), 223k prompt and 32k output tokens a run, on average.
 
@@ -505,7 +533,7 @@ Run 1 in the app, as it went (images kept on this machine only):
 | Baseline loss | What the baseline says decided it | Cited? | What the review said | Kinds named (of the baseline's) | Numbers named | By code |
 |---|---|---|---|---|---|---|
 | 8:38.9 near_death (19 of 100) | Emptying the whole rifle magazine at a doorway target, then walking through that same doorway on his pistol, without reloading, into an enemy who was already set inside. | yes | The player engages an enemy in the doorway between Covered Terrace and Mezzanine while exposed, dropping to near-death. Because: The player challenged a direct doorway angle while exposed in 2F Mezzanine at match point with 1:35 on the clock and 3 vs 3 numbers, taking heavy unshielded damage; as read: position 8:39 The | position, numbers (2 of 6: position, information, resources, numbers, map, mechanics) | none | – |
-| 8:58.3 death (ELIMINATED BY francomix: THUNDERBIRD, SPEAR .308; headshot icon in the feed row) | Walking into an open room on 19 HP with the rifle lowered, so that when the enemy crossed his crosshair at 13 m (8:56.9) he couldn't shoot until the enemy was in cover, and lost the following exchange to one headshot. | yes | The player pushes into 2F Piano Room at 19 HP and engages in a gunfight, resulting in death. Because: The player pushed into an enemy room at critically low health (19/100) in a 2 vs 3 situation without healing or secure cover; as read: position 8:59 The player stood in the 2F Piano Room doorway exposed to enemy angles | position, resources (2 of 6: position, information, resources, numbers, map, mechanics) | 19/100, 19 HP, 2 vs 3 | numbers: 19/100, |
+| 8:58.3 death (ELIMINATED BY francomix: THUNDERBIRD, SPEAR .308; headshot icon in the feed row) | Walking into an open room on 19 HP with the rifle lowered, so that when the enemy crossed his crosshair at 13 m (8:56.9) he couldn't shoot until the enemy was in cover, and lost the following exchange to one headshot. | yes | The player pushes into 2F Piano Room at 19 HP and engages in a gunfight, resulting in death. Because: The player pushed into an enemy room at critically low health (19/100) in a 2 vs 3 situation without healing or secure cover; as read: position 8:59 The player stood in the 2F Piano Room doorway exposed to enemy angles | position, resources (2 of 6: position, information, resources, numbers, map, mechanics) | 19/100, 19 HP, 2 vs 3 | – |
 
 Run 1 in the app, as it went (images kept on this machine only):
 

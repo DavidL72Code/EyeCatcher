@@ -2,6 +2,11 @@
  "clip": "chess/chess-k8MN5xMyfdg.mp4",
  "game": "Chess (chess.com, 10 min, phone)",
  "player": "VasuGmR (755), White, at the bottom",
+ "ids": {
+  "player": [
+   "VasuGmR"
+  ]
+ },
  "opponent": "Fearless_Bishop2024 (777), Black",
  "validated": "Oct 24: the move list OCR'd from 1 s frames over the whole recording and read by eye at 0.25 s around every graded move and the opponent's move before it; boards checked at 2:16, 5:12 and 6:27; clocks read from crops; every move regraded with chess-grade.mjs at depth 16 and depth 20, and Stockfish lines (depth 18) taken at each graded position.",
  "moves": "1. e4 d5 2. f4 dxe4 3. Nc3 e6 4. Nxe4 Nf6 5. Nxf6+ Qxf6 6. Ne2 e5 7. fxe5 Qxe5 8. d4 Qe6 9. Qd3 Qg6 10. Qb5+ Qc6 11. Qe5+ Be6 12. Bd2 Nd7 13. Qe3 O-O-O 14. O-O-O Bd6 15. Bc3 Rde8 16. Qd3 Qa6 17. Qxa6 bxa6 18. Nf4 Bxf4+ 19. Kb1 Nb6 20. Bxa6+ Kb8 21. Rhf1 Bc4 22. Rxf4 Bxa6 23. Rxf7 Bc4 24. Rxg7 Re2 25. b3 Bg8 26. Rf1 Be6 (the recording ends at 8:27, three seconds after 26...Be6, game unfinished: White to move on 5:56, Black 6:00)",

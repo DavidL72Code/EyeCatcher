@@ -1,0 +1,279 @@
+{
+ "loop": "loop-41",
+ "by": "a grading agent, from the loop-41 worksheet, notes and ledger and the validated baselines (loss grades as the notes give them; sent-back claims judged against each baseline's happened, factors and not_true); checked by a second grading agent (every wrong grade, every true send-back, and every other graded run), its 12 changes applied",
+ "games": {
+  "lol": {
+   "1": {
+    "losses": {
+     "1:48": {
+      "grade": "right",
+      "why": "names staying to clear minions instead of retreating on the retreat pings, ult down; '271 of 1479' is mid-burst (baseline 617-621 at 1:43-1:45) and Flash down is missed, as the notes grade it"
+     },
+     "4:30": {
+      "grade": "partly",
+      "why": "right moment and advancing into the enemy's reach as they grouped, but 'to farm minions' misses the decision: channeling her ult (cast about 4:24.9) inside their reach with no Flash"
+     },
+     "8:56": {
+      "grade": "wrong",
+      "why": "'without ultimate ready and with low health' contradicts the baseline's '1723 of 1820 health with Flash and ult up at 8:44'; '392 of 693' is mana; 'two allies' where only Blitzcrank was there"
+     }
+    },
+    "sent_back": [
+     {
+      "claim": "at 1:46, health read 271 of 1479 (attempt 1)",
+      "really": "unclear",
+      "why": "baseline: '622 (1:45.8), 140 (1:46.1)'; 271 lies inside that burst, neither shown nor ruled out, and the check held it to 1:45.0"
+     },
+     {
+      "claim": "at 4:28, ultimate R on 1:46 cooldown (attempt 1)",
+      "really": "true",
+      "why": "baseline: ult cast about 4:24.9, '1:48 left at 4:26', so 1:46 at 4:28"
+     },
+     {
+      "claim": "at 5:05, health read 401 of 609 (attempt 1)",
+      "really": "false",
+      "why": "baseline: her health is out of 1589 at 4:18-4:30 ('280 of 1589'); 609 is her mana"
+     },
+     {
+      "claim": "at 8:46, low health, 392 of 693 (attempt 1)",
+      "really": "false",
+      "why": "baseline: '1723 of 1820 health with Flash and ult up at 8:44'"
+     },
+     {
+      "claim": "at 4:26, ultimate R on 1:48 cooldown (attempt 2, record check)",
+      "really": "true",
+      "why": "baseline: '1:48 left at 4:26', the cite's moment; the record's 1:46 is the 4:28 value"
+     },
+     {
+      "claim": "at 5:05, health read 291 of 1589 (attempt 2, record check)",
+      "really": "unclear",
+      "why": "5:05 isn't a baseline loss and the key gives no reading there; the record's '401 of 609' it was held to is mana"
+     },
+     {
+      "claim": "at 8:46, health read 1730 of 1820 (attempt 2, record check)",
+      "really": "true",
+      "why": "baseline: '1723 of 1820 health with Flash and ult up at 8:44' (ledger L5)"
+     },
+     {
+      "claim": "at 1:46, mana 181 of 569 (attempt 2)",
+      "really": "unclear",
+      "why": "the baseline gives no mana reading at 1:45-1:46"
+     },
+     {
+      "claim": "at 4:28, team score 15 to 20 (attempt 2)",
+      "really": "unclear",
+      "why": "the baseline gives no team kill score at 4:26-4:30"
+     },
+     {
+      "claim": "at 5:05, mana 609 of 609 (attempt 2)",
+      "really": "unclear",
+      "why": "the baseline gives no mana reading at 5:05"
+     },
+     {
+      "claim": "at 8:46, ultimate R on 1:37 cooldown (attempt 2)",
+      "really": "false",
+      "why": "baseline: 'Flash and ult up at 8:44'; the ult was channelled only at 8:50.2"
+     }
+    ]
+   },
+   "2": {
+    "losses": {
+     "1:48": {
+      "grade": "wrong",
+      "why": "'engaged an enemy champion in the bottom lane' (not_true: 'bot lane at 1:48'), and the code fill 'committed to using Bullet Time' while the ult was on cooldown (1:30 left at 1:40)"
+     },
+     "4:30": {
+      "grade": "wrong",
+      "why": "code fill 'chose to recall while a teammate was being engaged': she walked in from base and channeled her ult inside the enemy's reach"
+     }
+    },
+    "sent_back": [
+     {
+      "claim": "at 1:44, committed to using Bullet Time in the open river (attempt 2)",
+      "really": "false",
+      "why": "baseline: ult 'on cooldown (1:30 left at 1:40)', and she was at the front of the mid wave"
+     },
+     {
+      "claim": "at 9:17, entered the river as the enemy contested the dragon and was isolated and killed (attempt 2)",
+      "really": "false",
+      "why": "baseline: she was dead from 8:54.9 ('0 (8:54.9)') and the key lists no later death"
+     },
+     {
+      "claim": "at 4:25, channeled Bullet Time at low health and surrounded by enemies (attempt 3)",
+      "really": "false",
+      "why": "baseline: health 1589 at 4:18, 1124 at 4:26, 'Geraam ... the only enemy champion on screen' (the channel itself is right)"
+     },
+     {
+      "claim": "at 1:44, committed to using Bullet Time in the open river (attempt 5)",
+      "really": "false",
+      "why": "baseline: ult 'on cooldown (1:30 left at 1:40)'; sent back again"
+     }
+    ]
+   }
+  },
+  "cr": {
+   "1": {
+    "losses": {},
+    "sent_back": [
+     {
+      "claim": "at 3:07, an enemy unit crossed the bridge and destroyed the tower in overtime (attempt 2)",
+      "really": "false",
+      "why": "not_true: 'a Ram Rider or any troop destroyed the right tower (the opponent's Fireball did, at 3:27.3)'"
+     },
+     {
+      "claim": "at 0:20, the player delayed a defensive placement at 10 elixir and lost the trade (attempt 3)",
+      "really": "unclear",
+      "why": "the baseline says nothing of 0:15-0:25; its first loss is the 1:33 tower damage"
+     }
+    ]
+   },
+   "2": {
+    "losses": {},
+    "sent_back": []
+   }
+  },
+  "fn": {
+   "1": {
+    "losses": {
+     "7:43": {
+      "grade": "partly",
+      "why": "names engaging from behind a low hedge at 45 HP, but its fix says heal (not_true: no heals, slot 5 empty from 2:51.6) and calls it a 1v1 (4 were left): facts that change the fix (second grader)"
+     }
+    },
+    "sent_back": []
+   },
+   "2": {
+    "losses": {
+     "7:43": {
+      "grade": "right",
+      "why": "same core as run 1, which the notes count right: engaging while still behind a hedge at low health, fix 'reposition to better cover'; '24/45' and 'heal' (no heals) are off"
+     }
+    },
+    "sent_back": []
+   }
+  },
+  "bs": {
+   "1": {
+    "losses": {},
+    "sent_back": [
+     {
+      "claim": "at 1:19, the player pushed into a lost team fight without teammate support (attempt 2, record and frames checks)",
+      "really": "false",
+      "why": "baseline: he died at about 1:10.4 ('NPC..Abuser -> PANDA YT', spectating from 1:10.75), so he wasn't in the 1:19 fight"
+     },
+     {
+      "claim": "at 1:33, the player was eliminated pushing into an open lane (attempt 2)",
+      "really": "false",
+      "why": "baseline: his round-1 death was at 1:10.4, spectating after; round won at 2:10, no death at 1:33"
+     },
+     {
+      "claim": "at 1:33, the player is eliminated in the central lane (attempt 3)",
+      "really": "false",
+      "why": "baseline: dead since 1:10.4 ('Following: Automatic' from 1:10.75); no death at 1:33"
+     },
+     {
+      "claim": "at 2:58, the player is eliminated after engaging an enemy group (attempt 3)",
+      "really": "true",
+      "why": "baseline: 'SSZtt -> PANDA YT' at 2:58.5, dead at 2:58.4 after walking up ahead of his team (ledger B3)"
+     }
+    ]
+   },
+   "2": {
+    "losses": {},
+    "sent_back": []
+   }
+  },
+  "ch": {
+   "1": {
+    "losses": {
+     "0:16": {
+      "grade": "right",
+      "why": "names 2.f4 ignoring that dxe4 wins material; fix 'exd5 or Nc3' is the baseline's '2.exd5 (or 2.Nc3...)'"
+     },
+     "5:14": {
+      "grade": "right",
+      "why": "names Qd3 walking into Bc4 on the queen with the e2 knight behind, fix 16.d5 (Stockfish's); 'losing the queen' overstates the +3.9, as the notes say"
+     },
+     "6:28": {
+      "grade": "right",
+      "why": "names Rxf4 allowing Bxa6 with the a6 bishop hanging, fix Bxc4: the baseline's capture-order lesson"
+     }
+    },
+    "sent_back": []
+   },
+   "2": {
+    "losses": {
+     "0:16": {
+      "grade": "partly",
+      "why": "names 2.f4 allowing dxe4, but its fix 'Play d4 or e4' leaves e4 hanging; baseline better: 2.exd5 (second grader)"
+     },
+     "5:41": {
+      "grade": "right",
+      "why": "names 18.Nf4 allowing Bxf4+ with check, losing the knight: the baseline's 'onto the d6 bishop's diagonal to the king'"
+     },
+     "6:28": {
+      "grade": "right",
+      "why": "names 22.Rxf4 overlooking Bxa6, fix to check recaptures first; as the notes grade it"
+     }
+    },
+    "sent_back": [
+     {
+      "claim": "18.Nf4 blew a 5.0 pawn advantage (attempt 2)",
+      "really": "false",
+      "why": "baseline: about 5 is what 18.Nf4 lost ('a knight lost for nothing (about -5 by the engine)'), not a lead; material was level after 17...bxa6"
+     },
+     {
+      "claim": "10.Qb5+ allowed Black to develop with Nc6 (attempt 2)",
+      "really": "unclear",
+      "why": "baseline: Black played '10. Qb5+ Qc6', but it gives no engine line for 10.Qb5+ (a soft mistake, 168/116)"
+     },
+     {
+      "claim": "10.Qb5+ allowed Black to respond with Qc6 (attempt 4, record check)",
+      "really": "true",
+      "why": "baseline move list: '10. Qb5+ Qc6' (Qc6 confirmed on the board at 2:16)"
+     }
+    ]
+   }
+  },
+  "r6": {
+   "1": {
+    "losses": {
+     "8:58.3": {
+      "grade": "right",
+      "why": "names taking a direct gunfight at 19 of 100 at match point (and at 8:52, pressing in at 19 HP without support); thin, as the notes say: no lowered rifle, 'heal' isn't the baseline's fix"
+     }
+    },
+    "sent_back": [
+     {
+      "claim": "the scoreboard clock read 1:13 at the 8:59 death (attempt 1, record check)",
+      "really": "true",
+      "why": "baseline: '1:16-1:13 left' (timer 1:16 at 8:55.5); the record's 1:17 was read at 8:54"
+     },
+     {
+      "claim": "took damage down to 19 HP in 2F Covered Terrace at 8:39 (attempt 1)",
+      "really": "false",
+      "why": "baseline: he walked through that doorway 'into 2F Mezzanine' (8:37.7-8:38.0) and took the hits there"
+     },
+     {
+      "claim": "down to 19 HP at 8:39 (attempt 3, record check)",
+      "really": "true",
+      "why": "baseline: '100 (8:38.5), 73 (8:38.6), 46 (8:38.8), 19 (8:38.9)'; the record's 100 was read at 8:36 (ledger S4)"
+     }
+    ]
+   },
+   "2": {
+    "losses": {
+     "8:38.9": {
+      "grade": "partly",
+      "why": "right moment, exposed in the Terrace-Mezzanine doorway at match point, 1:35; misses the empty rifle not reloaded, 'ammo 10/89' is wrong (rifle 0/89, pistol 21) and '3 vs 3' was 4 v 4"
+     },
+     "8:58.3": {
+      "grade": "right",
+      "why": "names pushing into an enemy room at 19/100 in a 2 vs 3, ammo 12/64 (baseline 25 -> 12 by 8:58.2); misses the lowered rifle"
+     }
+    },
+    "sent_back": []
+   }
+  }
+ }
+}

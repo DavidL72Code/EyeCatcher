@@ -2,6 +2,11 @@
   "clip": "fortnite/fn-_SIkdlhwK6A.end8.mp4",
   "game": "Fortnite",
   "player": "MhBro0 (the green name in the elimination feed on the player's Arc-Lightning Gun kills: 'MhBro0 (3) zapped GlowBeetle41 (1) with the Arc-Lightning Gun' at 0:48 and 'MhBro0 (3) zapped GoldenOctopus0 (1)' at 3:18, each as the HUD elimination counter rises (2 -> 3 by 0:50, 4 -> 5 by 3:20), then 'GoldenOctopus0 is now spectating you' at 3:20)",
+  "ids": {
+    "player": [
+      "MhBro0"
+    ]
+  },
   "mode": "solo Battle Royale with building (build controls and materials on the HUD: 500 wood, 500 stone, 482 metal from 6:07 on)",
   "enemies_named_on_screen": [
     "MISK-82 (the card at 7:44.5: 'ELIMINATED BY MISK-82', 4 eliminations, 'WITH DEADEYE ASSAULT RIFLE (EPIC)', 63 shield and 100 health)"

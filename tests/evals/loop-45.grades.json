@@ -1,0 +1,309 @@
+{
+ "loop": "loop-45",
+ "by": "a grading agent, from the loop-45 worksheet and the validated baselines (eval/answer-keys/coach/baseline.validated.json and validated-*.json): each cited loss judged against the key's happened, factors, mistake, better and not_true, with its unsure list not held against a cite; wrong where a fact in the cause flips the key's lesson, partly where the decision is missed or an off fact leaves the lesson standing; send-backs for a rule (citing the loss itself, a name or a heal nothing read shows, too few losses, the second-time notice, a cause naming none of code's reads) left out; no numbers per loss, as loop-41 has none; not yet checked by a second grader",
+ "games": {
+  "lol": {
+   "1": {
+    "losses": {
+     "1:48": {
+      "grade": "right",
+      "why": "names staying alone at the front of the wave 'without vision of the flanking enemy' with ult down, fix 'retreat ... or wait under tower' (the key's 'stand behind her wave toward her own tower'); off: 'summoner spells on cooldown' (key: 'her D summoner (gold icon) up and never used'), '271 of 1479' is mid-burst ('622 (1:45.8), 140 (1:46.1)'), 'match clock at 1:22' (chat 15:41 = 1:44); misses the Nearsighted cue"
+     },
+     "4:30": {
+      "grade": "partly",
+      "why": "right moment, pushing forward after 'Ally turret destroyed!' with Flash down, but misses the decision: 'Channeling her ult, which roots her in place, from inside the enemy's reach'; its 'unstoppable enemy threat' is her ally ('rillerking (Evelynn) ... is unstoppable'), and '1:05' is Flash's cooldown ('1:05 at 4:30'), not the match clock"
+     },
+     "8:56": {
+      "grade": "partly",
+      "why": "right moment, the unwarded river with enemies missing (key: 'enemies are missing' pinged; 'ward the river'), health 1056 (key: 1057 at 8:54.3); misses the decision, 'stopping in the river to channel her ult' after the Flash, and '4 enemies ... against 3 teammates' goes against 'two teammates dead, one in base ... only Blitzcrank is with her'"
+     }
+    },
+    "outside": [],
+    "sent_back": [
+     {
+      "claim": "at 4:29, health dropping to 304 of 1589 (attempt 1)",
+      "really": "unclear",
+      "why": "baseline: '1124 at 4:26, 280 at 4:29.7'; 4:29.0 isn't read, so neither 304 nor the check's 321 is shown or ruled out"
+     }
+    ]
+   }
+  },
+  "rl": {
+   "1": {
+    "losses": {
+     "4:15": {
+      "grade": "partly",
+      "why": "right moment and '1/100' on the way back (key: 'with him at 1 boost'), fix 'rotate back defensively earlier' near the key's 'rotate back to the back post'; misses the decision, 'A tight-angle shot from the corner while his teammate was also forward', and 'ahead of the opponent's advance' goes against 'never goal-side'"
+     }
+    },
+    "outside": [],
+    "sent_back": [
+     {
+      "claim": "at 4:12, an aggressive aerial challenge in the opponent's corner (attempt 2)",
+      "really": "false",
+      "why": "baseline: the corner shot was at 4:09; by 4:12 'He lands at about 35 and chases from behind (14 at 4:12 ...)'"
+     },
+     {
+      "claim": "at 4:12, boost down to 1/100 (attempt 3, record check)",
+      "really": "false",
+      "why": "baseline: '14 at 4:12'; he is at 1 only at the goal (4:15)"
+     },
+     {
+      "claim": "at 4:12, took a shot on goal, +10 SHOT ON GOAL (attempt 3)",
+      "really": "false",
+      "why": "baseline: 'at 4:09 he shoots from the corner at a tight angle (SHOT ON GOAL +10)'; at 4:12 he is chasing NYAL from behind (the shot is real, 3 s earlier)"
+     }
+    ]
+   }
+  },
+  "mr": {
+   "1": {
+    "losses": {},
+    "outside": [],
+    "sent_back": [
+     {
+      "claim": "at 6:02, engaged without escape abilities ready (attempt 3)",
+      "really": "unclear",
+      "why": "the baseline's last loss is 5:10 (healed to '278 of 278 (5:12)'); it reads nothing at 6:02"
+     },
+     {
+      "claim": "at 6:02, match clock 01:03 (attempt 4, record check)",
+      "really": "unclear",
+      "why": "the baseline gives no clock reading at 6:02-6:04"
+     }
+    ]
+   }
+  },
+  "val": {
+   "1": {
+    "losses": {
+     "0:41": {
+      "grade": "wrong",
+      "why": "'Stood stationary ... holding a static angle', 'a still view' goes against 'He walks up past the crate' and 'firing on the move ... Shooting Error reads 1.40°', so its fix (reposition, use utility) misses 'Stop before the first shot (counter-strafe)'; 'Bandit' where the key has 'the first Classic shot'"
+     },
+     "2:17": {
+      "grade": "partly",
+      "why": "names the 2 v 1 and playing with the teammate (key: 'trade off CLV|bam in the 2 v 1'), but not the decision: 'Throwing his flash where it popped in his own view and swapping to the Outlaw mid-fight'"
+     },
+     "4:15": {
+      "grade": "wrong",
+      "why": "'holding a still view', 'without movement' goes against 'He peeks the courtyard from A Flowers on the move (the view drifts 4:13.6-4:14.1)', and it misses 'not firing when zeytazin ran across his crosshair'; the 1 v 2 post-plant at 51, rifle 20/50 and the unused utility ('ult READY and unused') are right"
+     },
+     "6:15": {
+      "grade": "partly",
+      "why": "right moment and 'use utility' near the key's 'use the ready ult'; misses the decision, 'Running onto site with the knife out and the rifle not ready' (0.35 s late), and puts him 'in A Secret ... peeking out toward A Site' where he 'runs onto A Site ... past the box'"
+     }
+    },
+    "outside": [],
+    "sent_back": [
+     {
+      "claim": "at 0:38, at 100 health with abilities on cooldown (attempt 2, record check)",
+      "really": "unclear",
+      "why": "the baseline says nothing of his abilities at 0:38-0:40; code read icon 1 ready"
+     },
+     {
+      "claim": "at 6:08, peeked A Site without using utility (attempt 3)",
+      "really": "unclear",
+      "why": "baseline: 'ult READY and unused', but it doesn't say whether he cast anything before 6:08 (unsure: 'whose smoke it was')"
+     },
+     {
+      "claim": "at 2:02, advanced into B Site in a 2v1 (attempt 4)",
+      "really": "unclear",
+      "why": "the baseline names no site and reads nothing at 2:02; its 2 v 1 ('he and CLV|bam alive against Fade') starts at 2:12.5"
+     }
+    ]
+   }
+  },
+  "cr": {
+   "1": {
+    "losses": {},
+    "outside": [],
+    "sent_back": [
+     {
+      "claim": "at 2:50, player elixir at 5 (attempt 2)",
+      "really": "unclear",
+      "why": "baseline: the '5/6 Sparky' was queued at 2:46 and the next reading is 10 at 3:01-3:02; nothing at 2:50"
+     },
+     {
+      "claim": "at 3:24, overtime clock at 1:39 (attempt 2)",
+      "really": "false",
+      "why": "baseline: sudden death from 3:00 ('+120s Extra Time') and the 'overtime clock frozen at 1:33' from 3:27, so about 1:36 at 3:24"
+     },
+     {
+      "claim": "at 2:50, match clock at 0:14 (attempt 3)",
+      "really": "false",
+      "why": "baseline: 'Double elixir from 2:00' and 'Sudden death from 3:00', so regulation shows 0:10 at 2:50"
+     },
+     {
+      "claim": "at 3:24, tower health at 71 (attempt 3, record and frames checks; the record check sent twice word for word)",
+      "really": "false",
+      "why": "baseline: the Log 'leaves the tower on 7' (3:14.5) and 'it stood at 7 until 3:27.3'; the check's 1711 is the opponent's right tower ('to 1711 (3:23)')"
+     }
+    ]
+   }
+  },
+  "fn": {
+   "1": {
+    "losses": {
+     "7:43": {
+      "grade": "right",
+      "why": "names firing the Arc-Lightning Gun from behind a low bush at low health, fix 'reposition behind solid building cover' (the key's 'get into the building beside them ... re-engage only from built cover'); misses the lightning breaking the hedge and the unbuilt 500 materials; off: '24 health, 45 shield' (key: '24 shield and 45 health'), 'magazine 2 and reserve 500' (the gun reads 46%; 500 is wood), '1 visible enemy' ('the shooter never on screen')"
+     }
+    },
+    "outside": [],
+    "sent_back": [
+     {
+      "claim": "at 7:42, 24 health and 45 shield (attempt 2, record check)",
+      "really": "false",
+      "why": "baseline: '24 shield and 45 health' until the shield broke at about 7:42.5"
+     }
+    ]
+   }
+  },
+  "bs": {
+   "1": {
+    "losses": {
+     "1:10": {
+      "grade": "partly",
+      "why": "names holding ground alone, separated from teammates, fix 'retreat toward teammates earlier' (the key's 'back off down-left toward his four teammates'); misses the charged super and gadget ('he used neither before dying'), and 'central barrels and cacti' where he is 'alone on the right side, by the water'"
+     }
+    },
+    "outside": [],
+    "sent_back": [
+     {
+      "claim": "at 1:10, pushed into the open at 188 HP (attempt 1)",
+      "really": "false",
+      "why": "baseline: '188 (1:07.25)', then 1 HP from 1:07.75 to his death at about 1:10.4, and 'He holds his spot instead of backing off'; the check's 4932 is NPC..Abuser's ('4932 at 1:06.5')"
+     },
+     {
+      "claim": "at 3:01, eliminated near the upper wall after engaging multiple enemies (attempt 1)",
+      "really": "true",
+      "why": "baseline: 'SSZtt -> PANDA YT' at 2:58.5 after 'Walking up alone, ahead of his team, into three enemies'; the live 5750 the check saw is the teammate he spectates ('Following: ราชาโดดรุม' from 2:58.8)"
+     },
+     {
+      "claim": "at 3:34, eliminated near the centre, low on resources, as the gas closed in (attempt 1)",
+      "really": "false",
+      "why": "baseline: '0 kills, 2 deaths', at 1:10.4 and 2:58.4; he is spectating from 2:58.8 to the round's end (3:49)"
+     },
+     {
+      "claim": "at 3:01, eliminated near the upper wall after engaging (attempt 2, record check)",
+      "really": "true",
+      "why": "baseline: dead at 2:58.4 ('SSZtt -> PANDA YT' 2:58.5); the record's 'alive with 5750 HP' is the spectated teammate"
+     },
+     {
+      "claim": "at 3:34, positioned in an exposed area as the gas closed in (attempt 2, record check)",
+      "really": "false",
+      "why": "baseline: dead from 2:58.4, spectating from 2:58.8; no position of his at 3:34"
+     },
+     {
+      "claim": "at 1:10, engaged in the open with 4932 HP (attempt 2)",
+      "really": "false",
+      "why": "baseline: 4932 is NPC..Abuser's ('next to NPC..Abuser (4932 at 1:06.5)'); he was at 1 HP from 1:07.75"
+     },
+     {
+      "claim": "at 3:00, engages near the upper wall with 5750 HP ahead of teammates (attempt 4, record and frames checks)",
+      "really": "false",
+      "why": "baseline: dead at 2:58.4 and 'Following: ราชาโดดรุม' from 2:58.8, so the 5750 isn't his"
+     },
+     {
+      "claim": "at 1:08, engages an enemy brawler near central barrels (attempt 6)",
+      "really": "false",
+      "why": "baseline: 1:07.75-1:09.1 'Immune' at 1 HP 'with a no-entry icon and grey buttons', on the right side by the map edge"
+     }
+    ]
+   }
+  },
+  "ch": {
+   "1": {
+    "losses": {
+     "0:16": {
+      "grade": "right",
+      "why": "names 2.f4 allowing dxe4, 'taking the pawn', fix exd5: the key's 'the e4 pawn attacked by d5 and defended by nothing', '2.exd5'; '3.0 pawns' is within the key's noise of '325 at depth 20, 334 at depth 16'"
+     },
+     "5:05": {
+      "grade": "partly",
+      "why": "right move and the key's fix 15.Nc3, but its threat 'it allows Qd5' isn't the key's ('15...Nf6 threatens ...Nd5', a knight fork of c3 and e3), and 'a blunder, giving away 2.6 pawns' overstates 'mistake 15.Bc3 (211 at depth 20, 169 at depth 16)'"
+     },
+     "5:14": {
+      "grade": "right",
+      "why": "names Qd3 with 'the queen and the knight on e2 behind it' open to a tactic (key: 'in line with the e2 knight on the c4 bishop move's diagonal'), fix d5; it doesn't claim Bc4 wins the knight (not_true)"
+     },
+     "5:41": {
+      "grade": "right",
+      "why": "names 18.Nf4 allowing 'Bxf4+, taking the knight with check', fix Ng3: the key's 'f4 is on the d6 bishop's diagonal to c1'"
+     },
+     "6:28": {
+      "grade": "partly",
+      "why": "right move and the key's fix 22.Bxc4, but 'Black's bishop on a6 threatens retaliation' goes against the key ('21...Bc4 attacks White's a6 bishop'), so the capture-order lesson isn't said"
+     },
+     "7:52": {
+      "grade": "partly",
+      "why": "names 26.Rf1, Stockfish's 26...Bd5 and the fix 26.Re1, but not why: the key's 'Not challenging the rook on e2' (Black's rook on White's second rank)"
+     }
+    },
+    "outside": [
+     {
+      "t": "2:03",
+      "really": "loss",
+      "why": "the key's engine grades 10.Qb5+ '168 / 116', a soft mistake it doesn't list (Black answered '10. Qb5+ Qc6', not Nc6)"
+     },
+     {
+      "t": "0:57",
+      "really": "loss",
+      "why": "the key's engine grades 6.Ne2 '151 / 121', a soft mistake it doesn't list"
+     }
+    ],
+    "sent_back": [
+     {
+      "claim": "10.Qb5+ was a premature check, a blunder giving away 2.8 pawns (attempt 2)",
+      "really": "false",
+      "why": "key: '10.Qb5+ (168 / 116)', a soft mistake (100-250), not a 2.8-pawn blunder"
+     },
+     {
+      "claim": "10.Qb5+ was a blunder (attempt 3)",
+      "really": "false",
+      "why": "key: '10.Qb5+ (168 / 116)'; 'only losses of 250+ (blunders) are firm'"
+     },
+     {
+      "claim": "16.Qd3 was a blunder (attempt 3)",
+      "really": "true",
+      "why": "key: 'blunder 16.Qd3 (430 at depth 20, 303 at depth 16; best d5)'"
+     },
+     {
+      "claim": "18.Nf4 was a blunder (attempt 3)",
+      "really": "true",
+      "why": "key: 'blunder 18.Nf4 (571 at depth 20, 542 at depth 16; best Ng3)'"
+     }
+    ]
+   }
+  },
+  "r6": {
+   "1": {
+    "losses": {
+     "8:58.3": {
+      "grade": "right",
+      "why": "names pushing into the enemy's line of sight on '19/100' in a '2 v 3' at match point (3-0, 1:14; key '1:16-1:13 left'), rifle 25/64, a traded death ('YOU [rifle] francomix'), fix 'wait for teammates' (the key's 'play off TAVUKSEVEN'); misses the 'rifle lowered on entry'"
+     }
+    },
+    "outside": [],
+    "sent_back": [
+     {
+      "claim": "at 8:39, health 100/100 in 2F Covered Terrace (attempt 2)",
+      "really": "false",
+      "why": "baseline: '100 (8:38.5), 73 (8:38.6), 46 (8:38.8), 19 (8:38.9)', taken after he walked 'into 2F Mezzanine'"
+     },
+     {
+      "claim": "at 8:39, 4 v 4 players remaining (attempt 3, record and frames checks)",
+      "really": "false",
+      "why": "baseline: '4 v 4 on the top bar from 8:33 to 8:38', then lemOnekxD (8:38.75) and Capzi. (8:38.8) fell; '2 VS 3' at 8:39.8"
+     },
+     {
+      "claim": "at 8:59, health 19/100 at the death (attempt 3)",
+      "really": "true",
+      "why": "baseline: '19 of 100 HP since 8:38.9' to the headshot at 8:58.3; the check saw the death screen, not another value"
+     }
+    ]
+   }
+  }
+ }
+}

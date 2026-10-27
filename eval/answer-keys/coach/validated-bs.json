@@ -3,6 +3,11 @@
   "game": "Brawl Stars",
   "player": "PANDA YT™ (green name over the centred brawler; bottom row of the VS screen at 0:20)",
   "character": "not named on screen (no brawler name in any frame checked: VS screen 0:20, play, VICTORY screen 3:54)",
+  "ids": {
+    "player": [
+      "PANDA YT™"
+    ]
+  },
   "teammates": [
     "☢TITAN☢PC☢ (title 'Where's my head?')",
     "ราชาโดดรุม (Thai script; title 'CEO of Brawl Stars')",

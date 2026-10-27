@@ -26,9 +26,9 @@ export function readEnv(file) {
 const localName = (h) => /^(localhost|127\.0\.0\.1|\[::1\])(:\d+)?$/i.test(h || '');
 const localPeer = (req) => ['127.0.0.1', '::1', '::ffff:127.0.0.1'].includes(req.socket.remoteAddress) && localName(req.headers.host);
 
-// THIRDEYE_COACH_MODEL can come from the launch too, to try the coach on another model without touching .env, and so
+// THIRDEYE_COACH_MODEL and GEMINI_MODEL can come from the launch too, to try the coach (or every call) on another model without touching .env, and so
 // can THIRDEYE_FLAGS, the experiments a review runs with (agent.js flag)
-const envOf = (overrides) => ({ ...readEnv(path.join(root, '.env')), ...Object.fromEntries(['THIRDEYE_COACH_MODEL', 'THIRDEYE_FLAGS'].filter((k) => process.env[k]).map((k) => [k, process.env[k]])), ...overrides });
+const envOf = (overrides) => ({ ...readEnv(path.join(root, '.env')), ...Object.fromEntries(['THIRDEYE_COACH_MODEL', 'THIRDEYE_FLAGS', 'GEMINI_MODEL'].filter((k) => process.env[k]).map((k) => [k, process.env[k]])), ...overrides });
 
 // Any page open in the browser can load this server's files as scripts, on this machine too, so the key goes only to
 // Eye Catcher's own page: the browser marks that request same-origin (Sec-Fetch-Site), and a page can't fake the mark.

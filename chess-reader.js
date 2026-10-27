@@ -133,14 +133,19 @@
     };
     const side = Math.min(box.w, box.h);
     let best = { x: box.x, y: box.y, size: side, v: -1 };
-    const search = (cx, cy, cs, reach, step) => {
-      for (let size = cs - reach; size <= cs + reach; size += step) for (let y = cy - reach; y <= cy + reach; y += step) for (let x = cx - reach; x <= cx + reach; x += step) {
+    // smaller: from 0.7 of the box (a box across the whole width of a phone recording with black bars at its sides holds
+    // a board of 0.82 of it, out of reach at 0.85, loop 47)
+    const search = (cx, cy, cs, reach, step, smaller = reach) => {
+      for (let size = cs - smaller; size <= cs + reach; size += step) for (let y = cy - reach; y <= cy + reach; y += step) for (let x = cx - reach; x <= cx + reach; x += step) {
         if (x < 0 || y < 0 || x + size > w || y + size > h) continue;
         const v = score(x, y, size);
         if (v > best.v) best = { x, y, size, v };
       }
     };
-    search(box.x, box.y, side, side * 0.15, side / 48);
+    // from the box's start, its middle, and its end along its longer side: a box taller than the board (the names and
+    // clocks above and below it) put the board in its middle, out of reach from its top, and no move was read (loop 47)
+    const along = (a, len) => [...new Set([a, a + (len - side) / 2, a + len - side].map(Math.round))];
+    for (const y of along(box.y, box.h)) for (const x of along(box.x, box.w)) search(x, y, side, side * 0.15, side / 48, side * 0.3);
     search(best.x, best.y, best.size, side / 48, side / 256);
     return { x: Math.round(best.x), y: Math.round(best.y), size: Math.round(best.size), score: best.v };
   }

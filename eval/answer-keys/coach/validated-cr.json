@@ -3,6 +3,11 @@
  "game": "Clash Royale",
  "validated": "Oct 24: every frame of the match saved at 1 s (0:00-3:42) and OCR'd for tower health, timer and elixir, then read by eye: 1 s contact sheets of each run-up, full-resolution crops of the hand and the right lane, and 0.2-0.25 s grids of the Royal Giant kill (1:33.6-1:35), the 3:05-3:16 overtime hits and the final Fireball (3:25.5-3:28.5); each claim checked against a frame time before reading its entry.",
  "player": "Mr.XLEBUSHEK2.0 (bottom, blue side; the intro card at 0:02 reads 'MR.XLEBUSHEK2.0 5468', the result screen at 3:33 'Mr.XLEBUSHEK2.0 No Clan'; the login toast at 0:00 reads VladBaks777)",
+ "ids": {
+  "player": [
+   "Mr.XLEBUSHEK2.0"
+  ]
+ },
  "opponent": "THE FRABET (5450 trophies, clan НІНІНА), top, red side",
  "habit": "Defending the damaged right tower late and right on top of it. The level-14 Royal Giant got all six shots off from the bridge (1:24.5-1:33, 3197 to 761) before the 6-elixir Sparky, placed at 1:24.5 when it became affordable, fired once at 1:34.2; then twice the player's defenders were bunched against that tower when the opponent's Fireball landed (2:23.2: 761 to 511, with two Sparkys beside it; 3:08.5: 384 to 134, with Teslas and Minions in front of it), until a Log (3:14.5) left it at 7 and a last Fireball (3:27.3) ended the match in sudden death.",
  "result": "lost 0-1 in sudden-death overtime: the right Princess Tower, at 7 from 3:14.5, fell to the opponent's Fireball at 3:27.3 (overtime clock frozen at 1:33); 'Match Over!' at 3:31; the result screen shows -24 trophies (5468 to 5444) and 'Crown Towers Defended: 2'",

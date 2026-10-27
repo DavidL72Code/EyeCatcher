@@ -1,0 +1,262 @@
+{
+ "loop": "loop-47",
+ "by": "a grading agent, from the loop-47 worksheet and the validated baselines (eval/answer-keys/coach/baseline.validated.json and validated-*.json), calibrated on loops 45 and 46's grades (and loop 40's for val 4:57, which neither of them cites): each cited loss judged against the key's happened, factors, mistake, better and not_true, with its unsure list not held against a cite; wrong where a cause in a cite at the loss contradicts the key or its not_true, or describes what didn't happen; partly where the decision is missed or an off fact changes the fix; right where the decision is named and off facts leave the lesson standing; send-backs for a rule (citing the loss itself, a name or a heal nothing read shows, too few losses, the second-time notice) left out; send-backs that the player was dead at a cited moment graded as claims, with the claim taken from that attempt's finish in the run file; a cause that goes against code's reading graded as a claim taken from that attempt's finish, as loop 46's r6 8:39; a claim at a whole-second time judged at that second as the key reads it (as loop 45's '4:29.0 isn't read'); a claim found by both the record and the frames check counted once; no numbers per loss, as loops 45 and 46 have none; not yet checked by a second grader",
+ "games": {
+  "lol": {
+   "1": {
+    "losses": {
+     "1:48": {
+      "grade": "right",
+      "why": "names standing alone at the front 'pushing minions with low health and Nearsighted status when enemy Nocturne engaged', fix 'Retreated to safety under tower when affected by Nearsightedness' (key: 'stand behind her wave toward her own tower'; 'when Nearsighted (1:43.5), walk back at once'); misses the 'enemies are missing' pings; off: 'Flash ready' (key: 'Flash on cooldown (3:55 left at 1:40)'), 'near the tier 2 turret' (not_true: 'a turret at 1:48')"
+     },
+     "8:56": {
+      "grade": "partly",
+      "why": "right moment and 'outnumbered' (key: 'two teammates dead, one in base: a 2-v-5 map'), fix 'avoided the teamfight' near 'back off toward the team'; misses the decision, 'stopping in the river to channel her ult' after Flashing out of the stun, and the missing jungler; 'R ready (1:37)' goes against 'ult channelled right after (8:50.2)' ('1:40 left at 8:50.3')"
+     }
+    },
+    "outside": [],
+    "sent_back": [
+     {
+      "claim": "at 1:46, health 271 of 569 (attempt 1)",
+      "really": "false",
+      "why": "baseline: health '622 (1:45.8), 140 (1:46.1)' out of 1479 ('617-621 of 1479 (42%) at 1:43-1:45'); 569 isn't her health's max"
+     },
+     {
+      "claim": "at 5:04, health 271 of 609 (attempt 1)",
+      "really": "false",
+      "why": "baseline: her health is out of 1589 at 4:29.7 ('280 of 1589') and 1820 by 8:44 ('1723 of 1820'), so 609 isn't its max at 5:04 (5:04 itself isn't read)"
+     },
+     {
+      "claim": "at 8:54, blue score 9, red score 27 at match clock 1:35 (attempt 1)",
+      "really": "false",
+      "why": "baseline: chat '22:49 (8:52)' puts the game clock near 22:51, and 1:35 fits her ult ('1:40 left at 8:50.3'), not the match clock; the team scores aren't read"
+     },
+     {
+      "claim": "at 1:42, health 271 of 1479 (attempt 2, record and frames checks)",
+      "really": "false",
+      "why": "baseline: 'health 631-651 at 1:40, 617-621 of 1479 (42%) at 1:43-1:45'; it falls below 622 only from 1:45.8"
+     },
+     {
+      "claim": "at 5:04, Q on cooldown 40 (attempt 2)",
+      "really": "unclear",
+      "why": "the baseline reads no ability at 5:04; its nearest loss ends with 'Enemy turret destroyed!' at 4:34.5"
+     },
+     {
+      "claim": "at 8:54, Q ready (attempt 2)",
+      "really": "unclear",
+      "why": "baseline: 'Flash and ult up at 8:44', Flash used at 8:49.8 and ult channelled at 8:50.2; it reads no Q at 8:54"
+     }
+    ]
+   }
+  },
+  "rl": {
+   "1": {
+    "losses": {},
+    "outside": [],
+    "sent_back": [
+     {
+      "claim": "at 4:14, orange leading 2-1 (attempt 1)",
+      "really": "false",
+      "why": "baseline: 'Up 2-0 with 1:18 left (4:06)' until NYAL 'scores at 4:15'"
+     },
+     {
+      "claim": "at 2:00, two teammates and two opponents near the play (attempt 1)",
+      "really": "false",
+      "why": "baseline: a 2 v 2, his one teammate FORKY JR. ('both orange players') against NYAL and K2-; 2:00 itself isn't read"
+     },
+     {
+      "claim": "at 4:14, 33 boost (attempt 2, record and frames checks)",
+      "really": "false",
+      "why": "baseline: '0 at 4:14, 7 at 4:14.3 after another'"
+     }
+    ]
+   }
+  },
+  "mr": {
+   "1": {
+    "losses": {
+     "1:19": {
+      "grade": "partly",
+      "why": "right window, 'among multiple enemies' (key: 'in among the enemy') and '80/250' at 1:17 (key: '80 at 1:17'); misses the decision, 'Staying in after her bonus health broke and VEN was revived, until she was at 16', and its 'without ... escape cooldowns' and fix 'wait for teammates and cooldowns' go against 'at 1:16 two ability slots ready'; the key shows no drop from a walkway"
+     },
+     "4:18": {
+      "grade": "partly",
+      "why": "right moment and the melee 'among the enemy team' (key: 'Trading head-on'), fix 'Retreat' near 'dash out to her healers'; misses the decision, 'Trading head-on through her ult ... with two abilities ready to step out and come back': its 'ultimate ready' and 'Health was 250 / 250' go against 'She casts her ult at 4:12.5' and '54 of 253 at 4:18', and 'without immediate escape routes' against 'two ability slots ready'"
+     },
+     "4:27": {
+      "grade": "right",
+      "why": "names stepping into 'frontline melee against multiple enemies without support' at '121 of 250', fix 'disengage when health drops instead of fighting in the open' (key: 'Staying forward at half health ... into four enemies, with her teammates behind her'; 'use the ready ability to fall back to Chinagooner and NaturalKickZ'); misses the trigger, 'When the ult ends at 121' (4:25.5)"
+     },
+     "5:10": {
+      "grade": "partly",
+      "why": "right moment and engaging 'multiple enemies' at reduced health, fix 'wait for teammates before engaging' near 'Portal in with the team'; misses the decision, 'trading down to 30 before stepping back, with an ability still ready', and the portal dive ('through her own portal into the enemy')"
+     }
+    },
+    "outside": [],
+    "sent_back": []
+   }
+  },
+  "val": {
+   "1": {
+    "losses": {
+     "0:41": {
+      "grade": "wrong",
+      "why": "'Held a static angle ... without ... firing', 'the view still' goes against 'He walks up past the crate' and 'He fires once at 0:40.0 (8 -> 7) while moving (Shooting Error 1.40°)', so its fix ('fire immediately or reposition') misses 'Stop before the first shot (counter-strafe)'"
+     },
+     "4:15": {
+      "grade": "wrong",
+      "why": "'Held a static angle', 'the view still' goes against 'He peeks the courtyard from A Flowers on the move (the view drifts 4:13.6-4:14.1)', and 'Retreat to regroup with teammates' (code's '1 teammate alive') goes against 'he is his team's last player against two'; misses 'not firing when zeytazin ran across his crosshair' and the ready ult; the 1 v 2 at 51 is right"
+     },
+     "4:57": {
+      "grade": "right",
+      "why": "names peeking A Main on a Sheriff into 'an unfavorable weapon duel' 'without rifle support' (key: 'Taking the first duel alone on a Sheriff'), fix 'a closer off-angle' and 'teammate utility support' (key: 'hold a tight angle', 'play with a teammate'); misses 'no armor', 'his ult ready' and 'firing a beat late', as loop 40's right grade of this loss did"
+     }
+    },
+    "outside": [],
+    "sent_back": [
+     {
+      "claim": "at 0:38.5, a Bandit with magazine 8 (attempt 2)",
+      "really": "false",
+      "why": "baseline: 'Pistol round (0-0)', 'the first Classic shot' (8 -> 7 at 0:40.0)"
+     },
+     {
+      "claim": "at 2:15.8, a Classic pistol with magazine 12 (attempt 2; the check: player dead)",
+      "really": "false",
+      "why": "baseline: 'he is dead at 2:15.0' ('The peach screen at 2:15-2:16 is the death screen'), after 'He switches to his Outlaw at 2:14.3'"
+     },
+     {
+      "claim": "at 6:13.3, Vandal ammo 21 (attempt 2)",
+      "really": "false",
+      "why": "baseline: 'He runs onto A Site with his knife out (6:12.6-6:13.5)', and the Vandal is at 25 at his first shot ('25 -> 20 by 6:15.5' from 6:14.75); the check's 22-23 isn't the key's either"
+     },
+     {
+      "claim": "at 6:09.3, abilities ready (attempt 3, record check)",
+      "really": "unclear",
+      "why": "baseline: only 'ult READY and unused'; it reads no other ability slot at 6:09"
+     },
+     {
+      "claim": "at 2:10, advancing onto B Site with a pistol in a disadvantageous 2v1 (attempt 3)",
+      "really": "false",
+      "why": "baseline: 'he and CLV|bam alive against Fade' at 2:12.5, so his side had at least two at 2:10, and the key calls it 'a fight he could have played together'"
+     },
+     {
+      "claim": "at 6:09.3, Vandal ammo 23 (attempt 3)",
+      "really": "unclear",
+      "why": "baseline: 'Full buy: Vandal 25/50' and 25 at his first shot (6:14.75); it reads no magazine at 6:09.3"
+     }
+    ]
+   }
+  },
+  "cr": {
+   "1": {
+    "losses": {
+     "1:33": {
+      "grade": "wrong",
+      "why": "its cause, 'advancing enemy units' with the tower 'dropping to 761 as Sparky successfully fired multiple blasts', is the not_true 'an enemy Sparky took the right tower 3197 to 761 ... (the opponent's level-14 Royal Giant at the bridge did; the Sparky was the player's own)', and its 'Cannon placed' at 1:25 was his own Sparky ('deploys at 1:24.5'); code's 0:52 cite (elixir spent) is near '0 elixir at 1:08' but misses 'Answering a Royal Giant at the bridge with the slowest, most expensive card'"
+     },
+     "3:27": {
+      "grade": "wrong",
+      "why": "the 3:06 cite's 'Allowed advancing enemy units to reach the low-health tower ... resulting in tower destruction' is the not_true 'a Ram Rider or any troop destroyed the right tower (the opponent's Fireball did, at 3:27.3)', and its fix 'pull advancing enemy units away' isn't 'Keep defenders off the tower'; the 3:03 cite (a Tesla at the 384 tower 'vulnerable to enemy spell damage') is near 'spending everything on defending in front of it', but neither names the crown attempt"
+     }
+    },
+    "outside": [],
+    "sent_back": []
+   }
+  },
+  "fn": {
+   "1": {
+    "losses": {
+     "6:59": {
+      "grade": "wrong",
+      "why": "'Sprinted across an open grassy field exposed to distant high ground ... taking damage', fix 'Hold a weapon and move through covered paths', blames exposure to fire where the key has a fall, 'jump off it at 6:58.0, airborne until about 6:59.3' (not_true: 'an enemy did the damage at 2:43, 6:09 or 6:59'); misses 'Walk the ridge down or ramp it', and 'storm circle closing' goes against 'storm not moving'"
+     },
+     "7:43": {
+      "grade": "right",
+      "why": "names engaging 'from behind soft hedge cover' at 45 health and 24 shield (key: 'behind a hedge (a breakable bush)', '24 shield and 45 health'), fix 'Retreat to solid structural cover' (key: 'get into the building beside them ... re-engage only from built cover'); misses no build with '500 wood, 500 stone' and their own lightning hitting the hedge; the 7:35 cite is the run across the plaza (the key's 7:30 loss, 'hit again at 7:33.1 (-> 24)')"
+     }
+    },
+    "outside": [],
+    "sent_back": [
+     {
+      "claim": "at 2:38, walked off a high cliff edge, health 98 to 67 (attempt 2)",
+      "really": "false",
+      "why": "baseline: 'they run down a grassy hill onto rocks above a pond (2:40-2:42) and jump down ... airborne at 2:42.5', 'health 97 -> 72'; not_true: 'shield and health don't drop between 0:36 and 2:42'"
+     },
+     {
+      "claim": "at 6:59, health dropping from 46% to 31% (55 HP) (attempt 2)",
+      "really": "false",
+      "why": "baseline: '55 (6:59.3) -> 45 (6:59.5), shield 98'"
+     },
+     {
+      "claim": "at 7:35, shield damage from 100% to 23% (attempt 2)",
+      "really": "false",
+      "why": "baseline: shield '98 -> 73' (7:29.9), '-> 49' (7:30.5), '-> 24' (7:33.1), then 'No hit from 7:33.1 until 7:42.5'"
+     },
+     {
+      "claim": "at 2:41, fall damage dropping health from 98 to 67 (attempt 3)",
+      "really": "false",
+      "why": "baseline: 'health 97 -> 72, shield 98 untouched' (72 at 2:43.25)"
+     }
+    ]
+   }
+  },
+  "bs": {
+   "1": {
+    "losses": {
+     "2:58": {
+      "grade": "partly",
+      "why": "right moment and committing to the fight against three enemies (key: 'into three enemies'), fix 'Maintain distance' near 'hold beside nahhh'; misses the decision, 'Walking up alone, ahead of his team', the pink circle and the Immune state; 'approaching enemies ... pushing' where 'he walks up ahead of them, into the gap', and 'super ready' goes against 'about 85% at 2:58.25, never charged'"
+     }
+    },
+    "outside": [],
+    "sent_back": [
+     {
+      "claim": "at 2:57, exposed to crossfire from multiple enemies without backup cover (attempt 1, record check)",
+      "really": "unclear",
+      "why": "baseline: 'Walking up alone, ahead of his team', but 'nahhh stays about a quarter-screen behind on his left' and SSZtt's health drops from 2:57.75 'while nahhh and ราชาโดดรุม are below'"
+     },
+     {
+      "claim": "at 1:05, health 3187 (attempt 1)",
+      "really": "false",
+      "why": "baseline: 'His health is 4430 (1:04.25-1:05.25)'; 3187 is a red hit on him at 1:01.5"
+     },
+     {
+      "claim": "at 1:09, health 3187 (attempt 1)",
+      "really": "false",
+      "why": "baseline: 'From 1:07.75 to about 1:09.1 'Immune' shows over him, at 1 HP'"
+     },
+     {
+      "claim": "at 2:57, health 1062 (attempt 1)",
+      "really": "false",
+      "why": "baseline: 'stacked red 1062s land on him', and 'From 2:57.0 to about 2:58.2 'Immune' shows over him at 1 HP'"
+     },
+     {
+      "claim": "at 1:09, health 4430 (attempt 2)",
+      "really": "false",
+      "why": "baseline: at 1 HP from 1:07.75 to his death at 1:10.4; 4430 was at 1:04.25-1:05.25, and the check's 7035 is kucennn's ('kucennn (7035) beside him')"
+     }
+    ]
+   }
+  },
+  "ch": {
+   "1": {
+    "losses": {},
+    "outside": [],
+    "sent_back": []
+   }
+  },
+  "r6": {
+   "1": {
+    "losses": {},
+    "outside": [],
+    "sent_back": [
+     {
+      "claim": "at 8:52, held a position in the open at 19 of 100 in a 2 v 3 (attempt 2, record check)",
+      "really": "false",
+      "why": "baseline: he 'looks into the room from the 2F Covered Terrace doorway at 8:52, backs off, then at 8:56.3-8:56.5 walks through that doorway'; the 19 of 100 and the 2 v 3 are right"
+     }
+    ]
+   }
+  }
+ }
+}

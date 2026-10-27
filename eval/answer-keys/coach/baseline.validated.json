@@ -8,6 +8,14 @@
    "game": "League of Legends",
    "player": "xHACKLETx",
    "character": "Miss Fortune",
+   "ids": {
+    "player": [
+     "xHACKLETx"
+    ],
+    "character": [
+     "Miss Fortune"
+    ]
+   },
    "allies": [
     "Gragas (Gragas)",
     "rillerking (Evelynn)",
@@ -90,6 +98,12 @@
    "clip": "rocket-league/rl-somey-gc2.match1.mp4",
    "game": "Rocket League",
    "player": "THESOMEY (orange; the name is not written on screen in these frames: the feed calls him 'YOU')",
+   "ids": {
+    "player": [
+     "THESOMEY",
+     "YOU"
+    ]
+   },
    "teammates": [
     "FORKY JR."
    ],
@@ -128,6 +142,14 @@
    "game": "Marvel Rivals",
    "player": "PunK10",
    "character": "Magik (from the file name; the hero's name is not written on screen in the frames checked)",
+   "ids": {
+    "player": [
+     "PunK10"
+    ],
+    "character": [
+     "Magik"
+    ]
+   },
    "teammates_named": [
     "Alejos2001 (revives her: feed 'Alejos2001 revive PunK10' at 4:31; the hero is not named on screen)",
     "Chinagooner (beside her at 4:27.6 and 5:08.5-5:10.6; KO'd StarBoii at 4:26.3)",
@@ -213,6 +235,14 @@
    "game": "VALORANT",
    "player": "Me",
    "character": "Yoru (broadcast 'Me (Yoru) spotted an ENEMY in A', 4:17, 4:58)",
+   "ids": {
+    "player": [
+     "Me"
+    ],
+    "character": [
+     "Yoru"
+    ]
+   },
    "allies": [
     "lisa (Reyna, per broadcast at 2:06)",
     "woo",

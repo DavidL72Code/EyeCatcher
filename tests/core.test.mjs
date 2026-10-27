@@ -608,6 +608,12 @@ test('the profile comes from the learn call, with only the checks code can do', 
   // the player's own controls on the HUD make it their own screen, whatever the call says (Clash Royale's card hand)
   assert.equal(L.toProfile({ game: 'A card game', genre: 'strategy', view: 'spectator', first_person: false, crosshair_center: false, elements: [{ name: 'abilities', frame: 1, box: [800, 100, 930, 900] }] }).view, 'own_screen');
   assert.equal(L.toProfile({ game: 'Football', genre: 'sports', view: 'spectator', first_person: false, crosshair_center: false, elements: [{ name: 'scoreboard', frame: 1, box: [20, 20, 80, 300] }] }).view, 'spectator');
+  // in a team game too: a phone game's joystick and touch buttons, or a camera that keeps one character centered
+  // (Brawl Stars, learned as spectator footage with its joystick and buttons on screen, Oct 26)
+  const team = { game: 'A brawler', genre: 'shooter', view: 'spectator', team_game: true, first_person: false, crosshair_center: false };
+  assert.equal(L.toProfile({ ...team, elements: [{ name: 'touch_controls', frame: 1, box: [700, 100, 950, 400] }] }).view, 'own_screen');
+  assert.equal(L.toProfile({ ...team, camera_follows_one: true, elements: [] }).view, 'own_screen');
+  assert.equal(L.toProfile({ ...team, camera_follows_one: false, elements: [{ name: 'team', frame: 1, box: [20, 20, 80, 300] }] }).view, 'spectator', 'a broadcast that cuts between players stays footage of the whole match');
   // a name read on the far side is the other side's, whatever the call calls it (Clash Royale's opponent's clan)
   const duel = { game: 'A card game', genre: 'strategy', first_person: false, crosshair_center: false, elements: [] };
   assert.equal(L.toProfile({ ...duel, player_name: 'HIHIHA', player_name_where: 'far_side' }).playerName, null);
@@ -838,6 +844,10 @@ test('send-back reasons group by kind, whatever moment they name', () => {
   assert.equal(C.problemKind(twice.find((x) => /measure_aim/.test(x))), 'aim_count');
   assert.equal(C.problemKind(thrice.find((x) => /measure_aim/.test(x))), 'aim_count', 'a different count is the same reason');
   assert.equal(C.problemKind("You haven't looked closely at 1:30. Look with frames or measure_aim, or cite a moment you did look at."), 'unseen');
+  // two different questions asked once are no reason sent back twice (Siege, loop 47)
+  const healing = 'At 8:52 what to do instead ("Fall back") rests on a healing, which nothing read at that loss shows they had.', facts = "Some causes don't fit what code read at the loss: at 8:52, it goes against code's reading";
+  assert.deepEqual([C.problemKind(healing), C.problemKind(facts)], ['unheld', 'facts']);
+  assert.ok(['unheld', 'facts', 'pieces'].every((k) => C.NOT_DECIDING.includes(k)));
   assert.equal(C.problemKind('At 0:34 the engine scores c3 as fine (it gave away 20 centipawns)'), 'engine');
   assert.equal(C.problemKind('Name the habit (habit).'), 'format', 'a field to fill in');
   assert.equal(C.problemKind('Something no check says yet.'), 'other');
@@ -974,11 +984,16 @@ test('where a match was lost: deaths, lost fights, teammates down untraded, and 
     { t: 30, kind: 'death' },
     { t: 50, kind: 'ally_death', victim: 'FYR_rLayze', tradedBy: 'Silent Gaming' },
     { t: 90, kind: 'ally_death', victim: 'O5HK', near: true }, { t: 95, kind: 'ally_death', victim: 'O5HK', near: false },
-    { t: 120, kind: 'engagement', from: 120, to: 126, outcome: 'lost' },
+    { t: 120, kind: 'engagement', from: 120, to: 126, outcome: 'lost' }, { t: 124, kind: 'near_death', hp: 20, of: 250 },
     { t: 150, kind: 'engagement', from: 150, to: 155, outcome: 'won' },
+    // a fight the pass called lost with nothing lost in it: no loss (Oct 26: losses are what the screen shows)
+    { t: 170, kind: 'engagement', from: 170, to: 176, outcome: 'lost' },
     { t: 200, kind: 'move', san: 'Nce5', grade: 'blunder' }, { t: 210, kind: 'move', san: 'c3' },
   ];
-  assert.deepEqual(C.lossMoments(events).map((l) => [l.t, l.what]), [[30, 'their death'], [90, 'O5HK down near them, not traded'], [120, 'a fight they lost'], [200, 'Nce5 (blunder)']]);
+  assert.deepEqual(C.lossMoments(events).map((l) => [l.t, l.kind]), [[30, 'death'], [90, 'ally_death'], [120, 'engagement'], [124, 'near_death'], [200, 'move']]);
+  // a death the low-detail pass alone guessed is no loss; one a second look or the HUD confirmed is
+  const guessed = [{ t: 40, kind: 'death', text: 'Player dies', guess: 'Player dies' }, { t: 60, kind: 'death', text: 'Player dies', guess: 'Player dies', sure: 'you died (a second look at the screen shows it)' }, { t: 80, kind: 'death', text: 'you died (your health read 0)', seenBy: 'hud' }];
+  assert.deepEqual(C.lossMoments(guessed).map((l) => l.t), [60, 80]);
   assert.equal(C.atLoss(events, 25), true, 'the seconds before a death show it');
   assert.equal(C.atLoss(events, 50), false, 'a traded teammate is no loss');
   assert.equal(C.atLoss(events, 152), false);
@@ -1744,12 +1759,206 @@ test("a structure's drops are the player's losses with their numbers, and one of
   assert.ok(C.structureSpans(counts, 6).some(([a, b]) => a <= 198 && b >= 210), 'and after its last low reading');
 });
 
+// a crop of a shield bar (blue, rows 2-9) over a health bar (green, rows 12-18), each filled to its share from the left
+function twoBars({ w = 60, h = 20, shield = 1, health = 1 }) {
+  const data = new Uint8ClampedArray(w * h * 4);
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+    let c = [40, 40, 40];
+    if (y >= 2 && y < 10 && x >= 2 && x < 2 + Math.round((w - 4) * shield)) c = [40, 120, 230];
+    if (y >= 12 && y < 19 && x >= 2 && x < 2 + Math.round((w - 4) * health)) c = [60, 200, 60];
+    data.set([...c, 255], (y * w + x) * 4);
+  }
+  return { width: w, height: h, data };
+}
+test("the shield bar is found where it's full, not only at health's full moments, where it can be empty (Fortnite's 7:30)", () => {
+  // at the health bar's full moments the shield was under half full, so no row was half blue, its rows read as the
+  // whole box, and no shield was found
+  const calib = [0, 1, 2].map(() => twoBars({ shield: 0.45 }));
+  const frames = Array.from({ length: 12 }, (_, i) => ({ t: i, img: twoBars({ shield: i < 8 ? 1 : 0.25 }) }));
+  const first = C.barColor(calib);
+  const shield = C.secondBar(frames, calib, first);
+  assert.ok(shield, 'a second bar');
+  assert.ok(shield.series[2].share > 0.9 && shield.series[10].share < 0.35, JSON.stringify(shield.series.map((x) => +x.share.toFixed(2))));
+});
+
+test('a shield fall no number checks needs the level it fell from held: a bump over scenery and back is no fall', () => {
+  const at = (from, to, share) => Array.from({ length: Math.round((to - from) / 0.5) }, (_, k) => ({ t: from + k * 0.5, share }));
+  // Fortnite's shield at 48%, read 73% for a second and a half over its blue scenery (the loop 45 box), then 48% again
+  const bump = [...at(10, 17, 0.48), { t: 17, share: 0.73 }, { t: 17.5, share: 0.73 }, { t: 18, share: 0.71 }, { t: 18.5, share: 1 }, ...at(19, 30, 0.48)];
+  assert.equal(C.barDamage(bump, { unit: 'shield' }).length, 1, 'without the level, the drop back reads as a fall');
+  assert.deepEqual(C.barDamage(bump, { unit: 'shield', level: C.SHIELD_LEVEL }), [], 'with it, none');
+  // its 7:30 fall, 98% for minutes, then 76, 48, and 24 in three hits
+  const fall = [...at(440, 450, 0.98), { t: 450, share: 0.76 }, { t: 450.5, share: 0.84 }, ...at(451, 453.5, 0.5), ...at(453.5, 460, 0.24)];
+  const d = C.barDamage(fall, { unit: 'shield', level: C.SHIELD_LEVEL });
+  assert.equal(d.length, 1);
+  assert.equal(d[0].was, 98);
+  assert.equal(d[0].now, 24);
+});
+
+test('a death after another stands only with the player alive between: one death screen read as four is one', () => {
+  const d = (t, text = 'you died (your health read 0)') => ({ t, kind: 'death', seenBy: 'hud', text });
+  // League: dead at 1:46, its gray HUD read 0, a sliver, 0, until the respawn at 2:15; dead again at 8:55
+  const health = [{ t: 100, value: 1500 }, { t: 106, value: 0 }, { t: 112, value: 30 }, { t: 116, value: 0 }, { t: 122, value: 20 }, { t: 128, value: 0 }, { t: 134, value: 25 }, { t: 140, value: 1700 }, { t: 530, value: 1100 }, { t: 535, value: 0 }];
+  const maxes = [{ t: 100, value: 1820 }];
+  const events = [d(106), d(116), d(128), d(135, 'you died (your health read nearly 0, then high again)'), d(535)];
+  assert.deepEqual(C.deathsApart(events, health, maxes).map((e) => e.t), [106, 535]);
+  assert.deepEqual(C.deathsApart([d(106), d(116, 'Player killed (the HUD agrees)')], health, maxes, { keep: (e) => /the HUD agrees/.test(e.text) }).map((e) => e.t), [106, 116], 'a death the count rose at stands');
+  assert.deepEqual(C.deathsApart([d(10), d(40)], [{ t: 5, value: 100 }], maxes).map((e) => e.t), [10, 40], 'no reading between: it stands');
+});
+
+test('damage with no fight near it says so, and a lesson blaming an enemy for it goes against code', () => {
+  // Fortnite's 2:43 fall, 97 to 72, no shot fired, no hit, no fight near (loop 46: "attacked by an unseen enemy")
+  const series = [...Array.from({ length: 10 }, (_, k) => ({ t: 155 + k * 0.5, share: 0.97 })), ...Array.from({ length: 10 }, (_, k) => ({ t: 160 + k * 0.5, share: 0.72 }))];
+  const [d] = C.barDamage(series, { quiet: () => true });
+  assert.equal(d.quiet, true);
+  assert.match(d.text, /no shot fired, no hit, and no fight within 8 s/);
+  assert.match(C.quietAgainst({ t: '2:40', what: 'Running through open grass when attacked by an unseen enemy' }, [d]), /nothing shows an enemy hurting them/);
+  assert.equal(C.quietAgainst({ t: 160, what: 'Jumped off the ledge into the valley instead of taking the path down' }, [d]), '');
+  assert.match(C.quietAgainst({ t: '2:40', what: 'Moving into an open field', because: 'making them an easy target for long-range fire' }, [d]), /nothing shows an enemy/, 'loop 49\'s words');
+  assert.equal(C.quietAgainst({ t: '5:00', what: 'attacked from the side' }, [d]), '', 'not at that damage');
+});
+
+test('an ability lit at both reads before a loss is said as ready and not used', () => {
+  const st = (states) => states.map((state, i) => ({ icon: i + 1, of: states.length, state, share: 0 }));
+  assert.equal(C.unusedFact(st(['lit', 'dimmed', 'lit', 'lit']), st(['lit', 'lit', null, 'lit']), { t0: 249, t1: 253, what: 'the death' }), "the HUD's ability row, read in code at 4:09.0 and 4:13.0: icons 1 and 4 (the last) lit (ready) at both, so ready and not used in the seconds before the death");
+  assert.equal(C.unusedFact(st(['dimmed', 'lit']), st(['lit', 'dimmed']), { t0: 1, t1: 5 }), '', 'none lit at both');
+});
+
+test('a cause with one detail the record goes against taken out keeps the rest, tidied', () => {
+  // Marvel Rivals' 1:16, sent back for code's ability row read 3 s earlier (loop 49)
+  assert.equal(C.dropClause('Pushed into an indoor area alone, outnumbered, with ability 2 on cooldown (dimmed) and health at 91/250, without waiting for teammates', 'ability 2 on cooldown (dimmed)'), 'Pushed into an indoor area alone, outnumbered, with health at 91/250, without waiting for teammates');
+  assert.equal(C.dropClause('At 8:52, with 19 of 100 health, ability 2 on cooldown (dimmed), in a 2 v 3', 'ability 2 on cooldown (dimmed)'), 'At 8:52, with 19 of 100 health, in a 2 v 3');
+  assert.equal(C.dropClause('no such words here', 'ult ready'), 'no such words here');
+});
+
+test("a read whose HP number is another number than the other read's is left out, and a one-off reading between agreeing ones", () => {
+  // Fortnite, loop 50: the 6-second read gave the players-left count (28, 27, 26) where the 2-second read gave 100 and 97
+  const coarse = { cells: 5, times: [0, 6, 12, 18, 24], health: [0, 6, 12, 18, 24].map((t, i) => ({ t, value: 28 - i })), healthMax: [] };
+  const fine = { cells: 6, times: [2, 4, 8, 10, 14, 16], health: [2, 4, 8, 10, 14, 16].map((t) => ({ t, value: t < 12 ? 100 : 97 })), healthMax: [] };
+  assert.deepEqual(C.mergeCounts(coarse, fine).health.map((x) => x.value), [100, 100, 100, 100, 97, 97]);
+  assert.deepEqual(C.despike([{ t: 0, value: 100 }, { t: 2, value: 100 }, { t: 4, value: 27 }, { t: 6, value: 100 }, { t: 8, value: 100 }]).map((x) => x.value), [100, 100, 100, 100]);
+  assert.deepEqual(C.despike([{ t: 0, value: 28 }, { t: 2, value: 100 }, { t: 4, value: 100 }, { t: 6, value: 100 }]).map((x) => x.value), [100, 100, 100], 'and at the start');
+});
+
+test('hp_falls: a drop of the HP number the next reading holds is damage, where the bar showed none', () => {
+  // Fortnite's falls, loop 50: 97, 72, 75 at 2:42-2:54 and 75, 55, 55 at 6:06-6:18; a maximum read as the health then
+  const health = [{ t: 156, value: 97 }, { t: 162, value: 97 }, { t: 168, value: 72 }, { t: 174, value: 75 }, { t: 366, value: 75 }, { t: 372, value: 55 }, { t: 378, value: 55 }, { t: 0, value: 100 }, { t: 6, value: 100 }, { t: 12, value: 100 }];
+  const d = C.numberDrops(health, { maxes: [{ t: 168, value: 72 }] });
+  assert.deepEqual(d.map((x) => [x.t, x.was, x.now]), [[168, 97, 72], [372, 75, 55]]);
+  assert.match(d[0].text, /fell from 97 to 72 of 97/);
+  assert.deepEqual(C.numberDrops(health, { events: [{ t: 170, kind: 'damage' }, { t: 373, kind: 'near_death' }] }), [], 'not where the bar or a near-death has it');
+  assert.deepEqual(C.numberDrops([{ t: 0, value: 100 }, { t: 2, value: 70 }, { t: 4, value: 100 }, { t: 6, value: 100 }, { t: 8, value: 100 }]), [], 'a drop the next reading takes back is none');
+  assert.deepEqual(C.numberDrops(health, { events: [{ t: 160, from: 160, to: 175, kind: 'engagement' }] }).map((x) => x.t), [372], 'nor one in a fight (Marvel Rivals\' six, loop 50)');
+  // bonus health lost, down to about full, is no damage (Marvel Rivals 335 to 250 of 250, loop 50)
+  assert.deepEqual(C.numberDrops([{ t: 0, value: 250 }, { t: 6, value: 250 }, { t: 12, value: 250 }, { t: 360, value: 335 }, { t: 366, value: 250 }, { t: 372, value: 250 }]), []);
+});
+
+test('hp_falls: a fight that turned on the player is a loss off the HP number, its low read or not', () => {
+  // Marvel Rivals 5:05-5:10, read every 2 s: 235, then 100, 75, then healed (the 30 at 5:10 between the reads)
+  const health = [{ t: 296, value: 250 }, { t: 304.5, value: 235 }, { t: 306.5, value: 100 }, { t: 308.5, value: 75 }, { t: 310.5, value: 120 }, { t: 312.5, value: 278 }];
+  const maxes = [{ t: 296, value: 250 }];
+  const [f] = C.numberFalls(health, { maxes });
+  assert.equal(f.kind, 'damage');
+  assert.equal(f.t, 308.5, 'at its lowest reading');
+  assert.match(f.text, /fell from 235 to 75 of 250 in 4 s/);
+  assert.deepEqual(C.numberFalls(health, { maxes, events: [{ t: 309, kind: 'near_death' }] }), [], 'a near-death there is it already');
+  // one low misread between two at the same level is no fall (Fortnite's 75, 7, 75, loop 50)
+  assert.deepEqual(C.numberFalls([{ t: 290, value: 75 }, { t: 292, value: 75 }, { t: 294, value: 75 }, { t: 296, value: 7 }, { t: 298, value: 75 }, { t: 0, value: 100 }, { t: 6, value: 100 }, { t: 12, value: 100 }], {}), []);
+  // full health with no maximum written: the highest number read three times or more, not the most common
+  assert.equal(C.fullHealth([], [{ value: 100 }, { value: 100 }, { value: 100 }, { value: 75 }, { value: 75 }, { value: 75 }, { value: 75 }, { value: 120 }]), 100);
+  assert.deepEqual(C.numberFalls(health, { maxes, events: [{ t: 310, kind: 'death' }] }), [], 'and a death after it is the death');
+  assert.deepEqual(C.numberFalls([{ t: 0, value: 250 }, { t: 2, value: 200 }, { t: 4, value: 160 }], { maxes }), [], 'a fall into the middle is no turn');
+});
+
+test('death_sweep: a death is where playing turns to out and stays out, at the middle of the gap', () => {
+  const at = (t, state) => ({ t, state });
+  // Brawl Stars: dead at 1:10 (out from 1:12, the round over at 2:10), and at 2:58 in the next round
+  const frames = [at(66, 'playing'), at(70, 'playing'), at(74, 'out'), at(78, 'out'), at(130, 'neither'), at(134, 'playing'), at(174, 'playing'), at(178, 'out'), at(182, 'out')];
+  assert.deepEqual(C.sweepDeaths(frames), [{ t: 72 }, { t: 176 }]);
+  assert.deepEqual(C.sweepDeaths([at(10, 'playing'), at(14, 'out'), at(18, 'playing')]), [], 'one frame out is no death');
+});
+
+test("fact_check in chess: a lesson's pieces have to stand where it says, before the move, after it, or after the reply", () => {
+  // after 21...Bc4: White's bishop on a6, Black's on c4 (loop 45's 22.Rxf4 said "Black's bishop on a6")
+  const after = 'r3k2r/ppp2ppp/B7/8/2b5/8/PPP2PPP/R3K2R w KQkq - 0 22';
+  assert.deepEqual(C.boardAgainst({ what: 'Played Rxf4', because: "Black's bishop on a6 threatens retaliation" }, [after], 'w'), [`"Black's bishop on a6": code's board has White's bishop on a6 then`]);
+  assert.deepEqual(C.boardAgainst({ what: 'Played Rxf4', because: "your bishop on a6 hangs to the bishop on c4; Black's bishop on c4" }, [after], 'w'), [], 'the player\'s own, and a piece with no side named, where they stand');
+  assert.deepEqual(C.boardAgainst({ what: 'the knight on e5' }, [after], 'w'), [`"knight on e5": code's board has nothing on e5 then`]);
+});
+
+test("a health bar over the followed character is read with its name, and a teammate's 0 is no death of the player's", () => {
+  assert.equal(C.overCharacter([0.478, 0.54, 0.044, 0.027]), true, "Brawl Stars' bar over the brawler");
+  assert.equal(C.overCharacter([0, 0.87, 0.255, 0.09]), false, "Fortnite's in the corner");
+  // Brawl Stars, Oct 26: the player's bar, then after their death at 1:10 the camera follows a teammate, whose bar
+  // read 0 at 1:42
+  const counts = { health: [[20, 14300], [41, 1743], [60, 12000], [80, 9000], [102, 0]].map(([t, value]) => ({ t, value })), healthMax: [], healthNames: [[20, 'PANDA YT™'], [41, 'PANDA YT'], [60, 'PANDA YT™'], [80, 'TITAN PC'], [102, 'TITAN PC']].map(([t, name]) => ({ t, name })) };
+  const own = C.ownHealth(counts, '');
+  assert.deepEqual(own.health.map((x) => x.t), [20, 41, 60], "the bar's most common name early on is the player's");
+  assert.equal(own.notOurs, 2);
+  assert.deepEqual(C.ownHealth(counts, 'PANDA YT').health.map((x) => x.t), [20, 41, 60]);
+  assert.equal(C.ownHealth({ health: [{ t: 1, value: 5 }] }, 'x').health.length, 1, 'no names read: every reading stays');
+});
+
+test("fact_check: a cause has to agree with what code read at its loss and name it (loop 44's causes)", () => {
+  const moving = ["the view, read in code from 0:36.0 to 0:38.0 before the death, was moving (the scene at the screen's sides changed from frame to frame: walking or turning)"];
+  // Valorant 0:38: "Holding the angle in B Link", where he walked in shooting
+  const v = C.factCheck({ t: '0:38', what: 'Holding the angle in B Link.', because: 'Holding the angle in B Link alone while the spike was planted', better: 'Reposition to cover.' }, moving);
+  assert.deepEqual(v.against, ['code read the view moving before the loss (walking or turning), not holding an angle']);
+  const row = ["the HUD's ability row, read in code (4 icons, left to right), at 1:14.0, 2 s before the near-death: lit (ready) icons 1 and 2; dimmed (on cooldown or unusable) icons 3 (1 s) and 4 (the last, 0%)", "the HUD's health number read 91 of 250 at 1:16.0 (3 s before the near-death)"];
+  // Marvel Rivals 1:16: "abilities on cooldown" with two lit
+  assert.match(C.factCheck({ t: '1:16', what: 'Player stays in the fight while low on health and exposed.', because: 'low on health (91/250), abilities on cooldown' }, row).against[0], /icons 1 and 2 lit \(ready\) at 1:14\.0/);
+  // Marvel Rivals 4:26: names none of it
+  const vague = C.factCheck({ t: '4:26', what: 'Player commits to a fight while surrounded', because: 'outnumbered, no teammates nearby', better: 'Retreat to a safer position' }, row);
+  assert.deepEqual([vague.against, vague.names, vague.kinds], [[], false, ['abilities', 'health']]);
+  // what the baseline says, in code's terms, passes
+  assert.deepEqual(C.factCheck({ t: '1:16', what: 'Stayed in after her shield broke', because: 'two abilities ready (icons 1 and 2) to step out at 91 of 250', better: 'Use a ready ability to step back to the healers' }, row), { against: [], names: true, kinds: ['abilities', 'health'] });
+  // "low on health" at 235 of 250, and an ult said down while its icon was lit
+  assert.equal(C.factCheck({ t: '5:08', what: 'Engaged while low on health' }, ["the HUD's health number read 235 of 250 at 5:08.0 (2 s before the near-death)"]).against.length, 1);
+  assert.equal(C.factCheck({ t: '4:15', what: 'Swung the courtyard without his ult' }, ["the HUD's ability row, read in code (4 icons, left to right), at 4:13.0, 2 s before the death: lit (ready) icons 1, 3, and 4 (the last)"]).against.length, 1);
+  // with nothing code read, a cause can't go against it, and needs to name nothing
+  assert.deepEqual(C.factCheck({ t: '1:00', what: 'Anything' }, []), { against: [], names: true, kinds: [] });
+});
+
+test("a team game is never one-on-one, and a MOBA's objectives are the team's, not losses of the player's", () => {
+  // League of Legends, learned as strategy (loop 44): its turrets were the score, and the pass's banners points lost
+  const lol = { genre: 'strategy', teamGame: true, rounds: false, opponentName: '' };
+  assert.equal(C.oneOnOne(lol), false);
+  assert.equal(C.oneOnOne({ genre: 'strategy', teamGame: false, opponentName: 'THE FRABET' }), true, 'Clash Royale is');
+  // loop 44 run 1's events at 4:21, 4:34, 4:39: the banners read "Ally turret destroyed!", "Enemy turret destroyed!", "Ally turret destroyed!"
+  const pass = [{ t: 108, kind: 'death', text: 'Player dies' }, { t: 261, kind: 'point_lost', text: 'Ally turret destroyed' }, { t: 274, kind: 'point_lost', text: 'Enemy turret destroyed' }, { t: 279, kind: 'point_lost', text: 'Ally turret destroyed' }];
+  const kept = C.teamPoints(pass, lol);
+  assert.deepEqual(kept.map((e) => e.kind), ['death', 'other', 'other', 'other']);
+  assert.deepEqual(C.lossMoments(kept).map((l) => l.t), [108], 'the death is still a loss');
+  // goals and rounds are points
+  assert.equal(C.teamPoints(pass, { ...lol, genre: 'sports' })[1].kind, 'point_lost');
+  assert.equal(C.teamPoints(pass, { ...lol, genre: 'shooter', rounds: true })[1].kind, 'point_lost');
+});
+
+test('a structure losing health over a stretch with no readings is one loss: a gap says nothing, a reading holding ends it', () => {
+  // Clash Royale's own right tower, as the record read it on Oct 26 (cr-9ILfFYDblIo.match1): 761 from 1:34 to 2:22,
+  // 511 and 448 by 2:28, no reading for 34 s while fights covered it, then 384. The baseline: 761 to 384 by 2:36
+  const S3 = [[8, 3668], [44, 3197], [84, 3197], [86, 2791], [88, 1979], [92, 1167], [94, 761], [98, 761], [136, 761], [140, 761], [142, 761], [146, 511], [148, 448], [182, 384], [184, 384], [188, 384]];
+  const counts = { objectives: { S3: S3.map(([t, value]) => ({ t, value })) }, timesFor: { objectives: S3.map(([t]) => t) } };
+  const ev = C.structureEvents(counts, [{ id: 'S3', label: 'right princess tower', side: 'own' }]);
+  // the 0:44 chip, 3668 to 3197, is no big fight (under a fifth of full) and leaves the tower high: no loss
+  assert.deepEqual(ev.map((e) => [e.t, e.was, e.now, e.start]), [[94, 3197, 761, 86], [182, 761, 384, 146]]);
+  assert.ok(C.lossMoments(ev).some((l) => l.from <= 156 && l.to >= 156), "the loss's span holds the baseline's 2:36");
+});
+
 test("the pass's structures destroyed yield to the HUD's numbers where they were read", () => {
   const counts = crCounts(), hud = C.structureEvents(counts, towers);
   const pass = [{ t: 44, kind: 'point_lost', text: "Player's right princess tower destroyed", guess: 'x' }, { t: 208, kind: 'point_won', text: "Player destroys opponent's king tower", guess: 'x' }, { t: 206, kind: 'point_lost', text: 'tower down', guess: 'x' }, { t: 60, kind: 'kill', text: 'k' }];
   const r = C.trustStructures(pass, hud, { counts, structures: towers });
   assert.deepEqual(r.dropped.map((e) => e.t), [44, 208], '0:44 read intact on both sides; the opponent\'s towers read at half health or more just before 3:28');
   assert.deepEqual(r.events.map((e) => [e.t, e.kind, e.seenBy || '']), [[60, 'kill', ''], [90, 'objective_damage', 'hud'], [150, 'objective_damage', 'hud'], [204, 'point_lost', 'hud']], 'the pass\'s 3:26 is the HUD\'s fall');
+  // no tower of theirs could have fallen there: each read standing after it (Clash Royale's 1:18 "princess tower damaged", loop 47)
+  assert.deepEqual(C.trustStructures([{ t: 78, kind: 'point_lost', text: 'Princess tower damaged by enemy fireball', guess: 'x' }], hud, { counts, structures: towers }).dropped.map((e) => e.t), [78]);
+  // a box on the king tower's level badge (13, 5) is no structure's health: no drop off it, and the pass's fall at 3:29
+  // stands where only that box was read (loop 50)
+  const badge = C.mergeCounts({ cells: 4, times: [100, 140, 150, 200], asked: ['objectives'], objectives: { S1: [{ t: 100, value: 3668 }, { t: 140, value: 3668 }], K: [{ t: 100, value: 13 }, { t: 140, value: 13 }, { t: 150, value: 5 }, { t: 200, value: 13 }] } }, null);
+  const king = [{ id: 'S1', label: 'left tower', side: 'other' }, { id: 'K', label: 'king tower', side: 'own' }];
+  assert.deepEqual(C.structureEvents(badge, king), [], 'no drop off the badge');
+  assert.equal(C.trustStructures([{ t: 209, kind: 'point_lost', text: 'right tower destroyed', guess: 'x' }], C.structureEvents(badge, king), { counts: badge, structures: king }).events.length, 1);
   // a structure of that side not read around it: the claim stays
   const loose = C.trustStructures([{ t: 230, kind: 'point_lost', guess: 'x' }], [], { counts: C.mergeCounts({ cells: 1, times: [0], asked: ['objectives'], objectives: { S1: [{ t: 0, value: 3000 }] } }, null), structures: towers });
   assert.equal(loose.events.length, 1);
@@ -1793,6 +2002,9 @@ test("cover_losses: a loss still uncovered is filled in from its clip read, said
   const w = { from: 240, to: 270, reading: { last_choice: { t: '4:24', choice: 'Stayed forward at half health after her ult ran out', cost: 'her escape', instead: 'Step back behind the team' }, factors: [{ kind: 'resources', t: '4:25', what: 'Health 121/250, ult 0%' }, { kind: 'numbers', t: '', what: '1 v 4.' }] } };
   assert.deepEqual(C.coverFill({ t: 267, what: 'their death' }, { w }), { t: '4:24.0', what: 'From the clip read: Stayed forward at half health after her ult ran out', because: 'what it cost: her escape; resources Health 121/250, ult 0%; numbers 1 v 4', better: 'Step back behind the team', led_to: '4:27.0', filled: 'clip' });
   assert.equal(C.coverFill({ t: 267 }, { w: { ...w, reading: { ...w.reading, last_choice: { t: '9:00', choice: 'Pushed', instead: 'Wait for the team' } } } }).t, '4:27.0', 'a time outside the run-up is the loss\'s');
+  // and what code read at the loss, two lines of it at most, the rest of what it knew (a structure, the count) left out
+  const known = ["the HUD's health number read 72 of 100 at 2:44.0 (1 s before the damage)", 'since 0:00, the kill feed shows 1 down', 'the view, read in code from 2:41.0 to 2:43.0 before the damage, was moving (walking or turning)'];
+  assert.match(C.coverFill({ t: 267 }, { w: { ...w, reading: { ...w.reading, known } } }).because, /; code read the HUD's health number read 72 of 100 at 2:44.0 \(1 s before the damage\); code read the view, read in code from 2:41.0 to 2:43.0 before the damage, was moving \(walking or turning\)$/);
   assert.equal(C.coverFill({ t: 267 }, { w: { ...w, reading: { ...w.reading, last_choice: { t: '4:24', choice: 'Pushed', instead: '' } } } }), null, 'no fill without what to do instead, as no moment of the coach\'s goes without one');
   const move = { t: 341, kind: 'move', san: 'Nf4', grade: 'blunder', loss: 571, text: '18. Nf4 (blunder: gave away 5.7 pawns; it allows Bxf4+, taking the knight with check)', squares: { bestSan: 'Ng3' } };
   // the engine's line, all code's: the grade and what it cost, the reply it allows, the engine's move; never the clock
@@ -1844,7 +2056,7 @@ test("objectives: the learn call's structures keep whose they are, the near side
   assert.equal(L.toProfile({ game: 'G', genre: 'shooter', elements: [] }).objectives, undefined);
 });
 
-test('game_profile: two learn calls agree on a box, one they boxed apart is asked for again, structures only where both saw one', () => {
+test('game_profile: two learn calls agree on a box, one they boxed apart is asked for again, structures where both saw one, else all', () => {
   const a = { game: 'G', elements: [{ name: 'health', frame: 1, box: [900, 100, 940, 300] }, { name: 'minimap', frame: 1, box: [0, 0, 200, 200] }, { name: 'kill_feed', frame: 1, box: [50, 700, 300, 990] }, { name: 'ammo', frame: 1, box: [930, 800, 960, 900] }], cues: ['a'], structures: [{ label: 'tower', side: 'player', box: [700, 200, 720, 300] }, { label: 'base', side: 'player', box: [800, 200, 820, 300] }] };
   const b = { game: 'G', elements: [{ name: 'health', frame: 2, box: [905, 110, 945, 310] }, { name: 'minimap', frame: 2, box: [700, 700, 900, 900] }, { name: 'kill_feed', frame: 2, box: [600, 0, 700, 200] }, { name: 'team', frame: 2, box: [10, 300, 60, 700] }], cues: ['a', 'b'], structures: [{ label: 'tower', side: 'player', box: [704, 204, 724, 304] }] };
   const { raw, disputed } = L.consensus(a, b);
@@ -1854,6 +2066,8 @@ test('game_profile: two learn calls agree on a box, one they boxed apart is aske
   assert.deepEqual(raw.cues, ['a', 'b']);
   assert.deepEqual(raw.structures.map((s) => [s.label, s.box]), [['tower', [702, 202, 722, 302]]]);
   assert.equal(L.consensus(a, { ...b, structures: [] }).raw.structures.length, 2, 'one call that boxed none takes the other\'s');
+  // both boxed some, none in the same place (Clash Royale, loop 46: no tower read at all): all of them, each once
+  assert.deepEqual(L.consensus(a, { ...b, structures: [{ label: 'far tower', side: 'opponent', box: [100, 200, 120, 300] }] }).raw.structures.map((s) => s.label), ['tower', 'base', 'far tower']);
   assert.equal(L.profileKey({ name: 'Clash Royale!', view: 'own_screen' }, { w: 1080, h: 1920 }), `clash royale|own_screen|0.56|v${L.LAYOUT_VERSION}`, 'with the code\'s version');
   assert.deepEqual(Object.keys(L.layoutOf({ name: 'G', regions: {}, playerName: 'me', character: 'X', verified: {}, research: {}, cues: [] })), ['name', 'regions', 'cues']);
 });
@@ -2014,6 +2228,10 @@ test('hp_bar: the bar\'s color and band come from crops at full health, and its 
 test('hp_bar: it is calibrated where the number read full, and its series is in the number\'s units', () => {
   const counts = { health: [{ t: 10, value: 250 }, { t: 20, value: 120 }, { t: 30, value: 248 }, { t: 40, value: 250 }, { t: 50, value: 0 }], healthMax: [{ t: 10, value: 250 }] };
   assert.deepEqual([...C.barFullTimes(counts, [{ t: 38, kind: 'death' }], 5)], [10, 30], 'not 0:40, while they were dead');
+  // a full reading between low ones is another number in the box (Fortnite's shield 98 between its health's 75s, loop 45)
+  const mixed = { health: [{ t: 6, value: 100 }, { t: 12, value: 100 }, { t: 186, value: 75 }, { t: 188, value: 98 }, { t: 190, value: 98 }, { t: 192, value: 75 }], healthMax: [{ t: 6, value: 100 }] };
+  assert.deepEqual([...C.barFullTimes(mixed, [], 5)], [6, 12], 'not the 98s between 75s');
+  assert.deepEqual([...C.barFullTimes({ health: [{ t: 6, value: 100 }, { t: 12, value: 100 }, { t: 190, value: 98 }], healthMax: [{ t: 6, value: 100 }, { t: 190, value: 75 }] }, [], 5)], [6, 12], 'not 98 of 75');
   assert.deepEqual(C.barReadings([{ t: 12, share: 0.5 }, { t: 14, share: 0.2 }], counts), [{ t: 12, value: 125, full: 250 }, { t: 14, value: 50, full: 250 }]);
   assert.deepEqual(C.barReadings([{ t: 1, share: 1 }], {}), [], 'no number, no units');
 });
@@ -2297,6 +2515,25 @@ test("cover_losses: once asked, a loss still uncovered is filled in from its cli
   assert.deepEqual(plainOf(result.flags), ['cover_losses']);
 });
 
+test('cover_losses: a loss whose clip the coach never read is read by code before the cover pass, then filled from that read', async () => {
+  const fix = { t: '0:58', what: 'Walks into the open', because: 'alone against two', better: 'Wait for the team', led_to: '1:01' };
+  const base = { found: false, reason: 'Walking into the open alone', why: 'x'.repeat(30), drill: 'd'.repeat(25), recheck: 'r', fixes: [fix] };
+  let fifthRead = false;
+  const { result, results } = await scripted({
+    flags: 'cover_losses',
+    profile: { name: 'G', genre: 'shooter', regions: {} },
+    scan: { events: ['0:31', '1:01', '1:31', '2:01', '2:31'].map((t) => ({ t, kind: 'death', text: 'died' })), fights: [] },
+    clip: (p, n) => { if (!new RegExp(`Clip ${n}: 2:1`).test(p)) return {}; fifthRead = true; return { last_choice: { t: '2:28', choice: 'Stepped out of cover', cost: 'cover', instead: 'Hold behind the wall' }, factors: { position: { t: '2:28', what: 'in the open, two enemies ahead' } } }; },
+    // the coach reads four of the five deaths (as many as finish asks it to look at, LOSS_LOOKS), then finishes
+    // twice: the cover ask, then keeping the answer. The fifth used to be critiqued by no one
+    script: [['read_clips', { windows: ['W1', 'W2', 'W3', 'W4'] }], ['finish', base], ['finish', base]],
+  });
+  assert.equal(results.filter(([n]) => n === 'read_clips').length, 1, "the coach's one read");
+  assert.ok(fifthRead, "code read the fifth death's clip, which the coach never asked for");
+  const filled = result.turning.filter((e) => e.filled === 'clip');
+  assert.ok(filled.some((e) => e.ledTo === 151 && e.better === 'Hold behind the wall' && /^From the clip read: Stepped out of cover/.test(e.what)), JSON.stringify(result.turning));
+});
+
 // ---------- loop 40's judge (Oct 25): ability_state, claims at their own moment, the engine's lines, who is left ----------
 
 // A HUD's ability row, w x h: icons iw wide at xs, each frame's state an icon a brightness factor (1 lit, 0.35 on
@@ -2441,9 +2678,11 @@ test('ability_state: the ability row at 6 and 2 s before a loss reaches the read
   // at 0:50 (crop 25) the second icon was on cooldown; at 0:54 (crop 27) too; the ult dimmed at both
   assert.match(said, /the HUD's ability row, read in code \(4 icons, left to right\), at 0:50\.0, 6 s before the death: lit \(ready\) icon 1; dimmed \(on cooldown or unusable\) icons 2 \(100% unlike its ready look\) and 4 \(the last, 100%\)/);
   assert.match(said, /at 0:54\.0, 2 s before the death/);
-  assert.equal(r.readings[0].known.length, 2);
+  // and icon 1, lit at both, ready and not used before it
+  assert.match(said, /read in code at 0:50\.0 and 0:54\.0: icon 1 lit \(ready\) at both, so ready and not used in the seconds before the death/);
+  assert.equal(r.readings[0].known.length, 3);
   assert.equal(r.abilityRow, '4 icons, 1 of them dark');
-  assert.deepEqual(plainOf(r.readings[0].knownAt), [[50], [54]]);
+  assert.deepEqual(plainOf(r.readings[0].knownAt), [[50], [54], [50, 54]]);
   assert.match(page.A.clipLine({ id: 'W1', from: 48, to: 60, reading: r.readings[0] }), /What code read then, which is true: the HUD's ability row/);
   // off: no crops of the row and nothing said
   const off = fakePage({ image, answer: () => ({ clips: [{ clip: 1, ...read }] }) });

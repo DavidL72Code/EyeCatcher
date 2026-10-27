@@ -10,7 +10,7 @@
     "vendor": "node scripts/vendor.mjs",
     "scenes": "node scripts/make-scenes.mjs",
     "fixture": "node tests/make-fixture.mjs",
-    "test:unit": "node --test tests/core.test.mjs tests/gemini-images.test.mjs tests/gemini-fallback.test.mjs tests/chess.test.mjs tests/backend.test.mjs",
+    "test:unit": "node --test tests/core.test.mjs tests/gemini-images.test.mjs tests/gemini-fallback.test.mjs tests/chess.test.mjs tests/backend.test.mjs tests/scorecard.test.mjs",
     "test:e2e": "node tests/e2e.mjs",
     "test:live": "node tests/live-check.mjs",
     "test": "npm run test:unit && npm run test:e2e",

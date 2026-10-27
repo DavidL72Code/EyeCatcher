@@ -212,7 +212,8 @@
   const dropWhat = (e) => `${e.structure ? `their ${e.structure}` : 'a structure of theirs'} losing health, ${e.was} to ${e.now}${seenWhat(e)}`;
   // hp_bar (barDamage): a drop of their health bar with no death or near-death in it, "health 97% to 72% of full"
   // and one a clip read saw, in the HUD's own numbers: "damage taken (their shield 98 to 24, seen by a clip read...)"
-  const damageWhat = (e) => (e.seenBy === 'clip' ? `damage taken (their ${e.unit || 'health'} ${e.was} to ${e.now}${e.of ? ` of ${e.of}` : ''}${seenWhat(e).replace(/^ \(/, ', ').replace(/\)$/, '')})` : `damage taken (their ${e.unit || 'health'} bar ${e.was}% to ${e.now}% of full)`);
+  // the HP number's falls (hp_falls) in its own units: "269% to 80% of full" read as shares was 269 to 80 of 250 (loop 50)
+  const damageWhat = (e) => (e.seenBy === 'clip' ? `damage taken (their ${e.unit || 'health'} ${e.was} to ${e.now}${e.of ? ` of ${e.of}` : ''}${seenWhat(e).replace(/^ \(/, ', ').replace(/\)$/, '')})` : e.of ? `a fight that turned on them (their health ${e.was} to ${e.now} of ${e.of})` : `damage taken (their ${e.unit || 'health'} bar ${e.was}% to ${e.now}% of full)`);
   // how much of full a damage event left (hp_bar's are in % of full; a clip read's in the HUD's numbers)
   const damageLeft = (e) => (e.seenBy === 'clip' ? e.now / (e.of || e.was || 1) : e.now / 100);
   /**
@@ -240,13 +241,24 @@
    * from 3 s before it lands.
    */
   // deadFor (deadForOf): a teammate going down while the player is dead is no loss of theirs; the screen shows someone else
+  // what a fight cost, as the record shows it: a loss of the player's in the fight, from 2 s before it to 5 s after (its
+  // cost can land after it: Clash Royale's last tower fell at 3:29, 4 s after the fight)
+  const COSTS = new Set(['death', 'near_death', 'damage', 'objective_damage', 'point_lost']);
+  const costIn = (events, f) => (events || []).some((x) => COSTS.has(x.kind) && x.t >= f.from - 2 && x.t <= f.to + 5);
   function lossMoments(events, { deadFor = 5 } = {}) {
     const out = [];
     for (const e of events || []) {
-      if (e.kind === 'death') out.push({ t: e.t, from: e.t - 6, to: e.t + 2, what: 'their death', kind: e.kind });
+      // a death only where something checked shows it (the kill feed, the HUD, a second look at the screen): one the
+      // low-detail pass alone guessed (a guess and no sure) is no loss of theirs, however sure it sounds (Oct 26: "how can
+      // you say someone died at a certain time when you look at it nobody died")
+      if (e.kind === 'death' && !(e.guess && !e.sure)) out.push({ t: e.t, from: e.t - 6, to: e.t + 2, what: 'their death', kind: e.kind });
       else if (e.kind === 'near_death') out.push({ t: e.t, from: e.t - 6, to: e.t + 2, what: nearWhat(e), kind: e.kind, size: e.of > 0 ? round(1 - e.hp / e.of, 3) : 0 });
       else if (e.kind === 'ally_death' && !e.tradedBy && e.near === true && !deathAt(events, e.t, deadFor)) out.push({ t: e.t, from: e.t - 6, to: e.t + 2, what: `${e.victim || 'a teammate'} down near them, not traded`, kind: e.kind });
-      else if (e.kind === 'engagement' && e.outcome === 'lost') out.push({ t: e.from, from: e.from - 2, to: e.to + 2, what: 'a fight they lost', kind: e.kind });
+      // a fight lost is a loss only where the screen shows what it cost: a death, a near-death, damage, a structure's drop,
+      // or a point against them in it, each read off the HUD, the feed, or a second look. The low-detail pass called fights
+      // lost where nothing was lost (Clash Royale's 0:33 and 3:03, with no tower hit; Oct 26: "these should be supported
+      // by the recording")
+      else if (e.kind === 'engagement' && e.outcome === 'lost' && costIn(events, e)) out.push({ t: e.from, from: e.from - 2, to: e.to + 2, what: 'a fight they lost', kind: e.kind });
       else if (e.kind === 'point_lost') out.push({ t: e.t, from: e.t - 8, to: e.t + 1, what: 'a point the other side scored', kind: e.kind });
       // from where the drops began: Clash Royale's 3197 to 761 came in six shots over about 10 s (Oct 25)
       else if (e.kind === 'objective_damage') out.push({ t: e.t, from: Math.min(e.start ?? e.t, e.t) - 6, to: e.t + 2, what: dropWhat(e), kind: e.kind, size: e.was > 0 ? round((e.was - e.now) / e.was, 3) : 0 });
@@ -282,7 +294,8 @@
   const lossOrder = (all) => { const costed = (all || []).some((l) => l.cost); return [...(all || [])].sort((a, b) => (costed ? (b.cost || 0) - (a.cost || 0) : (LOSS_RANK[a.kind] ?? 2) - (LOSS_RANK[b.kind] ?? 2) || (b.size || 0) - (a.size || 0)) || a.t - b.t); };
   const rankedLosses = (all, n = 6) => (all.some((l) => l.cost) ? costliest(all, n) : lossOrder(all).slice(0, n).sort((a, b) => a.t - b.t));
   // in chess, the eight costliest by the engine: 26.Rf1 was eighth (1.5 pawns) and never asked for (loop 41, H2)
-  const COVER_N = 6, CHESS_COVER_N = 8;
+  // elsewhere eight too: the baselines' clips have up to seven losses, and the record's near-deaths rank below its deaths
+  const COVER_N = 8, CHESS_COVER_N = 8;
   const uncoveredLosses = (all, cites, n = (all || []).some((l) => l.cost) ? CHESS_COVER_N : COVER_N) => rankedLosses(all, n).filter((l) => !(cites || []).some((ts) => ts.some((t) => t >= l.from && t <= l.to)));
   /**
    * cover_losses: a turning point for a loss still uncovered once the coach was asked, filled in by code from that
@@ -294,13 +307,17 @@
   // rejected (cover_losses): the claims either check let go of, [{ t, text, to }], so code never fills a loss back in with
   // one: League's 1:44 fill was the read's "committed to using Bullet Time", which the frames check had rejected twice in
   // the coach's own words (loop 41)
+  const FACT_LINE = /^(the HUD's health number read|the HUD's ability row, read in code|the view, read in code|the ammo counter of the weapon in hand)/;
   function coverFill(loss, { w = null, move = null, rejected = [] } = {}) {
     // chess: from the engine's line, all of it code's: the move's grade and what it cost, the reply it allows, and the
     // engine's move. Not the clock, which the board reader read and can misread (16.Qd3's 9:43, loop 41)
     if (move?.kind === 'move' && move.grade && (move.squares?.bestSan || move.allows)) {
       const no = /^(\d+\s*\.(?:\.\.)?)/.exec(text(move.text))?.[1]?.replace(/\s+/g, '') || '', reply = /;\s*it allows ([^;)]+)/.exec(text(move.text))?.[1] || move.allows || '';
       const best = move.squares?.bestSan || '', pawns = `${((move.loss || 0) / 100).toFixed(1)} pawns`;
-      return { t: mmss(move.t, true), what: `From the engine: ${no ? `${no} ` : ''}${move.san} was a ${move.grade}, giving away ${pawns}`, because: [reply && `it allows ${reply.trim()}`, best && `the engine's move was ${best}`].filter(Boolean).join('; '), better: best ? `Play ${best}` : `Look for ${reply.split(',')[0].trim()} before playing ${move.san}`, led_to: mmss(move.t, true), filled: 'engine' };
+      // and what the engine's line wins, so the lesson says why, not only the moves (loop 45's 26.Rf1 fill, graded partly:
+      // "names Rf1, Bd5 and Re1, but not why")
+      const line = move.line?.line && move.line?.text ? `in the engine's line, ${text(move.line.line)}, ${text(move.line.text)}` : '';
+      return { t: mmss(move.t, true), what: `From the engine: ${no ? `${no} ` : ''}${move.san} was a ${move.grade}, giving away ${pawns}`, because: [reply && `it allows ${reply.trim()}`, line, best && `the engine's move was ${best}`].filter(Boolean).join('; '), better: best ? `Play ${best}` : `Look for ${reply.split(',')[0].trim()} before playing ${move.san}`, led_to: mmss(move.t, true), filled: 'engine' };
     }
     const lc = w?.reading?.last_choice;
     // a fill needs what to do instead, as every moment the coach gives does: from the read, or none at all
@@ -308,7 +325,10 @@
       const said = parseTime(lc.t), at = Number.isFinite(said) && said <= loss.t && said >= loss.t - LEAD_MAX ? said : loss.t;
       if (fillRejected(text(lc.choice), at, loss, rejected)) return null;
       const why = (Array.isArray(w.reading.factors) ? w.reading.factors : []).filter((f) => text(f?.what)).slice(0, 6).map((f) => `${f.kind} ${text(f.what).replace(/\.$/, '')}`);
-      return { t: mmss(at, true), what: `From the clip read: ${text(lc.choice).replace(/\.$/, '')}`, because: [text(lc.cost) && `what it cost: ${text(lc.cost).replace(/\.$/, '')}`, ...why].filter(Boolean).join('; ') || 'the clip read gives no factors', better: text(lc.instead), led_to: mmss(loss.t, true), filled: 'clip' };
+      // and what code read at the loss (the HP number, the ability row, the view, the ammo), as code read it: a fill
+      // that named none of it was dropped from a salvage, and Fortnite's 2:43 and 6:09 falls went uncritiqued (loop 47)
+      const known = (Array.isArray(w.reading.known) ? w.reading.known : []).map((k) => text(k)).filter((k) => FACT_LINE.test(k)).slice(0, 2).map((k) => `code read ${k.replace(/\.$/, '')}`);
+      return { t: mmss(at, true), what: `From the clip read: ${text(lc.choice).replace(/\.$/, '')}`, because: [text(lc.cost) && `what it cost: ${text(lc.cost).replace(/\.$/, '')}`, ...why, ...known].filter(Boolean).join('; ') || 'the clip read gives no factors', better: text(lc.instead), led_to: mmss(loss.t, true), filled: 'clip' };
     }
     return null;
   }
@@ -357,6 +377,19 @@
    */
   const unreadUnits = (windows) => (windows || []).filter((w) => w.unit && !w.reading).map((w) => ({ t: w.from, what: `a ${w.unit} not read yet`, window: w.id || null }));
   const atLoss = (events, t, deadFor) => lossMoments(events, { deadFor }).some((l) => t >= l.from && t <= l.to);
+  /**
+   * A one-on-one game, where a structure down is the score and the far side is the opponent's: an opponent named, or a
+   * strategy game, and never a team game (League of Legends was learned as strategy, and its turrets read as points
+   * against the player, loop 44). profile: { opponentName, genre, teamGame }.
+   */
+  const oneOnOne = (profile) => (!!profile?.opponentName || profile?.genre === 'strategy') && !profile?.teamGame;
+  /**
+   * In a team game scored by neither goals nor rounds (a MOBA), the pass's points are no points of the player's: a
+   * structure or objective either team takes is the team's, and stays in the record as what happened (other), not a
+   * loss, as structuresOf keeps the HUD's. League's pass called its "Ally turret destroyed!" banners points lost, and
+   * an "Enemy turret destroyed!" one too (loop 44). profile: { teamGame, rounds, genre, opponentName }.
+   */
+  const teamPoints = (events, profile) => (oneOnOne(profile) || !profile?.teamGame || profile.genre === 'sports' || profile.rounds ? events : (events || []).map((e) => (e.kind === 'point_won' || e.kind === 'point_lost' ? { ...e, kind: 'other', was: e.kind } : e)));
   const MIN_LOSSES = 2; // separate losses a habit has to show at; with fewer in the match, no habit can be named
   /** Why the review can't decide yet, or '': fewer of the player's losses looked at than LOSS_LOOKS (or all, when fewer). */
   function lossGap(events, ledger) {
@@ -395,10 +428,15 @@
     ['frames', /the frames don't fit your claim/],
     ['no_reason', /Name the biggest reason they lost|has to show where they lost: at least one|Cite the moments you looked at that show the reason/],
     ['unshown', /the video doesn't show/],
+    // asked once, and code settles what's left (agent.js): "rests on a healing" and "don't fit what code read" both
+    // fell to 'other', counted as one reason sent back twice, and Siege's finding was forced out (loop 47)
+    ['unheld', /rests on an? .{1,40}, which nothing read at that loss shows/],
+    ['facts', /Some causes don't fit what code read at the loss/],
+    ['pieces', /Some lessons name a piece that isn't where they say/],
   ];
   const problemKind = (text) => PROBLEM_KINDS.find(([, re]) => re.test(text))?.[0] || 'other';
   // the kinds that never count as "sent back twice for the same reason"
-  const NOT_DECIDING = ['format', 'won_fight', 'costliest', 'uncovered', 'check_failed'];
+  const NOT_DECIDING = ['format', 'won_fight', 'costliest', 'uncovered', 'check_failed', 'unheld', 'facts', 'pieces'];
 
   // ---------- controls for the claim checker ----------
   /**
@@ -656,6 +694,32 @@
    * move was exd5, loop 41, H4). move: the record's graded move ({ san, squares: { bestSan } }). Returns the lesson, with
    * betterBy 'engine' where code wrote it.
    */
+  // A chess lesson's pieces, held against the board: each "<side>'s <piece> on <square>" it names (White's, Black's, the
+  // player's own, the opponent's, or no side) has to stand there before the move, after it, or after the reply. Loop
+  // 45's 22.Rxf4 said "Black's bishop on a6 threatens retaliation", the a6 bishop White's (graded partly). boards:
+  // FENs; me: 'w' or 'b'. Returns what it names that isn't there, as code's words.
+  const PIECES = { king: 'k', queen: 'q', rook: 'r', bishop: 'b', knight: 'n', pawn: 'p' };
+  function fenSquares(fen) {
+    const rows = String(fen || '').split(' ')[0].split('/'), out = {};
+    if (rows.length !== 8) return null;
+    rows.forEach((row, r) => { let f = 0; for (const ch of row) { if (/\d/.test(ch)) f += +ch; else { out[`${'abcdefgh'[f]}${8 - r}`] = ch; f++; } } });
+    return out;
+  }
+  function boardAgainst(lesson, boards, me) {
+    const said = [lesson?.what, lesson?.because, lesson?.better].map((x) => text(x)).join(' '), squares = (boards || []).map(fenSquares).filter(Boolean), out = [];
+    if (!squares.length || (me !== 'w' && me !== 'b')) return out;
+    const other = me === 'w' ? 'b' : 'w', name = { w: 'White', b: 'Black' };
+    const re = /\b(?:(white|black|your|my|their|the opponent's|opponent's)(?:'s)?\s+)?(king|queen|rook|bishop|knight|pawn)\s+on\s+([a-h][1-8])\b/gi;
+    for (const m of said.matchAll(re)) {
+      const who = (m[1] || '').toLowerCase(), side = /^white/.test(who) ? 'w' : /^black/.test(who) ? 'b' : /^(your|my)$/.test(who) ? me : who ? other : null;
+      const p = PIECES[m[2].toLowerCase()], sq = m[3].toLowerCase();
+      const there = squares.some((b) => b[sq] && b[sq].toLowerCase() === p && (!side || (b[sq] === b[sq].toUpperCase() ? 'w' : 'b') === side));
+      if (there) continue;
+      const held = [...new Set(squares.map((b) => b[sq]).filter(Boolean).map((c) => `${name[c === c.toUpperCase() ? 'w' : 'b']}'s ${Object.keys(PIECES).find((k) => PIECES[k] === c.toLowerCase())}`))];
+      out.push(`"${m[0]}": code's board has ${held.length ? held.join(' or ') : 'nothing'} on ${sq} then`);
+    }
+    return [...new Set(out)];
+  }
   function chessBetter(lesson, move) {
     const best = sanKey(move?.squares?.bestSan || '');
     if (!lesson || !best || movesIn(lesson.better).includes(best)) return lesson;
@@ -1624,13 +1688,65 @@
    * one name (sameSide), and cellsFor: how many moments each part was asked at, for hudRecord's known share.
    */
   // clock: the scoreboard's match clock as written ("1:18"), read under state_facts (agent.js readCounters)
-  const SERIES = { damage: 'damage', kills: 'kill_count', deaths: 'kill_count', assists: 'kill_count', health: 'health', healthMax: 'health', clock: 'scoreboard' };
+  /**
+   * A health bar over the character the camera follows (a top-down game's, near the screen's middle, never first person):
+   * after the player's death the camera follows a teammate, and the bar is theirs. box: [x, y, w, h]. (Brawl Stars:
+   * the teammates' 0s at 1:42 and 3:31 were taken for the player's deaths, which were at 1:10 and 2:58, Oct 26)
+   */
+  const overCharacter = (box) => Array.isArray(box) && box.length === 4 && box[0] + box[2] / 2 > 0.3 && box[0] + box[2] / 2 < 0.7 && box[1] + box[3] / 2 > 0.2 && box[1] + box[3] / 2 < 0.8;
+  // the bar with the name written over it: the box grown up by twice its height, and to each side by half its width
+  const withNameOver = ([x, y, w, h]) => { const x0 = Math.max(0, x - w / 2), y0 = Math.max(0, y - 2 * h); return [x0, y0, Math.min(1, x + w * 1.5) - x0, Math.min(1, y + h) - y0]; };
+  const barName = (x) => String(x || '').toLowerCase().replace(/[^\p{L}\p{N}]/gu, '');
+  /**
+   * The health readings that are the player's: where counts.healthNames has the name over the bar at a reading, only
+   * those under the player's own name (or the name the bar shows most in the match's first third, where the camera follows
+   * the player from the start), and so only their 0s are their deaths. Readings with no name read stay. Returns counts.
+   */
+  function ownHealth(counts, player = '') {
+    const names = (counts?.healthNames || []).filter((x) => barName(x.name));
+    if (!names.length) return counts;
+    const first = names.filter((x) => x.t <= names[0].t + ((names.at(-1).t - names[0].t) || 1) / 3);
+    const tally = new Map(); for (const x of first) tally.set(barName(x.name), (tally.get(barName(x.name)) || 0) + 1);
+    const usual = [...tally].sort((a, b) => b[1] - a[1])[0]?.[0] || '', mine = barName(player);
+    const me = mine && (usual.includes(mine) || mine.includes(usual)) ? usual : mine || usual;
+    const at = new Map(names.map((x) => [x.t, barName(x.name)]));
+    const ours = (x) => !at.has(x.t) || at.get(x.t) === me || (me.length >= 4 && (at.get(x.t).includes(me) || me.includes(at.get(x.t))));
+    return { ...counts, health: (counts.health || []).filter(ours), healthMax: (counts.healthMax || []).filter(ours), notOurs: (counts.health || []).filter((x) => !ours(x)).length };
+  }
+  const SERIES = { damage: 'damage', kills: 'kill_count', deaths: 'kill_count', assists: 'kill_count', health: 'health', healthMax: 'health', healthNames: 'health', clock: 'scoreboard' };
+  /**
+   * The HP number's readings without the ones off from both neighbors that agree with each other: another number taken
+   * for it. Fortnite's 6-second read gave the players-left count (27, 26, 24...) between 2-second reads of 100 and 97,
+   * no full-health moment held, and the bar was never calibrated (loop 50). A heal or a hit that fast and that big and
+   * back again isn't health. Neighbors within SPIKE_GAP s, agreeing within a tenth of full, the reading off by SPIKE_OFF.
+   */
+  const SPIKE_GAP = 8, SPIKE_OFF = 0.4;
+  function despike(xs) {
+    const hp = (xs || []).filter((x) => Number.isFinite(x?.value)), full = fullHealth([], hp);
+    if (!full || hp.length < 3) return xs || [];
+    // at either end, the two readings on its one side stand in for both (Fortnite's first reading, 28, became a
+    // near-death at 0:00, loop 50)
+    return hp.filter((x, i) => {
+      const [a, b] = i === 0 ? [hp[1], hp[2]] : i === hp.length - 1 ? [hp[i - 1], hp[i - 2]] : [hp[i - 1], hp[i + 1]];
+      return !(a && b && Math.abs(x.t - a.t) <= SPIKE_GAP && Math.abs(b.t - x.t) <= SPIKE_GAP * (i === 0 || i === hp.length - 1 ? 2 : 1) && Math.abs(a.value - b.value) <= 0.1 * full && Math.abs(x.value - a.value) >= SPIKE_OFF * full);
+    });
+  }
   function mergeCounts(a, b) {
     const reads = [a, b].filter(Boolean);
     if (!reads.length) return null;
     const join = (...xs) => { const m = new Map(); for (const r of xs.flat()) if (r && !m.has(r.t)) m.set(r.t, r); return [...m.values()].sort((p, q) => p.t - q.t); };
     const out = { cells: reads.reduce((n, r) => n + (r.cells || 0), 0), calls: reads.reduce((n, r) => n + (r.calls || 0), 0), times: join(...reads.map((r) => (r.times || []).map((t) => ({ t })))).map((x) => x.t), scores: {}, cellsFor: {} };
+    // a read whose HP number is another number than the other read's at the same moments: the 6-second read took
+    // Fortnite's players-left count (28 down to 17) for its health between the 2-second read's 100s and 97s (loop 50);
+    // where most of its readings sit far off the other's within 3 s, the first read's health goes (a, the coarse read)
+    if (reads.length === 2 && a?.health?.length && b?.health?.length) {
+      const full = fullHealth([...(a.healthMax || []), ...(b.healthMax || [])], [...a.health, ...b.health]);
+      const pairs = a.health.map((x) => ({ x, y: b.health.reduce((m, y) => (Math.abs(y.t - x.t) < Math.abs((m?.t ?? Infinity) - x.t) ? y : m), null) })).filter((p) => p.y && Math.abs(p.y.t - p.x.t) <= 3 && Number.isFinite(p.x.value) && Number.isFinite(p.y.value));
+      const off = pairs.filter((p) => full && Math.abs(p.x.value - p.y.value) >= SPIKE_OFF * full).length;
+      if (pairs.length >= 4 && off >= 0.7 * pairs.length) reads[0] = { ...a, health: [], healthMax: [] };
+    }
     for (const k of Object.keys(SERIES)) out[k] = join(...reads.map((r) => r[k] || []));
+    out.health = despike(out.health);
     for (const r of reads) for (const [side, xs] of Object.entries(r.scores || {})) { const name = Object.keys(out.scores).find((k) => k === side || sameSide(k, side)) || side; out.scores[name] = join(out.scores[name] || [], xs); }
     // objectives: each structure's health, by its id, where a read had them (structureEvents)
     if (reads.some((r) => r.objectives)) { out.objectives = {}; for (const r of reads) for (const [id, xs] of Object.entries(r.objectives || {})) out.objectives[id] = join(out.objectives[id] || [], xs); }
@@ -1709,9 +1825,19 @@
       after = false;
       for (const [id, v] of vals) last.set(id, v);
     }
-    return screen.size ? Object.fromEntries(ids.map((id) => [id, (reads[id] || []).filter((x) => !screen.has(x.t))])) : reads;
+    const kept = screen.size ? Object.fromEntries(ids.map((id) => [id, (reads[id] || []).filter((x) => !screen.has(x.t))])) : reads;
+    // and without a box whose numbers are another order than the board's: one board's structures have health of one
+    // order (Clash Royale's towers 3668 and 5582), and a box reading 13 there is the tower's level badge. Loop 50 read the
+    // king tower's level, 13 to 5, as a drop, and took it standing for the 3:29 loss's structure, which went (loop 50)
+    const tops = ids.map((id) => ({ id, top: Math.max(0, ...(kept[id] || []).map((x) => x.value).filter(Number.isFinite)) })), board = Math.max(0, ...tops.map((x) => x.top));
+    const small = tops.filter((x) => board && x.top < STRUCTURE_ORDER * board).map((x) => x.id);
+    return small.length ? Object.fromEntries(ids.filter((id) => !small.includes(id)).map((id) => [id, kept[id]])) : kept;
   }
-  const STRUCTURE_DROP = 0.1, STRUCTURE_GAP = 12;
+  const STRUCTURE_ORDER = 0.1;
+  // A structure's loss is a big drop, a fifth of its full health or more (a fight that turned: about 730 of Clash
+  // Royale's 3668; under 750 to 1000 is no big fight, the user, Oct 26), or one that leaves it low, a quarter of full or
+  // under (761 to 384 at 2:36, the tower nearly down). The 0:44 chip, 3668 to 3197, is neither
+  const STRUCTURE_DROP = 0.2, STRUCTURE_LOW = 0.25, STRUCTURE_GAP = 12;
   function structureEvents(counts, structures) {
     const reads = structureReads(counts), asked = [...new Set(counts?.timesFor?.objectives ?? counts?.times ?? [])].sort((a, b) => a - b), out = [];
     const readOther = (id, t) => Object.entries(reads).some(([k, xs]) => k !== id && xs.some((x) => x.t === t && Number.isFinite(x.value)));
@@ -1726,16 +1852,20 @@
         const after = asked.filter((t) => t > lastRead).slice(0, GONE_READS);
         if (after.length === GONE_READS && after.every((t) => readOther(s.id, t))) fell = after[0];
       }
+      // A stretch ends where a reading shows its last value holding STRUCTURE_GAP s on; a gap with no readings says
+      // nothing. Clash Royale's right tower read 761, 511, 448 by 2:28, nothing for 34 s while fights covered it, then
+      // 384: one loss of 377, which the gap split into two too small to count (the baseline's 2:36, Oct 26)
+      const held = (from, to, v) => xs.some((x) => x.t >= from + STRUCTURE_GAP && x.t < to && Math.abs(x.value - v) <= near2(v));
       const stretches = [];
       for (let i = 1; i < steps.length; i++) {
         const cur = stretches.at(-1);
-        if (cur && steps[i].t - cur.t <= STRUCTURE_GAP) Object.assign(cur, { t: steps[i].t, now: steps[i].value });
+        if (cur && (steps[i].t - cur.t <= STRUCTURE_GAP || !held(cur.t, steps[i].t, cur.now))) Object.assign(cur, { t: steps[i].t, now: steps[i].value });
         else stretches.push({ start: steps[i].t, t: steps[i].t, was: steps[i - 1].value, now: steps[i].value });
       }
       // a fall right after a stretch of drops is one loss, from where the stretch began
       const end = fell != null ? stretches.find((x) => x.now === 0 || (fell >= x.t && fell - x.t <= STRUCTURE_GAP)) : null;
       for (const x of stretches) {
-        if (x === end || !own || x.was - x.now < STRUCTURE_DROP * full) continue;
+        if (x === end || !own || (x.was - x.now < STRUCTURE_DROP * full && !(x.now <= STRUCTURE_LOW * full && x.was - x.now >= 0.05 * full))) continue;
         out.push({ t: x.t, kind: 'objective_damage', side: 'own', structure: label, was: x.was, now: x.now, start: x.start, seenBy: 'hud', text: `your ${label}'s health fell from ${x.was} to ${x.now} (the HUD's number over it)` });
       }
       if (fell != null) {
@@ -1769,7 +1899,11 @@
       const side = e.seenBy === 'hud' ? null : sideOf[e.kind], all = (structures || []).filter((s) => s.side === side);
       if (!side || !all.length) { out.push(e); continue; }
       if (falls.some((f) => f.kind === e.kind && Math.abs(f.t - e.t) <= slack)) continue;
-      if (all.every((s) => covered((reads[s.id] || []).filter((x) => Number.isFinite(x.value)), e.t)) || all.every((s) => standing(s, e.t))) { dropped.push(e); continue; }
+      // nor where no structure of that side could have fallen then: one only falls that was read before it and never
+      // read standing after. Clash Royale's pass gave a point lost at 1:18 ("princess tower damaged"), the right tower
+      // read 761 after it and the others never read before it (loop 47)
+      const couldFall = (s) => { const xs = (reads[s.id] || []).filter((x) => Number.isFinite(x.value)); return xs.some((x) => x.t < e.t) && !xs.some((x) => x.t > e.t + slack && x.value > 0); };
+      if (all.every((s) => covered((reads[s.id] || []).filter((x) => Number.isFinite(x.value)), e.t)) || all.every((s) => standing(s, e.t)) || (all.some((s) => (reads[s.id] || []).length) && !all.some(couldFall))) { dropped.push(e); continue; }
       out.push(e);
     }
     return { events: [...out, ...(hud || [])].sort((a, b) => a.t - b.t), dropped };
@@ -1788,10 +1922,24 @@
   // as three (4:30, 4:43, 5:07; Oct 23)
   const NEAR_DEATH = 0.25, NEAR_LOW = 0.4, NEAR_GAP = 90, MAX_NEAR = 10;
   const modeOf = (xs) => { const n = new Map(); for (const x of xs) n.set(x, (n.get(x) || 0) + 1); return [...n].sort((a, b) => b[1] - a[1] || b[0] - a[0])[0]?.[0] ?? null; };
+  /**
+   * Full health, where the HUD writes no maximum (no 250 of 120/250): the highest number read at least FULL_SEEN times,
+   * not the one read most often. Fortnite's sat at 75 most of the match, so 75 was "full", 97 and 100 read as over
+   * full, and its falls went uncalibrated (loop 50). tops: the maxima the HUD wrote; hp: its readings.
+   */
+  const FULL_SEEN = 3;
+  function fullHealth(tops, hp) {
+    const written = modeOf((tops || []).map((x) => x.value).filter((v) => Number.isFinite(v) && v > 0));
+    if (written != null) return written;
+    const n = new Map();
+    for (const x of hp || []) if (Number.isFinite(x?.value) && x.value > 0) n.set(x.value, (n.get(x.value) || 0) + 1);
+    const seen = [...n].filter(([, c]) => c >= FULL_SEEN).map(([v]) => v);
+    return seen.length ? Math.max(...seen) : modeOf([...n.keys()]);
+  }
   function nearDeaths(health, { maxes = [], deaths = [] } = {}) {
     const hp = (health || []).filter((x) => Number.isFinite(x?.value) && Number.isFinite(x?.t)).sort((a, b) => a.t - b.t);
     const tops = (maxes || []).filter((x) => Number.isFinite(x?.value) && x.value > 0 && Number.isFinite(x?.t));
-    const usual = modeOf(tops.map((x) => x.value)) ?? modeOf(hp.map((x) => x.value).filter((v) => v > 0));
+    const usual = fullHealth(tops, hp);
     const fullAt = (t) => tops.filter((x) => Math.abs(x.t - t) <= MAX_NEAR).sort((a, b) => Math.abs(a.t - t) - Math.abs(b.t - t))[0]?.value ?? usual;
     if (!usual || hp.length < 3) return [];
     const out = [];
@@ -1809,6 +1957,70 @@
       if (x.value > 0 && x.value <= NEAR_LOW * fullAt(x.t)) run.push(x); else close();
     }
     close();
+    return out;
+  }
+  /**
+   * The fights that turned on the player, off the HP number: health falling by FALL_SHARE of full or more within
+   * FALL_WITHIN s, into the low zone (NEAR_LOW of full or under), where no death of theirs is near (that's the death) and
+   * no near-death within 5 s (that's it already). The dive is the loss, not only its lowest reading: Marvel Rivals' 5:10
+   * went 235, 146, 72, 40, 30 over 5:05-5:10, healed to 92 at 5:10.3, and read every 2 s the low fell between the reads
+   * (loop 49; the user, Oct 26: "the series of events led to that"). health, maxes: [{ t, value }]; events: the record.
+   * Returns [{ t, kind: 'damage', was, now, start, seenBy, text }], at the fall's lowest reading.
+   */
+  const FALL_SHARE = 0.5, FALL_WITHIN = 4;
+  function numberFalls(health, { maxes = [], events = [], deadFor = 5 } = {}) {
+    const hp = (health || []).filter((x) => Number.isFinite(x?.value) && Number.isFinite(x?.t) && x.value > 0).sort((a, b) => a.t - b.t);
+    const tops = (maxes || []).filter((x) => Number.isFinite(x?.value) && x.value > 0), usual = fullHealth(tops, hp);
+    const fullAt = (t) => tops.filter((x) => Math.abs(x.t - t) <= MAX_NEAR).sort((a, b) => Math.abs(a.t - t) - Math.abs(b.t - t))[0]?.value ?? usual;
+    if (!usual) return [];
+    const out = [];
+    for (let j = 1; j < hp.length; j++) {
+      const now = hp[j], full = fullAt(now.t);
+      if (now.value > NEAR_LOW * full || deathAt(events, now.t, deadFor)) continue;
+      const before = hp.filter((x) => x.t < now.t && x.t >= now.t - FALL_WITHIN), top = before.length ? before.reduce((a, b) => (b.value > a.value ? b : a)) : null;
+      if (!top || top.value - now.value < FALL_SHARE * full) continue;
+      // a fall reads on its way down, or stays down at the next reading: one low reading between two at the same level
+      // is a misread (Fortnite's 75, 7, 75 at 4:56, 5:14, and 5:38, three "falls" that weren't, loop 50)
+      // (a fall already kept goes on to its lowest reading)
+      const last = out.at(-1);
+      if (last && now.t - last.t <= FALL_WITHIN) { if (now.value < last.now) Object.assign(last, { t: now.t, now: now.value }); continue; }
+      const between = hp.some((x) => x.t > top.t && x.t < now.t && x.value < top.value - 0.1 * full && x.value > now.value);
+      const next = hp.find((x) => x.t > now.t && x.t <= now.t + FALL_WITHIN);
+      if (!between && !(next && next.value <= NEAR_LOW * full)) continue;
+      if ((events || []).some((e) => (e.kind === 'death' && e.t >= now.t - 2 && e.t <= now.t + 8) || (e.kind === 'near_death' && Math.abs(e.t - now.t) <= 5))) continue;
+      out.push({ t: now.t, kind: 'damage', was: top.value, now: now.value, of: full, start: top.t, seenBy: 'hud', text: '' });
+    }
+    return out.map((x) => ({ t: round(x.t, 2), kind: 'damage', was: x.was, now: x.now, of: x.of, start: round(x.start, 2), seenBy: 'hud', text: `your health fell from ${x.was} to ${x.now} of ${x.of} in ${round(x.t - x.start, 1)} s (the HUD's health number): a fight that turned on them` }));
+  }
+  /**
+   * Damage off the HP number itself, where the bar isn't read: a drop of BAR_DROP of full or more between readings
+   * DROP_GAP s apart or less that the next reading holds (within a twentieth of full), away from any fight or kill, where
+   * no death of theirs, no near-death, and no other damage is near. Fortnite's falls read 97, 72, 75 at 2:42-2:54 and 75, 55, 55 at 6:06-6:18,
+   * the bar unread with its box cut off (loop 50). health, maxes: [{ t, value }]; events: the record. Returns damage events.
+   */
+  const DROP_GAP = 8, DROP_KEEPS = 0.85;
+  function numberDrops(health, { maxes = [], events = [], deadFor = 5 } = {}) {
+    const hp = (health || []).filter((x) => Number.isFinite(x?.value) && Number.isFinite(x?.t) && x.value > 0).sort((a, b) => a.t - b.t);
+    const tops = (maxes || []).filter((x) => Number.isFinite(x?.value) && x.value > 0), usual = fullHealth(tops, hp);
+    const fullAt = (t) => tops.filter((x) => Math.abs(x.t - t) <= MAX_NEAR).sort((a, b) => Math.abs(a.t - t) - Math.abs(b.t - t))[0]?.value ?? usual;
+    if (!usual) return [];
+    // the usual full health: the maximum the HUD writes most often where it writes a few (Marvel Rivals' 250, its bonus
+    // health 335 and 420 for a while), else off the readings (a maximum read once as the health then can be lower)
+    const base = tops.length >= FULL_SEEN ? usual : fullHealth([], hp) || usual, out = [];
+    for (let j = 1; j + 1 < hp.length; j++) {
+      // full is never under the reading before the drop (a maximum read as the health then: "97 to 72 of 72")
+      const a = hp[j - 1], x = hp[j], b = hp[j + 1], full = Math.max(fullAt(x.t), a.value);
+      // and not where it leaves them near their usual full health: bonus health lost (Marvel Rivals' 335 to 250 of 250,
+      // 356 to 224, at 6:12 and 6:42, loop 50) is no damage that decided anything
+      if (x.value >= DROP_KEEPS * base) continue;
+      if (x.t - a.t > DROP_GAP || a.value - x.value < BAR_DROP * full - 1e-9 || Math.abs(b.value - x.value) > 0.05 * full || b.t - x.t > DROP_GAP) continue;
+      if (deathAt(events, x.t, deadFor) || (events || []).some((e) => (e.kind === 'death' && e.t >= x.t - 2 && e.t <= x.t + 8) || ((e.kind === 'near_death' || e.kind === 'damage') && Math.abs(e.t - x.t) <= 5)) || out.some((y) => Math.abs(y.t - x.t) <= 5)) continue;
+      // and only away from a fight, where nothing else in the record says what hurt them (a fall, the storm): in a fight
+      // a hero shooter's health drops and climbs all the time, and Marvel Rivals' record grew six such drops that decided
+      // nothing, ten losses where the coach had looked at three (loop 50)
+      if ((events || []).some((e) => (e.kind === 'engagement' && (e.to ?? e.t) >= x.t - 8 && (e.from ?? e.t) <= x.t + 8) || (e.kind === 'kill' && Math.abs(e.t - x.t) <= 8))) continue;
+      out.push({ t: round(x.t, 2), kind: 'damage', was: a.value, now: x.value, of: full, start: round(a.t, 2), seenBy: 'hud', text: `your health fell from ${a.value} to ${x.value} of ${full} (the HUD's health number, read again after it)` });
+    }
     return out;
   }
   /**
@@ -1844,6 +2056,25 @@
    * Marvel Rivals' kill feed read as a death at 4:31, three seconds after the real one).
    */
   const ONE_DEATH = 6;
+  /**
+   * Deaths with the player alive between them: a death after another stands only where the HP number read them alive
+   * (over NEAR_DEATH of full) in between, read at least once; with no reading between, one death screen can't be told
+   * from two, and it stands. League's death screen lasts half a minute, and its gray HUD read 0, a sliver, and 0 again:
+   * four deaths at 1:46, 1:56, 2:08, and 2:15 for one, the second look calling each "dead" (loop 46). health, maxes:
+   * readCounters' [{ t, value }]; keep(e): a death that stands whatever the HP read (one a death count rose at).
+   */
+  function deathsApart(events, health = [], maxes = [], { keep: always = () => false } = {}) {
+    const hp = (health || []).filter((x) => Number.isFinite(x?.t) && Number.isFinite(x?.value)), full = modeOf((maxes || []).map((x) => x.value).filter((v) => v > 0)) ?? Math.max(0, ...hp.map((x) => x.value));
+    if (!full || !hp.length) return events;
+    let last = null;
+    return [...(events || [])].sort((a, b) => a.t - b.t).filter((e) => {
+      if (e.kind !== 'death') return true;
+      const between = last == null ? [] : hp.filter((x) => x.t > last + 1 && x.t < e.t - 1);
+      const keep = last == null || always(e) || !between.length || between.some((x) => x.value > NEAR_DEATH * full);
+      if (keep) last = e.t;
+      return keep;
+    });
+  }
   function oneDeathEach(events, gap = ONE_DEATH) {
     let last = -Infinity;
     return (events || []).filter((e) => { if (e.kind !== 'death') return true; const keep = e.t - last > gap; if (keep) last = e.t; return keep; });
@@ -2441,6 +2672,45 @@
     return out.slice(0, max);
   }
 
+  /**
+   * death_sweep: the deaths in a sweep's frames ([{ t, state: playing | out | neither }]): each place playing turns to
+   * out and the next frame read is out too (a death screen lasts; one frame out is a flicker or a cut), at the middle of
+   * the gap between the last frame playing and the first out. Frames said neither are skipped over.
+   */
+  /**
+   * A lesson that blames an enemy for damage the record shows with no fight near it (barDamage's quiet: no shot fired,
+   * no hit, no fight within 8 s): the reason it goes against code, or ''. Loop 46's Fortnite cites said "attacked by an
+   * unseen enemy" and "a teammate took fall damage" of the player's own falls (graded wrong).
+   */
+  // and "an easy target for long-range fire", "vulnerable to fire" (loop 49's Fortnite cites at its falls)
+  const ENEMY_HURT = /\b(attack(ed|s|ing)?|shot|sniped|ambush(ed)?|enemy fire|under fire|took fire|fired on|hit by|engag(ed|ing)|gunfight|fight(ing)?|(long-range|ranged|distant|incoming|enemy|to) fire|easy target|exposed to (enemy|enemies|fire|shots|sight ?lines?))\b/i;
+  function quietAgainst(lesson, events) {
+    const t = parseTime(lesson?.t), to = parseTime(lesson?.led_to ?? lesson?.ledTo), at = (x) => Number.isFinite(x) && (events || []).find((e) => e.kind === 'damage' && e.quiet && x >= (e.start ?? e.t) - 3 && x <= e.t + 2);
+    const d = at(t) || at(to);
+    if (!d) return '';
+    const said = [lesson?.what, lesson?.because].map((x) => text(x)).join(' ');
+    return ENEMY_HURT.test(said) ? `code read no shot, no hit, and no fight within 8 s of the damage at ${mmss(d.t, true)}: nothing shows an enemy hurting them` : '';
+  }
+  /**
+   * A cause with one detail taken out (dropClause): the quoted words, with the "with" or comma joining them, tidied. A
+   * claim the record goes against on that detail alone keeps the rest (agent.js finish).
+   */
+  function dropClause(said, q) {
+    const s0 = String(said || ''), i = s0.indexOf(q);
+    if (i < 0 || !q) return s0;
+    let before = s0.slice(0, i), after = s0.slice(i + q.length);
+    const joiner = /(?:,\s*|\s+)(with|and|while)\s*$/i.exec(before)?.[1]?.toLowerCase() || '';
+    before = before.replace(/(,\s*|\s+)(with|and|while)\s*$/i, '').replace(/,\s*$/, '');
+    // "with X and Y": X out, "with Y"
+    after = after.replace(/^\s*,\s*(and\s+)?/, before.trim() ? ', ' : '').replace(/^\s+and\s+/i, before.trim() ? (joiner === 'with' ? ', with ' : ' and ') : '');
+    return `${before}${after}`.replace(/\s{2,}/g, ' ').replace(/\s+([,;.])/g, '$1').replace(/^[\s,;]+/, '').trim();
+  }
+  function sweepDeaths(frames) {
+    const xs = (frames || []).filter((x) => Number.isFinite(x?.t) && (x.state === 'playing' || x.state === 'out')).sort((a, b) => a.t - b.t), out = [];
+    for (let k = 1; k < xs.length - 1; k++) if (xs[k - 1].state === 'playing' && xs[k].state === 'out' && xs[k + 1].state === 'out') out.push({ t: round((xs[k - 1].t + xs[k].t) / 2, 2) });
+    return out;
+  }
+
   // ---------- whether the view moved (first person) ----------
   // Valorant's 0:41 read said "Held a static angle" where he walked in and fired on the move (loop 40, V1). In first
   // person the view moves when the player walks or turns: the scene at the screen's sides changes from frame to frame,
@@ -2467,7 +2737,10 @@
     return { state: m >= VIEW_MOVING ? 'moving' : m <= VIEW_STILL ? 'still' : null, change: m };
   }
   /** The view's motion as a code fact before a loss, or ''. */
-  const viewFact = (motion, { from, to, what = 'the loss' } = {}) => (motion?.state ? `the view, read in code from ${mmss(from, true)} to ${mmss(to, true)} before ${what}, was ${motion.state === 'moving' ? 'moving (the scene at the screen\'s sides changed from frame to frame: walking or turning)' : 'still (the scene at the screen\'s sides held: holding an angle, not walking or turning)'}` : '');
+  // Still says only that it didn't turn: walking straight ahead holds the sides too. Valorant's 0:38-0:40 read 2.1, still,
+  // as he walked up past the crate and fired on the move, and the critique said "a still view, holding a static angle"
+  // (loops 46 and 47, graded wrong)
+  const viewFact = (motion, { from, to, what = 'the loss' } = {}) => (motion?.state ? `the view, read in code from ${mmss(from, true)} to ${mmss(to, true)} before ${what}, was ${motion.state === 'moving' ? 'moving (the scene at the screen\'s sides changed from frame to frame: walking or turning)' : 'still (the scene at the screen\'s sides held: not turning; walking straight ahead reads the same, so this says nothing about whether they held a position)'}` : '');
 
   // ---------- what the player had, and who was left ----------
   // Fortnite's 7:43 fix said "Heal to full health and shield": they had no heals (loop 41, F4). A fix that rests on a
@@ -2830,9 +3103,35 @@
    * its own, measured along itself. Fortnite's 7:30 shield, 98 to 24 in three hits, had no series to fall in (loop 41,
    * F3). frames: [{ t, img }]; calib: the health bar's full crops; first: its color. Returns { color, ref, series } or null.
    */
+  // a second bar's color in a crop, lying across it: { n, its pixels, rows: whether the rows half of whose length is the
+  // color are a few of their own, as a bar's are: one run of them, under half the box, apart from the health bar's band }
+  function shieldRows(img, color, band = [0, 1]) {
+    const up = img.height > img.width, along = up ? img.height : img.width, across = up ? img.width : img.height, solid = [];
+    let n = 0;
+    for (let c = 0; c < across; c++) {
+      let on = 0;
+      for (let a = 0; a < along; a++) { const q = ((up ? a : c) * img.width + (up ? c : a)) * 4; if (barPixel(color, img.data[q], img.data[q + 1], img.data[q + 2])) on++; }
+      n += on;
+      if (on >= along / 2) solid.push(c);
+    }
+    const apart = solid.every((c) => c / across < band[0] || c / across >= band[1]), run = solid.length && solid[solid.length - 1] - solid[0] + 1 === solid.length;
+    return { n, rows: !!run && solid.length < across * 0.45 && apart };
+  }
   function secondBar(frames, calib, first) {
-    const c0 = first && barColor(calib, { not: first });
+    let c0 = first && barColor(calib, { not: first });
     if (!c0 || !(frames || []).length) return null;
+    // its rows from where it's fullest, since the health bar's full moments can't say: a shield can be empty there
+    // (Fortnite's often was, and its blue's rows read as the whole box, the health bar's rows too, so no shield, Oct 26). Fullest by
+    // its pixels in the box (shieldRows), not where it's a bar: a bar is measured on its rows, which are what's missing,
+    // and in a box a little taller (loop 45's, 0.103 of the frame) the blue was under a quarter of each column, nowhere a
+    // bar. Only where the health bar is a bar (the HUD up) and the color lies in a few rows of its own, as a bar does:
+    // after the death, and over water, Fortnite's blue scenery filled the box
+    // Measured there whatever the full moments said: their band can also be a sliver, one row of the bar's edge (a fifth
+    // of the shield's rows), and read off it the full shield dipped to 66% and rose with the scenery, eight falls that
+    // weren't (Fortnite, the loop 45 box)
+    const fullest = frames.filter((f) => f.img?.data && barLike(f.img, first)).map((f) => ({ img: f.img, ...shieldRows(f.img, c0, first.band) })).filter((x) => x.rows).sort((x, y) => y.n - x.n).slice(0, 12).map((x) => x.img);
+    const again = fullest.length >= 2 ? barColor(fullest, { not: first }) : null;
+    if (again && hueGap(again.hue, c0.hue) <= 30 && !(again.band[0] <= 0 && again.band[1] >= 1)) c0 = { ...c0, band: again.band };
     const [a0, a1] = first.band || [0, 1], [b0, b1] = c0.band || [0, 1];
     if (b0 < a1 && a0 < b1) return null; // the same rows as the health bar: no second bar
     // of the crops where it is a bar (scenery of its color round it is no bar), the fullest tenth
@@ -2880,14 +3179,19 @@
   }
   /**
    * When the HUD's number read full health, to calibrate the bar on (barColor, and the fill that is full): readings at
-   * 98% of the full health nearest them or more, the player not dead, up to max, spread through the match. counts:
+   * 98% of the full health nearest them or more (and not over it: that's two numbers read as one pair), the player not
+   * dead, and none under 90% of it within FULL_HELD s, up to max, spread through the match. A box holding two bars has two numbers, and the reads took the other one at times:
+   * Fortnite's shield 98 at 3:10 and 4:38, between 75s, its health then; calibrated on those, the bar was 75% full at
+   * half its "full" moments, wasn't taken for a bar, and none of its four falls was read (loop 45). counts:
    * readCounters' (mergeCounts).
    */
+  const FULL_HELD = 5;
   function barFullTimes(counts, events = [], deadFor = 5, max = 8) {
     const tops = (counts?.healthMax || []).filter((x) => Number.isFinite(x?.value) && x.value > 0), hp = (counts?.health || []).filter((x) => Number.isFinite(x?.value) && x.value > 0);
-    const usual = modeOf(tops.map((x) => x.value)) ?? modeOf(hp.map((x) => x.value));
+    const usual = fullHealth(tops, hp);
     const fullAt = (t) => tops.filter((x) => Math.abs(x.t - t) <= MAX_NEAR).sort((a, b) => Math.abs(a.t - t) - Math.abs(b.t - t))[0]?.value ?? usual;
-    const full = hp.filter((x) => usual && x.value >= 0.98 * fullAt(x.t) && !deathAt(events, x.t, deadFor)).map((x) => x.t);
+    const held = (x) => !hp.some((y) => Math.abs(y.t - x.t) <= FULL_HELD && y.value < 0.9 * fullAt(x.t));
+    const full = hp.filter((x) => usual && x.value >= 0.98 * fullAt(x.t) && x.value <= 1.02 * fullAt(x.t) && held(x) && !deathAt(events, x.t, deadFor)).map((x) => x.t);
     return full.length <= max ? full : Array.from({ length: max }, (_, k) => full[Math.round((k * (full.length - 1)) / (max - 1))]);
   }
   /**
@@ -2895,7 +3199,7 @@
    * look, which reads the number: share times the full health the HUD wrote nearest then.
    */
   function barReadings(series, counts) {
-    const tops = (counts?.healthMax || []).filter((x) => Number.isFinite(x?.value) && x.value > 0), usual = modeOf(tops.map((x) => x.value)) ?? modeOf((counts?.health || []).map((x) => x.value).filter((v) => Number.isFinite(v) && v > 0));
+    const tops = (counts?.healthMax || []).filter((x) => Number.isFinite(x?.value) && x.value > 0), usual = fullHealth(tops, counts?.health);
     if (!usual) return [];
     const fullAt = (t) => (tops.length ? tops.reduce((a, b) => (Math.abs(b.t - t) < Math.abs(a.t - t) ? b : a)).value : usual);
     return (series || []).filter((x) => Number.isFinite(x?.share)).map((x) => { const full = fullAt(x.t); return { t: x.t, value: Math.round(x.share * full), full }; });
@@ -2910,7 +3214,11 @@
   // quiet(t): no fight near t (no shot fired, no hit, no kill or death of theirs): a fall off a ledge, where a smaller
   // share is still damage, QUIET_DROP of full: Fortnite's 6:59 drop, 55 to 45, was under the 20% line (loop 41, F2)
   const BAR_DROP = 0.2, QUIET_DROP = 0.08, BAR_WINDOW = 3, BAR_HOLD = 1;
-  function barDamage(series, { events = [], deadFor = 5, quiet = null, unit = 'health' } = {}) {
+  // level: for a bar no number checks (a shield), the level it fell from must also be the bar's median over the level s
+  // before: Fortnite's shield read 73% for a second and a half over scenery of its blue, between 48s, and the drop back
+  // was a fall of a quarter that wasn't (the loop 45 box)
+  const SHIELD_LEVEL = 5;
+  function barDamage(series, { events = [], deadFor = 5, quiet = null, unit = 'health', level = 0 } = {}) {
     const xs = (series || []).filter((x) => Number.isFinite(x?.share) && Number.isFinite(x?.t) && !deathAt(events, x.t, deadFor)).sort((a, b) => a.t - b.t), found = [];
     const holds = (j) => xs.filter((y) => y.t > xs[j].t && y.t <= xs[j].t + BAR_HOLD).every((y) => y.share <= xs[j].share + 0.1) && xs.some((y) => y.t > xs[j].t);
     let cur = null;
@@ -2921,7 +3229,8 @@
       // a quiet drop under the 20% line counts only where it stays down 3 s, as a fall's does: a bar's wobble climbs back
       const quietHere = quiet && quiet(xs[j].t), big = peak && peak.share - xs[j].share >= BAR_DROP - 1e-9;
       const stays = (k) => { const next = xs.filter((y) => y.t > xs[k].t && y.t <= xs[k].t + 3); return next.every((y) => y.share <= xs[k].share + 0.05) && next.some((y) => y.t >= xs[k].t + 2.5); };
-      if (peak && (big || (quietHere && peak.share - xs[j].share >= QUIET_DROP - 1e-9 && stays(j))) && holds(j)) {
+      const leveled = !level || median(xs.filter((y) => y.t >= xs[j].t - level && y.t < xs[j].t).map((y) => y.share)) - xs[j].share >= BAR_DROP - 1e-9;
+      if (peak && (big || (quietHere && peak.share - xs[j].share >= QUIET_DROP - 1e-9 && stays(j))) && holds(j) && leveled) {
         if (cur && peak.t <= cur.t + BAR_HOLD) { if (xs[j].share < cur.now) Object.assign(cur, { t: xs[j].t, now: xs[j].share }); } else { if (cur) found.push(cur); cur = { start: peak.t, was: peak.share, t: xs[j].t, now: xs[j].share }; }
       } else if (cur && xs[j].t - cur.t > BAR_HOLD) { found.push(cur); cur = null; }
     }
@@ -2932,7 +3241,10 @@
     const deaths = (events || []).filter((e) => e.kind === 'death'), lows = (events || []).filter((e) => e.kind === 'near_death');
     return found.filter((x) => !deaths.some((d) => d.t >= x.start - 2 && d.t <= x.t + 8) && !lows.some((n) => Math.abs(n.t - x.t) <= 5)).map((x) => {
       const was = Math.round(x.was * 100), now = Math.round(x.now * 100);
-      return { t: round(x.t, 2), kind: 'damage', was, now, start: round(x.start, 2), seenBy: 'hud', ...(unit !== 'health' ? { unit } : {}), ...(quiet && quiet(x.t) && x.was - x.now < BAR_DROP ? { quiet: true } : {}), text: `your ${unit} bar fell from ${was}% to ${now}% of full (read off the bar${unit !== 'health' ? ', no number to check it by' : ''})` };
+      // quiet: no shot fired, no hit, no fight near it, said in its text so the coach and the claim checks have it: loop
+      // 46's Fortnite fixes said "attacked by an unseen enemy" of a fall (graded wrong)
+      const still = !!(quiet && quiet(x.t));
+      return { t: round(x.t, 2), kind: 'damage', was, now, start: round(x.start, 2), seenBy: 'hud', ...(unit !== 'health' ? { unit } : {}), ...(still ? { quiet: true } : {}), text: `your ${unit} bar fell from ${was}% to ${now}% of full (read off the bar${unit !== 'health' ? ', no number to check it by' : ''}${still ? '; no shot fired, no hit, and no fight within 8 s of it: nothing on screen shows an enemy hurting them' : ''})` };
     });
   }
 
@@ -3079,6 +3391,18 @@
    * item), so icons go by their place in it. Dimmed isn't only a cooldown: stunned, League dims every icon (8:49). ''
    * when no icon's state is sure. what: the loss, "the death".
    */
+  /**
+   * The icons lit (ready) at both reads before a loss, as a code fact: had and not used. The graded critiques named the
+   * situation, not the decision: Marvel Rivals' "stayed in until 16 with two abilities ready", Valorant's ult READY at
+   * 4:15, 4:57, and 6:15, never used (loops 45-47). An icon that came off cooldown in between reads lit at both too, so
+   * it says only what the row showed then. earlier, later: abilityState's at the two reads; '' when none is lit at both.
+   */
+  function unusedFact(earlier, later, { t0, t1, what = 'the loss' } = {}) {
+    const both = (later || []).filter((s) => s.state === 'lit' && (earlier || []).some((e) => e.icon === s.icon && e.state === 'lit'));
+    if (!both.length) return '';
+    const n = later[0].of, names = both.map((s) => `${s.icon}${s.icon === n ? ' (the last)' : ''}`);
+    return `the HUD's ability row, read in code at ${mmss(t0, true)} and ${mmss(t1, true)}: icon${names.length > 1 ? 's' : ''} ${names.join(' and ')} lit (ready) at both, so ready and not used in the seconds before ${what}`;
+  }
   function abilityFact(states, { t, before, what = 'the loss' } = {}) {
     const sure = (states || []).filter((s) => s.state);
     if (!sure.length) return '';
@@ -3094,6 +3418,38 @@
    * through it and the ult icon twice as wide, split into one icon, and its reads said "abilities on cooldown" where one
    * was ready and one on 1 s (loop 40, M2).
    */
+  /**
+   * Whether a cited moment's cause agrees with what code read at its loss, and names any of it (N7). facts: the lines code
+   * wrote for that loss's clip read (reading.known: state_facts' HUD numbers and ammo, ability_state's row, the view's
+   * motion). Loop 44's causes said the opposite of code's reading as often as not ("holding the angle" of a walk in,
+   * "abilities on cooldown" with two lit, "low on health" at 235 of 250) and named none of it ("outnumbered, retreat to
+   * cover"). Returns { against: [what code read instead], names, kinds }: kinds, the facts code had there; names, whether
+   * the cause says any of them.
+   */
+  const FACT_WORDS = { view: /\b(walk|walked|walking|moving|moved|running|ran|turn(ed|ing)?|still|stood|held|holding|static|peek(ed|ing)?|strafe|strafing|push(ed|ing)?|swung|swing(ing)?|rushed|rushing)/, abilities: /\b(abilit|ult\b|ultimate|cooldown|ready|charge|charged)/, health: /\b(health|hp\b|shield|\d+ ?(of|\/) ?\d+)/, ammo: /\b(ammo|reload|magazine|mag\b|bullets|empty|clip\b|rounds? left)/ };
+  function factCheck(moment, facts) {
+    const said = [moment?.what, moment?.because, moment?.better].map((x) => text(x)).join(' ').toLowerCase();
+    const lines = (facts || []).map((f) => String(f?.text ?? f ?? ''));
+    const view = lines.map((l) => /^the view, read in code .* was (moving|still)/.exec(l)?.[1]).find(Boolean) || null;
+    // the ability row's reading nearest the loss is its last (6, then 2 s before it)
+    const rows = lines.filter((l) => /^the HUD's ability row, read in code/.test(l) && !/lit \(ready\) at both/.test(l)), row = rows.at(-1) || '';
+    const lit = /lit \(ready\) icons? ([^;]+)/.exec(row)?.[1] || '', dim = /dimmed \(on cooldown or unusable\) icons? ([^;]+)/.exec(row)?.[1] || '';
+    const rowAt = /at ([\d:.]+)/.exec(row)?.[1] || '';
+    const hpLine = lines.map((l) => /^the HUD's health number read (.*)/.exec(l)?.[1]).find(Boolean) || '';
+    const reads = [...hpLine.matchAll(/(\d+) of (\d+) at ([\d:.]+)/g)].map(([, v, of, at]) => ({ v: +v, of: +of, t: parseTime(at) })).filter((r) => r.of > 0);
+    const t = parseTime(moment?.t), hp = reads.length ? [...reads].sort((a, b) => Math.abs(a.t - t) - Math.abs(b.t - t))[0] : null;
+    const ammo = lines.some((l) => /^the ammo counter of the weapon in hand/.test(l));
+    const against = [];
+    if (view === 'moving' && /\b(held|holding|hold(s)?) (an? |the |that )?(angle|position|spot|corner)|\bstatic\b|\bstood still\b|\bcamp(ed|ing)?\b/.test(said)) against.push('code read the view moving before the loss (walking or turning), not holding an angle');
+    // (a still view is no fact against walking: walking straight ahead holds the screen's sides too, viewFact)
+    if (/\(the last\)/.test(lit) && /\bult(imate)?\b[^.;]{0,30}\b(down|on cooldown|not (ready|up|available)|unavailable|used|spent)\b|\b(no|without( an?| the| (his|her|their))?) ult(imate)?\b/.test(said)) against.push(`code read the last icon, the ult, lit (ready) at ${rowAt}`);
+    if (/the last/.test(dim) && /\bult(imate)? (was |is )?(ready|up|available)\b|\bwith (his|her|their|the) ult(imate)? (ready|up)\b/.test(said)) against.push(`code read the last icon, the ult, dimmed (on cooldown or unusable) at ${rowAt}`);
+    if (lit && /\b(abilities|cooldowns) (were |was |all |are )*(on cooldown|down|used|unavailable|spent)\b|\bno abilities\b|\bwithout (any )?abilities\b/.test(said)) against.push(`code read icon${/,| and /.test(lit) ? 's' : ''} ${lit.trim()} lit (ready) at ${rowAt}`);
+    if (hp && hp.v / hp.of >= 0.6 && /\blow (on )?(health|hp)\b|\bat low (health|hp)\b|\blow-health\b|\bnearly dead\b/.test(said)) against.push(`code read health ${hp.v} of ${hp.of} at ${mmss(hp.t, true)}`);
+    if (hp && hp.v / hp.of <= 0.3 && /\b(full|high) (health|hp)\b|\bhealthy\b/.test(said)) against.push(`code read health ${hp.v} of ${hp.of} at ${mmss(hp.t, true)}`);
+    const kinds = [view && 'view', row && 'abilities', reads.length && 'health', ammo && 'ammo'].filter(Boolean);
+    return { against, names: !kinds.length || kinds.some((k) => FACT_WORDS[k].test(said)), kinds };
+  }
   const abilityUnknown = (why) => (why ? `the HUD's ability row couldn't be read in code (${String(why).replace(/\.$/, '')}): say an ability or the ult is ready or on cooldown only where its own icon shows it plainly (a cooldown number on it, or the icon greyed or dark), and otherwise that it can't be told` : '');
 
   // ---------- the HUD's digits, larger (hud_zoom) ----------
@@ -3217,6 +3573,8 @@
    * A box in the wrong place is better read as nothing than as another number.
    */
   const READOUT_H = 0.07, READOUT_W = 0;
+  // a structure's health number is read at this height at least (agent.js readCounters, learn.js ownStructures)
+  const TOWER_H = 0.045;
   function readoutRegion([x, y, w, h], minH = READOUT_H, minW = READOUT_W) {
     const ww = Math.max(w, minW), hh = Math.max(h, minH);
     return [ww === w ? x : round(clamp(x + w / 2 - ww / 2, 0, 1 - ww), 4), hh === h ? y : round(clamp(y + h / 2 - hh / 2, 0, 1 - hh), 4), ww, hh];
@@ -3290,9 +3648,9 @@
     BudgetError, createBudget, left, spend, budgetLine,
     SLACK, MIN_EVIDENCE, LEAD_MAX, createLedger, recordLook, seen, deadForOf, deathAt, playedInRounds, noRespawnRounds, roundStarts, roundDeath, aliveInRound, ROUND_GAP, LOSS_LOOKS, losses, lossGap, lossMoments, costliest, atLoss, MIN_LOSSES, MAX_TRIES, fightOf, retryRefusal, problemKind, NOT_DECIDING, checkFinish,
     STATUSES, applyNote, boardBrief, unreadDowns, unreadUnits, cutTimes, snapUnits, KINDS, normalizeEvents, mergeEvents, knownText, eventLine, eventsBrief, wrapNames,
-    pixelTeam, killfeedRows, teamLines, colorBands, fitGrid, rowDistance, SAME_ROW, sameRow, freshRows, nameKey, sameName, feedSightings, choosePlayer, whoIsPlayer, buildKillfeed, confirmByBanners, cutNames, aliasNames, feedCharacters, counterRises, counterSteps, hudKills, hpGone, hpSliver, hudRecord, mergeCounts, riseSpans, lowSpans, timesIn, nearDeaths, NEAR_DEATH, controlClaims, ammoPairs, ammoSlots, mixedAmmo, namedTimes, recordingTimes, numberText, statesNumber, NEAR_TIME, MOMENT_SLACK, claimTimes, quotedLine, lineKind, staleAgainst, sawElsewhen, videoSaw, movesIn, playedMoves, engineMoves, engineFact, movesAt, lineContradicts, chessBetter, steadyClocks, iconPixels, abilityIcons, abilityState, abilityFact, abilityUnknown, sameSide, trustCounter, settleFights, pointsTaken, oneDeathEach, eventWindows, readFrom, windowLosses, nearLosses, RUN_UP, fightsFromClips, clipMoments, onClock, feedText, textRows, textEdge, onEdge, feedBand, nameColors, textFeedReads, textFeedSightings, teamsByColor,
-    ammoReading, shotsFired, fireTimes, groupFights, mergeFights, feedTeams, scoreRounds, matchState, stateFacts, fillerFactor, deathCues, narratedDeath, viewEdges, viewMotion, viewFact, unheldResource, dropResourceClause, playersLeft, soloAgainst, resultOf, settleResult, readDrops, dropChecked, DROP_SHARE, MAX_FRAMES, framePlan, CLIP_LOOK, clipPlan, claimAfter, regionRect, READOUT_H, READOUT_W, readoutRegion, characterFrom, namesIn, unshownNames,
-    uncoveredLosses, COVER_N, CHESS_COVER_N, rankedLosses, lossOrder, coverFill, fillRejected, pickTurns, structureSteps, structureEvents, structureSpans, trustStructures, STRUCTURE_DROP, LONG_RUN_UP, ZOOM, digitZoom, zoomScale, sheetCols, numbersOf, parseRef, refsIn, stripRefs, withRefs, barColor, barFill, barRun, barLike, barSpan, secondBar, barAgrees, damageChecked, barFullTimes, barReadings, barDamage, BAR_DROP, QUIET_DROP, BAR_WINDOW, fightWindows,
+    pixelTeam, killfeedRows, teamLines, colorBands, fitGrid, rowDistance, SAME_ROW, sameRow, freshRows, nameKey, sameName, feedSightings, choosePlayer, whoIsPlayer, buildKillfeed, confirmByBanners, cutNames, aliasNames, feedCharacters, counterRises, counterSteps, hudKills, hpGone, hpSliver, hudRecord, mergeCounts, riseSpans, lowSpans, timesIn, nearDeaths, fullHealth, despike, numberFalls, numberDrops, FALL_SHARE, NEAR_DEATH, controlClaims, ammoPairs, ammoSlots, mixedAmmo, namedTimes, recordingTimes, numberText, statesNumber, NEAR_TIME, MOMENT_SLACK, claimTimes, quotedLine, lineKind, staleAgainst, sawElsewhen, videoSaw, movesIn, playedMoves, engineMoves, engineFact, movesAt, lineContradicts, chessBetter, fenSquares, boardAgainst, sweepDeaths, quietAgainst, dropClause, steadyClocks, iconPixels, abilityIcons, abilityState, abilityFact, unusedFact, abilityUnknown, sameSide, trustCounter, settleFights, pointsTaken, deathsApart, oneDeathEach, eventWindows, readFrom, windowLosses, nearLosses, RUN_UP, fightsFromClips, clipMoments, onClock, feedText, textRows, textEdge, onEdge, feedBand, nameColors, textFeedReads, textFeedSightings, teamsByColor,
+    ammoReading, shotsFired, fireTimes, groupFights, mergeFights, feedTeams, scoreRounds, matchState, stateFacts, fillerFactor, deathCues, narratedDeath, viewEdges, viewMotion, viewFact, unheldResource, dropResourceClause, playersLeft, soloAgainst, resultOf, settleResult, readDrops, dropChecked, DROP_SHARE, MAX_FRAMES, framePlan, CLIP_LOOK, clipPlan, claimAfter, regionRect, READOUT_H, READOUT_W, TOWER_H, readoutRegion, characterFrom, namesIn, unshownNames,
+    oneOnOne, teamPoints, factCheck, overCharacter, withNameOver, ownHealth, uncoveredLosses, COVER_N, CHESS_COVER_N, rankedLosses, lossOrder, coverFill, fillRejected, pickTurns, structureSteps, structureEvents, structureSpans, trustStructures, STRUCTURE_DROP, LONG_RUN_UP, ZOOM, digitZoom, zoomScale, sheetCols, numbersOf, parseRef, refsIn, stripRefs, withRefs, barColor, barFill, barRun, barLike, barSpan, secondBar, barAgrees, damageChecked, barFullTimes, barReadings, barDamage, BAR_DROP, QUIET_DROP, SHIELD_LEVEL, BAR_WINDOW, fightWindows,
     emptyHistory, addMatch, acceptHabit, historyFor, dropHabit, compareAim, historyBrief,
   };
   root.ThirdeyeCore = api;

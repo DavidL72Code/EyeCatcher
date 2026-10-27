@@ -1,0 +1,289 @@
+{
+ "loop": "loop-49",
+ "by": "a grading agent, from the loop-49 worksheet and the validated baselines (eval/answer-keys/coach/baseline.validated.json and validated-*.json), calibrated on loops 45, 46 and 47's grades (and loop 40's for val 2:17, 4:15 and 4:57): each cited loss judged against the key's happened, factors, mistake, better and not_true, with its unsure list not held against a cite; wrong where a cause in a cite at the loss contradicts the key or its not_true, or describes what didn't happen; partly where the decision is missed or an off fact changes the fix; right where the decision is named and off facts leave the lesson standing; one cite at two losses (Rivals 4:16, led to 4:28) graded at each; send-backs for a rule (citing the loss itself, a name nothing read shows, too few losses looked at, not looked closely, the coverage list, the habit_id format, a cause naming none of code's reads, the second-time notice) left out; send-backs that the player was dead at a cited moment graded as claims, with the claim taken from that attempt's finish in the run file; a cause that goes against code's reading or the record graded as a claim, the part the check named; a 'video doesn't show' check graded as a claim where the key settles it; a claim at a whole-second time judged at that second as the key reads it (as loop 45's '4:29.0 isn't read'); a claim found by both the record and the frames check, or sent twice word for word, counted once; mixed evidence judged unclear, as loop 47's bs 2:57; no numbers per loss, as loops 45-47 have none; not yet checked by a second grader",
+ "games": {
+  "lol": {
+   "1": {
+    "losses": {
+     "1:48": {
+      "grade": "right",
+      "why": "names staying 'advanced in lane alone' while 'enemy missing pings were active', fix 'Retreat to tower when enemy missing pings warn enemies missing' (key: 'Staying at the front of the mid wave after four 'enemies missing' ... pings'; 'stand behind her wave toward her own tower'); misses the Nearsighted cue ('walk back at once') and Flash and ult down; off: 'key abilities ready' where 'Flash on cooldown ... ult on cooldown', and '271 of 1479 ... at 1:46' is mid-burst ('622 (1:45.8), 140 (1:46.1)')"
+     },
+     "8:56": {
+      "grade": "partly",
+      "why": "right moment and the river 'without full vision of flanking enemies' (key: 'the enemy jungler unseen'; 'ward the river'), fix 'Stay back with teammates' near 'back off toward the team'; misses the decision, 'stopping in the river to channel her ult' after Flashing out of the stun; '3 teammates alive' goes against 'two teammates dead, one in base', 'key abilities ready and unspent' at 8:51 against 'Flash used ... (8:49.8-8:50.0) and ult channelled right after (8:50.2)', and 'Graves smoke' names no one the key shows (Nearsighted at 8:53.0, then 'Tintin ... beside her')"
+     }
+    },
+    "outside": [
+     {
+      "t": "4:53",
+      "really": "loss",
+      "why": "a near-death the key doesn't list: the record's HUD health '392 of 1589' at 4:53 (looked at again), after the key's '280 at 4:29.7' and 'She lives'; the key reads nothing after 'Enemy turret destroyed!' at 4:34.5"
+     },
+     {
+      "t": "4:53",
+      "really": "loss",
+      "why": "the same moment as a turning point: the record's near-death, HUD '392 of 1589' at 4:53, which the key, ending that fight at 4:34.5, doesn't list"
+     }
+    ],
+    "sent_back": [
+     {
+      "claim": "at 8:44, facing incoming enemies without full vision (attempt 2, record check)",
+      "really": "true",
+      "why": "baseline: 'the enemy jungler unseen', Fizz's 'enemies are missing' ping at 8:52 and Tintin first 'beside her at 8:54.6'; CalvinCoach on screen (8:47.5-8:49.3) isn't full vision"
+     },
+     {
+      "claim": "at 1:48, health 271 of 1479 (attempt 2)",
+      "really": "false",
+      "why": "baseline: '622 (1:45.8), 140 (1:46.1), 0 (1:46.4): dead at 1:46.4', and '617-621 of 1479 (42%) at 1:43-1:45' while she stayed in lane; the check's 1 isn't the key's either"
+     },
+     {
+      "claim": "at 4:53, health 389 of 1589 (attempt 2)",
+      "really": "unclear",
+      "why": "the baseline reads nothing after 'Enemy turret destroyed!' at 4:34.5; its last health is '280 at 4:29.7'"
+     },
+     {
+      "claim": "at 8:56, health 256 of 1820 (attempt 2; the check: player dead)",
+      "really": "false",
+      "why": "baseline: '1057 (8:54.3), 131 (8:54.6), 0 (8:54.9)': dead before 8:56"
+     },
+     {
+      "claim": "at 8:54, health 256 of 1820 (attempt 3)",
+      "really": "false",
+      "why": "baseline: '1112 (8:52), 1057 (8:54.3)', so not 256 at 8:54; the check's 1056 fits"
+     }
+    ]
+   }
+  },
+  "rl": {
+   "1": {
+    "losses": {},
+    "outside": [],
+    "sent_back": [
+     {
+      "claim": "at 4:13, committed to an offensive shot deep in the opponent half with only 1 boost (attempt 1)",
+      "really": "false",
+      "why": "baseline: 'at 4:09 he shoots from the corner at a tight angle ... down to 42'; at 4:13 he 'chases from behind' ('5 at 4:13') and is at 1 only at the goal (4:15)"
+     },
+     {
+      "claim": "at 4:13, the shot exhausted his boost down to 1 (attempt 2, record check)",
+      "really": "false",
+      "why": "baseline: the shot took him 'down to 42', then '14 at 4:12, 5 at 4:13'; 'with him at 1 boost' only at 4:15"
+     },
+     {
+      "claim": "at 4:16, stranded in the midfield without boost when the ball was cleared (attempt 2)",
+      "really": "unclear",
+      "why": "baseline: 'The shots are saved and cleared', so the check's 'a goal ... rather than the ball being cleared' isn't the key's, but 'He lands at about 35' as it is cleared, then '14 at 4:12, 5 at 4:13 ... 0 at 4:14': low, not empty, at the clear"
+     }
+    ]
+   }
+  },
+  "mr": {
+   "1": {
+    "losses": {
+     "4:18": {
+      "grade": "partly",
+      "why": "right moment, '206 of 314' at 4:16 (key: '206 of 314 at 4:16') and close-range melee against multiple enemies (key: 'Trading head-on'); misses the decision, 'Trading head-on through her ult ... with two abilities ready to step out and come back': it never names the ult, 'ability icons showed cooldowns' goes against 'at 4:18 two ability slots ready', and 'wait for teammate cooldowns before engaging' isn't 'dash out to her healers for a second, then go back in'"
+     },
+     "4:27": {
+      "grade": "partly",
+      "why": "the same 4:16 cite, led to 4:28: 'multiple enemies' and 'limited cover' fit 'four labelled enemies' and 'past cover', and 'wait for teammate cooldowns before engaging' is near 're-engage with them'; but it describes the ult fight at 206 of 314, not the decision, 'Staying forward at half health after her ult ran out' ('121 at 4:25.5'), and misses 'use the ready ability to fall back to Chinagooner and NaturalKickZ'"
+     }
+    },
+    "outside": [],
+    "sent_back": []
+   }
+  },
+  "val": {
+   "1": {
+    "losses": {
+     "0:41": {
+      "grade": "wrong",
+      "why": "'Held a stationary position in B Link' goes against 'He walks up past the crate' and 'He fires once at 0:40.0 (8 -> 7) while moving' ('Shooting Error 1.40°'), so its fix ('Use utility or reposition') misses 'Stop before the first shot (counter-strafe)'; 'Bandit' where the key has 'the first Classic shot'"
+     },
+     "2:17": {
+      "grade": "wrong",
+      "why": "'Equipped the Classic pistol' and 'dry peeking with a pistol' go against 'He switches to his Outlaw at 2:14.3' and his flash ('throws a blue orb at 2:13.5 ... pops there in his own view'), so it misses the decision, 'Throwing his flash where it popped in his own view and swapping to the Outlaw mid-fight', as loop 40's wrong grades did; '100 of 100' at 2:15.8 is after 'he is dead at 2:15.0'; the 2 v 1 and 'Wait for teammate backup' (key: 'trade off CLV|bam') are right"
+     },
+     "4:15": {
+      "grade": "right",
+      "why": "names moving to peek A site 'alone in a 1v2' at 51 'with abilities 1, 2, and 4 ready and unused', fix 'use utility' (key: 'Swinging the open courtyard ... in a 1 v 2 with his ult ready'; 'Use the ready ult (or a flash) to find the two before swinging'); misses 'on the move' and 'not firing when zeytazin ran across his crosshair', as loop 40's right grade of this loss did; 51 HP and rifle 20/50 are right"
+     },
+     "4:57": {
+      "grade": "right",
+      "why": "names advancing up A Main on a Sheriff with ability 4 (the ult) 'ready and unused', fix 'Hold an angle or use utility' (key: 'Taking the first duel alone on a Sheriff ... and his ult ready'; 'hold a tight angle ... or use the ult or a flash'); misses 'no armor', playing alone and 'firing a beat late', as loops 40 and 47 graded this loss right; 'Sheriff ammo 5/24' at 4:55 is before his one shot ('6 -> 5' at 4:55.95)"
+     },
+     "6:15": {
+      "grade": "partly",
+      "why": "right moment, the peek onto A site 'against Reyna' with ability 4 (the ult) 'ready and unused' (key: 'ult READY and unused'), fix 'wait for teammate backup' near 'clear the edge with Chamber'; misses the decision, 'Running onto site with the knife out and the rifle not ready'; 'at 50 health' and 'duels at half health' rest on a 50 the key reads as his shield ('Full buy: Vandal 25/50 and 50 shield'), and 'Vandal magazine at 21' at 6:14 is before his first shot (25 -> 20 from 6:14.75)"
+     }
+    },
+    "outside": [],
+    "sent_back": [
+     {
+      "claim": "at 0:38, abilities on cooldown (attempt 2, record check)",
+      "really": "unclear",
+      "why": "the baseline says nothing of his abilities at 0:38-0:40; code read icon 1 ready"
+     }
+    ]
+   }
+  },
+  "cr": {
+   "1": {
+    "losses": {
+     "2:36": {
+      "grade": "wrong",
+      "why": "its cause, a counterpush 'leaving the tower vulnerable to enemy units' with the tower 'taking direct hits from enemy units', goes against the key's drops, all spells: 'the opponent's Fireball' (761 to 511, 2:23.2), 'a red spell ring' (to 448) and 'the opponent's Log' (to 384 at 2:35.8), before the counterpush ('Ram Rider (2:35)'); it misses 'Stacking 13 elixir of Sparkys right against the damaged right tower', and 'Focus entirely on defensive positioning' isn't 'Keep the defending Sparky a couple of tiles off the damaged tower'"
+     }
+    },
+    "outside": [],
+    "sent_back": [
+     {
+      "claim": "at 3:28, placed a defensive building in the center in sudden death instead of intercepting the enemy push (attempt 2)",
+      "really": "false",
+      "why": "baseline: the Teslas went 'in the middle' at 3:03 and 3:05 and, with the Sparky, stopped the push ('The Royal Giant dies at 3:10'); at 3:28 the tower had just fallen to 'the opponent's Fireball ... at 3:27.3'"
+     },
+     {
+      "claim": "at 2:36, the right tower at 384 of 3197 (attempt 2)",
+      "really": "true",
+      "why": "baseline: '448 to 384 at 2:35.8', on the tower that started at 3197 ('3197 to 2791 (1:24.5)'); the check read 384 too and objected only that 3197 isn't on screen"
+     },
+     {
+      "claim": "at 3:28, cast a spell in the center in sudden death instead of defending the tower (attempt 3, record and frames checks; the record check sent twice word for word)",
+      "really": "false",
+      "why": "baseline: the spell then is 'the opponent's Fireball', which 'hits the 7-health tower at 3:27.3'; the player's overtime spell was 'a Zap on the opponent's right tower (3:17-3:18)', and his elixir went to defence ('all but the Ram Rider on defence')"
+     }
+    ]
+   }
+  },
+  "fn": {
+   "1": {
+    "losses": {
+     "7:43": {
+      "grade": "right",
+      "why": "names engaging 'from behind soft bush cover' with the Arc-Lightning Gun, fix 'Reposition inside the glass building for hard structural cover' (key: 'Re-peeking from behind a hedge ... firing the Arc-Lightning Gun into the hedge'; 'get into the building beside them ... re-engage only from built cover'); misses the unbuilt '500 wood, 500 stone' and the lightning hitting the hedge; off: '63 health and 100 shield' is MISK-82's '63 shield and 100 health' after the kill (theirs: '24 shield and 45 health'), and '259' is rifle ammo ('259 and 528 ammo')"
+     }
+    },
+    "outside": [],
+    "sent_back": []
+   }
+  },
+  "bs": {
+   "1": {
+    "losses": {
+     "0:38": {
+      "grade": "partly",
+      "why": "right loss and advancing 'against multiple enemies' (key: three enemies 'on screen at its top edge'), fix 'Retreat' near 'Step back out of the circle'; misses the decision, 'Walking up into the enemy's pink circle ... and staying in it for about 7 s, ahead of his team'; 'alongside teammates' where 'ahead of the three teammates on his left', and its 0:42 'dropping health to 3485' is his recovery behind them ('1743 (0:40.25), 3485 (0:41.25)')"
+     },
+     "1:10": {
+      "grade": "partly",
+      "why": "names fighting 'multiple enemies alone while teammates were distant' 'in the right lane', fix 'Fall back to regroup with teammates' (key: 'staying put alone on the right ... instead of falling back to his team'; 'back off down-left toward his four teammates'); misses the charged super and gadget ('he used neither before dying'), as loop 45's partly grade of this loss did; 'Pushed forward' where 'He holds his spot instead of backing off', and 'dying at 1:09' where 'dead at about 1:10.4'"
+     },
+     "2:58": {
+      "grade": "partly",
+      "why": "right moment and challenging 'multiple enemies' (key: 'into three enemies'), fix 'Retreat behind cover' near 'step straight back out of it'; misses the decision, 'Walking up alone, ahead of his team', the two shots at SSZtt for no damage, the pink circle and the Immune state; 'despite teammates being nearby' where 'he walks up ahead of them', and '262 of 262' isn't his health ('Immune' at 1 HP from 2:57.0, of 14300)"
+     }
+    },
+    "outside": [],
+    "sent_back": [
+     {
+      "claim": "at 1:09, pushed up the right lane alone with health dropping from 14300 to 2690 and zero, and no defensive abilities available (attempt 1; the check: player dead)",
+      "really": "false",
+      "why": "baseline: at 1:09 he is alive at 1 HP ('Immune' to about 1:09.1, 'still at 1 HP' from 1:09.25) and 'dead at about 1:10.4', with 'super charged from 1:05.75' and 'gadget at 3 all round, never used'; the check's 'already dead' isn't the key's either"
+     },
+     {
+      "claim": "at 2:57, health dropping to 262 (attempt 1)",
+      "really": "false",
+      "why": "baseline: 'From 2:57.0 to about 2:58.2 'Immune' shows over him at 1 HP'; the check's 7560 is the object's ('9880 to 7560') and 2320 his own hit"
+     },
+     {
+      "claim": "at 0:42, advanced into the open alone (attempt 2, record check)",
+      "really": "false",
+      "why": "baseline: 'He walks down out of the circle and ends up behind them: at 0:40.5 TITAN PC (5520), ราชาโดดรุม and nahhh are up-left of him'"
+     },
+     {
+      "claim": "at 2:56, teammates were distant (attempt 2, record check)",
+      "really": "unclear",
+      "why": "baseline: 'Walking up alone, ahead of his team', but 'nahhh stays about a quarter-screen behind on his left', as loop 47 judged the same moment"
+     }
+    ]
+   }
+  },
+  "ch": {
+   "1": {
+    "losses": {
+     "0:16": {
+      "grade": "right",
+      "why": "names 2.f4 'allowing dxe4', fix exd5 (key: 'the opponent's capture dxe4 was the threat', '2.exd5'); 'weakening the center' and 'to control the center' aren't the key's 'defended by nothing'"
+     },
+     "5:05": {
+      "grade": "partly",
+      "why": "right move and the key's fix 15.Nc3, but its threat 'allowing Qd5' isn't the key's ('15...Nf6 threatens ...Nd5', a knight fork of c3 and e3), as loop 45 graded it"
+     },
+     "5:14": {
+      "grade": "right",
+      "why": "names Qd3 'walking into Bc4 attacking the queen with the knight behind it', fix d5 (key: 'in line with the e2 knight on the c4 bishop move's diagonal', '16.d5'); it doesn't claim Bc4 wins the knight (not_true)"
+     },
+     "5:41": {
+      "grade": "right",
+      "why": "names 18.Nf4 'allowing Bxf4+ taking the knight with check' as 'the bishop on d6 covered f4', fix Ng3 (key: 'f4 is on the d6 bishop's diagonal to c1', '18.Ng3')"
+     },
+     "6:28": {
+      "grade": "right",
+      "why": "names 22.Rxf4 'allowing Bxa6' as the c4 bishop 'controlled a6', fix Bxc4 (key: 'Black's 21...Bc4 attacks White's a6 bishop', '22.Bxc4 Nxc4 23.Rxf4'); 'losing material' where the key has 'an even trade instead of a won piece'"
+     },
+     "7:52": {
+      "grade": "partly",
+      "why": "names 26.Rf1, Stockfish's 26...Bd5 and the fix 26.Re1, but not why: the key's 'Not challenging the rook on e2' (Black's rook on White's second rank)"
+     }
+    },
+    "outside": [
+     {
+      "t": "2:03",
+      "really": "loss",
+      "why": "the key's engine grades 10.Qb5+ '168 / 116', a soft mistake it doesn't list (Black answered '10. Qb5+ Qc6', not Nc6)"
+     },
+     {
+      "t": "0:57",
+      "really": "loss",
+      "why": "the key's engine grades 6.Ne2 '151 / 121', a soft mistake it doesn't list"
+     }
+    ],
+    "sent_back": []
+   }
+  },
+  "r6": {
+   "1": {
+    "losses": {
+     "8:58.3": {
+      "grade": "right",
+      "why": "names advancing through the doorway at '19/100' in a '2v3' at match point (1:15; key '1:16-1:13 left'), rifle 25/64, fix 'Wait for teammate support ... instead of pushing with critical health' (key: 'play off TAVUKSEVEN ... instead of taking the first duel'); misses the 'rifle lowered on entry'; off: '2F Mezzanine' where he 'walks through that doorway into 2F Piano Room' (the Mezzanine was the 8:38 room)"
+     }
+    },
+    "outside": [],
+    "sent_back": [
+     {
+      "claim": "at 8:59, pushed through the doorway from 2F Covered Terrace into 2F Piano Room (attempt 1, record check)",
+      "really": "true",
+      "why": "baseline: 'looks into the room from the 2F Covered Terrace doorway at 8:52, backs off, then at 8:56.3-8:56.5 walks through that doorway into 2F Piano Room'; the record's 2F Mezzanine is the 8:38 room"
+     },
+     {
+      "claim": "at 8:39, challenged the doorway angle from cover on 2F Covered Terrace, leading to the near-death (attempt 1)",
+      "really": "false",
+      "why": "baseline: he 'walks across the room and through that doorway' (8:37.7-8:38.0) 'into 2F Mezzanine' and takes 'three hits of 27' there; at 8:39 he is in the Mezzanine, as the check read"
+     },
+     {
+      "claim": "at 8:59, clock 1:17 (attempt 1)",
+      "really": "false",
+      "why": "baseline: 'timer 1:16 at 8:55.5' and '1:16-1:13 left' over the loss"
+     },
+     {
+      "claim": "at 8:39, clock 1:35 (attempt 2)",
+      "really": "false",
+      "why": "baseline: 'timer 1:38 at 8:33' and '1:38-1:32 left' for that fight, so about 1:32 at 8:39, as the check read"
+     }
+    ]
+   }
+  }
+ }
+}

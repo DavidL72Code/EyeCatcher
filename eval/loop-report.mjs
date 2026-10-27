@@ -2,14 +2,17 @@
 // and whether its finding matched the coach baseline (eval/answer-keys/coach): which of the baseline's losses it cited,
 // how many of the factor kinds that decided each it named, which of the baseline's numbers its cause names (numbers
 // named), the deaths its record found, and cites at no real loss.
-// Writes tests/evals/<name>.md (with the app's own screenshots of run 1, kept local) and <name>.json, and lists the
-// loop in tests/evals/README.md.
+// It opens with the scorecard every loop is held to (eval/scorecard.mjs, eval/SCORECARD.md), graded with
+// tests/evals/<name>.grades.json where there is one; the rest is the detail behind it.
+// Writes tests/evals/<name>.md (with the app's own screenshots of run 1, kept local), <name>.json, and the card
+// (<name>.scorecard.md and .json), and lists the loop in tests/evals/README.md.
 //   node eval/loop-report.mjs <loop dir> <name> [notes.md]
 // <loop dir> holds one folder per game (lol, rl, mr, val, cr, fn, bs, ch, r6) of run-N.json files from the consistency
 // harness, and optionally shots/ (SHOTS). notes.md, if given, is put in as written: what the loop changed, and the
 // evaluation in words.
 import fs from 'node:fs';
 import path from 'node:path';
+import { GAMES, sec, mmss, numbersNamed, scoreLoop, table, tableNotes, writeIndex } from './scorecard.mjs';
 
 const ROOT = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..');
 const KEYS = path.join(ROOT, 'eval/answer-keys/coach'), OUT = path.join(ROOT, 'tests/evals');
@@ -18,9 +21,6 @@ if (!dir || !name) { console.error('usage: node eval/loop-report.mjs <loop dir> 
 
 const base = JSON.parse(fs.readFileSync(path.join(KEYS, 'baseline.validated.json'), 'utf8'));
 for (const f of fs.readdirSync(KEYS).filter((f) => /^validated-.*\.json$/.test(f))) { const c = JSON.parse(fs.readFileSync(path.join(KEYS, f), 'utf8')); if (!base.clips.some((x) => x.clip === c.clip)) base.clips.push(c); }
-const GAMES = { lol: ['League of Legends', /league/i], rl: ['Rocket League', /rocket/i], mr: ['Marvel Rivals', /marvel/i], val: ['Valorant', /6\.13\.34|valorant/i], cr: ['Clash Royale', /clash/i], fn: ['Fortnite', /fortnite/i], bs: ['Brawl Stars', /brawl/i], ch: ['Chess', /chess/i], r6: ['Rainbow Six Siege', /rainbow/i] };
-const sec = (s) => { const m = String(s ?? '').match(/^(\d+):(\d+(?:\.\d+)?)/); return m ? +m[1] * 60 + +m[2] : s !== '' && s != null && Number.isFinite(+s) ? +s : NaN; };
-const mmss = (t) => (Number.isFinite(t) ? `${Math.floor(t / 60)}:${String(Math.round(t % 60)).padStart(2, '0')}` : '?');
 const k = (n) => `${Math.round((n || 0) / 1000)}k`;
 // rough: the words a cause uses for each kind of factor; a cause naming none of a kind doesn't reach it
 const KINDS = {
@@ -33,44 +33,7 @@ const KINDS = {
 };
 const kindsIn = (text) => Object.entries(KINDS).filter(([, re]) => re.test(text)).map(([x]) => x);
 // Numbers named: the numbers a cause gives that match one in the baseline loss's factors, so the report shows depth,
-// not only kinds. Each number is read with what it is: a share (42%), health or a resource as a fraction (631/1479, a
-// range like 617-621 of 1479) or with its word (45 health, 42 boost), a cooldown or the clock left (3:55 left), a score
-// (2-0), how many on each side (1 v 2), and a count of players (two teammates, 4 players). A bare time (at 1:40) is a
-// timestamp, not a number that decided anything, and isn't read.
-const WORD = { one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9, ten: 10 };
-const int = (x) => (WORD[String(x).toLowerCase()] ?? +String(x).replace(/,/g, ''));
-const RES = 'health|hp|shields?|boost|elixir|ammo|gold|mana|credits';
-function numbersIn(text) {
-  let t = ` ${String(text || '')} `;
-  const out = [], take = (re, f) => { t = t.replace(re, (...m) => { const x = f(m); if (x) out.push(x); return ' '; }); };
-  take(/(\d+(?:\.\d+)?)\s*%/g, (m) => ({ k: 'pct', v: +m[1], said: `${m[1]}%` }));
-  take(/(\d[\d,]*)(?:\s*[-–]\s*(\d[\d,]*))?\s*(?:\/|out of|of)\s*(\d[\d,]*)/gi, (m) => ({ k: 'frac', a: int(m[1]), a2: int(m[2] ?? m[1]), b: int(m[3]), said: m[0].trim() }));
-  // "45 health" first, then "health at 45" with only a linking word between (never "shield and 45 health"), and "boost
-  // 65 to 42" as both
-  const noun = (x) => x.toLowerCase().replace(/^hp$/, 'health').replace(/s$/, '');
-  take(new RegExp(`(\\d[\\d,]*)\\s*(${RES})\\b`, 'gi'), (m) => ({ k: 'res', noun: noun(m[2]), v: int(m[1]), said: m[0].trim() }));
-  take(new RegExp(`\\b(${RES})\\b\\s*(?:(?:was|is|at|of|now|left|read|reads|fell from|fell to|from|down to|went from)\\s*)?[:=]?\\s*(\\d[\\d,]*)(?:\\s*(?:to|->|→)\\s*(\\d[\\d,]*))?`, 'gi'), (m) => { if (m[3]) out.push({ k: 'res', noun: noun(m[1]), v: int(m[3]), said: `${m[1]} ${m[3]}` }); return { k: 'res', noun: noun(m[1]), v: int(m[2]), said: m[0].trim() }; });
-  take(/(\d{1,2}):(\d{2})\s*(?:left|remaining|to go|on (?:the )?clock)/gi, (m) => ({ k: 'clock', v: +m[1] * 60 + +m[2], said: m[0].trim() }));
-  take(/(?:cooldown|clock)\s*(?:of|read|reads|showed|[:(,])?\s*(\d{1,2}):(\d{2})/gi, (m) => ({ k: 'clock', v: +m[1] * 60 + +m[2], said: `${m[1]}:${m[2]}` }));
-  t = t.replace(/\d+:\d+(?:\.\d+)?/g, ' '); // timestamps
-  take(/\b(\d|one|two|three|four|five|six)\s*(?:-?v-?|vs\.?|versus|against)\s*(\d|one|two|three|four|five|six)\b/gi, (m) => ({ k: 'vs', a: int(m[1]), b: int(m[2]), said: m[0].trim() }));
-  take(/\b(1?\d|20)\s*(?:-|–|to)\s*(1?\d|20)\b(?!\s*(?:s\b|sec|seconds|m\b|met|min|percent))/gi, (m) => ({ k: 'score', a: +m[1], b: +m[2], said: m[0].trim() }));
-  take(/\b(\d{1,2}|one|two|three|four|five|six|seven|eight|nine|ten)\s+(?:[a-z]+\s+)?(teammates?|allies|ally|enemies|enemy|opponents?|players?)\b/gi, (m) => ({ k: 'count', v: int(m[1]), noun: m[2].toLowerCase().replace(/^(teammates?|allies|ally)$/, 'teammate').replace(/^(enemies|enemy|opponents?)$/, 'enemy').replace(/s$/, ''), said: m[0].trim() }));
-  return out;
-}
-const close = (x, y, rel = 0.03, abs = 1) => Math.abs(x - y) <= Math.max(abs, rel * Math.abs(y));
-const share = (n) => (n.k === 'pct' ? n.v : n.k === 'frac' && n.b ? (100 * (n.a + n.a2)) / 2 / n.b : null);
-function sameNumber(c, b) {
-  if (c.k === 'pct' || b.k === 'pct') return share(c) != null && share(b) != null && Math.abs(share(c) - share(b)) <= 3;
-  if (c.k === 'frac' && b.k === 'frac') return close(c.b, b.b, 0.02) && c.a2 >= b.a - Math.max(2, 0.03 * b.a) && c.a <= b.a2 + Math.max(2, 0.03 * b.a2);
-  if ((c.k === 'frac' || c.k === 'res') && (b.k === 'frac' || b.k === 'res')) { const lo = (n) => (n.k === 'frac' ? n.a : n.v), hi = (n) => (n.k === 'frac' ? n.a2 : n.v); return (c.k !== 'res' || b.k !== 'res' || c.noun === b.noun) && hi(c) >= lo(b) - Math.max(1, 0.03 * lo(b)) && lo(c) <= hi(b) + Math.max(1, 0.03 * hi(b)); }
-  if (c.k === 'clock' && b.k === 'clock') return Math.abs(c.v - b.v) <= 2;
-  if ((c.k === 'score' && b.k === 'score') || (c.k === 'vs' && b.k === 'vs')) return (c.a === b.a && c.b === b.b) || (c.a === b.b && c.b === b.a);
-  if (c.k === 'count' && b.k === 'count') return c.noun === b.noun && c.v === b.v;
-  return false;
-}
-// the baseline's numbers a cause names: [what the cause said]
-const numbersNamed = (cause, factors) => { const base = Object.values(factors || {}).flatMap((x) => numbersIn(x)); return [...new Set(numbersIn(cause).filter((c) => base.some((b) => sameNumber(c, b))).map((c) => c.said))]; };
+// not only kinds (scorecard.mjs numbersNamed).
 // which model answered the calls, from the harness's timeline (the model each call asked for, status 200): an A/B whose
 // arms ran on different models measures the model (loops 37 and 38 ran mostly on 3.1 Flash-Lite, Oct 25)
 const modelsOf = (timeline) => { const n = {}; for (const x of timeline || []) if (x.status === 200 && x.model) n[x.model] = (n[x.model] || 0) + 1; return n; };
@@ -131,8 +94,18 @@ const pct = (x) => (x == null ? '–' : `${Math.round(x * 100)}%`);
 const matches = (g) => { const rs = g.runs; if (!rs.length) return 'no runs'; const cited = mean(rs.map((r) => r.cited / Math.max(1, g.losses))), cov = mean(rs.map((r) => r.coverage ?? 0)); return cited >= 0.99 && (cov >= 0.6 || g.tag === 'ch') ? 'yes' : cited >= 0.5 ? 'partly' : 'no'; };
 const L = [];
 L.push(`# Eval: ${name}`, '', `Generated ${new Date().toISOString().slice(0, 16).replace('T', ' ')} from \`${path.basename(dir)}\` by \`eval/loop-report.mjs\`. Each game was reviewed ${games[0]?.runs.length ?? 0} times by the desktop app in a harness (\`consistency.mjs\`); run 1 learns the game afresh, later runs reuse what it learned. Graded against the frame-checked coach baselines in \`eval/answer-keys/coach/\`.`, '');
+{
+  // the scorecard: the same rows for every loop (eval/SCORECARD.md), with the loop's grades where there are some
+  const gradesFile = path.join(OUT, `${name}.grades.json`), grades = fs.existsSync(gradesFile) ? JSON.parse(fs.readFileSync(gradesFile, 'utf8')) : null;
+  const card = scoreLoop(dir, { name, grades });
+  fs.writeFileSync(path.join(OUT, `${name}.scorecard.json`), JSON.stringify(card, null, 1) + '\n');
+  const cardMd = [table(card), '', ...tableNotes(card).map((x) => `- ${x}`)];
+  fs.writeFileSync(path.join(OUT, `${name}.scorecard.md`), [`# Scorecard: ${name}`, '', 'Every run held against the coach baselines (`eval/answer-keys/coach`), on the card in `eval/SCORECARD.md`. Cells are counts over the valid runs: n of N. ↑ higher is better, ↓ lower is better.', '', ...cardMd, ''].join('\n'));
+  L.push('## Scorecard', '', 'The same card for every loop (`eval/SCORECARD.md`): counts over the valid runs, n of N. ↑ higher is better, ↓ lower is better.', '', ...cardMd, '');
+}
+L.push('## Detail', '');
 L.push('**How to read it.** *Losses cited*: of the baseline\'s losses (deaths, lost points, blunders, tower losses), how many the finding cites, at the loss or at the decision that led to it. *Factor coverage*: of the kinds of factor the baseline says decided each cited loss (position, information, resources, numbers, map, mechanics), the share the cited cause names, by its words (rough; not graded for chess). *Numbers named*: of the cited losses, how many have a cause that names a number matching one in the baseline\'s factors (health like 42% or 631/1479, a cooldown like 3:55 left, a score like 2-0, a count like 1 v 2), so depth shows, not only kinds. Cites, kinds, and numbers are the coach\'s own words; *By code* counts apart the losses only a turning point code filled in cites (cover_losses), and the losses where numbers code wrote match (factor_refs or a filled turning point). *Deaths found*: the record\'s deaths against the baseline\'s. *Matches the baseline*: every loss cited with at least 60% coverage (yes), at least half cited (partly), else no.', '');
-L.push('## Summary', '', '| Game | Runs | Min/run | Calls answered / failed | Model share (answered) | Prompt / output tokens | Deaths found | Losses cited | Factor coverage | Matches the baseline | Numbers named | By code (cited, numbers) |', '|---|---|---|---|---|---|---|---|---|---|---|---|');
+L.push('### Summary', '', '| Game | Runs | Min/run | Calls answered / failed | Model share (answered) | Prompt / output tokens | Deaths found | Losses cited | Factor coverage | Matches the baseline | Numbers named | By code (cited, numbers) |', '|---|---|---|---|---|---|---|---|---|---|---|---|');
 for (const g of games) {
   const rs = g.runs;
   const share = shareLine(rs.reduce((n, r) => { for (const [m, c] of Object.entries(r.models)) n[m] = (n[m] || 0) + c; return n; }, {}));
@@ -158,10 +131,6 @@ fs.mkdirSync(OUT, { recursive: true });
 fs.writeFileSync(path.join(OUT, `${name}.md`), L.join('\n') + '\n');
 fs.writeFileSync(path.join(OUT, `${name}.json`), JSON.stringify({ name, generated: new Date().toISOString(), source: path.basename(dir), games }, null, 1));
 
-// the index: one line per loop
-const idx = path.join(OUT, 'README.md'), head = '# Eye Catcher evals\n\nEach loop reviews the test recordings in the desktop app, several times each, and grades every finding against the frame-checked coach baselines (`eval/answer-keys/coach/`). One report per loop, as Markdown with the app\'s screens and as JSON; `ideas-*.md` are the experiments planned before a loop. Screenshots show third-party footage and stay on this machine (`.gitignore`).\n\n| Loop | Games | Runs | Min/run | Calls a run | Prompt tokens a run | Losses cited | Report |\n|---|---|---|---|---|---|---|---|\n';
-const rows = (fs.existsSync(idx) ? fs.readFileSync(idx, 'utf8').split('\n').filter((l) => /^\| (?!Loop|---)/.test(l) && !l.includes(`](${name}.md)`)) : []);
-const cited = all.reduce((n, r) => n + r.cited, 0), total = games.reduce((n, g) => n + g.losses * g.runs.length, 0);
-rows.push(`| ${name} | ${games.map((g) => g.tag).join(' ')} | ${all.length} | ${mean(all.map((r) => +r.minutes || 0))?.toFixed(1)} | ${mean(all.map((r) => r.calls.answered))?.toFixed(1)} | ${k(mean(all.map((r) => r.tokens.prompt)))} | ${cited}/${total} | [${name}](${name}.md) |`);
-fs.writeFileSync(idx, head + rows.sort().join('\n') + '\n');
+// the index: one line per scored loop, all on the card's columns
+writeIndex();
 console.log(`wrote tests/evals/${name}.md and .json (${games.length} games, ${all.length} runs)`);

@@ -1,0 +1,390 @@
+{
+ "loop": "loop-40",
+ "by": "a grading agent, from the loop-40 worksheet, the validated coach baselines and the loop-40 notes (their grades kept where they grade a cite; runs they describe only in prose graded to match their totals of 10 right, 4 partly, 5 wrong); checked by a second grading agent (every wrong grade, every true send-back, and every other graded run), its 12 changes applied",
+ "games": {
+  "lol": {
+   "1": {
+    "losses": {
+     "1:48": {
+      "grade": "right",
+      "why": "names stepping up alone while enemies were missing, ult down, 661/1479 (baseline 631-651 at 1:40); 'a teammate was dead' isn't in the baseline"
+     },
+     "8:56": {
+      "grade": "right",
+      "why": "names lingering unwarded against missing enemies and the ult 'used while exposed' (baseline: the ult channel); '2v3' and 1123 health at 8:44 are off"
+     }
+    },
+    "sent_back": [
+     {
+      "claim": "health 661 of 1479 with ult on cooldown at 1:40",
+      "really": "true",
+      "why": "baseline: 'health 631-651 at 1:40', ult on cooldown; 661 is within 3%"
+     },
+     {
+      "claim": "health 1557/1703 with ult ready at 5:42",
+      "really": "unclear",
+      "why": "baseline has no loss or reading at 5:40-5:50"
+     },
+     {
+      "claim": "health 1169 of 1820 with ult on cooldown at 8:44",
+      "really": "false",
+      "why": "baseline: '1723 of 1820 health with Flash and ult up at 8:44'"
+     },
+     {
+      "claim": "health 608 of 1479 with ult on cooldown at 1:41",
+      "really": "unclear",
+      "why": "baseline: 631-651 at 1:40 and 617-621 at 1:43-1:45, nothing at 1:41"
+     },
+     {
+      "claim": "health 1570 of 1703 with ult ready at 5:42",
+      "really": "unclear",
+      "why": "baseline has no loss or reading at 5:40-5:50"
+     },
+     {
+      "claim": "pushed up alone ahead of her minion wave at 1:41",
+      "really": "unclear",
+      "why": "baseline hedges: level with her minions, not clearly past them (second grader)"
+     },
+     {
+      "claim": "stayed pushed up ahead of her minion wave at 5:42",
+      "really": "unclear",
+      "why": "baseline has no loss or position at 5:40-5:50"
+     }
+    ]
+   },
+   "2": {
+    "losses": {
+     "1:48": {
+      "grade": "partly",
+      "why": "right moment, alone without vision of missing enemies, fix 'stay near your turret'; but 'moved into the river' (baseline: front of the mid wave) and no Flash/ult or pings"
+     },
+     "8:56": {
+      "grade": "partly",
+      "why": "names walking into the river without vision; 'alone' is wrong (Blitzcrank with her) and it misses the ult channel after Flashing out of the stun"
+     }
+    },
+    "sent_back": []
+   }
+  },
+  "rl": {
+   "1": {
+    "losses": {},
+    "sent_back": [
+     {
+      "claim": "at 3:26 he challenged in defence without a strong enough clear",
+      "really": "false",
+      "why": "baseline: 'Up 2-0 with 1:18 left (4:06)': 3:26 was his team's own goal, not one against"
+     },
+     {
+      "claim": "at 3:48 a defensive rotation with 33 boost, 1-0 down, left the near post open to the opponent's shot",
+      "really": "false",
+      "why": "baseline: 'Up 2-0 with 1:18 left (4:06)': 3:48 was orange's goal, not one against"
+     },
+     {
+      "claim": "at 4:42 he stayed grounded inside the goal instead of challenging",
+      "really": "false",
+      "why": "baseline not_true: 'he stayed static in his goal'; 4:42 was not a goal against (the only point lost is 4:15)"
+     },
+     {
+      "claim": "at 3:26 he challenged in defence without a strong enough clear",
+      "really": "false",
+      "why": "baseline: 'Up 2-0 with 1:18 left (4:06)': 3:26 was his team's own goal"
+     },
+     {
+      "claim": "at 3:48 a defensive rotation left the near post open to the opponent's shot",
+      "really": "false",
+      "why": "baseline: 'Up 2-0 with 1:18 left (4:06)': 3:48 was orange's goal"
+     },
+     {
+      "claim": "at 4:42 he stayed grounded inside the goal instead of challenging",
+      "really": "false",
+      "why": "baseline not_true: 'he stayed static in his goal'"
+     }
+    ]
+   },
+   "2": {
+    "losses": {},
+    "sent_back": []
+   }
+  },
+  "mr": {
+   "1": {
+    "losses": {
+     "4:27": {
+      "grade": "partly",
+      "why": "121/250 and the four enemies are right, but 'abilities on cooldown, no escape route' (baseline: one slot ready, one on 1 s) changes the fix: use the ready one to fall back"
+     }
+    },
+    "sent_back": [
+     {
+      "claim": "no cover in the room at 1:17",
+      "really": "unclear",
+      "why": "baseline 1:19 says 'in among the enemy as VEN was revived', nothing on cover"
+     },
+     {
+      "claim": "206/314 health at 4:17",
+      "really": "false",
+      "why": "baseline 4:18: 206 of 314 at 4:16.5, 157 at 4:17: the check read the moment right (second grader)"
+     },
+     {
+      "claim": "157/250 health at 4:17",
+      "really": "true",
+      "why": "baseline: '157 at 4:17'"
+     },
+     {
+      "claim": "Stepping Discs on cooldown at 1:17",
+      "really": "false",
+      "why": "baseline: 'at 1:16 two ability slots ready and the third on 1 s'"
+     }
+    ]
+   },
+   "2": {
+    "losses": {
+     "1:19": {
+      "grade": "partly",
+      "why": "in close among enemies at 50/250 is right, but 'ability icons on cooldown' contradicts 'at 1:16 two ability slots ready', which changes the fix (use the ready dash)"
+     }
+    },
+    "sent_back": [
+     {
+      "claim": "eliminated near the payload at 6:18",
+      "really": "false",
+      "why": "baseline lists every death (4:27 only); none at 6:18"
+     },
+     {
+      "claim": "the team fight in the tunnel at 4:15 was lost",
+      "really": "unclear",
+      "why": "baseline 4:18: 'No kill-feed entries from 4:15 to 4:24', 'she fights on'; who won isn't said"
+     }
+    ]
+   }
+  },
+  "val": {
+   "1": {
+    "losses": {
+     "0:41": {
+      "grade": "wrong",
+      "why": "'holding a static angle' and an enemy 'rifle' contradict the baseline: he walked in and fired on the move (Shooting Error 1.40°), pistol round 0-0"
+     },
+     "2:17": {
+      "grade": "wrong",
+      "why": "'2v3' (baseline: 2 v 1), 'Classic pistol' (swapped to the Outlaw at 2:14.3), 'enemy utility' (his own flash popped in his view)"
+     },
+     "4:57": {
+      "grade": "right",
+      "why": "names taking the duel down A Main alone on a pistol (Sheriff) without utility; misses no armor, the ready ult and the late shot"
+     }
+    },
+    "sent_back": [
+     {
+      "claim": "at 0:38 he pushed in 'while holding W'",
+      "really": "true",
+      "why": "baseline: 'He walks up past the crate', fires 'while moving (Shooting Error 1.40°)'"
+     },
+     {
+      "claim": "at 0:38 he had a Bandit pistol",
+      "really": "false",
+      "why": "baseline: 'the first Classic shot went to the body for 39'"
+     }
+    ]
+   },
+   "2": {
+    "losses": {
+     "0:41": {
+      "grade": "wrong",
+      "why": "'held a static angle' and 'isolated, 3v4' contradict the baseline: walking and firing on the move into two enemies, woo beyond the crate"
+     },
+     "2:17": {
+      "grade": "wrong",
+      "why": "'2v3' (baseline: 2 v 1), 'with a pistol' (Outlaw out at 2:14.3), 'active enemy utility' (his own flash)"
+     },
+     "4:15": {
+      "grade": "right",
+      "why": "'Dry peeked ... with 51 HP and no teammates alive': 51 HP, nothing thrown, last one alive; misses the ready ult and not firing"
+     }
+    },
+    "sent_back": [
+     {
+      "claim": "health dropping to 20 at 2:16",
+      "really": "true",
+      "why": "baseline: '46' at 2:14.8, '20 at 2:14.9', dead at 2:15.0"
+     },
+     {
+      "claim": "swung onto A Site at 6:14 without using the Blindside flash",
+      "really": "true",
+      "why": "baseline: 'He runs onto A Site with his knife out'; no flash before the duel"
+     },
+     {
+      "claim": "health at 46 at 2:16",
+      "really": "false",
+      "why": "baseline 2:17: 46 at 2:14.8, 20 at 2:14.9, dead at 2:15.0; the peach screen at 2:15-2:16 is the death screen (second grader)"
+     },
+     {
+      "claim": "dry peeked 1v5 out of A Flowers at 4:13",
+      "really": "false",
+      "why": "baseline: 'he is his team's last player against two'"
+     }
+    ]
+   }
+  },
+  "cr": {
+   "1": {
+    "losses": {},
+    "sent_back": [
+     {
+      "claim": "deployed a push at 0:21",
+      "really": "unclear",
+      "why": "baseline says nothing about 0:15-0:25 (losses at 1:33, 2:36, 3:27)"
+     }
+    ]
+   },
+   "2": {
+    "losses": {},
+    "sent_back": []
+   }
+  },
+  "fn": {
+   "1": {
+    "losses": {
+     "7:43": {
+      "grade": "right",
+      "why": "names firing the Arc-Lightning Gun from behind the low hedge at 24 shield/45 health vs the Deadeye AR, fix: hard cover in the building; 'heal to full' when he had no heals"
+     }
+    },
+    "sent_back": []
+   }
+  },
+  "bs": {
+   "1": {
+    "losses": {},
+    "sent_back": []
+   },
+   "2": {
+    "losses": {},
+    "sent_back": []
+   }
+  },
+  "ch": {
+   "1": {
+    "losses": {
+     "5:41": {
+      "grade": "right",
+      "why": "names 18.Nf4 allowing 18...Bxf4+ winning the knight with check, best Ng3"
+     },
+     "6:28": {
+      "grade": "right",
+      "why": "names 22.Rxf4 allowing 22...Bxa6, best Bxc4; 'capture safely' is off (the b6 knight defended c4)"
+     }
+    },
+    "sent_back": [
+     {
+      "claim": "16.Qd3 allows Bc4 with a discovered attack on the knight",
+      "really": "true",
+      "why": "baseline: 16...Bc4 hits the queen and 'by leaving e6 opens the e-file from the e8 rook to the e2 knight'"
+     },
+     {
+      "claim": "16.Qd3 allowed Bc4",
+      "really": "true",
+      "why": "baseline: 'Stockfish's 16...Bc4 hits the queen ... Black misses it with 16...Qa6'"
+     },
+     {
+      "claim": "18.Nf4 lost 5.0 pawns",
+      "really": "true",
+      "why": "baseline: '571 at depth 20, 542 at depth 16', 'about -5 by the engine'"
+     },
+     {
+      "claim": "22.Rxf4 lost 3.1 pawns",
+      "really": "true",
+      "why": "baseline: '330 at depth 20, 288 at depth 16'"
+     }
+    ]
+   },
+   "2": {
+    "losses": {
+     "5:41": {
+      "grade": "right",
+      "why": "names 18.Nf4 onto the active dark-squared bishop's diagonal, allowing Bxf4+ with check; fix: check every destination square"
+     }
+    },
+    "sent_back": [
+     {
+      "claim": "at 16.Qd3 Black's pieces were placed to play Bc4",
+      "really": "true",
+      "why": "baseline: 'the bishop on e6', and 16...Bc4 is Stockfish's reply"
+     },
+     {
+      "claim": "10.Qb5+ exposed the queen to loss of tempo and material",
+      "really": "unclear",
+      "why": "baseline: '10.Qb5+ (168 / 116)' only; no material changes hands until 17.Qxa6"
+     }
+    ]
+   }
+  },
+  "r6": {
+   "1": {
+    "losses": {
+     "8:58.3": {
+      "grade": "right",
+      "why": "names advancing into the Piano Room fight at 19/100, 3-0, 1:17 left; '3 teammates and 3 opponents' is wrong (2 v 3)"
+     }
+    },
+    "sent_back": [
+     {
+      "claim": "ammo at 15 in magazine at 8:39",
+      "really": "true",
+      "why": "baseline: pistol '21 -> 20 at 8:38.2, 15 at 8:38.9'"
+     },
+     {
+      "claim": "ammo 13/64 at 8:59",
+      "really": "true",
+      "why": "baseline: rifle '25 -> 12 (8:57.4-8:58.2)'"
+     },
+     {
+      "claim": "took the damage holding an angle in 2F Covered Terrace at 8:39",
+      "really": "false",
+      "why": "baseline: he 'walks across the room and through that doorway ... into 2F Mezzanine' before the hits"
+     },
+     {
+      "claim": "held an angle in 2F Covered Terrace at 8:39",
+      "really": "false",
+      "why": "baseline: the hits came after he walked 'into 2F Mezzanine' (8:37.7-8:38.0)"
+     },
+     {
+      "claim": "health at 19 of 100 at 8:59",
+      "really": "true",
+      "why": "baseline: '19 of 100 HP since 8:38.9', dead at 8:58.3"
+     }
+    ]
+   },
+   "2": {
+    "losses": {
+     "8:38.9": {
+      "grade": "wrong",
+      "why": "'holding an angle ... facing away' contradicts the baseline: he walked through the doorway on his pistol into a set enemy; rifle 0/89, not 21/89"
+     },
+     "8:58.3": {
+      "grade": "right",
+      "why": "names stepping through the doorway at 19/100, 25/64, 1:17 on match point, wait for teammate support; 'equal forces' is wrong (2 v 3)"
+     }
+    },
+    "sent_back": [
+     {
+      "claim": "at 8:54 he stepped through the doorway into the Piano Room at 19 HP",
+      "really": "false",
+      "why": "baseline: looks in at 8:52, backs off, drones at 8:55, walks through at 8:56.3-8:56.5 (second grader)"
+     },
+     {
+      "claim": "ammunition 15 of 64 at 8:59",
+      "really": "false",
+      "why": "baseline: rifle 25 -> 12 at 8:57.4-8:58.2, dead at 8:58.3 (second grader)"
+     },
+     {
+      "claim": "he was eliminated at 8:59",
+      "really": "true",
+      "why": "baseline: 'He is dead at 8:58.3'"
+     }
+    ]
+   }
+  }
+ }
+}

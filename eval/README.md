@@ -1,5 +1,7 @@
 # Evaluation
 
+**Every loop is scored on one card** (`scorecard.mjs`; the rows and how they're graded are in [SCORECARD.md](SCORECARD.md)): what the review saw, what it claimed, what its checker caught, and what it cost. Each row is held against the frame-checked coach baselines in `answer-keys/coach/`, so any two loops can be compared on the same games (`node eval/scorecard.mjs compare <a> <b>`). The cards and the index are in `tests/evals/`. The older evals below kept their own formats.
+
 `npm run eval` runs three reviewers on every recording in `recordings.json` and scores them against the habit planted in it:
 
 | System | What it is |

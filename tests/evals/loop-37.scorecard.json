@@ -1,0 +1,2187 @@
+{
+ "name": "loop-37",
+ "source": "/private/tmp/claude-501/-Users-davidle-Documents-hackathon/85b4a72f-2966-4d0a-af8c-1c90c58f3635/scratchpad/loops/37",
+ "generated": "2026-10-26T15:50:01.145Z",
+ "graded": false,
+ "gradedBy": null,
+ "games": [
+  {
+   "tag": "lol",
+   "game": "League of Legends",
+   "losses": 3,
+   "runs": [
+    {
+     "run": 1,
+     "void": true,
+     "voidWhy": "no result",
+     "rows": {
+      "player": {
+       "n": 0,
+       "d": 0
+      },
+      "otherPlayer": {
+       "n": 0,
+       "d": 0
+      },
+      "character": {
+       "n": 0,
+       "d": 0
+      },
+      "found": {
+       "n": 0,
+       "d": 0
+      },
+      "invented": {
+       "n": 0,
+       "d": 0
+      },
+      "numbers": {
+       "n": 0,
+       "d": 0
+      },
+      "cited": {
+       "n": 0,
+       "d": 0
+      },
+      "right": {
+       "n": 0,
+       "d": 0
+      },
+      "partly": {
+       "n": 0,
+       "d": 0
+      },
+      "wrong": {
+       "n": 0,
+       "d": 0
+      },
+      "nothing": {
+       "n": 0,
+       "d": 0
+      },
+      "caught": {
+       "n": 0,
+       "d": 0
+      },
+      "wrongly": {
+       "n": 0,
+       "d": 0
+      }
+     },
+     "cost": {
+      "minutes": 25.1,
+      "answered": 29,
+      "failed": 22,
+      "prompt": 848194,
+      "output": 50169
+     },
+     "losses": [],
+     "outside": [],
+     "ungraded": 0
+    },
+    {
+     "run": 2,
+     "void": true,
+     "voidWhy": "8 calls refused or dropped by the API",
+     "rows": {
+      "player": {
+       "n": 0,
+       "d": 0
+      },
+      "otherPlayer": {
+       "n": 0,
+       "d": 0
+      },
+      "character": {
+       "n": 0,
+       "d": 0
+      },
+      "found": {
+       "n": 0,
+       "d": 0
+      },
+      "invented": {
+       "n": 0,
+       "d": 0
+      },
+      "numbers": {
+       "n": 0,
+       "d": 0
+      },
+      "cited": {
+       "n": 0,
+       "d": 0
+      },
+      "right": {
+       "n": 0,
+       "d": 0
+      },
+      "partly": {
+       "n": 0,
+       "d": 0
+      },
+      "wrong": {
+       "n": 0,
+       "d": 0
+      },
+      "nothing": {
+       "n": 0,
+       "d": 0
+      },
+      "caught": {
+       "n": 0,
+       "d": 0
+      },
+      "wrongly": {
+       "n": 0,
+       "d": 0
+      }
+     },
+     "cost": {
+      "minutes": 10.1,
+      "answered": 18,
+      "failed": 8,
+      "prompt": 486617,
+      "output": 32230
+     },
+     "losses": [],
+     "outside": [],
+     "ungraded": 0
+    },
+    {
+     "run": 3,
+     "void": true,
+     "voidWhy": "6 calls refused or dropped by the API",
+     "rows": {
+      "player": {
+       "n": 0,
+       "d": 0
+      },
+      "otherPlayer": {
+       "n": 0,
+       "d": 0
+      },
+      "character": {
+       "n": 0,
+       "d": 0
+      },
+      "found": {
+       "n": 0,
+       "d": 0
+      },
+      "invented": {
+       "n": 0,
+       "d": 0
+      },
+      "numbers": {
+       "n": 0,
+       "d": 0
+      },
+      "cited": {
+       "n": 0,
+       "d": 0
+      },
+      "right": {
+       "n": 0,
+       "d": 0
+      },
+      "partly": {
+       "n": 0,
+       "d": 0
+      },
+      "wrong": {
+       "n": 0,
+       "d": 0
+      },
+      "nothing": {
+       "n": 0,
+       "d": 0
+      },
+      "caught": {
+       "n": 0,
+       "d": 0
+      },
+      "wrongly": {
+       "n": 0,
+       "d": 0
+      }
+     },
+     "cost": {
+      "minutes": 11.3,
+      "answered": 22,
+      "failed": 6,
+      "prompt": 616407,
+      "output": 39498
+     },
+     "losses": [],
+     "outside": [],
+     "ungraded": 0
+    }
+   ],
+   "rows": {
+    "player": {
+     "n": 0,
+     "d": 0
+    },
+    "otherPlayer": {
+     "n": 0,
+     "d": 0
+    },
+    "character": {
+     "n": 0,
+     "d": 0
+    },
+    "found": {
+     "n": 0,
+     "d": 0
+    },
+    "invented": {
+     "n": 0,
+     "d": 0
+    },
+    "numbers": {
+     "n": 0,
+     "d": 0
+    },
+    "cited": {
+     "n": 0,
+     "d": 0
+    },
+    "right": {
+     "n": 0,
+     "d": 0
+    },
+    "partly": {
+     "n": 0,
+     "d": 0
+    },
+    "wrong": {
+     "n": 0,
+     "d": 0
+    },
+    "nothing": {
+     "n": 0,
+     "d": 0
+    },
+    "caught": {
+     "n": 0,
+     "d": 0
+    },
+    "wrongly": {
+     "n": 0,
+     "d": 0
+    }
+   },
+   "cost": {
+    "runs": 3,
+    "valid": 0,
+    "minutes": null,
+    "answered": null,
+    "failed": null,
+    "prompt": null,
+    "output": null
+   },
+   "ungraded": 0
+  },
+  {
+   "tag": "rl",
+   "game": "Rocket League",
+   "losses": 1,
+   "runs": [
+    {
+     "run": 1,
+     "void": false,
+     "rows": {
+      "player": {
+       "n": 0,
+       "d": 1
+      },
+      "otherPlayer": {
+       "n": 0,
+       "d": 0
+      },
+      "character": {
+       "n": 0,
+       "d": 0
+      },
+      "found": {
+       "n": 1,
+       "d": 1
+      },
+      "invented": {
+       "n": 0,
+       "d": 1
+      },
+      "numbers": {
+       "n": 0,
+       "d": 0
+      },
+      "cited": {
+       "n": 1,
+       "d": 1
+      },
+      "right": {
+       "n": 0,
+       "d": 0
+      },
+      "partly": {
+       "n": 0,
+       "d": 0
+      },
+      "wrong": {
+       "n": 0,
+       "d": 0
+      },
+      "nothing": {
+       "n": 0,
+       "d": 0
+      },
+      "caught": {
+       "n": 0,
+       "d": 0
+      },
+      "wrongly": {
+       "n": 0,
+       "d": 0
+      }
+     },
+     "cost": {
+      "minutes": 8.3,
+      "answered": 20,
+      "failed": 2,
+      "prompt": 203885,
+      "output": 14760
+     },
+     "losses": [
+      {
+       "t": "4:15",
+       "kind": "point_lost (NYAL scores; 2-1, 1:09 left)",
+       "found": true,
+       "cited": true,
+       "status": "ungraded",
+       "numbers": null
+      }
+     ],
+     "outside": [],
+     "ungraded": 0
+    }
+   ],
+   "rows": {
+    "player": {
+     "n": 0,
+     "d": 1
+    },
+    "otherPlayer": {
+     "n": 0,
+     "d": 0
+    },
+    "character": {
+     "n": 0,
+     "d": 0
+    },
+    "found": {
+     "n": 1,
+     "d": 1
+    },
+    "invented": {
+     "n": 0,
+     "d": 1
+    },
+    "numbers": {
+     "n": 0,
+     "d": 0
+    },
+    "cited": {
+     "n": 1,
+     "d": 1
+    },
+    "right": {
+     "n": 0,
+     "d": 0
+    },
+    "partly": {
+     "n": 0,
+     "d": 0
+    },
+    "wrong": {
+     "n": 0,
+     "d": 0
+    },
+    "nothing": {
+     "n": 0,
+     "d": 0
+    },
+    "caught": {
+     "n": 0,
+     "d": 0
+    },
+    "wrongly": {
+     "n": 0,
+     "d": 0
+    }
+   },
+   "cost": {
+    "runs": 1,
+    "valid": 1,
+    "minutes": 8.3,
+    "answered": 20,
+    "failed": 2,
+    "prompt": 203885,
+    "output": 14760
+   },
+   "ungraded": 0
+  },
+  {
+   "tag": "mr",
+   "game": "Marvel Rivals",
+   "losses": 4,
+   "runs": [
+    {
+     "run": 1,
+     "void": true,
+     "voidWhy": "8 calls refused or dropped by the API",
+     "rows": {
+      "player": {
+       "n": 0,
+       "d": 0
+      },
+      "otherPlayer": {
+       "n": 0,
+       "d": 0
+      },
+      "character": {
+       "n": 0,
+       "d": 0
+      },
+      "found": {
+       "n": 0,
+       "d": 0
+      },
+      "invented": {
+       "n": 0,
+       "d": 0
+      },
+      "numbers": {
+       "n": 0,
+       "d": 0
+      },
+      "cited": {
+       "n": 0,
+       "d": 0
+      },
+      "right": {
+       "n": 0,
+       "d": 0
+      },
+      "partly": {
+       "n": 0,
+       "d": 0
+      },
+      "wrong": {
+       "n": 0,
+       "d": 0
+      },
+      "nothing": {
+       "n": 0,
+       "d": 0
+      },
+      "caught": {
+       "n": 0,
+       "d": 0
+      },
+      "wrongly": {
+       "n": 0,
+       "d": 0
+      }
+     },
+     "cost": {
+      "minutes": 16.5,
+      "answered": 31,
+      "failed": 8,
+      "prompt": 274454,
+      "output": 31792
+     },
+     "losses": [],
+     "outside": [],
+     "ungraded": 0
+    }
+   ],
+   "rows": {
+    "player": {
+     "n": 0,
+     "d": 0
+    },
+    "otherPlayer": {
+     "n": 0,
+     "d": 0
+    },
+    "character": {
+     "n": 0,
+     "d": 0
+    },
+    "found": {
+     "n": 0,
+     "d": 0
+    },
+    "invented": {
+     "n": 0,
+     "d": 0
+    },
+    "numbers": {
+     "n": 0,
+     "d": 0
+    },
+    "cited": {
+     "n": 0,
+     "d": 0
+    },
+    "right": {
+     "n": 0,
+     "d": 0
+    },
+    "partly": {
+     "n": 0,
+     "d": 0
+    },
+    "wrong": {
+     "n": 0,
+     "d": 0
+    },
+    "nothing": {
+     "n": 0,
+     "d": 0
+    },
+    "caught": {
+     "n": 0,
+     "d": 0
+    },
+    "wrongly": {
+     "n": 0,
+     "d": 0
+    }
+   },
+   "cost": {
+    "runs": 1,
+    "valid": 0,
+    "minutes": null,
+    "answered": null,
+    "failed": null,
+    "prompt": null,
+    "output": null
+   },
+   "ungraded": 0
+  },
+  {
+   "tag": "val",
+   "game": "Valorant",
+   "losses": 5,
+   "runs": [
+    {
+     "run": 1,
+     "void": true,
+     "voidWhy": "no result",
+     "rows": {
+      "player": {
+       "n": 0,
+       "d": 0
+      },
+      "otherPlayer": {
+       "n": 0,
+       "d": 0
+      },
+      "character": {
+       "n": 0,
+       "d": 0
+      },
+      "found": {
+       "n": 0,
+       "d": 0
+      },
+      "invented": {
+       "n": 0,
+       "d": 0
+      },
+      "numbers": {
+       "n": 0,
+       "d": 0
+      },
+      "cited": {
+       "n": 0,
+       "d": 0
+      },
+      "right": {
+       "n": 0,
+       "d": 0
+      },
+      "partly": {
+       "n": 0,
+       "d": 0
+      },
+      "wrong": {
+       "n": 0,
+       "d": 0
+      },
+      "nothing": {
+       "n": 0,
+       "d": 0
+      },
+      "caught": {
+       "n": 0,
+       "d": 0
+      },
+      "wrongly": {
+       "n": 0,
+       "d": 0
+      }
+     },
+     "cost": {
+      "minutes": 25.1,
+      "answered": 13,
+      "failed": 6,
+      "prompt": 211005,
+      "output": 15835
+     },
+     "losses": [],
+     "outside": [],
+     "ungraded": 0
+    },
+    {
+     "run": 2,
+     "void": true,
+     "voidWhy": "13 calls refused or dropped by the API",
+     "rows": {
+      "player": {
+       "n": 0,
+       "d": 0
+      },
+      "otherPlayer": {
+       "n": 0,
+       "d": 0
+      },
+      "character": {
+       "n": 0,
+       "d": 0
+      },
+      "found": {
+       "n": 0,
+       "d": 0
+      },
+      "invented": {
+       "n": 0,
+       "d": 0
+      },
+      "numbers": {
+       "n": 0,
+       "d": 0
+      },
+      "cited": {
+       "n": 0,
+       "d": 0
+      },
+      "right": {
+       "n": 0,
+       "d": 0
+      },
+      "partly": {
+       "n": 0,
+       "d": 0
+      },
+      "wrong": {
+       "n": 0,
+       "d": 0
+      },
+      "nothing": {
+       "n": 0,
+       "d": 0
+      },
+      "caught": {
+       "n": 0,
+       "d": 0
+      },
+      "wrongly": {
+       "n": 0,
+       "d": 0
+      }
+     },
+     "cost": {
+      "minutes": 18.2,
+      "answered": 16,
+      "failed": 13,
+      "prompt": 395080,
+      "output": 20638
+     },
+     "losses": [],
+     "outside": [],
+     "ungraded": 0
+    },
+    {
+     "run": 3,
+     "void": true,
+     "voidWhy": "no result",
+     "rows": {
+      "player": {
+       "n": 0,
+       "d": 0
+      },
+      "otherPlayer": {
+       "n": 0,
+       "d": 0
+      },
+      "character": {
+       "n": 0,
+       "d": 0
+      },
+      "found": {
+       "n": 0,
+       "d": 0
+      },
+      "invented": {
+       "n": 0,
+       "d": 0
+      },
+      "numbers": {
+       "n": 0,
+       "d": 0
+      },
+      "cited": {
+       "n": 0,
+       "d": 0
+      },
+      "right": {
+       "n": 0,
+       "d": 0
+      },
+      "partly": {
+       "n": 0,
+       "d": 0
+      },
+      "wrong": {
+       "n": 0,
+       "d": 0
+      },
+      "nothing": {
+       "n": 0,
+       "d": 0
+      },
+      "caught": {
+       "n": 0,
+       "d": 0
+      },
+      "wrongly": {
+       "n": 0,
+       "d": 0
+      }
+     },
+     "cost": {
+      "minutes": 1.5,
+      "answered": 2,
+      "failed": 11,
+      "prompt": 2324,
+      "output": 3991
+     },
+     "losses": [],
+     "outside": [],
+     "ungraded": 0
+    }
+   ],
+   "rows": {
+    "player": {
+     "n": 0,
+     "d": 0
+    },
+    "otherPlayer": {
+     "n": 0,
+     "d": 0
+    },
+    "character": {
+     "n": 0,
+     "d": 0
+    },
+    "found": {
+     "n": 0,
+     "d": 0
+    },
+    "invented": {
+     "n": 0,
+     "d": 0
+    },
+    "numbers": {
+     "n": 0,
+     "d": 0
+    },
+    "cited": {
+     "n": 0,
+     "d": 0
+    },
+    "right": {
+     "n": 0,
+     "d": 0
+    },
+    "partly": {
+     "n": 0,
+     "d": 0
+    },
+    "wrong": {
+     "n": 0,
+     "d": 0
+    },
+    "nothing": {
+     "n": 0,
+     "d": 0
+    },
+    "caught": {
+     "n": 0,
+     "d": 0
+    },
+    "wrongly": {
+     "n": 0,
+     "d": 0
+    }
+   },
+   "cost": {
+    "runs": 3,
+    "valid": 0,
+    "minutes": null,
+    "answered": null,
+    "failed": null,
+    "prompt": null,
+    "output": null
+   },
+   "ungraded": 0
+  },
+  {
+   "tag": "cr",
+   "game": "Clash Royale",
+   "losses": 3,
+   "runs": [
+    {
+     "run": 1,
+     "void": true,
+     "voidWhy": "3 calls refused or dropped by the API",
+     "rows": {
+      "player": {
+       "n": 0,
+       "d": 0
+      },
+      "otherPlayer": {
+       "n": 0,
+       "d": 0
+      },
+      "character": {
+       "n": 0,
+       "d": 0
+      },
+      "found": {
+       "n": 0,
+       "d": 0
+      },
+      "invented": {
+       "n": 0,
+       "d": 0
+      },
+      "numbers": {
+       "n": 0,
+       "d": 0
+      },
+      "cited": {
+       "n": 0,
+       "d": 0
+      },
+      "right": {
+       "n": 0,
+       "d": 0
+      },
+      "partly": {
+       "n": 0,
+       "d": 0
+      },
+      "wrong": {
+       "n": 0,
+       "d": 0
+      },
+      "nothing": {
+       "n": 0,
+       "d": 0
+      },
+      "caught": {
+       "n": 0,
+       "d": 0
+      },
+      "wrongly": {
+       "n": 0,
+       "d": 0
+      }
+     },
+     "cost": {
+      "minutes": 5.6,
+      "answered": 12,
+      "failed": 3,
+      "prompt": 67294,
+      "output": 5990
+     },
+     "losses": [],
+     "outside": [],
+     "ungraded": 0
+    },
+    {
+     "run": 2,
+     "void": true,
+     "voidWhy": "4 calls refused or dropped by the API",
+     "rows": {
+      "player": {
+       "n": 0,
+       "d": 0
+      },
+      "otherPlayer": {
+       "n": 0,
+       "d": 0
+      },
+      "character": {
+       "n": 0,
+       "d": 0
+      },
+      "found": {
+       "n": 0,
+       "d": 0
+      },
+      "invented": {
+       "n": 0,
+       "d": 0
+      },
+      "numbers": {
+       "n": 0,
+       "d": 0
+      },
+      "cited": {
+       "n": 0,
+       "d": 0
+      },
+      "right": {
+       "n": 0,
+       "d": 0
+      },
+      "partly": {
+       "n": 0,
+       "d": 0
+      },
+      "wrong": {
+       "n": 0,
+       "d": 0
+      },
+      "nothing": {
+       "n": 0,
+       "d": 0
+      },
+      "caught": {
+       "n": 0,
+       "d": 0
+      },
+      "wrongly": {
+       "n": 0,
+       "d": 0
+      }
+     },
+     "cost": {
+      "minutes": 4.1,
+      "answered": 8,
+      "failed": 4,
+      "prompt": 47795,
+      "output": 5409
+     },
+     "losses": [],
+     "outside": [],
+     "ungraded": 0
+    },
+    {
+     "run": 3,
+     "void": true,
+     "voidWhy": "3 calls refused or dropped by the API",
+     "rows": {
+      "player": {
+       "n": 0,
+       "d": 0
+      },
+      "otherPlayer": {
+       "n": 0,
+       "d": 0
+      },
+      "character": {
+       "n": 0,
+       "d": 0
+      },
+      "found": {
+       "n": 0,
+       "d": 0
+      },
+      "invented": {
+       "n": 0,
+       "d": 0
+      },
+      "numbers": {
+       "n": 0,
+       "d": 0
+      },
+      "cited": {
+       "n": 0,
+       "d": 0
+      },
+      "right": {
+       "n": 0,
+       "d": 0
+      },
+      "partly": {
+       "n": 0,
+       "d": 0
+      },
+      "wrong": {
+       "n": 0,
+       "d": 0
+      },
+      "nothing": {
+       "n": 0,
+       "d": 0
+      },
+      "caught": {
+       "n": 0,
+       "d": 0
+      },
+      "wrongly": {
+       "n": 0,
+       "d": 0
+      }
+     },
+     "cost": {
+      "minutes": 3.8,
+      "answered": 18,
+      "failed": 3,
+      "prompt": 104523,
+      "output": 11735
+     },
+     "losses": [],
+     "outside": [],
+     "ungraded": 0
+    }
+   ],
+   "rows": {
+    "player": {
+     "n": 0,
+     "d": 0
+    },
+    "otherPlayer": {
+     "n": 0,
+     "d": 0
+    },
+    "character": {
+     "n": 0,
+     "d": 0
+    },
+    "found": {
+     "n": 0,
+     "d": 0
+    },
+    "invented": {
+     "n": 0,
+     "d": 0
+    },
+    "numbers": {
+     "n": 0,
+     "d": 0
+    },
+    "cited": {
+     "n": 0,
+     "d": 0
+    },
+    "right": {
+     "n": 0,
+     "d": 0
+    },
+    "partly": {
+     "n": 0,
+     "d": 0
+    },
+    "wrong": {
+     "n": 0,
+     "d": 0
+    },
+    "nothing": {
+     "n": 0,
+     "d": 0
+    },
+    "caught": {
+     "n": 0,
+     "d": 0
+    },
+    "wrongly": {
+     "n": 0,
+     "d": 0
+    }
+   },
+   "cost": {
+    "runs": 3,
+    "valid": 0,
+    "minutes": null,
+    "answered": null,
+    "failed": null,
+    "prompt": null,
+    "output": null
+   },
+   "ungraded": 0
+  },
+  {
+   "tag": "fn",
+   "game": "Fortnite",
+   "losses": 5,
+   "runs": [
+    {
+     "run": 1,
+     "void": true,
+     "voidWhy": "no result",
+     "rows": {
+      "player": {
+       "n": 0,
+       "d": 0
+      },
+      "otherPlayer": {
+       "n": 0,
+       "d": 0
+      },
+      "character": {
+       "n": 0,
+       "d": 0
+      },
+      "found": {
+       "n": 0,
+       "d": 0
+      },
+      "invented": {
+       "n": 0,
+       "d": 0
+      },
+      "numbers": {
+       "n": 0,
+       "d": 0
+      },
+      "cited": {
+       "n": 0,
+       "d": 0
+      },
+      "right": {
+       "n": 0,
+       "d": 0
+      },
+      "partly": {
+       "n": 0,
+       "d": 0
+      },
+      "wrong": {
+       "n": 0,
+       "d": 0
+      },
+      "nothing": {
+       "n": 0,
+       "d": 0
+      },
+      "caught": {
+       "n": 0,
+       "d": 0
+      },
+      "wrongly": {
+       "n": 0,
+       "d": 0
+      }
+     },
+     "cost": {
+      "minutes": 17.8,
+      "answered": 18,
+      "failed": 4,
+      "prompt": 155988,
+      "output": 13905
+     },
+     "losses": [],
+     "outside": [],
+     "ungraded": 0
+    },
+    {
+     "run": 2,
+     "void": true,
+     "voidWhy": "no result",
+     "rows": {
+      "player": {
+       "n": 0,
+       "d": 0
+      },
+      "otherPlayer": {
+       "n": 0,
+       "d": 0
+      },
+      "character": {
+       "n": 0,
+       "d": 0
+      },
+      "found": {
+       "n": 0,
+       "d": 0
+      },
+      "invented": {
+       "n": 0,
+       "d": 0
+      },
+      "numbers": {
+       "n": 0,
+       "d": 0
+      },
+      "cited": {
+       "n": 0,
+       "d": 0
+      },
+      "right": {
+       "n": 0,
+       "d": 0
+      },
+      "partly": {
+       "n": 0,
+       "d": 0
+      },
+      "wrong": {
+       "n": 0,
+       "d": 0
+      },
+      "nothing": {
+       "n": 0,
+       "d": 0
+      },
+      "caught": {
+       "n": 0,
+       "d": 0
+      },
+      "wrongly": {
+       "n": 0,
+       "d": 0
+      }
+     },
+     "cost": {
+      "minutes": 1.7,
+      "answered": 3,
+      "failed": 14,
+      "prompt": 7828,
+      "output": 2531
+     },
+     "losses": [],
+     "outside": [],
+     "ungraded": 0
+    },
+    {
+     "run": 3,
+     "void": true,
+     "voidWhy": "no result",
+     "rows": {
+      "player": {
+       "n": 0,
+       "d": 0
+      },
+      "otherPlayer": {
+       "n": 0,
+       "d": 0
+      },
+      "character": {
+       "n": 0,
+       "d": 0
+      },
+      "found": {
+       "n": 0,
+       "d": 0
+      },
+      "invented": {
+       "n": 0,
+       "d": 0
+      },
+      "numbers": {
+       "n": 0,
+       "d": 0
+      },
+      "cited": {
+       "n": 0,
+       "d": 0
+      },
+      "right": {
+       "n": 0,
+       "d": 0
+      },
+      "partly": {
+       "n": 0,
+       "d": 0
+      },
+      "wrong": {
+       "n": 0,
+       "d": 0
+      },
+      "nothing": {
+       "n": 0,
+       "d": 0
+      },
+      "caught": {
+       "n": 0,
+       "d": 0
+      },
+      "wrongly": {
+       "n": 0,
+       "d": 0
+      }
+     },
+     "cost": {
+      "minutes": 1.6,
+      "answered": 0,
+      "failed": 11,
+      "prompt": 0,
+      "output": 0
+     },
+     "losses": [],
+     "outside": [],
+     "ungraded": 0
+    }
+   ],
+   "rows": {
+    "player": {
+     "n": 0,
+     "d": 0
+    },
+    "otherPlayer": {
+     "n": 0,
+     "d": 0
+    },
+    "character": {
+     "n": 0,
+     "d": 0
+    },
+    "found": {
+     "n": 0,
+     "d": 0
+    },
+    "invented": {
+     "n": 0,
+     "d": 0
+    },
+    "numbers": {
+     "n": 0,
+     "d": 0
+    },
+    "cited": {
+     "n": 0,
+     "d": 0
+    },
+    "right": {
+     "n": 0,
+     "d": 0
+    },
+    "partly": {
+     "n": 0,
+     "d": 0
+    },
+    "wrong": {
+     "n": 0,
+     "d": 0
+    },
+    "nothing": {
+     "n": 0,
+     "d": 0
+    },
+    "caught": {
+     "n": 0,
+     "d": 0
+    },
+    "wrongly": {
+     "n": 0,
+     "d": 0
+    }
+   },
+   "cost": {
+    "runs": 3,
+    "valid": 0,
+    "minutes": null,
+    "answered": null,
+    "failed": null,
+    "prompt": null,
+    "output": null
+   },
+   "ungraded": 0
+  },
+  {
+   "tag": "bs",
+   "game": "Brawl Stars",
+   "losses": 3,
+   "runs": [
+    {
+     "run": 1,
+     "void": true,
+     "voidWhy": "6 calls refused or dropped by the API",
+     "rows": {
+      "player": {
+       "n": 0,
+       "d": 0
+      },
+      "otherPlayer": {
+       "n": 0,
+       "d": 0
+      },
+      "character": {
+       "n": 0,
+       "d": 0
+      },
+      "found": {
+       "n": 0,
+       "d": 0
+      },
+      "invented": {
+       "n": 0,
+       "d": 0
+      },
+      "numbers": {
+       "n": 0,
+       "d": 0
+      },
+      "cited": {
+       "n": 0,
+       "d": 0
+      },
+      "right": {
+       "n": 0,
+       "d": 0
+      },
+      "partly": {
+       "n": 0,
+       "d": 0
+      },
+      "wrong": {
+       "n": 0,
+       "d": 0
+      },
+      "nothing": {
+       "n": 0,
+       "d": 0
+      },
+      "caught": {
+       "n": 0,
+       "d": 0
+      },
+      "wrongly": {
+       "n": 0,
+       "d": 0
+      }
+     },
+     "cost": {
+      "minutes": 18.3,
+      "answered": 26,
+      "failed": 6,
+      "prompt": 391139,
+      "output": 23010
+     },
+     "losses": [],
+     "outside": [],
+     "ungraded": 0
+    }
+   ],
+   "rows": {
+    "player": {
+     "n": 0,
+     "d": 0
+    },
+    "otherPlayer": {
+     "n": 0,
+     "d": 0
+    },
+    "character": {
+     "n": 0,
+     "d": 0
+    },
+    "found": {
+     "n": 0,
+     "d": 0
+    },
+    "invented": {
+     "n": 0,
+     "d": 0
+    },
+    "numbers": {
+     "n": 0,
+     "d": 0
+    },
+    "cited": {
+     "n": 0,
+     "d": 0
+    },
+    "right": {
+     "n": 0,
+     "d": 0
+    },
+    "partly": {
+     "n": 0,
+     "d": 0
+    },
+    "wrong": {
+     "n": 0,
+     "d": 0
+    },
+    "nothing": {
+     "n": 0,
+     "d": 0
+    },
+    "caught": {
+     "n": 0,
+     "d": 0
+    },
+    "wrongly": {
+     "n": 0,
+     "d": 0
+    }
+   },
+   "cost": {
+    "runs": 1,
+    "valid": 0,
+    "minutes": null,
+    "answered": null,
+    "failed": null,
+    "prompt": null,
+    "output": null
+   },
+   "ungraded": 0
+  },
+  {
+   "tag": "ch",
+   "game": "Chess",
+   "losses": 7,
+   "runs": [
+    {
+     "run": 1,
+     "void": true,
+     "voidWhy": "7 calls refused or dropped by the API",
+     "rows": {
+      "player": {
+       "n": 0,
+       "d": 0
+      },
+      "otherPlayer": {
+       "n": 0,
+       "d": 0
+      },
+      "character": {
+       "n": 0,
+       "d": 0
+      },
+      "found": {
+       "n": 0,
+       "d": 0
+      },
+      "invented": {
+       "n": 0,
+       "d": 0
+      },
+      "numbers": {
+       "n": 0,
+       "d": 0
+      },
+      "cited": {
+       "n": 0,
+       "d": 0
+      },
+      "right": {
+       "n": 0,
+       "d": 0
+      },
+      "partly": {
+       "n": 0,
+       "d": 0
+      },
+      "wrong": {
+       "n": 0,
+       "d": 0
+      },
+      "nothing": {
+       "n": 0,
+       "d": 0
+      },
+      "caught": {
+       "n": 0,
+       "d": 0
+      },
+      "wrongly": {
+       "n": 0,
+       "d": 0
+      }
+     },
+     "cost": {
+      "minutes": 7.9,
+      "answered": 16,
+      "failed": 7,
+      "prompt": 144193,
+      "output": 6526
+     },
+     "losses": [],
+     "outside": [],
+     "ungraded": 0
+    },
+    {
+     "run": 2,
+     "void": true,
+     "voidWhy": "6 calls refused or dropped by the API",
+     "rows": {
+      "player": {
+       "n": 0,
+       "d": 0
+      },
+      "otherPlayer": {
+       "n": 0,
+       "d": 0
+      },
+      "character": {
+       "n": 0,
+       "d": 0
+      },
+      "found": {
+       "n": 0,
+       "d": 0
+      },
+      "invented": {
+       "n": 0,
+       "d": 0
+      },
+      "numbers": {
+       "n": 0,
+       "d": 0
+      },
+      "cited": {
+       "n": 0,
+       "d": 0
+      },
+      "right": {
+       "n": 0,
+       "d": 0
+      },
+      "partly": {
+       "n": 0,
+       "d": 0
+      },
+      "wrong": {
+       "n": 0,
+       "d": 0
+      },
+      "nothing": {
+       "n": 0,
+       "d": 0
+      },
+      "caught": {
+       "n": 0,
+       "d": 0
+      },
+      "wrongly": {
+       "n": 0,
+       "d": 0
+      }
+     },
+     "cost": {
+      "minutes": 4.9,
+      "answered": 14,
+      "failed": 6,
+      "prompt": 140070,
+      "output": 8399
+     },
+     "losses": [],
+     "outside": [],
+     "ungraded": 0
+    },
+    {
+     "run": 3,
+     "void": true,
+     "voidWhy": "6 calls refused or dropped by the API",
+     "rows": {
+      "player": {
+       "n": 0,
+       "d": 0
+      },
+      "otherPlayer": {
+       "n": 0,
+       "d": 0
+      },
+      "character": {
+       "n": 0,
+       "d": 0
+      },
+      "found": {
+       "n": 0,
+       "d": 0
+      },
+      "invented": {
+       "n": 0,
+       "d": 0
+      },
+      "numbers": {
+       "n": 0,
+       "d": 0
+      },
+      "cited": {
+       "n": 0,
+       "d": 0
+      },
+      "right": {
+       "n": 0,
+       "d": 0
+      },
+      "partly": {
+       "n": 0,
+       "d": 0
+      },
+      "wrong": {
+       "n": 0,
+       "d": 0
+      },
+      "nothing": {
+       "n": 0,
+       "d": 0
+      },
+      "caught": {
+       "n": 0,
+       "d": 0
+      },
+      "wrongly": {
+       "n": 0,
+       "d": 0
+      }
+     },
+     "cost": {
+      "minutes": 4.1,
+      "answered": 13,
+      "failed": 6,
+      "prompt": 140009,
+      "output": 8116
+     },
+     "losses": [],
+     "outside": [],
+     "ungraded": 0
+    }
+   ],
+   "rows": {
+    "player": {
+     "n": 0,
+     "d": 0
+    },
+    "otherPlayer": {
+     "n": 0,
+     "d": 0
+    },
+    "character": {
+     "n": 0,
+     "d": 0
+    },
+    "found": {
+     "n": 0,
+     "d": 0
+    },
+    "invented": {
+     "n": 0,
+     "d": 0
+    },
+    "numbers": {
+     "n": 0,
+     "d": 0
+    },
+    "cited": {
+     "n": 0,
+     "d": 0
+    },
+    "right": {
+     "n": 0,
+     "d": 0
+    },
+    "partly": {
+     "n": 0,
+     "d": 0
+    },
+    "wrong": {
+     "n": 0,
+     "d": 0
+    },
+    "nothing": {
+     "n": 0,
+     "d": 0
+    },
+    "caught": {
+     "n": 0,
+     "d": 0
+    },
+    "wrongly": {
+     "n": 0,
+     "d": 0
+    }
+   },
+   "cost": {
+    "runs": 3,
+    "valid": 0,
+    "minutes": null,
+    "answered": null,
+    "failed": null,
+    "prompt": null,
+    "output": null
+   },
+   "ungraded": 0
+  },
+  {
+   "tag": "r6",
+   "game": "Rainbow Six Siege",
+   "losses": 2,
+   "runs": [
+    {
+     "run": 1,
+     "void": true,
+     "voidWhy": "6 calls refused or dropped by the API",
+     "rows": {
+      "player": {
+       "n": 0,
+       "d": 0
+      },
+      "otherPlayer": {
+       "n": 0,
+       "d": 0
+      },
+      "character": {
+       "n": 0,
+       "d": 0
+      },
+      "found": {
+       "n": 0,
+       "d": 0
+      },
+      "invented": {
+       "n": 0,
+       "d": 0
+      },
+      "numbers": {
+       "n": 0,
+       "d": 0
+      },
+      "cited": {
+       "n": 0,
+       "d": 0
+      },
+      "right": {
+       "n": 0,
+       "d": 0
+      },
+      "partly": {
+       "n": 0,
+       "d": 0
+      },
+      "wrong": {
+       "n": 0,
+       "d": 0
+      },
+      "nothing": {
+       "n": 0,
+       "d": 0
+      },
+      "caught": {
+       "n": 0,
+       "d": 0
+      },
+      "wrongly": {
+       "n": 0,
+       "d": 0
+      }
+     },
+     "cost": {
+      "minutes": 13.9,
+      "answered": 27,
+      "failed": 6,
+      "prompt": 302373,
+      "output": 27074
+     },
+     "losses": [],
+     "outside": [],
+     "ungraded": 0
+    },
+    {
+     "run": 2,
+     "void": true,
+     "voidWhy": "9 calls refused or dropped by the API",
+     "rows": {
+      "player": {
+       "n": 0,
+       "d": 0
+      },
+      "otherPlayer": {
+       "n": 0,
+       "d": 0
+      },
+      "character": {
+       "n": 0,
+       "d": 0
+      },
+      "found": {
+       "n": 0,
+       "d": 0
+      },
+      "invented": {
+       "n": 0,
+       "d": 0
+      },
+      "numbers": {
+       "n": 0,
+       "d": 0
+      },
+      "cited": {
+       "n": 0,
+       "d": 0
+      },
+      "right": {
+       "n": 0,
+       "d": 0
+      },
+      "partly": {
+       "n": 0,
+       "d": 0
+      },
+      "wrong": {
+       "n": 0,
+       "d": 0
+      },
+      "nothing": {
+       "n": 0,
+       "d": 0
+      },
+      "caught": {
+       "n": 0,
+       "d": 0
+      },
+      "wrongly": {
+       "n": 0,
+       "d": 0
+      }
+     },
+     "cost": {
+      "minutes": 18.1,
+      "answered": 20,
+      "failed": 9,
+      "prompt": 169434,
+      "output": 22688
+     },
+     "losses": [],
+     "outside": [],
+     "ungraded": 0
+    },
+    {
+     "run": 3,
+     "void": false,
+     "rows": {
+      "player": {
+       "n": 0,
+       "d": 1
+      },
+      "otherPlayer": {
+       "n": 0,
+       "d": 0
+      },
+      "character": {
+       "n": 1,
+       "d": 1
+      },
+      "found": {
+       "n": 2,
+       "d": 2
+      },
+      "invented": {
+       "n": 0,
+       "d": 1
+      },
+      "numbers": {
+       "n": 0,
+       "d": 0
+      },
+      "cited": {
+       "n": 2,
+       "d": 2
+      },
+      "right": {
+       "n": 0,
+       "d": 0
+      },
+      "partly": {
+       "n": 0,
+       "d": 0
+      },
+      "wrong": {
+       "n": 0,
+       "d": 0
+      },
+      "nothing": {
+       "n": 0,
+       "d": 0
+      },
+      "caught": {
+       "n": 0,
+       "d": 0
+      },
+      "wrongly": {
+       "n": 0,
+       "d": 0
+      }
+     },
+     "cost": {
+      "minutes": 13.4,
+      "answered": 20,
+      "failed": 2,
+      "prompt": 169434,
+      "output": 22688
+     },
+     "losses": [
+      {
+       "t": "8:38.9",
+       "kind": "near_death (19 of 100)",
+       "found": true,
+       "cited": true,
+       "status": "ungraded",
+       "numbers": null
+      },
+      {
+       "t": "8:58.3",
+       "kind": "death (ELIMINATED BY francomix: THUNDERBIRD, SPEAR .308; headshot icon in the feed row)",
+       "found": true,
+       "cited": true,
+       "status": "ungraded",
+       "numbers": null
+      }
+     ],
+     "outside": [],
+     "ungraded": 0
+    }
+   ],
+   "rows": {
+    "player": {
+     "n": 0,
+     "d": 1
+    },
+    "otherPlayer": {
+     "n": 0,
+     "d": 0
+    },
+    "character": {
+     "n": 1,
+     "d": 1
+    },
+    "found": {
+     "n": 2,
+     "d": 2
+    },
+    "invented": {
+     "n": 0,
+     "d": 1
+    },
+    "numbers": {
+     "n": 0,
+     "d": 0
+    },
+    "cited": {
+     "n": 2,
+     "d": 2
+    },
+    "right": {
+     "n": 0,
+     "d": 0
+    },
+    "partly": {
+     "n": 0,
+     "d": 0
+    },
+    "wrong": {
+     "n": 0,
+     "d": 0
+    },
+    "nothing": {
+     "n": 0,
+     "d": 0
+    },
+    "caught": {
+     "n": 0,
+     "d": 0
+    },
+    "wrongly": {
+     "n": 0,
+     "d": 0
+    }
+   },
+   "cost": {
+    "runs": 3,
+    "valid": 1,
+    "minutes": 13.4,
+    "answered": 20,
+    "failed": 2,
+    "prompt": 169434,
+    "output": 22688
+   },
+   "ungraded": 0
+  }
+ ],
+ "all": {
+  "rows": {
+   "player": {
+    "n": 0,
+    "d": 2
+   },
+   "otherPlayer": {
+    "n": 0,
+    "d": 0
+   },
+   "character": {
+    "n": 1,
+    "d": 1
+   },
+   "found": {
+    "n": 3,
+    "d": 3
+   },
+   "invented": {
+    "n": 0,
+    "d": 2
+   },
+   "numbers": {
+    "n": 0,
+    "d": 0
+   },
+   "cited": {
+    "n": 3,
+    "d": 3
+   },
+   "right": {
+    "n": 0,
+    "d": 0
+   },
+   "partly": {
+    "n": 0,
+    "d": 0
+   },
+   "wrong": {
+    "n": 0,
+    "d": 0
+   },
+   "nothing": {
+    "n": 0,
+    "d": 0
+   },
+   "caught": {
+    "n": 0,
+    "d": 0
+   },
+   "wrongly": {
+    "n": 0,
+    "d": 0
+   }
+  },
+  "ungraded": 0,
+  "cost": {
+   "runs": 21,
+   "valid": 2,
+   "minutes": 10.850000000000001,
+   "answered": 20,
+   "failed": 2,
+   "prompt": 186659.5,
+   "output": 18724
+  }
+ }
+}

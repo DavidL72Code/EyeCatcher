@@ -1,0 +1,243 @@
+{
+ "loop": "loop-46",
+ "by": "a grading agent, from the loop-46 worksheet and the validated baselines (eval/answer-keys/coach/baseline.validated.json and validated-*.json), calibrated on loop 45's grades: each cited loss judged against the key's happened, factors, mistake, better and not_true, with its unsure list not held against a cite; wrong where a fact in the cause flips the key's lesson or describes what didn't happen, partly where the decision is missed or an off fact leaves the lesson standing; send-backs for a rule (citing the loss itself, a name or a heal nothing read shows, too few losses, the second-time notice, a cause naming none of code's reads, the coverage list) left out; send-backs that the player was dead at a cited moment graded as claims, with the claim taken from that attempt's finish in the run file; a claim at a whole-second time judged at that second as the key reads it (as loop 45's '4:29.0 isn't read'); a claim sent twice word for word counted once; no numbers per loss, as loop 45 has none; not yet checked by a second grader",
+ "games": {
+  "lol": {
+   "1": {
+    "losses": {},
+    "outside": [
+     {
+      "t": "1:54",
+      "really": "none",
+      "why": "baseline: 'dead at 1:46.4', and her next death is 8:54.9 (the key lists every death), so nothing of hers was lost at 1:54-1:56; the record's '1:56 death' isn't one"
+     }
+    ],
+    "sent_back": [
+     {
+      "claim": "at 1:54-1:55, returned to lane at 1 of 1479 and was eliminated at 1:56 (attempt 1, record check: player dead)",
+      "really": "false",
+      "why": "baseline: 'dead at 1:46.4' and no other death until 8:54.9; her next play is 4:21, 'She walks from base into mid'"
+     },
+     {
+      "claim": "at 2:06-2:07, stayed extended by the turret while nearsighted and was eliminated at 2:08 (attempt 1, record check: player dead)",
+      "really": "false",
+      "why": "baseline: dead from 1:46.4, no death at 2:08 (deaths 1:46.4 and 8:54.9 only); the check's 'died about 1:56' is the record's invented death"
+     },
+     {
+      "claim": "at 2:13-2:14, advanced down the lane past retreat pings and died at 2:15 (attempt 1, record check: player dead)",
+      "really": "false",
+      "why": "baseline: no death between 1:46.4 and 8:54.9; the check's 'died about 2:08' is the record's invented death"
+     }
+    ]
+   }
+  },
+  "rl": {
+   "1": {
+    "losses": {},
+    "outside": [],
+    "sent_back": [
+     {
+      "claim": "at 4:13, challenging the ball directly from behind with 6 boost (attempt 2)",
+      "really": "false",
+      "why": "baseline: he 'chases from behind (14 at 4:12, 5 at 4:13, 7 at 4:13.5 ...) and is never goal-side'; not_true: 'challenging in midfield at 4:12'"
+     },
+     {
+      "claim": "at 4:14, 6 boost driving back toward the goal (attempt 3)",
+      "really": "false",
+      "why": "baseline: '0 at 4:14, 7 at 4:14.3 after another'; the check's 3 isn't the key's either"
+     }
+    ]
+   }
+  },
+  "mr": {
+   "1": {
+    "losses": {
+     "1:19": {
+      "grade": "partly",
+      "why": "right window, 'exposed to multiple enemies' (key: 'in among the enemy') and fix 'Retreat' (key: 'Leave when the bonus health breaks'); misses the decision, 'Staying in after her bonus health broke and VEN was revived, until she was at 16', calls 1:19 'engaging in melee range' when she 'falls back toward a blue dome', and 'without defensive utility ready' drops 'at 1:16 two ability slots ready'"
+     },
+     "4:18": {
+      "grade": "partly",
+      "why": "right moment and the trade down to 54 (key: 'health 250 -> 54 in 3 s'); misses the decision, 'Trading head-on through her ult ... with two abilities ready to step out and come back': it never names the ult, says 'key mobility ability on cooldown', and its fix 'Hold position behind cover until teammates catch up' isn't 'Use the 12 s of ult in bursts ... dash out to her healers'"
+     },
+     "4:27": {
+      "grade": "right",
+      "why": "names 'pushing forward into enemy lines' without cover or 'defensive abilities', fix 'Retreat to cover behind teammates to regenerate health' (key: 'Staying forward ... into four enemies, with her teammates behind her'; 'use the ready ability to fall back to Chinagooner and NaturalKickZ ... heal'); misses the trigger, 'When the ult ends at 121' (4:25.5)"
+     }
+    },
+    "outside": [],
+    "sent_back": [
+     {
+      "claim": "at 4:18, health 70 of 250 (attempt 1)",
+      "really": "false",
+      "why": "baseline: '54 of 253 at 4:18, then 70 at 4:18.5'; 70 is half a second later"
+     },
+     {
+      "claim": "at 4:28, health 121 of 250 (attempt 1)",
+      "really": "false",
+      "why": "baseline: '121 at 4:25.5', then 'dead at 4:27.3'"
+     }
+    ]
+   }
+  },
+  "val": {
+   "1": {
+    "losses": {
+     "0:41": {
+      "grade": "wrong",
+      "why": "'Holding a static angle', 'a still view' goes against 'He walks up past the crate' and 'firing on the move ... Shooting Error reads 1.40°', so its fix (reposition, use utility) misses 'Stop before the first shot (counter-strafe)'; 'use utility' is near 'without a teammate or utility'"
+     },
+     "4:15": {
+      "grade": "wrong",
+      "why": "'Holding a static angle', 'a still view' goes against 'He peeks the courtyard from A Flowers on the move (the view drifts 4:13.6-4:14.1)', so 'Rotate or use Gatecrash utility to reposition' misses 'peek from a stop' and 'not firing when zeytazin ran across his crosshair'; the 1 v 2 at 51 is right"
+     }
+    },
+    "outside": [],
+    "sent_back": [
+     {
+      "claim": "at 0:38, ability icons 2, 3 and 4 on cooldown (attempt 1)",
+      "really": "unclear",
+      "why": "the baseline says nothing of his abilities at 0:38-0:40"
+     },
+     {
+      "claim": "at 2:14, peeking out of B Tunnel onto B site with a pistol (attempt 1)",
+      "really": "unclear",
+      "why": "baseline: orb thrown at 2:13.5, 'He switches to his Outlaw at 2:14.3'; what he held at 2:14.0 isn't read, and it names no site"
+     },
+     {
+      "claim": "at 2:14, abilities on cooldown (attempt 2, record check)",
+      "really": "unclear",
+      "why": "baseline: 'casts his blue hand ability at 2:13 and throws a blue orb at 2:13.5'; it reads no ability row at 2:14"
+     },
+     {
+      "claim": "at 2:14, peeking B site holding an Outlaw sniper (attempt 2)",
+      "really": "false",
+      "why": "baseline: 'He switches to his Outlaw at 2:14.3 (HUD 2/6, rifle up at 2:14.6)', so not yet at 2:14.0; the check's 'only ... at 2:16.0' is after his death at 2:15.0"
+     }
+    ]
+   }
+  },
+  "cr": {
+   "1": {
+    "losses": {},
+    "outside": [],
+    "sent_back": []
+   }
+  },
+  "fn": {
+   "1": {
+    "losses": {
+     "2:43": {
+      "grade": "wrong",
+      "why": "'while a teammate took fall damage' and 'teammates were far away' in a 'solo Battle Royale' where their own health went '97 -> 72'; the cause, an exposed slope 'without ... securing cover', goes against 'No enemy, tracer or damage marker is on them' and 'with no fight on', and misses 'Take the slope on foot or put a ramp under the drop'"
+     },
+     "6:59": {
+      "grade": "wrong",
+      "why": "'attacked by an unseen enemy' goes against not_true 'an enemy did the damage at 2:43, 6:09 or 6:59 (shield stays 98 ...)'; the key's loss is 'A third fall-damage drop', fix 'Walk the ridge down or ramp it'"
+     }
+    },
+    "outside": [],
+    "sent_back": []
+   }
+  },
+  "bs": {
+   "1": {
+    "losses": {},
+    "outside": [],
+    "sent_back": []
+   }
+  },
+  "ch": {
+   "1": {
+    "losses": {
+     "0:16": {
+      "grade": "partly",
+      "why": "names 2.f4 and the key's fixes 'exd5 or Nc3', but not why: 'the e4 pawn attacked by d5 and defended by nothing'; its 'opening the diagonal' and 'to develop and fight for the center' miss the threat 'dxe4'"
+     },
+     "5:05": {
+      "grade": "wrong",
+      "why": "blames 14.O-O-O (4:34), which the key doesn't grade (not among 'White moves graded 100+ at both depths'), with fix 'Nf4'; the key's loss is 15.Bc3, 'onto a square that sets up a knight fork with the queen', best '15.Nc3'"
+     },
+     "5:14": {
+      "grade": "right",
+      "why": "names Qd3 allowing 'Bc4, which then attacks the queen on d3 with the knight on e2 behind it', fix d5 (key: 'in line with the e2 knight on the c4 bishop move's diagonal', '16.d5'); '4.6 pawns' is within the key's noise of '430 at depth 20'"
+     },
+     "5:41": {
+      "grade": "right",
+      "why": "names 18.Nf4 'while an enemy piece aligned against the f4 square', fix Ng3 (key: 'f4 is on the d6 bishop's diagonal to c1', '18.Ng3'); doesn't name the bishop or the check on c1"
+     },
+     "6:28": {
+      "grade": "right",
+      "why": "names 22.Rxf4 'while an enemy piece controlled the diagonal', fix 'Bxc4 ... before recapturing': the key's '22.Bxc4 Nxc4 23.Rxf4' and 'take the piece that attacks yours first'; doesn't say the c4 bishop hit a6 and f1"
+     },
+     "7:52": {
+      "grade": "partly",
+      "why": "names 26.Rf1, Stockfish's 26...Bd5 and the fix 26.Re1, but not why: the key's 'Not challenging the rook on e2' (Black's rook on White's second rank)"
+     }
+    },
+    "outside": [
+     {
+      "t": "0:57",
+      "really": "loss",
+      "why": "the key's engine grades 6.Ne2 '151 / 121', a soft mistake it doesn't list"
+     },
+     {
+      "t": "2:04",
+      "really": "loss",
+      "why": "the key's engine grades 10.Qb5+ '168 / 116', a soft mistake it doesn't list (Black answered '10. Qb5+ Qc6', not Nc6)"
+     }
+    ],
+    "sent_back": [
+     {
+      "claim": "7.fxe5 was a mistake (attempt 2)",
+      "really": "false",
+      "why": "key: 7.fxe5 isn't among the 'White moves graded 100+ at both depths', and losses 'up to about 100 cp' are the engine's noise"
+     },
+     {
+      "claim": "18.Nf4 was a blunder (attempt 2)",
+      "really": "true",
+      "why": "key: 'blunder 18.Nf4 (571 at depth 20, 542 at depth 16; best Ng3)'"
+     },
+     {
+      "claim": "22.Rxf4 was a blunder (attempt 2)",
+      "really": "true",
+      "why": "key: 'blunder 22.Rxf4 (330 at depth 20, 288 at depth 16; best Bxc4)'"
+     },
+     {
+      "claim": "7.fxe5 ignored the threat of Qxe5, hitting the e2 knight (attempt 3)",
+      "really": "unclear",
+      "why": "the key's moves give '7. fxe5 Qxe5' but it says nothing of a threat to e2 and doesn't grade 7.fxe5"
+     },
+     {
+      "claim": "18.Nf4 ignored the d6 bishop on f4, allowing Bxf4+ with check (attempt 3)",
+      "really": "true",
+      "why": "key: 'f4 is on the d6 bishop's diagonal to c1'; '18...Bxf4+ (5:45) wins the knight with check'"
+     },
+     {
+      "claim": "22.Rxf4 ignored the c4 bishop on a6, allowing Bxa6 (attempt 3)",
+      "really": "true",
+      "why": "key: 'Black's 21...Bc4 attacks White's a6 bishop'; '22...Bxa6 (6:31) trades the bishops off'"
+     }
+    ]
+   }
+  },
+  "r6": {
+   "1": {
+    "losses": {
+     "8:58.3": {
+      "grade": "right",
+      "why": "names engaging on the move at '19 of 100' at match point (1:17; key '1:16-1:13 left'), rifle 25/64, without cover, a traded death (key: 'his spray killed francomix as he died'), fix 'instead of taking an aggressive engagement' (key: 'instead of taking the first duel'); misses 'rifle lowered on entry' and playing off TAVUKSEVEN; off: '3 v 4' (key: '2 v 3 on the top bar from 8:39.5 to 8:57')"
+     }
+    },
+    "outside": [],
+    "sent_back": [
+     {
+      "claim": "at 8:39, holding an angle on the empty rifle (0/89) instead of switching to the pistol (attempt 2, record check; sent twice word for word)",
+      "really": "false",
+      "why": "baseline: 'has his pistol out at 8:36.8 (21/100), and walks across the room and through that doorway (8:37.7-8:38.0)'"
+     }
+    ]
+   }
+  }
+ }
+}

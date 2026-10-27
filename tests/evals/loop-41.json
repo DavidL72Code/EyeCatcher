@@ -1,6 +1,6 @@
 {
  "name": "loop-41",
- "generated": "2026-10-25T15:38:22.196Z",
+ "generated": "2026-10-26T01:07:14.537Z",
  "source": "41",
  "games": [
   {
@@ -2988,15 +2988,13 @@
         "19 HP",
         "2 vs 3"
        ],
-       "codeNumbers": [
-        "19/100,"
-       ]
+       "codeNumbers": []
       }
      ],
      "cited": 2,
      "numbered": 1,
      "filled": 0,
-     "codeNumbered": 1,
+     "codeNumbered": 0,
      "coverage": 0.3333333333333333,
      "looseCites": [],
      "sentBack": 0

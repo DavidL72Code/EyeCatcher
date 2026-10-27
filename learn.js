@@ -15,9 +15,11 @@
   // own_screen: the player's own screen, everything in it theirs. spectator: footage of the whole match (a broadcast,
   // coaching film, a match filmed from the stands) where the player is one of many, so they say which one they are.
   const VIEWS = ['own_screen', 'spectator'];
-  const ELEMENTS = ['kill_feed', 'minimap', 'ammo', 'health', 'scoreboard', 'damage', 'kill_count', 'board', 'player_clock', 'opponent_clock', 'gold', 'abilities', 'team'];
+  const ELEMENTS = ['kill_feed', 'minimap', 'ammo', 'health', 'scoreboard', 'damage', 'kill_count', 'board', 'player_clock', 'opponent_clock', 'gold', 'abilities', 'team', 'touch_controls'];
   // what each element is, for the learn call and for checking its boxes
-  const WHAT = { kill_feed: 'the list of recent kills', minimap: 'the small map', ammo: 'the magazine count', health: "the player's own health or shield bar", scoreboard: "each side's score, or the teams or players left", damage: 'the counter of damage the player has dealt', kill_count: "the counter of the player's own kills, or of their kills, deaths, and assists", board: 'the playing board', player_clock: "the player's clock", opponent_clock: "the opponent's clock", gold: 'the gold or money count', abilities: 'ability or ultimate icons', team: "the teammates' portraits or health bars, with who is dead or respawning" };
+  // health is never a weapon slot's count: Fortnite's learn boxed the reserve ammo on the weapon slot (205) as health,
+  // and the box check agreed; no fall of the five was read (loop 49)
+  const WHAT = { kill_feed: 'the list of recent kills', minimap: 'the small map', ammo: "the magazine count, or the ammo count on the weapon slot in hand", health: "the player's own health or shield bar, never the ammo count on a weapon or item slot", scoreboard: "each side's score, or the teams or players left", damage: 'the counter of damage the player has dealt', kill_count: "the counter of the player's own kills, or of their kills, deaths, and assists", board: 'the playing board', player_clock: "the player's clock", opponent_clock: "the opponent's clock", gold: 'the gold or money count', abilities: 'ability or ultimate icons', team: "the teammates' portraits or health bars, with who is dead or respawning", touch_controls: "the on-screen joystick and touch buttons of a phone game" };
   const AIM_TARGETS = ['head', 'body', 'tracking', 'none'];
   const RESEARCH_STORE = 'thirdeye.research.v2', RESEARCH_DAYS = 7; // v2: searched by facet, with the meta, the wiki's lists, and the character's kit; a week, since the meta moves with patches
   // what code can check a habit with, and what the learn call is told about each
@@ -48,6 +50,9 @@
         game: str('the game, or a short description if unknown'),
         genre: { type: 'string', enum: GENRES },
         view: { type: 'string', enum: VIEWS, description: "own_screen: the player's own game screen, its camera following the one player they control (first or third person). spectator: a broadcast, coaching film, replay, or a match filmed from the stands, where many players are on screen and the camera follows the action" },
+        // asked as something each frame shows: a top-down game whose camera follows the player (Brawl Stars) was called
+        // spectator footage for its many characters on screen, and read play by play with no player (Oct 26)
+        camera_follows_one: { type: 'boolean', description: 'true when the camera keeps the same one character at or near the center of every frame (first person, over the shoulder, or top-down following them), the player it follows; false when the camera cuts between players or pans over the field to follow the action' },
         sides: { type: 'array', maxItems: 4, description: 'in spectator footage, the teams or players on each side and how to tell them apart on screen; empty otherwise', items: { type: 'object', properties: { name: str('the side as the screen names it (a team name, a score bug), or by its look'), look: str('how its players look on screen: jersey, helmet, or kit colors, markers') }, required: ['name', 'look'] } },
         unit: str("one unit of play in the game's own word (a round, a play, a point, a rally, a possession, a hand), or empty when play is continuous"),
         first_person: { type: 'boolean' },
@@ -75,7 +80,7 @@
         cues: { type: 'array', items: { type: 'string' } },
         key_moments: str('one sentence: the moments where the player wins or loses something'),
       },
-      required: ['game', 'genre', 'view', 'first_person', 'crosshair_center', 'team_game', 'rounds', 'elements', ...(structures ? ['structures'] : []), 'cues', 'key_moments', 'player_name_where'],
+      required: ['game', 'genre', 'view', 'camera_follows_one', 'first_person', 'crosshair_center', 'team_game', 'rounds', 'elements', ...(structures ? ['structures'] : []), 'cues', 'key_moments', 'player_name_where'],
     };
   }
 
@@ -179,9 +184,14 @@
     // elixir or gold count) is their own screen, whatever the call says: Clash Royale's elixir bar and hand of cards were
     // learned as spectator footage, and the review read it play by play with no side for the player (Oct 25). Not in a
     // team game: a broadcast shows the observed player's ammo and abilities, and is still footage of the whole match.
-    const duel = !!String(raw?.opponent_name || '').trim() || raw?.genre === 'strategy';
+    // never a team game: League of Legends was learned as strategy, and its turrets read as the score (loop 44)
+    const duel = (!!String(raw?.opponent_name || '').trim() || raw?.genre === 'strategy') && !raw?.team_game;
     const own = duel && (Array.isArray(raw?.elements) ? raw.elements : []).some((e) => OWN_HUD.includes(e?.name) || e?.name === 'gold');
-    const view = raw?.view === 'spectator' && raw?.genre !== 'chess' && !own ? 'spectator' : 'own_screen';
+    // A camera that keeps one character at the center of every frame is that player's screen, in a team game too; so is
+    // a phone game's joystick and touch buttons, which no broadcast draws (Brawl Stars learned as spectator footage
+    // with them on screen, its joystick and attack, super, and gadget buttons in every frame, Oct 26)
+    const touch = (Array.isArray(raw?.elements) ? raw.elements : []).some((e) => e?.name === 'touch_controls');
+    const view = raw?.view === 'spectator' && raw?.genre !== 'chess' && !own && !touch && raw?.camera_follows_one !== true ? 'spectator' : 'own_screen';
     // footage of the whole match has no crosshair of the player's: its center is wherever the camera points
     const firstPerson = view === 'own_screen' && !!raw?.first_person, center = raw?.crosshair_center !== false;
     if (firstPerson && center) regions.aim = AIM;
@@ -963,6 +973,54 @@
     return { ...profile, ...seen, regions: { ...regions, ...second.regions }, verified: { kept, dropped: dropped.filter((d) => !second.regions[d.name]), moved, added } };
   }
   const mostCommonOf = (xs) => { const n = new Map(); for (const x of xs) n.set(x, (n.get(x) || 0) + 1); return [...n].sort((a, b) => b[1] - a[1])[0]?.[0] || null; };
+  /**
+   * The player's health box, still missing after the box check, asked for on its own and checked like the others (strict):
+   * asked with the K/D/A and the team bar, Marvel Rivals' health bar came back in neither ask in one run of three, and the
+   * review had no near-deaths and took an ult's red tint for a death (loop 45, Oct 26); asked on its own it came back 3
+   * of 3. Two calls, with game_profile, only where it's missing in a game whose player has health (HAS_HEALTH) or a
+   * learn call boxed one. Returns the regions found, {} for none.
+   */
+  const HAS_HEALTH = ['shooter', 'moba', 'fighting'];
+  /**
+   * The player's own structures, where a learn call boxed a structure and fewer of theirs are kept than of the other
+   * side's, asked for once in the last part of the match: Clash Royale writes a tower's number only once it's been hit, the learn frames are spread over
+   * the whole match, and in loop 45 they boxed the opponent's two towers only; the record read no tower of the player's
+   * and found neither of its big drops (1:33, 2:36). Each box found must show digits (C.ammoReading) in one of the
+   * pictures, in the crop the record reads it in (C.TOWER_H tall: the model's tight box sat just under the number), and
+   * its side is where it sits (structuresOf). One call. Returns the objectives, with any found added.
+   */
+  const OWN_STRUCTURE_AT = [0.6, 0.7, 0.8, 0.9, 0.97];
+  async function ownStructures({ video, profile, signal, onNotice }) {
+    const objectives = profile.objectives || [];
+    const times = OWN_STRUCTURE_AT.map((k) => +(video.duration * k).toFixed(2)), shots = await V.grab(video, times, { maxDim: 1024, quality: 0.85 });
+    const at = ([x, y, w, h]) => [y, x, y + h, x + w].map((v) => Math.round(v * 1000));
+    const resp = await counted(G.generate)({
+      contents: [{ role: 'user', parts: [...shots.flatMap((im, i) => [{ text: `Picture ${i + 1}` }, { inlineData: { mimeType: im.mimeType, data: im.data } }]), { text: `Each picture is a ${profile.name} screen from the last part of one match, on the player's own screen.${objectives.length ? ` The other side's structures have their health written at ${objectives.map((o) => `[${at(o.box).join(', ')}] (${o.label})`).join(', ')}, as [ymin, xmin, ymax, xmax] in 0-1000.` : ''} Box every structure of the player's own side, on the near side at the bottom, whose health is written as a number in any picture: a tight box around its number, in the picture where it shows, which one it is in a few words, and side player. A structure's number can show only once it's been hit. Leave out one whose number no picture shows.` }] }],
+      generationConfig: { temperature: 0, responseMimeType: 'application/json', responseSchema: { type: 'object', properties: { structures: STRUCTURES }, required: ['structures'] } },
+    }, { signal, onNotice });
+    const found = structuresOf(G.parseJSON(G.textOf(resp)), { duel: true, view: profile.view }).filter((o) => o.side === 'own' && !objectives.some((x) => overlap(x.box, o.box)));
+    const frame = { w: video.width, h: video.height }, kept = [];
+    for (const o of found) {
+      let reads = 0;
+      await V.each(video, times, { crop: C.regionRect({ regions: { s: C.readoutRegion(o.box, C.TOWER_H) } }, 's', frame), maxDim: 400, signal }, ({ canvas, w, h }) => { if (C.ammoReading(canvas.getContext('2d', { willReadFrequently: true }).getImageData(0, 0, w, h), profile.hudText)) reads++; });
+      if (reads) kept.push(o);
+    }
+    return [...objectives, ...kept].map((o, i) => ({ ...o, id: `S${i + 1}` }));
+  }
+  async function askAlone({ video, profile, names, signal, onNotice, count = VERIFY_FRAMES }) {
+    const times = Array.from({ length: count }, (_, k) => +((video.duration * (k + 0.3)) / count).toFixed(2));
+    const shots = await V.grab(video, times, { maxDim: 1280, quality: 0.85 });
+    const ask = await counted(G.generate)({
+      contents: [{ role: 'user', parts: [...shots.flatMap((im, i) => [{ text: `Picture ${i + 1}` }, { inlineData: { mimeType: im.mimeType, data: im.data } }]), { text: `Each picture is a ${profile.name} screen. Find ${names.map((n) => `${n} (${WHAT[n]}${BARS.includes(n) ? ', a bar or a number, with its number where one is written on or beside it' : ''})`).join('; ')}, and give a tight box [ymin, xmin, ymax, xmax] scaled 0-1000 in the picture where it's clearest. Leave out one the screen doesn't show.` }] }],
+      generationConfig: { temperature: 0, responseMimeType: 'application/json', responseSchema: RELOCATE, mediaResolution: 'MEDIA_RESOLUTION_HIGH' },
+    }, { signal, onNotice });
+    const found = mergeBoxes((G.parseJSON(G.textOf(ask)).found || []).filter((f) => names.includes(f.name)));
+    if (!Object.keys(found).length) return {};
+    // only what was asked for: a box the check said shows another counter came back renamed (Brawl Stars' health as its
+    // kill count)
+    const { regions } = await verifyRegions({ video, profile: { ...profile, regions: found }, signal, onNotice, again: false, strict: true, count });
+    return Object.fromEntries(Object.entries(regions).filter(([n]) => names.includes(n)));
+  }
 
   /**
    * Which character the player plays, read on its own from three full-size frames: the HUD's portrait and ability
@@ -1042,7 +1100,11 @@
     const sa = Array.isArray(a?.structures) ? a.structures : [], sb = Array.isArray(b?.structures) ? b.structures : [];
     const zone = (x) => mergeBoxes([{ name: 'gold', box: x.box }], 0).gold;
     const both = sa.filter((x) => zone(x) && sb.some((y) => zone(y) && overlap(zone(x), zone(y))));
-    const structures = !sa.length || !sb.length ? [...sa, ...sb] : both.map((x) => { const y = sb.find((z) => zone(z) && overlap(zone(x), zone(z))); return { ...x, box: x.box.map((v, k) => (+v + +y.box[k]) / 2) }; });
+    // and where both boxed some but none in the same place, all of them, each once: Clash Royale's two calls boxed its
+    // towers apart and the record read no tower at all (loop 46); a box on no number reads nothing, and whose it is
+    // comes from where it sits (structuresOf)
+    const apart = [...sa, ...sb.filter((y) => !sa.some((x) => zone(x) && zone(y) && overlap(zone(x), zone(y))))];
+    const structures = !sa.length || !sb.length || !both.length ? (!sa.length || !sb.length ? [...sa, ...sb] : apart) : both.map((x) => { const y = sb.find((z) => zone(z) && overlap(zone(x), zone(z))); return { ...x, box: x.box.map((v, k) => (+v + +y.box[k]) / 2) }; });
     const cues = [...new Set([...(a?.cues || []), ...(b?.cues || [])].map((c) => String(c).trim()).filter(Boolean))];
     return { raw: { ...a, elements, cues, ...(sa.length || sb.length ? { structures } : {}) }, disputed };
   }
@@ -1064,7 +1126,7 @@
     const parts = frames.flatMap((f, i) => [{ text: `Frame ${i + 1}, at ${C.mmss(f.t)}` }, { inlineData: { mimeType: f.mimeType, data: f.data } }]);
     const prompt = `These frames are spread over one recording of a game or match: usually the player's own screen, sometimes a broadcast or film of the whole match. Identify the game and describe what's on screen, so a coach can read the match from it.
 view: own_screen or spectator, as defined. In spectator footage: sides, the two sides and how to tell their players apart, and unit, the game's unit of play. On the player's own screen: player_name and player_side, so their own kills, deaths, and points can be told from the other side's, and in a one-on-one game opponent_name; the player's own cards, units, or pieces are usually at the bottom.
-elements: every HUD or board element that shows the state of play, each with a tight box [ymin, xmin, ymax, xmax] scaled 0-1000 in the frame (frame, numbered from 1) where it's clearest. kill_feed: the list of recent kills, all its rows; ammo: the magazine count; health: the player's own health or shield bar, not an ability icon, with its number where one is written on or beside it; where it sits over the character the camera follows (a top-down game), box the bar and its number together, not the name above them; damage: the counter of damage the player has dealt, if the game shows one, boxed on its own; kill_count: the counter of the player's own kills, or their kills, deaths, and assists (a K/D/A like 3/1/4), if the game shows one, boxed on its own; scoreboard: each side's score; abilities: the player's ability and ultimate icons with their charges or cooldowns, if the game has them; team: the row of the player's teammates' portraits or health bars, with who is dead or respawning, if the HUD shows one (not the scoreboard); board: the board of a board game such as chess, never a playing field.${structures ? `
+elements: every HUD or board element that shows the state of play, each with a tight box [ymin, xmin, ymax, xmax] scaled 0-1000 in the frame (frame, numbered from 1) where it's clearest. kill_feed: the list of recent kills, all its rows; ammo: the magazine count, or the ammo count on the weapon slot in hand; health: the player's own health or shield bar, not an ability icon and never the ammo count on a weapon or item slot, with its number where one is written on or beside it; where it sits over the character the camera follows (a top-down game), box the bar and its number together, not the name above them; damage: the counter of damage the player has dealt, if the game shows one, boxed on its own; kill_count: the counter of the player's own kills, or their kills, deaths, and assists (a K/D/A like 3/1/4), if the game shows one, boxed on its own; scoreboard: each side's score; abilities: the player's ability and ultimate icons with their charges or cooldowns, if the game has them; team: the row of the player's teammates' portraits or health bars, with who is dead or respawning, if the HUD shows one (not the scoreboard); touch_controls: the on-screen joystick and touch buttons a phone game draws for the player to press, if the screen shows them; board: the board of a board game such as chess, never a playing field.${structures ? `
 structures: every structure whose health the screen writes as a number over or on it (a tower, a turret, a base), the player's own and the other side's, each on its own, in the frame where its number is clearest: a tight box around its health number (the number, not the structure), which one it is in a few words (left tower, king tower), and whose it is; in a one-on-one game on the player's own screen, the player's own are on the near side, at the bottom by their cards or units, and the other side's at the top. Leave it empty only when no structure's health is written on screen.` : ''}
 fov_h: the game's default horizontal field of view if you know it, else 0.
 cues: up to 6 short facts about how key moments look on screen, such as a kill, a death, a round start, a capture.`;
@@ -1086,6 +1148,7 @@ cues: up to 6 short facts about how key moments look on screen, such as a kill, 
     const frame = { w: video.width, h: video.height }, first = toProfile(raw, checks), key = flag('game_profile') && namedGame(first.name) ? profileKey(first, frame) : null;
     const kept = key ? cleanLayout(readProfiles()[key]?.layout) : null;
     let named = String(raw?.character || '').trim(), checked = null, failed = false, relearned = '', grew = false, disputed = [];
+    const learns = [raw], boxed = (name) => learns.some((r) => (Array.isArray(r?.elements) ? r.elements : []).some((e) => e?.name === name));
     if (kept) {
       // under this recording's own player, checked once with no second ask; its structures from this recording where
       // the kept layout has none (learned with objectives off). A box that no longer shows its element, or a check that
@@ -1100,7 +1163,7 @@ cues: up to 6 short facts about how key moments look on screen, such as a kill, 
       if (key) {
         const more = await V.grab(video, Array.from({ length: SAMPLES }, (_, k) => +((video.duration * (k + 0.15)) / SAMPLES).toFixed(2)), { maxDim: 1024, quality: 0.8 });
         const second = await learnCall(more, ask).catch((e) => { if (e?.name === 'AbortError') throw e; return null; });
-        if (second) ({ raw, disputed } = consensus(raw, second));
+        if (second) { learns.push(second); ({ raw, disputed } = consensus(raw, second)); }
         onPhase('second learn call');
       }
       // every box is checked against the screen before anything reads from it; what matters in the game is the coach's
@@ -1108,6 +1171,19 @@ cues: up to 6 short facts about how key moments look on screen, such as a kill, 
       const own = toProfile(raw, checks);
       named = String(raw?.character || '').trim();
       checked = await verifyRegions({ video, profile: own, character: named, signal, onNotice, ...(key ? { count: PROFILE_VERIFY, alsoAsk: disputed } : {}) }).catch((e) => { if (e.name === 'AbortError') throw e; failed = true; return own; });
+      // game_profile: part of learning a game with more effort, once
+      if (key && !failed && !checked.regions?.health && (HAS_HEALTH.includes(own.genre) || boxed('health'))) {
+        const alone = await askAlone({ video, profile: own, names: ['health'], signal, onNotice, count: PROFILE_VERIFY }).catch((e) => { if (e.name === 'AbortError') throw e; return {}; });
+        if (alone.health) checked = { ...checked, regions: { ...checked.regions, health: alone.health }, verified: { ...checked.verified, added: [...(checked.verified?.added || []), 'health'] } };
+      }
+      // the player's own structures, when only the other side's were boxed (ownStructures)
+      // (fewer of theirs than of the other side's: a one-on-one board is the same on both sides, and the learn calls kept
+      // the player's king tower alone, not the right tower that fell, loop 47)
+      const sideCount = (side) => (checked.objectives || []).filter((o) => o.side === side).length;
+      if (flag('objectives') && learns.some((r) => Array.isArray(r?.structures) && r.structures.length) && C.oneOnOne(checked) && (!sideCount('own') || sideCount('own') < sideCount('other')) && checked.view === 'own_screen') {
+        const objectives = await ownStructures({ video, profile: checked, signal, onNotice }).catch((e) => { if (e.name === 'AbortError') throw e; return checked.objectives; });
+        checked = { ...checked, objectives };
+      }
       onPhase('boxes checked');
     }
     // the character, read a second time apart from the learn call (by the box check, which sees the whole screen, or on
@@ -1128,7 +1204,7 @@ cues: up to 6 short facts about how key moments look on screen, such as a kill, 
     return { profile, frames, raw, calls: made };
   }
 
-  const api = { learnGame, consensus, layoutOf, profileKey, structuresOf, cleanLayout, namedGame, PROFILE_STORE, LAYOUT_VERSION, researchGame, researchSaved, researchQuestion, habitsFor, researchBrief, cleanResearch, learnLayout, verifyRegions, toProfile, mergeBoxes, hueHistogram, pixelHues, twoTeamRows, feedRows, feedColors, judgeBoxes, barShaped, cleanCharacter, nameHue, rgbHue, alignedRows, portraitShare, CHECKS, ELEMENTS, GENRES, AIM, AIM_TARGETS };
+  const api = { learnGame, askAlone, ownStructures, consensus, layoutOf, profileKey, structuresOf, cleanLayout, namedGame, PROFILE_STORE, LAYOUT_VERSION, researchGame, researchSaved, researchQuestion, habitsFor, researchBrief, cleanResearch, learnLayout, verifyRegions, toProfile, mergeBoxes, hueHistogram, pixelHues, twoTeamRows, feedRows, feedColors, judgeBoxes, barShaped, cleanCharacter, nameHue, rgbHue, alignedRows, portraitShare, CHECKS, ELEMENTS, GENRES, AIM, AIM_TARGETS };
   root.ThirdeyeLearn = api;
   if (typeof module !== 'undefined') module.exports = api;
 })(typeof window !== 'undefined' ? window : globalThis);

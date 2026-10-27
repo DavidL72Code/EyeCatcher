@@ -1,0 +1,2265 @@
+{
+ "name": "loop-40",
+ "source": "/private/tmp/claude-501/-Users-davidle-Documents-hackathon/85b4a72f-2966-4d0a-af8c-1c90c58f3635/scratchpad/loops/40",
+ "generated": "2026-10-26T15:50:01.453Z",
+ "graded": true,
+ "gradedBy": "a grading agent, from the loop-40 worksheet, the validated coach baselines and the loop-40 notes (their grades kept where they grade a cite; runs they describe only in prose graded to match their totals of 10 right, 4 partly, 5 wrong); checked by a second grading agent (every wrong grade, every true send-back, and every other graded run), its 12 changes applied",
+ "games": [
+  {
+   "tag": "lol",
+   "game": "League of Legends",
+   "losses": 3,
+   "runs": [
+    {
+     "run": 1,
+     "void": true,
+     "voidWhy": "3 calls refused or dropped by the API",
+     "rows": {
+      "player": {
+       "n": 0,
+       "d": 0
+      },
+      "otherPlayer": {
+       "n": 0,
+       "d": 0
+      },
+      "character": {
+       "n": 0,
+       "d": 0
+      },
+      "found": {
+       "n": 0,
+       "d": 0
+      },
+      "invented": {
+       "n": 0,
+       "d": 0
+      },
+      "numbers": {
+       "n": 0,
+       "d": 0
+      },
+      "cited": {
+       "n": 0,
+       "d": 0
+      },
+      "right": {
+       "n": 0,
+       "d": 0
+      },
+      "partly": {
+       "n": 0,
+       "d": 0
+      },
+      "wrong": {
+       "n": 0,
+       "d": 0
+      },
+      "nothing": {
+       "n": 0,
+       "d": 0
+      },
+      "caught": {
+       "n": 0,
+       "d": 0
+      },
+      "wrongly": {
+       "n": 0,
+       "d": 0
+      }
+     },
+     "cost": {
+      "minutes": 11.3,
+      "answered": 28,
+      "failed": 3,
+      "prompt": 498246,
+      "output": 88878
+     },
+     "losses": [],
+     "outside": [],
+     "ungraded": 0
+    },
+    {
+     "run": 2,
+     "void": true,
+     "voidWhy": "3 calls refused or dropped by the API",
+     "rows": {
+      "player": {
+       "n": 0,
+       "d": 0
+      },
+      "otherPlayer": {
+       "n": 0,
+       "d": 0
+      },
+      "character": {
+       "n": 0,
+       "d": 0
+      },
+      "found": {
+       "n": 0,
+       "d": 0
+      },
+      "invented": {
+       "n": 0,
+       "d": 0
+      },
+      "numbers": {
+       "n": 0,
+       "d": 0
+      },
+      "cited": {
+       "n": 0,
+       "d": 0
+      },
+      "right": {
+       "n": 0,
+       "d": 0
+      },
+      "partly": {
+       "n": 0,
+       "d": 0
+      },
+      "wrong": {
+       "n": 0,
+       "d": 0
+      },
+      "nothing": {
+       "n": 0,
+       "d": 0
+      },
+      "caught": {
+       "n": 0,
+       "d": 0
+      },
+      "wrongly": {
+       "n": 0,
+       "d": 0
+      }
+     },
+     "cost": {
+      "minutes": 6.5,
+      "answered": 16,
+      "failed": 3,
+      "prompt": 433900,
+      "output": 20960
+     },
+     "losses": [],
+     "outside": [],
+     "ungraded": 0
+    }
+   ],
+   "rows": {
+    "player": {
+     "n": 0,
+     "d": 0
+    },
+    "otherPlayer": {
+     "n": 0,
+     "d": 0
+    },
+    "character": {
+     "n": 0,
+     "d": 0
+    },
+    "found": {
+     "n": 0,
+     "d": 0
+    },
+    "invented": {
+     "n": 0,
+     "d": 0
+    },
+    "numbers": {
+     "n": 0,
+     "d": 0
+    },
+    "cited": {
+     "n": 0,
+     "d": 0
+    },
+    "right": {
+     "n": 0,
+     "d": 0
+    },
+    "partly": {
+     "n": 0,
+     "d": 0
+    },
+    "wrong": {
+     "n": 0,
+     "d": 0
+    },
+    "nothing": {
+     "n": 0,
+     "d": 0
+    },
+    "caught": {
+     "n": 0,
+     "d": 0
+    },
+    "wrongly": {
+     "n": 0,
+     "d": 0
+    }
+   },
+   "cost": {
+    "runs": 2,
+    "valid": 0,
+    "minutes": null,
+    "answered": null,
+    "failed": null,
+    "prompt": null,
+    "output": null
+   },
+   "ungraded": 0
+  },
+  {
+   "tag": "rl",
+   "game": "Rocket League",
+   "losses": 1,
+   "runs": [
+    {
+     "run": 1,
+     "void": false,
+     "rows": {
+      "player": {
+       "n": 0,
+       "d": 1
+      },
+      "otherPlayer": {
+       "n": 1,
+       "d": 1
+      },
+      "character": {
+       "n": 0,
+       "d": 0
+      },
+      "found": {
+       "n": 0,
+       "d": 1
+      },
+      "invented": {
+       "n": 3,
+       "d": 3
+      },
+      "numbers": {
+       "n": 0,
+       "d": 0
+      },
+      "cited": {
+       "n": 0,
+       "d": 1
+      },
+      "right": {
+       "n": 0,
+       "d": 0
+      },
+      "partly": {
+       "n": 0,
+       "d": 0
+      },
+      "wrong": {
+       "n": 0,
+       "d": 0
+      },
+      "nothing": {
+       "n": 0,
+       "d": 3
+      },
+      "caught": {
+       "n": 6,
+       "d": 6
+      },
+      "wrongly": {
+       "n": 0,
+       "d": 6
+      }
+     },
+     "cost": {
+      "minutes": 4.5,
+      "answered": 27,
+      "failed": 1,
+      "prompt": 349212,
+      "output": 71694
+     },
+     "losses": [
+      {
+       "t": "4:15",
+       "kind": "point_lost (NYAL scores; 2-1, 1:09 left)",
+       "found": false,
+       "cited": false,
+       "status": "missed",
+       "numbers": null
+      }
+     ],
+     "outside": [
+      "3:26 The player challenged the ball in a defensive position without securing a strong enough clear.",
+      "3:48 The player committed to a defensive rotation that left the near post exposed to an enemy's shot.",
+      "4:42 The player remained grounded inside the goal instead of challenging or clearing the ball proactively."
+     ],
+     "ungraded": 3
+    },
+    {
+     "run": 2,
+     "void": false,
+     "rows": {
+      "player": {
+       "n": 0,
+       "d": 1
+      },
+      "otherPlayer": {
+       "n": 1,
+       "d": 1
+      },
+      "character": {
+       "n": 0,
+       "d": 0
+      },
+      "found": {
+       "n": 0,
+       "d": 1
+      },
+      "invented": {
+       "n": 3,
+       "d": 3
+      },
+      "numbers": {
+       "n": 0,
+       "d": 0
+      },
+      "cited": {
+       "n": 0,
+       "d": 1
+      },
+      "right": {
+       "n": 0,
+       "d": 0
+      },
+      "partly": {
+       "n": 0,
+       "d": 0
+      },
+      "wrong": {
+       "n": 0,
+       "d": 0
+      },
+      "nothing": {
+       "n": 0,
+       "d": 3
+      },
+      "caught": {
+       "n": 0,
+       "d": 0
+      },
+      "wrongly": {
+       "n": 0,
+       "d": 0
+      }
+     },
+     "cost": {
+      "minutes": 2.7,
+      "answered": 12,
+      "failed": 1,
+      "prompt": 201397,
+      "output": 35105
+     },
+     "losses": [
+      {
+       "t": "4:15",
+       "kind": "point_lost (NYAL scores; 2-1, 1:09 left)",
+       "found": false,
+       "cited": false,
+       "status": "missed",
+       "numbers": null
+      }
+     ],
+     "outside": [
+      "3:25 Challenged the ball directly in front of the goal rather than clearing to the corner.",
+      "3:46 Rotated toward the side boost instead of immediately challenging the advancing ball.",
+      "4:42 Stayed grounded near the goal line after the initial save instead of jumping or rotating up to challenge the dropping ball."
+     ],
+     "ungraded": 3
+    }
+   ],
+   "rows": {
+    "player": {
+     "n": 0,
+     "d": 2
+    },
+    "otherPlayer": {
+     "n": 2,
+     "d": 2
+    },
+    "character": {
+     "n": 0,
+     "d": 0
+    },
+    "found": {
+     "n": 0,
+     "d": 2
+    },
+    "invented": {
+     "n": 6,
+     "d": 6
+    },
+    "numbers": {
+     "n": 0,
+     "d": 0
+    },
+    "cited": {
+     "n": 0,
+     "d": 2
+    },
+    "right": {
+     "n": 0,
+     "d": 0
+    },
+    "partly": {
+     "n": 0,
+     "d": 0
+    },
+    "wrong": {
+     "n": 0,
+     "d": 0
+    },
+    "nothing": {
+     "n": 0,
+     "d": 6
+    },
+    "caught": {
+     "n": 6,
+     "d": 6
+    },
+    "wrongly": {
+     "n": 0,
+     "d": 6
+    }
+   },
+   "cost": {
+    "runs": 2,
+    "valid": 2,
+    "minutes": 3.6,
+    "answered": 19.5,
+    "failed": 1,
+    "prompt": 275304.5,
+    "output": 53399.5
+   },
+   "ungraded": 6
+  },
+  {
+   "tag": "mr",
+   "game": "Marvel Rivals",
+   "losses": 4,
+   "runs": [
+    {
+     "run": 1,
+     "void": false,
+     "rows": {
+      "player": {
+       "n": 1,
+       "d": 1
+      },
+      "otherPlayer": {
+       "n": 0,
+       "d": 1
+      },
+      "character": {
+       "n": 1,
+       "d": 1
+      },
+      "found": {
+       "n": 3,
+       "d": 4
+      },
+      "invented": {
+       "n": 0,
+       "d": 1
+      },
+      "numbers": {
+       "n": 0,
+       "d": 0
+      },
+      "cited": {
+       "n": 1,
+       "d": 4
+      },
+      "right": {
+       "n": 0,
+       "d": 1
+      },
+      "partly": {
+       "n": 1,
+       "d": 1
+      },
+      "wrong": {
+       "n": 0,
+       "d": 1
+      },
+      "nothing": {
+       "n": 0,
+       "d": 2
+      },
+      "caught": {
+       "n": 2,
+       "d": 2
+      },
+      "wrongly": {
+       "n": 1,
+       "d": 3
+      }
+     },
+     "cost": {
+      "minutes": 6.3,
+      "answered": 28,
+      "failed": 1,
+      "prompt": 358402,
+      "output": 69357
+     },
+     "losses": [
+      {
+       "t": "1:19",
+       "kind": "near_death (16 of 250 at 1:16.5; 50 at 1:18.5-1:19)",
+       "found": true,
+       "cited": false,
+       "status": "missed",
+       "numbers": null
+      },
+      {
+       "t": "4:18",
+       "kind": "near_death (54 of 253 at 4:18, then 70 at 4:18.5)",
+       "found": true,
+       "cited": false,
+       "status": "missed",
+       "numbers": null
+      },
+      {
+       "t": "4:27",
+       "kind": "death (killed by VEN)",
+       "found": true,
+       "cited": true,
+       "status": "partly",
+       "numbers": null
+      },
+      {
+       "t": "5:10",
+       "kind": "near_death (30 of 250)",
+       "found": false,
+       "cited": false,
+       "status": "missed",
+       "numbers": null
+      }
+     ],
+     "outside": [],
+     "ungraded": 0
+    },
+    {
+     "run": 2,
+     "void": true,
+     "voidWhy": "3 calls refused or dropped by the API",
+     "rows": {
+      "player": {
+       "n": 0,
+       "d": 0
+      },
+      "otherPlayer": {
+       "n": 0,
+       "d": 0
+      },
+      "character": {
+       "n": 0,
+       "d": 0
+      },
+      "found": {
+       "n": 0,
+       "d": 0
+      },
+      "invented": {
+       "n": 0,
+       "d": 0
+      },
+      "numbers": {
+       "n": 0,
+       "d": 0
+      },
+      "cited": {
+       "n": 0,
+       "d": 0
+      },
+      "right": {
+       "n": 0,
+       "d": 0
+      },
+      "partly": {
+       "n": 0,
+       "d": 0
+      },
+      "wrong": {
+       "n": 0,
+       "d": 0
+      },
+      "nothing": {
+       "n": 0,
+       "d": 0
+      },
+      "caught": {
+       "n": 0,
+       "d": 0
+      },
+      "wrongly": {
+       "n": 0,
+       "d": 0
+      }
+     },
+     "cost": {
+      "minutes": 6.7,
+      "answered": 23,
+      "failed": 3,
+      "prompt": 380985,
+      "output": 69746
+     },
+     "losses": [],
+     "outside": [],
+     "ungraded": 0
+    }
+   ],
+   "rows": {
+    "player": {
+     "n": 1,
+     "d": 1
+    },
+    "otherPlayer": {
+     "n": 0,
+     "d": 1
+    },
+    "character": {
+     "n": 1,
+     "d": 1
+    },
+    "found": {
+     "n": 3,
+     "d": 4
+    },
+    "invented": {
+     "n": 0,
+     "d": 1
+    },
+    "numbers": {
+     "n": 0,
+     "d": 0
+    },
+    "cited": {
+     "n": 1,
+     "d": 4
+    },
+    "right": {
+     "n": 0,
+     "d": 1
+    },
+    "partly": {
+     "n": 1,
+     "d": 1
+    },
+    "wrong": {
+     "n": 0,
+     "d": 1
+    },
+    "nothing": {
+     "n": 0,
+     "d": 2
+    },
+    "caught": {
+     "n": 2,
+     "d": 2
+    },
+    "wrongly": {
+     "n": 1,
+     "d": 3
+    }
+   },
+   "cost": {
+    "runs": 2,
+    "valid": 1,
+    "minutes": 6.3,
+    "answered": 28,
+    "failed": 1,
+    "prompt": 358402,
+    "output": 69357
+   },
+   "ungraded": 0
+  },
+  {
+   "tag": "val",
+   "game": "Valorant",
+   "losses": 5,
+   "runs": [
+    {
+     "run": 1,
+     "void": true,
+     "voidWhy": "1 call the API failed and no retry answered (learn 429)",
+     "rows": {
+      "player": {
+       "n": 0,
+       "d": 0
+      },
+      "otherPlayer": {
+       "n": 0,
+       "d": 0
+      },
+      "character": {
+       "n": 0,
+       "d": 0
+      },
+      "found": {
+       "n": 0,
+       "d": 0
+      },
+      "invented": {
+       "n": 0,
+       "d": 0
+      },
+      "numbers": {
+       "n": 0,
+       "d": 0
+      },
+      "cited": {
+       "n": 0,
+       "d": 0
+      },
+      "right": {
+       "n": 0,
+       "d": 0
+      },
+      "partly": {
+       "n": 0,
+       "d": 0
+      },
+      "wrong": {
+       "n": 0,
+       "d": 0
+      },
+      "nothing": {
+       "n": 0,
+       "d": 0
+      },
+      "caught": {
+       "n": 0,
+       "d": 0
+      },
+      "wrongly": {
+       "n": 0,
+       "d": 0
+      }
+     },
+     "cost": {
+      "minutes": 10.2,
+      "answered": 23,
+      "failed": 1,
+      "prompt": 437956,
+      "output": 57795
+     },
+     "losses": [],
+     "outside": [],
+     "ungraded": 0
+    },
+    {
+     "run": 2,
+     "void": false,
+     "rows": {
+      "player": {
+       "n": 1,
+       "d": 1
+      },
+      "otherPlayer": {
+       "n": 0,
+       "d": 1
+      },
+      "character": {
+       "n": 1,
+       "d": 1
+      },
+      "found": {
+       "n": 5,
+       "d": 5
+      },
+      "invented": {
+       "n": 0,
+       "d": 5
+      },
+      "numbers": {
+       "n": 0,
+       "d": 0
+      },
+      "cited": {
+       "n": 3,
+       "d": 5
+      },
+      "right": {
+       "n": 1,
+       "d": 3
+      },
+      "partly": {
+       "n": 0,
+       "d": 3
+      },
+      "wrong": {
+       "n": 2,
+       "d": 3
+      },
+      "nothing": {
+       "n": 0,
+       "d": 3
+      },
+      "caught": {
+       "n": 2,
+       "d": 4
+      },
+      "wrongly": {
+       "n": 2,
+       "d": 4
+      }
+     },
+     "cost": {
+      "minutes": 7.1,
+      "answered": 24,
+      "failed": 1,
+      "prompt": 453852,
+      "output": 72700
+     },
+     "losses": [
+      {
+       "t": "0:41",
+       "kind": "death (killed by Fade)",
+       "found": true,
+       "cited": true,
+       "status": "wrong",
+       "numbers": null
+      },
+      {
+       "t": "2:17",
+       "kind": "death (killed by Fade)",
+       "found": true,
+       "cited": true,
+       "status": "wrong",
+       "numbers": null
+      },
+      {
+       "t": "4:15",
+       "kind": "death (killed by zeytazin, 'KILLED BY CLOVE')",
+       "found": true,
+       "cited": true,
+       "status": "right",
+       "numbers": null
+      },
+      {
+       "t": "4:57",
+       "kind": "death (killed by ulquiorra, 'KILLED BY NEON')",
+       "found": true,
+       "cited": false,
+       "status": "missed",
+       "numbers": null
+      },
+      {
+       "t": "6:15",
+       "kind": "death (killed by Reyna)",
+       "found": true,
+       "cited": false,
+       "status": "missed",
+       "numbers": null
+      }
+     ],
+     "outside": [],
+     "ungraded": 0
+    }
+   ],
+   "rows": {
+    "player": {
+     "n": 1,
+     "d": 1
+    },
+    "otherPlayer": {
+     "n": 0,
+     "d": 1
+    },
+    "character": {
+     "n": 1,
+     "d": 1
+    },
+    "found": {
+     "n": 5,
+     "d": 5
+    },
+    "invented": {
+     "n": 0,
+     "d": 5
+    },
+    "numbers": {
+     "n": 0,
+     "d": 0
+    },
+    "cited": {
+     "n": 3,
+     "d": 5
+    },
+    "right": {
+     "n": 1,
+     "d": 3
+    },
+    "partly": {
+     "n": 0,
+     "d": 3
+    },
+    "wrong": {
+     "n": 2,
+     "d": 3
+    },
+    "nothing": {
+     "n": 0,
+     "d": 3
+    },
+    "caught": {
+     "n": 2,
+     "d": 4
+    },
+    "wrongly": {
+     "n": 2,
+     "d": 4
+    }
+   },
+   "cost": {
+    "runs": 2,
+    "valid": 1,
+    "minutes": 7.1,
+    "answered": 24,
+    "failed": 1,
+    "prompt": 453852,
+    "output": 72700
+   },
+   "ungraded": 0
+  },
+  {
+   "tag": "cr",
+   "game": "Clash Royale",
+   "losses": 3,
+   "runs": [
+    {
+     "run": 1,
+     "void": false,
+     "rows": {
+      "player": {
+       "n": 0,
+       "d": 1
+      },
+      "otherPlayer": {
+       "n": 0,
+       "d": 0
+      },
+      "character": {
+       "n": 0,
+       "d": 0
+      },
+      "found": {
+       "n": 0,
+       "d": 3
+      },
+      "invented": {
+       "n": 0,
+       "d": 0
+      },
+      "numbers": {
+       "n": 0,
+       "d": 0
+      },
+      "cited": {
+       "n": 0,
+       "d": 3
+      },
+      "right": {
+       "n": 0,
+       "d": 0
+      },
+      "partly": {
+       "n": 0,
+       "d": 0
+      },
+      "wrong": {
+       "n": 0,
+       "d": 0
+      },
+      "nothing": {
+       "n": 0,
+       "d": 1
+      },
+      "caught": {
+       "n": 0,
+       "d": 0
+      },
+      "wrongly": {
+       "n": 0,
+       "d": 0
+      }
+     },
+     "cost": {
+      "minutes": 2.5,
+      "answered": 17,
+      "failed": 0,
+      "prompt": 122194,
+      "output": 30282
+     },
+     "losses": [
+      {
+       "t": "1:33",
+       "kind": "tower damage (right tower 3197 to 761)",
+       "found": false,
+       "cited": false,
+       "status": "missed",
+       "numbers": null
+      },
+      {
+       "t": "2:36",
+       "kind": "tower damage (right tower 761 to 384), with the player's King Tower hit and activated (5582 bar from 2:24)",
+       "found": false,
+       "cited": false,
+       "status": "missed",
+       "numbers": null
+      },
+      {
+       "t": "3:27",
+       "kind": "right tower destroyed in sudden-death overtime: the match lost 0-1",
+       "found": false,
+       "cited": false,
+       "status": "missed",
+       "numbers": null
+      }
+     ],
+     "outside": [
+      "0:21 Placing a support unit behind advancing troops near the river encountered enemy defense"
+     ],
+     "ungraded": 1
+    },
+    {
+     "run": 2,
+     "void": false,
+     "rows": {
+      "player": {
+       "n": 0,
+       "d": 1
+      },
+      "otherPlayer": {
+       "n": 0,
+       "d": 0
+      },
+      "character": {
+       "n": 0,
+       "d": 0
+      },
+      "found": {
+       "n": 0,
+       "d": 3
+      },
+      "invented": {
+       "n": 0,
+       "d": 0
+      },
+      "numbers": {
+       "n": 0,
+       "d": 0
+      },
+      "cited": {
+       "n": 0,
+       "d": 3
+      },
+      "right": {
+       "n": 0,
+       "d": 0
+      },
+      "partly": {
+       "n": 0,
+       "d": 0
+      },
+      "wrong": {
+       "n": 0,
+       "d": 0
+      },
+      "nothing": {
+       "n": 0,
+       "d": 0
+      },
+      "caught": {
+       "n": 0,
+       "d": 0
+      },
+      "wrongly": {
+       "n": 0,
+       "d": 0
+      }
+     },
+     "cost": {
+      "minutes": 0.7,
+      "answered": 4,
+      "failed": 1,
+      "prompt": 58573,
+      "output": 6177
+     },
+     "losses": [
+      {
+       "t": "1:33",
+       "kind": "tower damage (right tower 3197 to 761)",
+       "found": false,
+       "cited": false,
+       "status": "missed",
+       "numbers": null
+      },
+      {
+       "t": "2:36",
+       "kind": "tower damage (right tower 761 to 384), with the player's King Tower hit and activated (5582 bar from 2:24)",
+       "found": false,
+       "cited": false,
+       "status": "missed",
+       "numbers": null
+      },
+      {
+       "t": "3:27",
+       "kind": "right tower destroyed in sudden-death overtime: the match lost 0-1",
+       "found": false,
+       "cited": false,
+       "status": "missed",
+       "numbers": null
+      }
+     ],
+     "outside": [],
+     "ungraded": 0
+    }
+   ],
+   "rows": {
+    "player": {
+     "n": 0,
+     "d": 2
+    },
+    "otherPlayer": {
+     "n": 0,
+     "d": 0
+    },
+    "character": {
+     "n": 0,
+     "d": 0
+    },
+    "found": {
+     "n": 0,
+     "d": 6
+    },
+    "invented": {
+     "n": 0,
+     "d": 0
+    },
+    "numbers": {
+     "n": 0,
+     "d": 0
+    },
+    "cited": {
+     "n": 0,
+     "d": 6
+    },
+    "right": {
+     "n": 0,
+     "d": 0
+    },
+    "partly": {
+     "n": 0,
+     "d": 0
+    },
+    "wrong": {
+     "n": 0,
+     "d": 0
+    },
+    "nothing": {
+     "n": 0,
+     "d": 1
+    },
+    "caught": {
+     "n": 0,
+     "d": 0
+    },
+    "wrongly": {
+     "n": 0,
+     "d": 0
+    }
+   },
+   "cost": {
+    "runs": 2,
+    "valid": 2,
+    "minutes": 1.6,
+    "answered": 10.5,
+    "failed": 0.5,
+    "prompt": 90383.5,
+    "output": 18229.5
+   },
+   "ungraded": 1
+  },
+  {
+   "tag": "fn",
+   "game": "Fortnite",
+   "losses": 5,
+   "runs": [
+    {
+     "run": 1,
+     "void": false,
+     "rows": {
+      "player": {
+       "n": 0,
+       "d": 1
+      },
+      "otherPlayer": {
+       "n": 0,
+       "d": 0
+      },
+      "character": {
+       "n": 0,
+       "d": 0
+      },
+      "found": {
+       "n": 1,
+       "d": 5
+      },
+      "invented": {
+       "n": 0,
+       "d": 1
+      },
+      "numbers": {
+       "n": 0,
+       "d": 0
+      },
+      "cited": {
+       "n": 1,
+       "d": 5
+      },
+      "right": {
+       "n": 1,
+       "d": 1
+      },
+      "partly": {
+       "n": 0,
+       "d": 1
+      },
+      "wrong": {
+       "n": 0,
+       "d": 1
+      },
+      "nothing": {
+       "n": 0,
+       "d": 1
+      },
+      "caught": {
+       "n": 0,
+       "d": 0
+      },
+      "wrongly": {
+       "n": 0,
+       "d": 0
+      }
+     },
+     "cost": {
+      "minutes": 7.4,
+      "answered": 19,
+      "failed": 1,
+      "prompt": 181147,
+      "output": 31501
+     },
+     "losses": [
+      {
+       "t": "2:43",
+       "kind": "damage (fall: health 97 -> 72, shield 98 untouched)",
+       "found": false,
+       "cited": false,
+       "status": "missed",
+       "numbers": null
+      },
+      {
+       "t": "6:09",
+       "kind": "damage (fall: health 75 -> 55, shield 98 untouched)",
+       "found": false,
+       "cited": false,
+       "status": "missed",
+       "numbers": null
+      },
+      {
+       "t": "6:59",
+       "kind": "minor damage (fall: health 55 -> 45, shield 98 untouched)",
+       "found": false,
+       "cited": false,
+       "status": "missed",
+       "numbers": null
+      },
+      {
+       "t": "7:30",
+       "kind": "heavy damage (shield 98 -> 24 in three hits, 7:29.9-7:33.1), fled",
+       "found": false,
+       "cited": false,
+       "status": "missed",
+       "numbers": null
+      },
+      {
+       "t": "7:43",
+       "kind": "death (eliminated by MISK-82 with a Deadeye Assault Rifle; placed #4)",
+       "found": true,
+       "cited": true,
+       "status": "right",
+       "numbers": null
+      }
+     ],
+     "outside": [],
+     "ungraded": 0
+    }
+   ],
+   "rows": {
+    "player": {
+     "n": 0,
+     "d": 1
+    },
+    "otherPlayer": {
+     "n": 0,
+     "d": 0
+    },
+    "character": {
+     "n": 0,
+     "d": 0
+    },
+    "found": {
+     "n": 1,
+     "d": 5
+    },
+    "invented": {
+     "n": 0,
+     "d": 1
+    },
+    "numbers": {
+     "n": 0,
+     "d": 0
+    },
+    "cited": {
+     "n": 1,
+     "d": 5
+    },
+    "right": {
+     "n": 1,
+     "d": 1
+    },
+    "partly": {
+     "n": 0,
+     "d": 1
+    },
+    "wrong": {
+     "n": 0,
+     "d": 1
+    },
+    "nothing": {
+     "n": 0,
+     "d": 1
+    },
+    "caught": {
+     "n": 0,
+     "d": 0
+    },
+    "wrongly": {
+     "n": 0,
+     "d": 0
+    }
+   },
+   "cost": {
+    "runs": 1,
+    "valid": 1,
+    "minutes": 7.4,
+    "answered": 19,
+    "failed": 1,
+    "prompt": 181147,
+    "output": 31501
+   },
+   "ungraded": 0
+  },
+  {
+   "tag": "bs",
+   "game": "Brawl Stars",
+   "losses": 3,
+   "runs": [
+    {
+     "run": 1,
+     "void": false,
+     "rows": {
+      "player": {
+       "n": 1,
+       "d": 1
+      },
+      "otherPlayer": {
+       "n": 0,
+       "d": 1
+      },
+      "character": {
+       "n": 0,
+       "d": 0
+      },
+      "found": {
+       "n": 0,
+       "d": 3
+      },
+      "invented": {
+       "n": 0,
+       "d": 0
+      },
+      "numbers": {
+       "n": 0,
+       "d": 0
+      },
+      "cited": {
+       "n": 0,
+       "d": 3
+      },
+      "right": {
+       "n": 0,
+       "d": 0
+      },
+      "partly": {
+       "n": 0,
+       "d": 0
+      },
+      "wrong": {
+       "n": 0,
+       "d": 0
+      },
+      "nothing": {
+       "n": 0,
+       "d": 0
+      },
+      "caught": {
+       "n": 0,
+       "d": 0
+      },
+      "wrongly": {
+       "n": 0,
+       "d": 0
+      }
+     },
+     "cost": {
+      "minutes": 1.2,
+      "answered": 7,
+      "failed": 1,
+      "prompt": 75417,
+      "output": 3684
+     },
+     "losses": [
+      {
+       "t": "0:38",
+       "kind": "near_death (1 of 14300 HP, 0:38.25-0:40.0)",
+       "found": false,
+       "cited": false,
+       "status": "missed",
+       "numbers": null
+      },
+      {
+       "t": "1:10",
+       "kind": "death (kill popup 'NPC💀💀Abuser -> PANDA YT' at 1:10.5; 'Following: Automatic' from 1:10.75)",
+       "found": false,
+       "cited": false,
+       "status": "missed",
+       "numbers": null
+      },
+      {
+       "t": "2:58",
+       "kind": "death (kill popup 'SSZtt -> PANDA YT' at 2:58.5; spectating 'Following: ราชาโดดรุม' from 2:58.8)",
+       "found": false,
+       "cited": false,
+       "status": "missed",
+       "numbers": null
+      }
+     ],
+     "outside": [],
+     "ungraded": 0
+    },
+    {
+     "run": 2,
+     "void": false,
+     "rows": {
+      "player": {
+       "n": 1,
+       "d": 1
+      },
+      "otherPlayer": {
+       "n": 0,
+       "d": 1
+      },
+      "character": {
+       "n": 0,
+       "d": 0
+      },
+      "found": {
+       "n": 0,
+       "d": 3
+      },
+      "invented": {
+       "n": 0,
+       "d": 0
+      },
+      "numbers": {
+       "n": 0,
+       "d": 0
+      },
+      "cited": {
+       "n": 0,
+       "d": 3
+      },
+      "right": {
+       "n": 0,
+       "d": 0
+      },
+      "partly": {
+       "n": 0,
+       "d": 0
+      },
+      "wrong": {
+       "n": 0,
+       "d": 0
+      },
+      "nothing": {
+       "n": 0,
+       "d": 0
+      },
+      "caught": {
+       "n": 0,
+       "d": 0
+      },
+      "wrongly": {
+       "n": 0,
+       "d": 0
+      }
+     },
+     "cost": {
+      "minutes": 0.8,
+      "answered": 4,
+      "failed": 2,
+      "prompt": 64441,
+      "output": 3047
+     },
+     "losses": [
+      {
+       "t": "0:38",
+       "kind": "near_death (1 of 14300 HP, 0:38.25-0:40.0)",
+       "found": false,
+       "cited": false,
+       "status": "missed",
+       "numbers": null
+      },
+      {
+       "t": "1:10",
+       "kind": "death (kill popup 'NPC💀💀Abuser -> PANDA YT' at 1:10.5; 'Following: Automatic' from 1:10.75)",
+       "found": false,
+       "cited": false,
+       "status": "missed",
+       "numbers": null
+      },
+      {
+       "t": "2:58",
+       "kind": "death (kill popup 'SSZtt -> PANDA YT' at 2:58.5; spectating 'Following: ราชาโดดรุม' from 2:58.8)",
+       "found": false,
+       "cited": false,
+       "status": "missed",
+       "numbers": null
+      }
+     ],
+     "outside": [],
+     "ungraded": 0
+    }
+   ],
+   "rows": {
+    "player": {
+     "n": 2,
+     "d": 2
+    },
+    "otherPlayer": {
+     "n": 0,
+     "d": 2
+    },
+    "character": {
+     "n": 0,
+     "d": 0
+    },
+    "found": {
+     "n": 0,
+     "d": 6
+    },
+    "invented": {
+     "n": 0,
+     "d": 0
+    },
+    "numbers": {
+     "n": 0,
+     "d": 0
+    },
+    "cited": {
+     "n": 0,
+     "d": 6
+    },
+    "right": {
+     "n": 0,
+     "d": 0
+    },
+    "partly": {
+     "n": 0,
+     "d": 0
+    },
+    "wrong": {
+     "n": 0,
+     "d": 0
+    },
+    "nothing": {
+     "n": 0,
+     "d": 0
+    },
+    "caught": {
+     "n": 0,
+     "d": 0
+    },
+    "wrongly": {
+     "n": 0,
+     "d": 0
+    }
+   },
+   "cost": {
+    "runs": 2,
+    "valid": 2,
+    "minutes": 1,
+    "answered": 5.5,
+    "failed": 1.5,
+    "prompt": 69929,
+    "output": 3365.5
+   },
+   "ungraded": 0
+  },
+  {
+   "tag": "ch",
+   "game": "Chess",
+   "losses": 7,
+   "runs": [
+    {
+     "run": 1,
+     "void": false,
+     "rows": {
+      "player": {
+       "n": 1,
+       "d": 1
+      },
+      "otherPlayer": {
+       "n": 0,
+       "d": 1
+      },
+      "character": {
+       "n": 0,
+       "d": 0
+      },
+      "found": {
+       "n": 6,
+       "d": 7
+      },
+      "invented": {
+       "n": 0,
+       "d": 0
+      },
+      "numbers": {
+       "n": 0,
+       "d": 0
+      },
+      "cited": {
+       "n": 2,
+       "d": 7
+      },
+      "right": {
+       "n": 2,
+       "d": 2
+      },
+      "partly": {
+       "n": 0,
+       "d": 2
+      },
+      "wrong": {
+       "n": 0,
+       "d": 2
+      },
+      "nothing": {
+       "n": 0,
+       "d": 2
+      },
+      "caught": {
+       "n": 0,
+       "d": 0
+      },
+      "wrongly": {
+       "n": 4,
+       "d": 4
+      }
+     },
+     "cost": {
+      "minutes": 3.9,
+      "answered": 14,
+      "failed": 1,
+      "prompt": 197680,
+      "output": 35850
+     },
+     "losses": [
+      {
+       "t": "0:16",
+       "kind": "blunder 2.f4 (325 at depth 20, 334 at depth 16; best exd5)",
+       "found": true,
+       "cited": false,
+       "status": "missed",
+       "numbers": null
+      },
+      {
+       "t": "5:05",
+       "kind": "mistake 15.Bc3 (211 at depth 20, 169 at depth 16; best Nc3)",
+       "found": true,
+       "cited": false,
+       "status": "missed",
+       "numbers": null
+      },
+      {
+       "t": "5:14",
+       "kind": "blunder 16.Qd3 (430 at depth 20, 303 at depth 16; best d5)",
+       "found": true,
+       "cited": false,
+       "status": "missed",
+       "numbers": null
+      },
+      {
+       "t": "5:41",
+       "kind": "blunder 18.Nf4 (571 at depth 20, 542 at depth 16; best Ng3)",
+       "found": true,
+       "cited": true,
+       "status": "right",
+       "numbers": null
+      },
+      {
+       "t": "6:15",
+       "kind": "inaccuracy at most: 21.Rhf1 (88 at depth 20, 119 at depth 16; best g3 at both)",
+       "found": false,
+       "cited": false,
+       "status": "missed",
+       "numbers": null
+      },
+      {
+       "t": "6:28",
+       "kind": "blunder 22.Rxf4 (330 at depth 20, 288 at depth 16; best Bxc4)",
+       "found": true,
+       "cited": true,
+       "status": "right",
+       "numbers": null
+      },
+      {
+       "t": "7:52",
+       "kind": "mistake 26.Rf1 (160 at depth 20, 147 at depth 16; best Re1)",
+       "found": true,
+       "cited": false,
+       "status": "missed",
+       "numbers": null
+      }
+     ],
+     "outside": [],
+     "ungraded": 0
+    },
+    {
+     "run": 2,
+     "void": false,
+     "rows": {
+      "player": {
+       "n": 1,
+       "d": 1
+      },
+      "otherPlayer": {
+       "n": 0,
+       "d": 1
+      },
+      "character": {
+       "n": 0,
+       "d": 0
+      },
+      "found": {
+       "n": 6,
+       "d": 7
+      },
+      "invented": {
+       "n": 0,
+       "d": 0
+      },
+      "numbers": {
+       "n": 0,
+       "d": 0
+      },
+      "cited": {
+       "n": 1,
+       "d": 7
+      },
+      "right": {
+       "n": 1,
+       "d": 1
+      },
+      "partly": {
+       "n": 0,
+       "d": 1
+      },
+      "wrong": {
+       "n": 0,
+       "d": 1
+      },
+      "nothing": {
+       "n": 0,
+       "d": 1
+      },
+      "caught": {
+       "n": 0,
+       "d": 0
+      },
+      "wrongly": {
+       "n": 1,
+       "d": 1
+      }
+     },
+     "cost": {
+      "minutes": 3.4,
+      "answered": 11,
+      "failed": 1,
+      "prompt": 153009,
+      "output": 33336
+     },
+     "losses": [
+      {
+       "t": "0:16",
+       "kind": "blunder 2.f4 (325 at depth 20, 334 at depth 16; best exd5)",
+       "found": true,
+       "cited": false,
+       "status": "missed",
+       "numbers": null
+      },
+      {
+       "t": "5:05",
+       "kind": "mistake 15.Bc3 (211 at depth 20, 169 at depth 16; best Nc3)",
+       "found": true,
+       "cited": false,
+       "status": "missed",
+       "numbers": null
+      },
+      {
+       "t": "5:14",
+       "kind": "blunder 16.Qd3 (430 at depth 20, 303 at depth 16; best d5)",
+       "found": true,
+       "cited": false,
+       "status": "missed",
+       "numbers": null
+      },
+      {
+       "t": "5:41",
+       "kind": "blunder 18.Nf4 (571 at depth 20, 542 at depth 16; best Ng3)",
+       "found": true,
+       "cited": true,
+       "status": "right",
+       "numbers": null
+      },
+      {
+       "t": "6:15",
+       "kind": "inaccuracy at most: 21.Rhf1 (88 at depth 20, 119 at depth 16; best g3 at both)",
+       "found": false,
+       "cited": false,
+       "status": "missed",
+       "numbers": null
+      },
+      {
+       "t": "6:28",
+       "kind": "blunder 22.Rxf4 (330 at depth 20, 288 at depth 16; best Bxc4)",
+       "found": true,
+       "cited": false,
+       "status": "missed",
+       "numbers": null
+      },
+      {
+       "t": "7:52",
+       "kind": "mistake 26.Rf1 (160 at depth 20, 147 at depth 16; best Re1)",
+       "found": true,
+       "cited": false,
+       "status": "missed",
+       "numbers": null
+      }
+     ],
+     "outside": [],
+     "ungraded": 0
+    }
+   ],
+   "rows": {
+    "player": {
+     "n": 2,
+     "d": 2
+    },
+    "otherPlayer": {
+     "n": 0,
+     "d": 2
+    },
+    "character": {
+     "n": 0,
+     "d": 0
+    },
+    "found": {
+     "n": 12,
+     "d": 14
+    },
+    "invented": {
+     "n": 0,
+     "d": 0
+    },
+    "numbers": {
+     "n": 0,
+     "d": 0
+    },
+    "cited": {
+     "n": 3,
+     "d": 14
+    },
+    "right": {
+     "n": 3,
+     "d": 3
+    },
+    "partly": {
+     "n": 0,
+     "d": 3
+    },
+    "wrong": {
+     "n": 0,
+     "d": 3
+    },
+    "nothing": {
+     "n": 0,
+     "d": 3
+    },
+    "caught": {
+     "n": 0,
+     "d": 0
+    },
+    "wrongly": {
+     "n": 5,
+     "d": 5
+    }
+   },
+   "cost": {
+    "runs": 2,
+    "valid": 2,
+    "minutes": 3.65,
+    "answered": 12.5,
+    "failed": 1,
+    "prompt": 175344.5,
+    "output": 34593
+   },
+   "ungraded": 0
+  },
+  {
+   "tag": "r6",
+   "game": "Rainbow Six Siege",
+   "losses": 2,
+   "runs": [
+    {
+     "run": 1,
+     "void": false,
+     "rows": {
+      "player": {
+       "n": 0,
+       "d": 1
+      },
+      "otherPlayer": {
+       "n": 0,
+       "d": 0
+      },
+      "character": {
+       "n": 0,
+       "d": 1
+      },
+      "found": {
+       "n": 2,
+       "d": 2
+      },
+      "invented": {
+       "n": 0,
+       "d": 1
+      },
+      "numbers": {
+       "n": 0,
+       "d": 0
+      },
+      "cited": {
+       "n": 1,
+       "d": 2
+      },
+      "right": {
+       "n": 1,
+       "d": 1
+      },
+      "partly": {
+       "n": 0,
+       "d": 1
+      },
+      "wrong": {
+       "n": 0,
+       "d": 1
+      },
+      "nothing": {
+       "n": 0,
+       "d": 1
+      },
+      "caught": {
+       "n": 2,
+       "d": 2
+      },
+      "wrongly": {
+       "n": 3,
+       "d": 5
+      }
+     },
+     "cost": {
+      "minutes": 5.9,
+      "answered": 27,
+      "failed": 1,
+      "prompt": 283105,
+      "output": 61061
+     },
+     "losses": [
+      {
+       "t": "8:38.9",
+       "kind": "near_death (19 of 100)",
+       "found": true,
+       "cited": false,
+       "status": "missed",
+       "numbers": null
+      },
+      {
+       "t": "8:58.3",
+       "kind": "death (ELIMINATED BY francomix: THUNDERBIRD, SPEAR .308; headshot icon in the feed row)",
+       "found": true,
+       "cited": true,
+       "status": "right",
+       "numbers": null
+      }
+     ],
+     "outside": [],
+     "ungraded": 0
+    },
+    {
+     "run": 2,
+     "void": false,
+     "rows": {
+      "player": {
+       "n": 0,
+       "d": 1
+      },
+      "otherPlayer": {
+       "n": 0,
+       "d": 0
+      },
+      "character": {
+       "n": 1,
+       "d": 1
+      },
+      "found": {
+       "n": 2,
+       "d": 2
+      },
+      "invented": {
+       "n": 0,
+       "d": 1
+      },
+      "numbers": {
+       "n": 0,
+       "d": 0
+      },
+      "cited": {
+       "n": 2,
+       "d": 2
+      },
+      "right": {
+       "n": 1,
+       "d": 2
+      },
+      "partly": {
+       "n": 0,
+       "d": 2
+      },
+      "wrong": {
+       "n": 1,
+       "d": 2
+      },
+      "nothing": {
+       "n": 0,
+       "d": 2
+      },
+      "caught": {
+       "n": 2,
+       "d": 3
+      },
+      "wrongly": {
+       "n": 1,
+       "d": 3
+      }
+     },
+     "cost": {
+      "minutes": 6.1,
+      "answered": 24,
+      "failed": 1,
+      "prompt": 243629,
+      "output": 58562
+     },
+     "losses": [
+      {
+       "t": "8:38.9",
+       "kind": "near_death (19 of 100)",
+       "found": true,
+       "cited": true,
+       "status": "wrong",
+       "numbers": null
+      },
+      {
+       "t": "8:58.3",
+       "kind": "death (ELIMINATED BY francomix: THUNDERBIRD, SPEAR .308; headshot icon in the feed row)",
+       "found": true,
+       "cited": true,
+       "status": "right",
+       "numbers": null
+      }
+     ],
+     "outside": [],
+     "ungraded": 0
+    }
+   ],
+   "rows": {
+    "player": {
+     "n": 0,
+     "d": 2
+    },
+    "otherPlayer": {
+     "n": 0,
+     "d": 0
+    },
+    "character": {
+     "n": 1,
+     "d": 2
+    },
+    "found": {
+     "n": 4,
+     "d": 4
+    },
+    "invented": {
+     "n": 0,
+     "d": 2
+    },
+    "numbers": {
+     "n": 0,
+     "d": 0
+    },
+    "cited": {
+     "n": 3,
+     "d": 4
+    },
+    "right": {
+     "n": 2,
+     "d": 3
+    },
+    "partly": {
+     "n": 0,
+     "d": 3
+    },
+    "wrong": {
+     "n": 1,
+     "d": 3
+    },
+    "nothing": {
+     "n": 0,
+     "d": 3
+    },
+    "caught": {
+     "n": 4,
+     "d": 5
+    },
+    "wrongly": {
+     "n": 4,
+     "d": 8
+    }
+   },
+   "cost": {
+    "runs": 2,
+    "valid": 2,
+    "minutes": 6,
+    "answered": 25.5,
+    "failed": 1,
+    "prompt": 263367,
+    "output": 59811.5
+   },
+   "ungraded": 0
+  }
+ ],
+ "all": {
+  "rows": {
+   "player": {
+    "n": 6,
+    "d": 13
+   },
+   "otherPlayer": {
+    "n": 2,
+    "d": 8
+   },
+   "character": {
+    "n": 3,
+    "d": 4
+   },
+   "found": {
+    "n": 25,
+    "d": 46
+   },
+   "invented": {
+    "n": 6,
+    "d": 15
+   },
+   "numbers": {
+    "n": 0,
+    "d": 0
+   },
+   "cited": {
+    "n": 11,
+    "d": 46
+   },
+   "right": {
+    "n": 7,
+    "d": 11
+   },
+   "partly": {
+    "n": 1,
+    "d": 11
+   },
+   "wrong": {
+    "n": 3,
+    "d": 11
+   },
+   "nothing": {
+    "n": 0,
+    "d": 19
+   },
+   "caught": {
+    "n": 14,
+    "d": 17
+   },
+   "wrongly": {
+    "n": 12,
+    "d": 26
+   }
+  },
+  "ungraded": 7,
+  "cost": {
+   "runs": 17,
+   "valid": 13,
+   "minutes": 4.038461538461538,
+   "answered": 16.76923076923077,
+   "failed": 1,
+   "prompt": 210927.53846153847,
+   "output": 39412
+  }
+ }
+}
